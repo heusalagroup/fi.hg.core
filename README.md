@@ -74,6 +74,8 @@ FooService.refreshData();
 
 HTTP request mapping annotations for TypeScript in the same style as in Java's Spring @RequestMapping.
 
+This is only annotation library part. The actual server implementing REST API is not available from this module at the moment, but may be later.
+
 ***This implementation is very experimental.***
 
 ```typescript
