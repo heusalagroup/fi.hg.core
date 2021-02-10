@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sendanor/typescript/issues"
   },
-  "homepage": "https://github.com/sendanor/typescript#readme"
+  "homepage": "https://github.com/sendanor/typescript#readme",
+  "dependencies": {
+    "@types/lodash": "^4.14.168"
+  }
 }
