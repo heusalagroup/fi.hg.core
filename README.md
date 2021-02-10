@@ -1,2 +1,3 @@
-# typescript
-Our enterprise library for TypeScript
+# @sendanor/typescript
+
+Our enterprise library for TypeScript.
