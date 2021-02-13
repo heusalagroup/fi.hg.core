@@ -1,5 +1,4 @@
 // Copyright (c) 2020 Sendanor. All rights reserved.
-
 import map from 'lodash/map.js';
 import some from 'lodash/some.js';
 import every from 'lodash/every.js';
