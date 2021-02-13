@@ -1,8 +1,9 @@
 {
+  "private": true,
   "name": "@sendanor/typescript",
   "version": "0.0.1",
-  "description": "Enterprise Library for TypeScript",
-  "main": "src/index.ts",
+  "description": "Enterprise libraries for TypeScript",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +18,8 @@
   },
   "homepage": "https://github.com/sendanor/typescript#readme",
   "dependencies": {
-    "@types/lodash": "^4.14.168"
-  }
+    "@types/lodash": "^4.14.168",
+    "lodash": "^4.17.20"
+  },
+  "devDependencies": {}
 }

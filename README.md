@@ -2,6 +2,27 @@
 
 Our enterprise library for TypeScript.
 
+## Install
+
+This library is meant to be used as a git submodule in a NodeJS or webpack project.
+
+Run the installation commands from your project's root directory. Usually it's where your `package.json` is located. We also expect your source files to be located in `./src` and we'll use `./src/modules` for extra modules.
+
+Setup git submodule:
+
+```
+mkdir -p src/modules/sendanor
+git submodule add https://github.com/sendanor/typescript src/modules/sendanor/typescript
+```
+
+Next install our dependencies (newest lodash):
+
+```
+npm install --save-dev lodash
+```
+
+Why, you may wonder? That's because NPM doesn't provide a good way to implement pure typescript core libraries. We would have to compile the whole library in our bundle even though you probably don't use everything.
+
 ## LogService
 
 Simple wrapper for `console` which allows naming the log context.
