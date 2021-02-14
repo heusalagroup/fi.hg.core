@@ -6,28 +6,42 @@ Our enterprise library for TypeScript.
 
 This library is meant to be used as a git submodule in a NodeJS or webpack project.
 
-Run the installation commands from your project's root directory. Usually it's where your `package.json` is located. We also expect your source files to be located in `./src` and we'll use `./src/modules` for extra modules.
+Run the installation commands from your project's root directory. Usually it's where your `package.json` is located. 
+
+We also expect your source files to be located in `./src` and we'll use `./src/nor/ts` for location for our sub module.
 
 Setup git submodule:
 
-```
-mkdir -p src/modules/sendanor
-git submodule add https://github.com/sendanor/typescript src/modules/sendanor/typescript
-```
-
-Next install our dependencies (newest lodash):
-
-```
-npm install --save-dev lodash
+```shell
+mkdir -p src/nor/ts
+git submodule add https://github.com/sendanor/typescript src/nor/ts
 ```
 
-Why, you may wonder? That's because NPM doesn't provide a good way to implement pure typescript core libraries. We would have to compile the whole library in our bundle even though you probably don't use everything.
+Next install our only required dependency (newest [lodash library](https://lodash.com/)):
+
+```shell
+npm install --save-dev lodash @types/lodash
+```
+
+If you're going to develop NodeJS app, you might want to install also types for NodeJS (this should be obvious though):
+
+```shell
+npm install --save-dev @types/node
+```
+
+### Why git submodules, you may wonder? 
+
+NPM doesn't provide a good way to implement pure compile time typescript libraries. 
+
+We would have to compile the whole library in our bundle even though you probably don't use everything.
 
 ## LogService
 
-Simple wrapper for `console` which allows naming the log context.
+Our simple wrapper for `console` which allows naming the log context.
 
 ```typescript
+import LogService from "src/nor/ts/LogService"
+
 const LOG = LogService.createLogger('FooService');
 
 export class FooService {
@@ -46,6 +60,7 @@ This is a simple observer implementation for implementing synchronous in-process
 You'll use it like this:
 
 ```typescript
+import Observer from "src/nor/ts/Observer"
 
 enum FooEvent {
     CHANGED = "FooService:changed"
@@ -100,6 +115,8 @@ This is only annotation library part. The actual server implementing REST API is
 ***This implementation is very experimental.***
 
 ```typescript
+import Request from "src/nor/ts/Request"
+
 export interface ListDTO<T> {
 
     pageNumber : number;
