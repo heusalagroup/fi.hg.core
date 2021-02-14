@@ -40,7 +40,7 @@ We would have to compile the whole library in our bundle even though you probabl
 Our simple wrapper for `console` which allows naming the log context.
 
 ```typescript
-import LogService from "src/nor/ts/LogService"
+import LogService from "./src/nor/ts/LogService"
 
 const LOG = LogService.createLogger('FooService');
 
@@ -60,7 +60,7 @@ This is a simple observer implementation for implementing synchronous in-process
 You'll use it like this:
 
 ```typescript
-import Observer from "src/nor/ts/Observer"
+import Observer from "./src/nor/ts/Observer"
 
 enum FooEvent {
     CHANGED = "FooService:changed"
@@ -115,7 +115,7 @@ This is only annotation library part. The actual server implementing REST API is
 ***This implementation is very experimental.***
 
 ```typescript
-import Request from "src/nor/ts/Request"
+import Request from "./src/nor/ts/Request"
 
 export interface ListDTO<T> {
 
