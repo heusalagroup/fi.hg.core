@@ -1,4 +1,4 @@
-# @sendanor/typescript
+# sendanor/typescript
 
 Our enterprise library for TypeScript.
 
@@ -15,6 +15,7 @@ Setup git submodule:
 ```shell
 mkdir -p src/nor
 git submodule add https://github.com/sendanor/typescript src/nor/ts
+git config -f .gitmodules submodule.src/nor/ts.branch main
 ```
 
 Next install our only required dependency (newest [lodash library](https://lodash.com/)):
