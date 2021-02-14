@@ -2,7 +2,7 @@
 
 Our enterprise library for TypeScript.
 
-## Install
+## Install & maintain our library
 
 This library is meant to be used as a git submodule in a NodeJS or webpack project.
 
@@ -29,11 +29,41 @@ If you're going to develop NodeJS app, you might want to install also types for 
 npm install --save-dev @types/node
 ```
 
+### Checking out a project with git submodules
+
+Git doesn't automatically clone your sub modules. 
+
+You'll need to command:
+
+```shell
+git clone --recurse-submodules git@github.com:sendanor/your-project.git your-project
+```
+
+...or:
+
+```shell
+git clone git@github.com:sendanor/your-project.git your-project
+cd your-project
+git submodule init
+git submodule update
+```
+
+### Updating upstream library code
+
+Later when you want to update your submodules, you may do:
+
+```shell
+git pull
+git submodule update --remote
+```
+
 ### Why git submodules, you may wonder? 
 
 NPM doesn't provide a good way to implement pure compile time typescript libraries. 
 
-We would have to compile the whole library in our bundle even though you probably don't use everything.
+We would have to compile our whole library in our bundle even though you probably don't use everything.
+
+It wouldn't be possible to use compile time optimizations and other ENV based feature flags.
 
 ## LogService
 
