@@ -13,7 +13,7 @@ We also expect your source files to be located in `./src` and we'll use `./src/n
 Setup git submodule:
 
 ```shell
-mkdir -p src/nor/ts
+mkdir -p src/nor
 git submodule add https://github.com/sendanor/typescript src/nor/ts
 ```
 
