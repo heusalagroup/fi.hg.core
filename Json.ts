@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {every, isFunction, isNumber, isString, keys, isBoolean, isNull, isArray} from "../modules/lodash";
-import {Test} from "../services/Test";
+import {every, isFunction, isNumber, isString, keys, isBoolean, isNull, isArray} from "./modules/lodash";
+import {Test} from "./Test";
 
 export interface WritableJsonSerializable {
     toJSON () : JsonAny;
