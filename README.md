@@ -173,3 +173,52 @@ export class UserController {
     }
 }
 ```
+
+## CrudRepository
+
+Spring Data like annotation mechanism for entities and simple CrudRepository implementation.
+
+```typescript
+import { Table, Entity, Id, Column } from "../nor/ts/crud-repository/Entity";
+
+@Table("users")
+export default class User extends Entity {
+    @Id()
+    @Column("id")
+    public id?: string;
+
+    @Column("name")
+    public name: string;
+
+    @Column("age")
+    public age: number;
+
+    ...
+}
+```
+
+```typescript
+import User from "../model/User";
+import CrudRepository from "../nor/ts/crud-repository/CrudRepository";
+import Persister from "../nor/ts/crud-repository/persistence/Persister";
+
+export default class UserRepository extends CrudRepository<User> {
+    constructor(persister: Persister) {
+        super(new User(), persister);
+    }
+}
+```
+
+```typescript
+import User from "../../model/User";
+import UserRepository from "../../repository/UserRepository";
+import PgPersister from "../../repository/persistence/PgPersister";
+
+export class UserController {
+    createUser(): UserDto {
+        const userRepository = new UserRepository(new PgPersister());
+        userRepository.save(new User(...));
+        ...
+    }
+}
+```
