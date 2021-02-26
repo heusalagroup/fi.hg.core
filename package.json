@@ -17,6 +17,10 @@
     },
     "homepage": "https://github.com/sendanor/typescript#readme",
     "dependencies": {},
+    "optionalDependencies": {
+        "mysql": "^2.18.1",
+        "pg": "^8.5.1"
+    },
     "devDependencies": {
         "lodash": "^4.17.20",
         "@types/lodash": "^4.14.168",
