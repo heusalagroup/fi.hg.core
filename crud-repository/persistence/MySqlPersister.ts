@@ -28,16 +28,16 @@ export default class MySqlPersister implements Persister {
     }
 
     public async insert<T>(entity: T, metadata: EntityMetadata): Promise<T> {
-        const { tableName } = metadata;
-        const fields = metadata.fields.filter((fld) => !this.isIdField(fld, metadata));
-        const colNames = fields.map((col) => col.columnName).join(",");
-        const values = fields.map((col) => col.propertyName).map((p) => (entity as any)[p]);
-        const placeholders = Array.from({ length: fields.length }, (_, i) => i + 1)
-            .map(() => `?`)
-            .reduce((prev, curr) => `${prev},${curr}`);
-        const insert = `INSERT INTO ${tableName}(${colNames}) VALUES(${placeholders})`;
         return new Promise((resolve, reject) => {
             try {
+                const { tableName } = metadata;
+                const fields = metadata.fields.filter((fld) => !this.isIdField(fld, metadata));
+                const colNames = fields.map((col) => col.columnName).join(",");
+                const values = fields.map((col) => col.propertyName).map((p) => (entity as any)[p]);
+                const placeholders = Array.from({ length: fields.length }, (_, i) => i + 1)
+                    .map(() => `?`)
+                    .reduce((prev, curr) => `${prev},${curr}`);
+                const insert = `INSERT INTO ${tableName}(${colNames}) VALUES(${placeholders})`;
                 this.connection.query(insert, values, async (error, result) => {
                     if (error) {
                         return reject(error);
