@@ -56,18 +56,18 @@ export default class MySqlPersister implements Persister {
     }
 
     public async update<T>(entity: T, metadata: EntityMetadata): Promise<T> {
-        const { tableName } = metadata;
-        const idColName = this.getIdColumnName(metadata);
-        const id = this.getId(entity, metadata);
-        const fields = metadata.fields.filter((fld) => !this.isIdField(fld, metadata));
-        const setters = fields.map((fld) => `${fld.columnName}=?`).reduce((prev, curr) => `${prev},${curr}`);
-        const values = fields
-            .map((col) => col.propertyName)
-            .map((p) => (entity as any)[p])
-            .concat([id]);
-        const update = `UPDATE ${tableName} SET ${setters} WHERE ${idColName}=?`;
         return new Promise((resolve, reject) => {
             try {
+                const { tableName } = metadata;
+                const idColName = this.getIdColumnName(metadata);
+                const id = this.getId(entity, metadata);
+                const fields = metadata.fields.filter((fld) => !this.isIdField(fld, metadata));
+                const setters = fields.map((fld) => `${fld.columnName}=?`).reduce((prev, curr) => `${prev},${curr}`);
+                const values = fields
+                    .map((col) => col.propertyName)
+                    .map((p) => (entity as any)[p])
+                    .concat([id]);
+                const update = `UPDATE ${tableName} SET ${setters} WHERE ${idColName}=?`;
                 this.connection.query(update, values, async (error, result) => {
                     if (error) {
                         return reject(error);
@@ -86,12 +86,12 @@ export default class MySqlPersister implements Persister {
     }
 
     public async delete<T>(entity: T, metadata: EntityMetadata): Promise<void> {
-        const { tableName } = metadata;
-        const idColName = this.getIdColumnName(metadata);
-        const id = this.getId(entity, metadata);
-        const sql = `DELETE FROM ${tableName} WHERE ${idColName}=?`;
         return new Promise((resolve, reject) => {
             try {
+                const { tableName } = metadata;
+                const idColName = this.getIdColumnName(metadata);
+                const id = this.getId(entity, metadata);
+                const sql = `DELETE FROM ${tableName} WHERE ${idColName}=?`;
                 this.connection.query(sql, [id], async (error, result) => {
                     if (error) {
                         return reject(error);
@@ -123,29 +123,37 @@ export default class MySqlPersister implements Persister {
 
     public async findById<T>(id: any, metadata: EntityMetadata): Promise<T | undefined> {
         return new Promise((resolve, reject) => {
-            const { tableName } = metadata;
-            const idColumnName = this.getIdColumnName(metadata);
-            const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} = ?`;
-            this.connection.query(select, [id], (error, result) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(result[0] ? this.toEntity(result[0], metadata) : undefined);
-            });
+            try {
+                const { tableName } = metadata;
+                const idColumnName = this.getIdColumnName(metadata);
+                const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} = ?`;
+                this.connection.query(select, [id], (error, result) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    resolve(result[0] ? this.toEntity(result[0], metadata) : undefined);
+                });
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
     public findByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
-        const { tableName } = metadata;
-        const columnName = this.getColumnName(property, metadata.fields);
-        const select = `SELECT * FROM ${tableName} WHERE ${columnName} = ?`;
         return new Promise((resolve, reject) => {
-            this.connection.query(select, [value], (error, result) => {
-                if (error) {
-                    reject(error);
-                }
-                return resolve(result.map((row: any) => this.toEntity(row, metadata)));
-            });
+            try {
+                const { tableName } = metadata;
+                const columnName = this.getColumnName(property, metadata.fields);
+                const select = `SELECT * FROM ${tableName} WHERE ${columnName} = ?`;
+                this.connection.query(select, [value], (error, result) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    return resolve(result.map((row: any) => this.toEntity(row, metadata)));
+                });
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -156,16 +164,23 @@ export default class MySqlPersister implements Persister {
     }
 
     private getColumnName(propertyName: string, fields: EntityField[]): string {
-        return fields.find((x) => x.propertyName === propertyName)?.columnName || "";
+        const field = fields.find((x) => x.propertyName === propertyName);
+        if (field) {
+            return field.columnName;
+        }
+        throw new Error(`Field not found for property: ${propertyName}`);
     }
 
     private getIdColumnName(metadata: EntityMetadata) {
-        const colName = this.getColumnName(metadata.idPropertyName, metadata.fields);
-        return colName;
+        return this.getColumnName(metadata.idPropertyName, metadata.fields);
     }
 
     private getId(entity: KeyValuePairs, metadata: EntityMetadata) {
-        return entity[metadata.idPropertyName];
+        const id = entity[metadata.idPropertyName];
+        if (id) {
+            return id;
+        }
+        throw new Error(`Id not found for table: ${metadata.tableName}`);
     }
 
     private isIdField(field: EntityField, metadata: EntityMetadata) {
