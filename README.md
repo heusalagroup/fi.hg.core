@@ -2,13 +2,15 @@
 
 Our enterprise library for TypeScript.
 
-## Install & maintain our library
+This git repository contains only the source code for a compile time use case. It is meant to be used as a git submodule in a NodeJS or webpack project.
 
-This library is meant to be used as a git submodule in a NodeJS or webpack project.
+See [sendanor/typescript-package](https://github.com/sendanor/typescript-package) for a full package example. Although, keep in mind, this repository is not intended to be used as a NPM package dependency.
+
+## Install & maintain our library
 
 Run the installation commands from your project's root directory. Usually it's where your `package.json` is located.
 
-We also expect your source files to be located in `./src` and we'll use `./src/nor/ts` for location for our sub module.
+For these sample commands we expect your source files to be located in `./src` and we'll use `./src/nor/ts` for location for our sub module.
 
 Setup git submodule:
 
