@@ -121,16 +121,30 @@ export default class MySqlPersister implements Persister {
         });
     }
 
-    public async findById<T>(id: string, metadata: EntityMetadata): Promise<T | undefined> {
-        const { tableName } = metadata;
-        const idColumnName = this.getIdColumnName(metadata);
-        const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} = ?`;
+    public async findById<T>(id: any, metadata: EntityMetadata): Promise<T | undefined> {
         return new Promise((resolve, reject) => {
+            const { tableName } = metadata;
+            const idColumnName = this.getIdColumnName(metadata);
+            const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} = ?`;
             this.connection.query(select, [id], (error, result) => {
                 if (error) {
                     reject(error);
                 }
                 resolve(result[0] ? this.toEntity(result[0], metadata) : undefined);
+            });
+        });
+    }
+
+    public findByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
+        const { tableName } = metadata;
+        const columnName = this.getColumnName(property, metadata.fields);
+        const select = `SELECT * FROM ${tableName} WHERE ${columnName} = ?`;
+        return new Promise((resolve, reject) => {
+            this.connection.query(select, [value], (error, result) => {
+                if (error) {
+                    reject(error);
+                }
+                return resolve(result.map((row: any) => this.toEntity(row, metadata)));
             });
         });
     }
@@ -146,7 +160,8 @@ export default class MySqlPersister implements Persister {
     }
 
     private getIdColumnName(metadata: EntityMetadata) {
-        return this.getColumnName(metadata.idPropertyName, metadata.fields);
+        const colName = this.getColumnName(metadata.idPropertyName, metadata.fields);
+        return colName;
     }
 
     private getId(entity: KeyValuePairs, metadata: EntityMetadata) {
