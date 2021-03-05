@@ -6,6 +6,21 @@ This git repository contains only the source code for a compile time use case. I
 
 See [sendanor/typescript-package](https://github.com/sendanor/typescript-package) for a full package example. Although, keep in mind, this repository is not intended to be used as a NPM package dependency.
 
+## Index
+
+ * [Install & maintain our library](#install--maintain-our-library)
+   * [Checking out a project with git submodules](#checking-out-a-project-with-git-submodules)
+   * [Updating upstream library code](#updating-upstream-library-code)
+   * [Why git submodules, you may wonder?](#why-git-submodules-you-may-wonder)
+ * [LogService](#logservice)
+ * [Observer](#observer)
+ * [Request](#request)
+ * [RequestServer](#requestserver)
+ * [CrudRepository](#crudrepository)
+ * [ProcessUtils](#processutils)
+   * [ProcessUtils.initEnvFromDefaultFiles()](#processutilsinitenvfromdefaultfiles)
+   * [ProcessUtils.setupDestroyHandler(...)](#processutilssetupdestroyhandlershutdownhandler-errorhandler)
+
 ## Install & maintain our library
 
 Run the installation commands from your project's root directory. Usually it's where your `package.json` is located.
