@@ -196,7 +196,7 @@ For the actual server implementing REST API, see next chapter.
 
 ## RequestServer
 
-This project also includes a simple and pure NodeJS implementation for the REST server for [our Request annotations](#request):
+This project also includes a simple and pure NodeJS implementation for the REST server implementing [our Request annotated controllers](#request):
 
 ```typescript
 import RequestServer from "./nor/ts/RequestServer";
