@@ -138,8 +138,6 @@ FooService.refreshData();
 
 HTTP request mapping annotations for TypeScript in the same style as in Java's Spring @RequestMapping.
 
-This is only annotation library part. The actual server implementing REST API is not available from this module at the moment, but may be later.
-
 **_This implementation is very experimental._**
 
 ```typescript
@@ -178,6 +176,21 @@ export class UserController {
     }
 }
 ```
+
+For the actual server implementing REST API, see next chapter.
+
+## RequestServer
+
+This project also includes a simple and pure NodeJS implementation for the REST server:
+
+```typescript
+import RequestServer from "./nor/ts/RequestServer";
+const server = new RequestServer("http://0.0.0.0:3000");
+server.attachController(UserController);
+server.start();
+```
+
+See also our `ProcessUtils` for best practices implementing runtime support in NodeJS.
 
 ## CrudRepository
 
@@ -226,4 +239,41 @@ export class UserController {
         ...
     }
 }
+```
+
+## ProcessUtils
+
+### ProcessUtils.initEnvFromDefaultFiles()
+
+This utility class includes a simple implementation for runtime `.env` file support.
+
+```typescript
+import ProcessUtils from "./nor/ts/ProcessUtils";
+
+// Must be first import to define environment variables before anything else
+ProcessUtils.initEnvFromDefaultFiles();
+```
+
+### ProcessUtils.setupDestroyHandler(shutdownHandler, errorHandler)
+
+This utility function can be used to implement default shutdown handlers for the common runtime events.
+
+It will hook into events `exit`, `SIGTERM`, `SIGINT`, `SIGUSR1`, `SIGUSR2` and `uncaughtException`.
+
+The `shutdownHandler` will be called only once.
+
+If an exception is thrown, the `errorHandler` will be called with the exception.
+
+```typescript
+import ProcessUtils from "./nor/ts/ProcessUtils";
+
+const server = new Server();
+
+server.start();
+
+ProcessUtils.setupDestroyHandler( () => {
+    server.stop();
+}, (err : any) => {
+    LOG.error('Error while shutting down the service: ', err);
+});
 ```
