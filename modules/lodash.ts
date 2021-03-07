@@ -6,6 +6,7 @@ import get from 'lodash/get.js';
 import set from 'lodash/set.js';
 import concat from 'lodash/concat.js';
 import find from 'lodash/find.js';
+import reduce from 'lodash/reduce.js';
 import remove from 'lodash/remove.js';
 import slice from 'lodash/slice.js';
 import indexOf from 'lodash/indexOf.js';
@@ -31,6 +32,7 @@ export {
     set,
     concat,
     find,
+    reduce,
     remove,
     slice,
     indexOf,

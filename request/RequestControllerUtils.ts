@@ -1,11 +1,15 @@
-import RequestController, {getInternalRequestMappingObject, setInternalRequestMappingObject} from "./types/RequestController";
+import RequestController, {
+    getInternalRequestMappingObject,
+    setInternalRequestMappingObject
+} from "./types/RequestController";
 import RequestMappingObject from "./types/RequestMappingObject";
 import RequestMappingArray from "./types/RequestMappingArray";
 import {isRequestMethod} from "./types/RequestMethod";
-import {isString, filter, concat, has} from "../modules/lodash";
-import RequestControllerMappingObject, {RequestParamObject} from "./types/RequestControllerMappingObject";
+import {concat, filter, has, isString} from "../modules/lodash";
+import RequestControllerMappingObject from "./types/RequestControllerMappingObject";
 import RequestParamType from "./types/RequestParamType";
 import LogService from "../LogService";
+import {RequestParamObject} from "./types/RequestParamObject";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
@@ -60,7 +64,7 @@ export class RequestControllerUtils {
 
         const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
 
-        const parsedObject = RequestControllerUtils.parseRequestMappings(config);
+        const parsedObject : RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
 
         if (origMapping === undefined) {
 
@@ -104,7 +108,7 @@ export class RequestControllerUtils {
 
     }
 
-    static setControllerMethodParam (
+    static setControllerMethodQueryParam (
         controller  : RequestController,
         propertyKey : string,
         paramIndex  : number,
@@ -112,11 +116,11 @@ export class RequestControllerUtils {
         paramType   : RequestParamType
     ) {
 
-        LOG.debug('setControllerMethodParam: queryParam =', queryParam, paramType);
+        LOG.debug('setControllerMethodQueryParam: queryParam =', queryParam, paramType);
 
         const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
 
-        LOG.debug('setControllerMethodParam: origMapping =', origMapping);
+        LOG.debug('setControllerMethodQueryParam: origMapping =', origMapping);
 
         if (origMapping === undefined) {
 
@@ -130,7 +134,7 @@ export class RequestControllerUtils {
                 type: paramType
             };
 
-            LOG.debug('setControllerMethodParam: params: ', params);
+            LOG.debug('setControllerMethodQueryParam: params: ', params);
 
             setInternalRequestMappingObject(controller, {
                 mappings: [],
@@ -154,7 +158,7 @@ export class RequestControllerUtils {
                 type: paramType
             };
 
-            LOG.debug('setControllerMethodParam: params: ', params);
+            LOG.debug('setControllerMethodQueryParam: params: ', params);
 
             setInternalRequestMappingObject(controller, {
                 ...origMapping,
@@ -174,7 +178,7 @@ export class RequestControllerUtils {
                 params.push(null);
             }
 
-            LOG.debug('setControllerMethodParam: params: ', params);
+            LOG.debug('setControllerMethodQueryParam: params: ', params);
 
             params[paramIndex] = {
                 queryParam: queryParam,
@@ -187,6 +191,96 @@ export class RequestControllerUtils {
                     ...origMapping.controllerProperties,
                     [propertyKey] : {
                         ...origMapping.controllerProperties[propertyKey],
+                        params: params
+                    }
+                }
+            });
+
+        }
+
+    }
+
+    static setControllerMethodBodyParam (
+        controller  : RequestController,
+        propertyKey : string,
+        paramIndex  : number
+    ) {
+
+        LOG.debug('setControllerMethodBodyParam: ', propertyKey, paramIndex);
+
+        const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+
+        LOG.debug('setControllerMethodBodyParam: origMapping =', origMapping);
+
+        if (origMapping === undefined) {
+
+            let params : Array<RequestParamObject|null> = [];
+            while (paramIndex >= params.length) {
+                params.push(null);
+            }
+
+            params[paramIndex] = {
+                type: RequestParamType.BODY
+            };
+
+            LOG.debug('setControllerMethodBodyParam: params: ', params);
+
+            setInternalRequestMappingObject(controller, {
+                mappings: [],
+                controllerProperties: {
+                    [propertyKey] : {
+                        requestBodyRequired: true,
+                        mappings : [],
+                        params   : params
+                    }
+                }
+            });
+
+        } else if (!has(origMapping.controllerProperties, propertyKey)) {
+
+            let params : Array<RequestParamObject|null> = [];
+            while (paramIndex >= params.length) {
+                params.push(null);
+            }
+
+            params[paramIndex] = {
+                type: RequestParamType.BODY
+            };
+
+            LOG.debug('setControllerMethodBodyParam: params: ', params);
+
+            setInternalRequestMappingObject(controller, {
+                ...origMapping,
+                controllerProperties: {
+                    ...origMapping.controllerProperties,
+                    [propertyKey] : {
+                        requestBodyRequired: true,
+                        mappings : [],
+                        params   : params
+                    }
+                }
+            });
+
+        } else {
+
+            let params : Array<RequestParamObject|null> = concat([], origMapping.controllerProperties[propertyKey].params);
+            while (paramIndex >= params.length) {
+                params.push(null);
+            }
+
+            LOG.debug('setControllerMethodBodyParam: params: ', params);
+
+            params[paramIndex] = {
+                type: RequestParamType.BODY
+            };
+
+            setInternalRequestMappingObject(controller, {
+                ...origMapping,
+                controllerProperties: {
+                    ...origMapping.controllerProperties,
+                    [propertyKey] : {
+                        ...origMapping.controllerProperties[propertyKey],
+                        requestBodyRequired: true,
                         params: params
                     }
                 }

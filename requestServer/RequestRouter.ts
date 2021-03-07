@@ -6,19 +6,24 @@ import RequestController, {
     hasInternalRequestMappingObject
 } from "../request/types/RequestController";
 import RequestMethod, {parseRequestMethod, stringifyRequestMethod} from "../request/types/RequestMethod";
-import {filter, forEach, has, isNull, keys, map, some, trim} from "../modules/lodash";
-import RequestControllerMappingObject, {
-    RequestControllerMethodObject,
-    RequestParamObject
-} from "../request/types/RequestControllerMappingObject";
+import {filter, forEach, has, isNull, keys, map, some, trim, reduce} from "../modules/lodash";
+import RequestControllerMappingObject from "../request/types/RequestControllerMappingObject";
 import RequestMappingObject from "../request/types/RequestMappingObject";
 import RequestStatus, {isRequestStatus} from "../request/types/RequestStatus";
 import RequestParamType from "../request/types/RequestParamType";
 import LogService from "../LogService";
 import {RequestRouterMappingPropertyObject} from "./types/RequestRouterMappingPropertyObject";
 import {RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
+import {RequestParamObject} from "../request/types/RequestParamObject";
+import {RequestControllerMethodObject} from "../request/types/RequestControllerMethodObject";
+import {isRequestQueryParamObject} from "../request/types/RequestQueryParamObject";
+import Json from "../Json";
 
 const LOG = LogService.createLogger('RequestRouter');
+
+export interface ParseRequestBodyCallback {
+    () : Json | undefined | Promise<Json | undefined>;
+}
 
 export class RequestRouter {
 
@@ -36,10 +41,11 @@ export class RequestRouter {
 
     }
 
-    public handleRequest (
-        methodString : RequestMethod,
-        urlString    : string | undefined = undefined
-    ) : any {
+    public async handleRequest (
+        methodString      : RequestMethod,
+        urlString         : string                   | undefined = undefined,
+        parseRequestBody  : ParseRequestBodyCallback | undefined = undefined
+    ) : Promise<any> {
 
         const requestMappings : Array<RequestControllerMappingObject> = this._getRequestMappings();
 
@@ -50,7 +56,7 @@ export class RequestRouter {
 
         LOG.debug('raw url: ', urlString);
 
-        const method : RequestMethod = parseRequestMethod(methodString);
+        const method       : RequestMethod = parseRequestMethod(methodString);
         const urlForParser : string        = `http://localhost${urlString ?? ''}`;
 
         const parsedUrl = new URL.URL(urlForParser);
@@ -83,30 +89,45 @@ export class RequestRouter {
             }
         });
 
+        const requestBodyRequired = parseRequestBody ? some(routes, item => item?.requestBodyRequired === true) : false;
+
+        LOG.debug('handleRequest: requestBodyRequired: ', requestBodyRequired);
+
+        const requestBody = parseRequestBody && requestBodyRequired ? await parseRequestBody() : undefined;
+
+        LOG.debug('handleRequest: requestBody: ', requestBody);
+
         if (!isRequestStatus(result)) {
 
             // Handle requests using controllers
-            forEach(routes, (route: RequestRouterMappingPropertyObject) => {
+            await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
-                // FIXME: Handle params
-                const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, route.propertyParams);
+                const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams);
 
-                LOG.debug('stepParams: ', stepParams);
+                LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
-                const stepResult = route.controller[route.propertyName](...stepParams);
+                const stepResultPromise : Promise<any> | any = route.controller[route.propertyName](...stepParams);
 
-                result = {
-                    ...result,
-                    ...stepResult
-                };
+                return previousPromise.then(async () => {
 
-                LOG.debug('result changed: ', result);
+                    LOG.debug('handleRequest: stepParams 2: ', stepParams);
 
-            });
+                    const stepResult = await stepResultPromise;
+
+                    result = {
+                        ...result,
+                        ...stepResult
+                    };
+
+                    LOG.debug('handleRequest: result changed: ', result);
+
+                });
+
+            }, Promise.resolve());
 
         }
 
-        LOG.debug('result finished: ', result);
+        LOG.debug('handleRequest: result finished: ', result);
 
         return result;
 
@@ -194,10 +215,11 @@ export class RequestRouter {
                                     setRouteMappingResult(
                                         fullPropertyPath,
                                         {
-                                            methods        : propertyMethodsCommonWithRoot,
-                                            controller     : controller,
-                                            propertyName   : propertyKey,
-                                            propertyParams : propertyParams
+                                            requestBodyRequired : propertyValue?.requestBodyRequired ?? false,
+                                            methods             : propertyMethodsCommonWithRoot,
+                                            controller          : controller,
+                                            propertyName        : propertyKey,
+                                            propertyParams      : propertyParams
                                         }
                                     );
 
@@ -230,10 +252,11 @@ export class RequestRouter {
                             setRouteMappingResult(
                                 propertyPath,
                                 {
-                                    methods        : propertyMethods,
-                                    controller     : controller,
-                                    propertyName   : propertyKey,
-                                    propertyParams : propertyParams
+                                    requestBodyRequired : propertyValue?.requestBodyRequired ?? false,
+                                    methods             : propertyMethods,
+                                    controller          : controller,
+                                    propertyName        : propertyKey,
+                                    propertyParams      : propertyParams
                                 }
                             );
 
@@ -303,25 +326,36 @@ export class RequestRouter {
     }
 
     private static _bindRequestActionParams (
-        searchParams: URLSearchParams,
-        params: Array<RequestParamObject|null>
+        searchParams : URLSearchParams,
+        requestBody  : Json | undefined,
+        params       : Array<RequestParamObject|null>
     ) : Array<any> {
 
         return map(params, (item : RequestParamObject|null) : any => {
 
-            if (item === null) {
+            if ( item === null ) {
                 return undefined;
             }
 
+            if ( item.type === RequestParamType.BODY ) {
+                return requestBody;
+            }
+
             // FIXME: Handle types
-            const key = item.queryParam;
-            if (!searchParams.has(key)) return undefined;
+            if (isRequestQueryParamObject(item)) {
 
-            const value : string | null = searchParams.get(key);
+                const key = item.queryParam;
+                if (!searchParams.has(key)) return undefined;
 
-            if (isNull(value)) return undefined;
+                const value : string | null = searchParams.get(key);
 
-            return RequestRouter._castParam(value, item.type);
+                if (isNull(value)) return undefined;
+
+                return RequestRouter._castParam(value, item.type);
+
+            }
+
+            throw new TypeError(`Unsupported item type: ${item}`);
 
         });
 

@@ -96,15 +96,15 @@ export class Request {
             paramIndex  ?: number
         ) => {
 
-            LOG.debug('typeof(target):                          ', typeof target );
-            LOG.debug('typeof(target.constructor):              ', typeof target?.constructor );
-            LOG.debug('isObject(target):                        ', isObject(target));
-            LOG.debug('isFunction(target):                      ', isFunction(target));
-            LOG.debug('isRequestController(target):             ', isRequestController(target));
-            LOG.debug('isFunction(target.constructor):          ', isFunction(target?.constructor));
-            LOG.debug('isRequestController(target.constructor): ', isRequestController(target?.constructor));
-            LOG.debug('isString(propertyKey):                   ', isString(propertyKey));
-            LOG.debug('isNumber(paramIndex):                    ', isNumber(paramIndex));
+            LOG.debug('.param: typeof(target):                          ', typeof target );
+            LOG.debug('.param: typeof(target.constructor):              ', typeof target?.constructor );
+            LOG.debug('.param: isObject(target):                        ', isObject(target));
+            LOG.debug('.param: isFunction(target):                      ', isFunction(target));
+            LOG.debug('.param: isRequestController(target):             ', isRequestController(target));
+            LOG.debug('.param: isFunction(target.constructor):          ', isFunction(target?.constructor));
+            LOG.debug('.param: isRequestController(target.constructor): ', isRequestController(target?.constructor));
+            LOG.debug('.param: isString(propertyKey):                   ', isString(propertyKey));
+            LOG.debug('.param: isNumber(paramIndex):                    ', isNumber(paramIndex));
 
             if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
 
@@ -114,7 +114,7 @@ export class Request {
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
 
-                RequestControllerUtils.setControllerMethodParam(target, propertyKey, paramIndex, queryParam, paramType);
+                RequestControllerUtils.setControllerMethodQueryParam(target, propertyKey, paramIndex, queryParam, paramType);
 
                 return;
 
@@ -128,7 +128,7 @@ export class Request {
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
 
-                RequestControllerUtils.setControllerMethodParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
+                RequestControllerUtils.setControllerMethodQueryParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
 
                 return;
             }
@@ -143,6 +143,82 @@ export class Request {
 
     }
 
+    public static body (
+        target       : any | Function,
+        propertyKey ?: string,
+        paramIndex  ?: number
+    ) {
+
+        LOG.debug('.body: typeof(target):                          ', typeof target );
+        LOG.debug('.body: typeof(target.constructor):              ', typeof target?.constructor );
+        LOG.debug('.body: isObject(target):                        ', isObject(target));
+        LOG.debug('.body: isFunction(target):                      ', isFunction(target));
+        LOG.debug('.body: isRequestController(target):             ', isRequestController(target));
+        LOG.debug('.body: isFunction(target.constructor):          ', isFunction(target?.constructor));
+        LOG.debug('.body: isRequestController(target.constructor): ', isRequestController(target?.constructor));
+        LOG.debug('.body: isString(propertyKey):                   ', isString(propertyKey));
+        LOG.debug('.body: isNumber(paramIndex):                    ', isNumber(paramIndex));
+
+        if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+
+            LOG.debug('.body: configure 1: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+            RequestControllerUtils.setControllerMethodBodyParam(target, propertyKey, paramIndex);
+
+            return;
+
+        }
+
+        if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+
+            LOG.debug('.body: configure 2: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+            RequestControllerUtils.setControllerMethodBodyParam(target.constructor, propertyKey, paramIndex);
+
+            return;
+        }
+
+        LOG.debug('.body: configure 3: ',
+            "; target=", target,
+            "; propertyKey=", propertyKey,
+            "; paramIndex=", paramIndex);
+
+    }
+
+}
+
+export function RequestMapping (...config : RequestMappingArray) {
+    return Request.mapping(...config);
+}
+
+export function GetMapping (...config : RequestMappingArray) {
+    return Request.mapping(Request.Method.GET, ...config);
+}
+
+export function PostMapping (...config : RequestMappingArray) {
+    return Request.mapping(Request.Method.POST, ...config);
+}
+
+export function PutMapping (...config : RequestMappingArray) {
+    return Request.mapping(Request.Method.PUT, ...config);
+}
+
+export function DeleteMapping (...config : RequestMappingArray) {
+    return Request.mapping(Request.Method.DELETE, ...config);
+}
+
+export function RequestBody (
+    target       : any | Function,
+    propertyKey ?: string,
+    paramIndex  ?: number
+) {
+    return Request.body(target, propertyKey, paramIndex);
 }
 
 export default Request;
