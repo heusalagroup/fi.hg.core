@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestController, {
     getInternalRequestMappingObject,
     setInternalRequestMappingObject

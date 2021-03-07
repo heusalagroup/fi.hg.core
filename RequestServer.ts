@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sendanor. All rights reserved.
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import HttpServerService from "./requestServer/HttpServerService";
 import {IncomingMessage, ServerResponse} from "http";

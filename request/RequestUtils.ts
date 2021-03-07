@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestMethod from "./types/RequestMethod";
 import {some} from "../modules/lodash";
 import RequestMappingObject from "./types/RequestMappingObject";

@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import {isObject, isString} from "../../modules/lodash";
 import InterfaceUtils from "../RequestInterfaceUtils";
 import RequestStatus, {isRequestStatus, stringifyRequestStatus} from "./RequestStatus";

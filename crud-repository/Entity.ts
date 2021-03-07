@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import "reflect-metadata";
 
 import EntityMetadata from "./persistence/EntityMetadata";

@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import { Pool } from "pg";
 import EntityMetadata, { KeyValuePairs, EntityField } from "./EntityMetadata";
 import Persister from "./Persister";

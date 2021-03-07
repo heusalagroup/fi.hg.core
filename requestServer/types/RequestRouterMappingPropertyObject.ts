@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestMethod from "../../request/types/RequestMethod";
 import {RequestParamObject} from "../../request/types/RequestParamObject";
 

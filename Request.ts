@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestMethod from "./request/types/RequestMethod";
 import LogService from "./LogService";
 import {isRequestController} from "./request/types/RequestController";

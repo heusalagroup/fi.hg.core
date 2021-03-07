@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestParamType, {isRequestParamType} from "./RequestParamType";
 import InterfaceUtils from "../RequestInterfaceUtils";
 import {isString} from "../../modules/lodash";

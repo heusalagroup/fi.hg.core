@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestMappingObject, {isRequestMappingObject} from "./RequestMappingObject";
 import InterfaceUtils from "../RequestInterfaceUtils";
 import {every, isArray, isObject} from "../../modules/lodash";

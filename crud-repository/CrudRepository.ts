@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import { Entity } from "./Entity";
 import EntityMetadata, { KeyValuePairs } from "./persistence/EntityMetadata";
 import Persister from "./persistence/Persister";
