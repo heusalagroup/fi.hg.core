@@ -27,7 +27,7 @@ export class Request {
     public static ParamType = RequestParamType;
     public static Type      = RequestType;
 
-    public static mapping (
+    public static Mapping (
         ...config : RequestMappingArray
     ) : RequestMappingDecorator {
 
@@ -83,7 +83,18 @@ export class Request {
 
     }
 
-    public static param (
+    /**
+     *
+     * @param config
+     * @deprecated Use @Request.Mapping or @RequestMapping
+     */
+    public static mapping (
+        ...config : RequestMappingArray
+    ) : RequestMappingDecorator {
+        return this.Mapping(...config);
+    }
+
+    public static Param (
         queryParam : string,
         paramType  : RequestParamType = Request.ParamType.STRING
     ) {
@@ -143,7 +154,20 @@ export class Request {
 
     }
 
-    public static body (
+    /**
+     *
+     * @param queryParam
+     * @param paramType
+     * @deprecated Use @RequestParam or @Request.Param instead
+     */
+    public static param (
+        queryParam : string,
+        paramType  : RequestParamType = Request.ParamType.STRING
+    ) {
+        return this.Param(queryParam, paramType);
+    }
+
+    public static Body (
         target       : any | Function,
         propertyKey ?: string,
         paramIndex  ?: number
@@ -191,26 +215,56 @@ export class Request {
 
     }
 
+    /**
+     * @param target
+     * @param propertyKey
+     * @param paramIndex
+     * @deprecated Use @Request.Body or @RequestBody
+     */
+    public static body (
+        target       : any | Function,
+        propertyKey ?: string,
+        paramIndex  ?: number
+    ) {
+        return this.Body(target, propertyKey, paramIndex);
+    }
+
+    public static Get (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.GET, ...config);
+    }
+
+    public static Post (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.POST, ...config);
+    }
+
+    public static Delete (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.DELETE, ...config);
+    }
+
+    public static Put (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.PUT, ...config);
+    }
+
 }
 
 export function RequestMapping (...config : RequestMappingArray) {
-    return Request.mapping(...config);
+    return Request.Mapping(...config);
 }
 
 export function GetMapping (...config : RequestMappingArray) {
-    return Request.mapping(Request.Method.GET, ...config);
+    return Request.Get(...config);
 }
 
 export function PostMapping (...config : RequestMappingArray) {
-    return Request.mapping(Request.Method.POST, ...config);
+    return Request.Post(...config);
 }
 
 export function PutMapping (...config : RequestMappingArray) {
-    return Request.mapping(Request.Method.PUT, ...config);
+    return Request.Put(...config);
 }
 
 export function DeleteMapping (...config : RequestMappingArray) {
-    return Request.mapping(Request.Method.DELETE, ...config);
+    return Request.Delete(...config);
 }
 
 export function RequestBody (
@@ -218,7 +272,7 @@ export function RequestBody (
     propertyKey ?: string,
     paramIndex  ?: number
 ) {
-    return Request.body(target, propertyKey, paramIndex);
+    return Request.Body(target, propertyKey, paramIndex);
 }
 
 export default Request;

@@ -156,7 +156,7 @@ HTTP request mapping annotations for TypeScript in the same style as in Java's S
 **_This implementation is very experimental._**
 
 ```typescript
-import Request from "./src/nor/ts/Request";
+import Request, {GetMapping, PostMapping, RequestBody} from "./src/nor/ts/Request";
 
 export interface ListDTO<T> {
     pageNumber: number;
@@ -164,8 +164,8 @@ export interface ListDTO<T> {
     content: Array<T>;
 }
 
-@Request.mapping("/foo/users")
-@Request.mapping("/users")
+@Request.Mapping("/foo/users")
+@Request.Mapping("/users")
 export class UserController {
     private readonly _userService: UserService;
 
@@ -173,7 +173,7 @@ export class UserController {
         this._userService = userService;
     }
 
-    @Request.mapping(Request.Method.GET, "/", "/list")
+    @GetMapping("/", "/list")
     getUserList(
         @Request.param("p", Request.ParamType.INTEGER)
         pageNumber: number = 0,
@@ -189,8 +189,26 @@ export class UserController {
             content: this._userService.getUserList(pageNumber, pageSize),
         };
     }
+
+    @PostMapping("/addUser")
+    async addUser (@RequestBody user : Json) {
+        await this._userService.addUser(user);
+        return {
+            user: user
+        };
+    }
+    
 }
 ```
+
+You can also use:
+
+ * `@Request.Mapping` instead of `@RequestMapping`,
+ * `@Request.Body` instead of `@RequestBody`,
+ * `@Request.Get(...)` instead of `GetMapping(...)` or `Request.Mapping(Request.Method.GET, ...)`
+ * `@Request.Put(...)` instead of `PutMapping(...)` or `Request.Mapping(Request.Method.PUT, ...)`
+ * `@Request.Post(...)` instead of `PostMapping(...)` or `Request.Mapping(Request.Method.POST, ...)`
+ * `@Request.Delete(...)` instead of `DeleteMapping(...)` or `Request.Mapping(Request.Method.DELETE, ...)`
 
 For the actual server implementing REST API, see next chapter.
 
