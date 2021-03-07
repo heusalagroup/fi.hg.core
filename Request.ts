@@ -7,6 +7,7 @@ import RequestParamType, {stringifyRequestParamType} from "./request/types/Reque
 import {isFunction, isNumber, isObject, isString} from "./modules/lodash";
 import RequestStatus from "./request/types/RequestStatus";
 import RequestType from "./request/types/RequestType";
+import {createRequestError} from "./request/types/RequestError";
 
 const LOG = LogService.createLogger('Request');
 
@@ -243,6 +244,72 @@ export class Request {
 
     public static Put (...config : RequestMappingArray) {
         return Request.mapping(Request.Method.PUT, ...config);
+    }
+
+
+    public static createBadRequestError (message : string) {
+        return createRequestError(RequestStatus.BadRequest, message);
+    }
+
+    public static createNotFoundRequestError (message : string) {
+        return createRequestError(RequestStatus.NotFound, message);
+    }
+
+    public static createMethodNotAllowedRequestError (message : string) {
+        return createRequestError(RequestStatus.MethodNotAllowed, message);
+    }
+
+    public static createConflictRequestError (message : string) {
+        return createRequestError(RequestStatus.Conflict, message);
+    }
+
+    public static createInternalErrorRequestError (message : string) {
+        return createRequestError(RequestStatus.InternalError, message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwBadRequestError (message : string) {
+        throw this.createBadRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwNotFoundRequestError (message : string) {
+        throw this.createNotFoundRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwMethodNotAllowedRequestError (message : string) {
+        throw this.createMethodNotAllowedRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwConflictRequestError (message : string) {
+        throw this.createConflictRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwInternalErrorRequestError (message : string) {
+        throw this.createInternalErrorRequestError(message);
     }
 
 }
