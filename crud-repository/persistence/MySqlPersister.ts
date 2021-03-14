@@ -48,7 +48,7 @@ export default class MySqlPersister implements Persister {
                     if (entity) {
                         return resolve(entity);
                     } else {
-                        reject(`Entity with id ${result.insertId} not found`);
+                        return reject(`Entity with id ${result.insertId} not found`);
                     }
                 });
             } catch (error) {
@@ -78,7 +78,7 @@ export default class MySqlPersister implements Persister {
                     if (entity) {
                         return resolve(entity);
                     } else {
-                        reject(`Entity with id ${result.insertId} not found`);
+                        return reject(`Entity with id ${result.insertId} not found`);
                     }
                 });
             } catch (error) {
@@ -123,6 +123,26 @@ export default class MySqlPersister implements Persister {
         });
     }
 
+    public async findAllById<T>(ids: any[], metadata: EntityMetadata): Promise<T[]> {
+        return new Promise((resolve, reject) => {
+            try {
+                const { tableName } = metadata;
+                const idColumnName = this.getIdColumnName(metadata);
+                const placeholders = ids.map(id => '?').join(',');
+                const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} IN (${placeholders})`;
+                this.connection.query(select, ids, (error, result) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    return resolve(result.map((row: any) => this.toEntity(row, metadata)));
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+
+    }
+
     public async findById<T>(id: any, metadata: EntityMetadata): Promise<T | undefined> {
         return new Promise((resolve, reject) => {
             try {
@@ -131,9 +151,9 @@ export default class MySqlPersister implements Persister {
                 const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} = ?`;
                 this.connection.query(select, [id], (error, result) => {
                     if (error) {
-                        reject(error);
+                        return reject(error);
                     }
-                    resolve(result[0] ? this.toEntity(result[0], metadata) : undefined);
+                    return resolve(result[0] ? this.toEntity(result[0], metadata) : undefined);
                 });
             } catch (error) {
                 reject(error);
@@ -149,7 +169,7 @@ export default class MySqlPersister implements Persister {
                 const select = `SELECT * FROM ${tableName} WHERE ${columnName} = ?`;
                 this.connection.query(select, [value], (error, result) => {
                     if (error) {
-                        reject(error);
+                        return reject(error);
                     }
                     return resolve(result.map((row: any) => this.toEntity(row, metadata)));
                 });

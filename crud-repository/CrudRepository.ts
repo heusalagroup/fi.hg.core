@@ -34,6 +34,10 @@ export default class CrudRepository<T extends Entity> {
         return this.persister.findAll<T>(this.entityMetadata);
     }
 
+    public findAllById(ids: any[]): Promise<T[]> {
+        return this.persister.findAllById<T>(ids, this.entityMetadata);
+    }
+
     public findById(id: any): Promise<T | undefined> {
         return this.persister.findById<T>(id, this.entityMetadata);
     }
