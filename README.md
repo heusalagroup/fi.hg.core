@@ -2,13 +2,30 @@
 
 Our enterprise library for TypeScript.
 
-## Install & maintain our library
+This git repository contains only the source code for a compile time use case. It is meant to be used as a git submodule in a NodeJS or webpack project.
 
-This library is meant to be used as a git submodule in a NodeJS or webpack project.
+See [sendanor/typescript-package](https://github.com/sendanor/typescript-package) for a full package example. Although, keep in mind, this repository is not intended to be used as a NPM package dependency.
+
+## Index
+
+ * [Install & maintain our library](#install--maintain-our-library)
+   * [Checking out a project with git submodules](#checking-out-a-project-with-git-submodules)
+   * [Updating upstream library code](#updating-upstream-library-code)
+   * [Why git submodules, you may wonder?](#why-git-submodules-you-may-wonder)
+ * [LogService](#logservice)
+ * [Observer](#observer)
+ * [Request](#request)
+ * [RequestServer](#requestserver)
+ * [CrudRepository](#crudrepository)
+ * [ProcessUtils](#processutils)
+   * [ProcessUtils.initEnvFromDefaultFiles()](#processutilsinitenvfromdefaultfiles)
+   * [ProcessUtils.setupDestroyHandler(...)](#processutilssetupdestroyhandlershutdownhandler-errorhandler)
+
+## Install & maintain our library
 
 Run the installation commands from your project's root directory. Usually it's where your `package.json` is located.
 
-We also expect your source files to be located in `./src` and we'll use `./src/nor/ts` for location for our sub module.
+For these sample commands we expect your source files to be located in `./src` and we'll use `./src/nor/ts` for location for our sub module.
 
 Setup git submodule:
 
@@ -100,11 +117,14 @@ class FooService {
     private static _data: any;
     private static _observer: Observer<FooEvent> = {};
 
-    public static getData(): any {
+    private static _data : any;
+    private static _observer : Observer<FooEvent> = new Observer<FooEvent>("GeoIpService");
+
+    public static getData () : any {
         return this._data;
     }
 
-    public static on(name: FooEvent, callback): ObserverDestructor {
+    public static on (name : FooEvent, callback : ObserverCallback<FooEvent>) : ObserverDestructor {
         return this._observer.listenEvent(name, callback);
     }
 
@@ -133,12 +153,10 @@ FooService.refreshData();
 
 HTTP request mapping annotations for TypeScript in the same style as in Java's Spring @RequestMapping.
 
-This is only annotation library part. The actual server implementing REST API is not available from this module at the moment, but may be later.
-
 **_This implementation is very experimental._**
 
 ```typescript
-import Request from "./src/nor/ts/Request";
+import Request, {GetMapping, PostMapping, RequestBody} from "./src/nor/ts/Request";
 
 export interface ListDTO<T> {
     pageNumber: number;
@@ -146,8 +164,8 @@ export interface ListDTO<T> {
     content: Array<T>;
 }
 
-@Request.mapping("/foo/users")
-@Request.mapping("/users")
+@Request.Mapping("/foo/users")
+@Request.Mapping("/users")
 export class UserController {
     private readonly _userService: UserService;
 
@@ -155,7 +173,7 @@ export class UserController {
         this._userService = userService;
     }
 
-    @Request.mapping(Request.Method.GET, "/", "/list")
+    @GetMapping("/", "/list")
     getUserList(
         @Request.param("p", Request.ParamType.INTEGER)
         pageNumber: number = 0,
@@ -171,8 +189,41 @@ export class UserController {
             content: this._userService.getUserList(pageNumber, pageSize),
         };
     }
+
+    @PostMapping("/addUser")
+    async addUser (@RequestBody user : Json) {
+        await this._userService.addUser(user);
+        return {
+            user: user
+        };
+    }
+    
 }
 ```
+
+You can also use:
+
+ * `@Request.Mapping` instead of `@RequestMapping`,
+ * `@Request.Body` instead of `@RequestBody`,
+ * `@Request.Get(...)` instead of `GetMapping(...)` or `Request.Mapping(Request.Method.GET, ...)`
+ * `@Request.Put(...)` instead of `PutMapping(...)` or `Request.Mapping(Request.Method.PUT, ...)`
+ * `@Request.Post(...)` instead of `PostMapping(...)` or `Request.Mapping(Request.Method.POST, ...)`
+ * `@Request.Delete(...)` instead of `DeleteMapping(...)` or `Request.Mapping(Request.Method.DELETE, ...)`
+
+For the actual server implementing REST API, see next chapter.
+
+## RequestServer
+
+This project also includes a simple and pure NodeJS implementation for the REST server implementing [our Request annotated controllers](#request):
+
+```typescript
+import RequestServer from "./nor/ts/RequestServer";
+const server = new RequestServer("http://0.0.0.0:3000");
+server.attachController(UserController);
+server.start();
+```
+
+See also our [`ProcessUtils`](#processutils) for best practices implementing complete runtime support.
 
 ## CrudRepository
 
@@ -221,4 +272,41 @@ export class UserController {
         ...
     }
 }
+```
+
+## ProcessUtils
+
+### ProcessUtils.initEnvFromDefaultFiles()
+
+This utility class includes a simple implementation for runtime `.env` file support.
+
+```typescript
+import ProcessUtils from "./nor/ts/ProcessUtils";
+
+// Must be first import to define environment variables before anything else
+ProcessUtils.initEnvFromDefaultFiles();
+```
+
+### ProcessUtils.setupDestroyHandler(shutdownHandler, errorHandler)
+
+This utility function can be used to implement default shutdown handlers for the common runtime events.
+
+It will hook into events `exit`, `SIGTERM`, `SIGINT`, `SIGUSR1`, `SIGUSR2` and `uncaughtException`.
+
+The `shutdownHandler` will be called only once.
+
+If an exception is thrown, the `errorHandler` will be called with the exception.
+
+```typescript
+import ProcessUtils from "./nor/ts/ProcessUtils";
+
+const server = new Server();
+
+server.start();
+
+ProcessUtils.setupDestroyHandler( () => {
+    server.stop();
+}, (err : any) => {
+    LOG.error('Error while shutting down the service: ', err);
+});
 ```

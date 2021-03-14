@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestMethod from "./request/types/RequestMethod";
 import LogService from "./LogService";
 import {isRequestController} from "./request/types/RequestController";
@@ -7,6 +9,7 @@ import RequestParamType, {stringifyRequestParamType} from "./request/types/Reque
 import {isFunction, isNumber, isObject, isString} from "./modules/lodash";
 import RequestStatus from "./request/types/RequestStatus";
 import RequestType from "./request/types/RequestType";
+import {createRequestError} from "./request/types/RequestError";
 
 const LOG = LogService.createLogger('Request');
 
@@ -27,7 +30,7 @@ export class Request {
     public static ParamType = RequestParamType;
     public static Type      = RequestType;
 
-    public static mapping (
+    public static Mapping (
         ...config : RequestMappingArray
     ) : RequestMappingDecorator {
 
@@ -83,7 +86,18 @@ export class Request {
 
     }
 
-    public static param (
+    /**
+     *
+     * @param config
+     * @deprecated Use @Request.Mapping or @RequestMapping
+     */
+    public static mapping (
+        ...config : RequestMappingArray
+    ) : RequestMappingDecorator {
+        return this.Mapping(...config);
+    }
+
+    public static Param (
         queryParam : string,
         paramType  : RequestParamType = Request.ParamType.STRING
     ) {
@@ -96,15 +110,15 @@ export class Request {
             paramIndex  ?: number
         ) => {
 
-            LOG.debug('typeof(target):                          ', typeof target );
-            LOG.debug('typeof(target.constructor):              ', typeof target?.constructor );
-            LOG.debug('isObject(target):                        ', isObject(target));
-            LOG.debug('isFunction(target):                      ', isFunction(target));
-            LOG.debug('isRequestController(target):             ', isRequestController(target));
-            LOG.debug('isFunction(target.constructor):          ', isFunction(target?.constructor));
-            LOG.debug('isRequestController(target.constructor): ', isRequestController(target?.constructor));
-            LOG.debug('isString(propertyKey):                   ', isString(propertyKey));
-            LOG.debug('isNumber(paramIndex):                    ', isNumber(paramIndex));
+            LOG.debug('.param: typeof(target):                          ', typeof target );
+            LOG.debug('.param: typeof(target.constructor):              ', typeof target?.constructor );
+            LOG.debug('.param: isObject(target):                        ', isObject(target));
+            LOG.debug('.param: isFunction(target):                      ', isFunction(target));
+            LOG.debug('.param: isRequestController(target):             ', isRequestController(target));
+            LOG.debug('.param: isFunction(target.constructor):          ', isFunction(target?.constructor));
+            LOG.debug('.param: isRequestController(target.constructor): ', isRequestController(target?.constructor));
+            LOG.debug('.param: isString(propertyKey):                   ', isString(propertyKey));
+            LOG.debug('.param: isNumber(paramIndex):                    ', isNumber(paramIndex));
 
             if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
 
@@ -114,7 +128,7 @@ export class Request {
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
 
-                RequestControllerUtils.setControllerMethodParam(target, propertyKey, paramIndex, queryParam, paramType);
+                RequestControllerUtils.setControllerMethodQueryParam(target, propertyKey, paramIndex, queryParam, paramType);
 
                 return;
 
@@ -128,7 +142,7 @@ export class Request {
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
 
-                RequestControllerUtils.setControllerMethodParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
+                RequestControllerUtils.setControllerMethodQueryParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
 
                 return;
             }
@@ -143,6 +157,191 @@ export class Request {
 
     }
 
+    /**
+     *
+     * @param queryParam
+     * @param paramType
+     * @deprecated Use @RequestParam or @Request.Param instead
+     */
+    public static param (
+        queryParam : string,
+        paramType  : RequestParamType = Request.ParamType.STRING
+    ) {
+        return this.Param(queryParam, paramType);
+    }
+
+    public static Body (
+        target       : any | Function,
+        propertyKey ?: string,
+        paramIndex  ?: number
+    ) {
+
+        LOG.debug('.body: typeof(target):                          ', typeof target );
+        LOG.debug('.body: typeof(target.constructor):              ', typeof target?.constructor );
+        LOG.debug('.body: isObject(target):                        ', isObject(target));
+        LOG.debug('.body: isFunction(target):                      ', isFunction(target));
+        LOG.debug('.body: isRequestController(target):             ', isRequestController(target));
+        LOG.debug('.body: isFunction(target.constructor):          ', isFunction(target?.constructor));
+        LOG.debug('.body: isRequestController(target.constructor): ', isRequestController(target?.constructor));
+        LOG.debug('.body: isString(propertyKey):                   ', isString(propertyKey));
+        LOG.debug('.body: isNumber(paramIndex):                    ', isNumber(paramIndex));
+
+        if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+
+            LOG.debug('.body: configure 1: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+            RequestControllerUtils.setControllerMethodBodyParam(target, propertyKey, paramIndex);
+
+            return;
+
+        }
+
+        if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+
+            LOG.debug('.body: configure 2: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+            RequestControllerUtils.setControllerMethodBodyParam(target.constructor, propertyKey, paramIndex);
+
+            return;
+        }
+
+        LOG.debug('.body: configure 3: ',
+            "; target=", target,
+            "; propertyKey=", propertyKey,
+            "; paramIndex=", paramIndex);
+
+    }
+
+    /**
+     * @param target
+     * @param propertyKey
+     * @param paramIndex
+     * @deprecated Use @Request.Body or @RequestBody
+     */
+    public static body (
+        target       : any | Function,
+        propertyKey ?: string,
+        paramIndex  ?: number
+    ) {
+        return this.Body(target, propertyKey, paramIndex);
+    }
+
+    public static Get (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.GET, ...config);
+    }
+
+    public static Post (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.POST, ...config);
+    }
+
+    public static Delete (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.DELETE, ...config);
+    }
+
+    public static Put (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.PUT, ...config);
+    }
+
+
+    public static createBadRequestError (message : string) {
+        return createRequestError(RequestStatus.BadRequest, message);
+    }
+
+    public static createNotFoundRequestError (message : string) {
+        return createRequestError(RequestStatus.NotFound, message);
+    }
+
+    public static createMethodNotAllowedRequestError (message : string) {
+        return createRequestError(RequestStatus.MethodNotAllowed, message);
+    }
+
+    public static createConflictRequestError (message : string) {
+        return createRequestError(RequestStatus.Conflict, message);
+    }
+
+    public static createInternalErrorRequestError (message : string) {
+        return createRequestError(RequestStatus.InternalError, message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwBadRequestError (message : string) {
+        throw this.createBadRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwNotFoundRequestError (message : string) {
+        throw this.createNotFoundRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwMethodNotAllowedRequestError (message : string) {
+        throw this.createMethodNotAllowedRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwConflictRequestError (message : string) {
+        throw this.createConflictRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwInternalErrorRequestError (message : string) {
+        throw this.createInternalErrorRequestError(message);
+    }
+
+}
+
+export function RequestMapping (...config : RequestMappingArray) {
+    return Request.Mapping(...config);
+}
+
+export function GetMapping (...config : RequestMappingArray) {
+    return Request.Get(...config);
+}
+
+export function PostMapping (...config : RequestMappingArray) {
+    return Request.Post(...config);
+}
+
+export function PutMapping (...config : RequestMappingArray) {
+    return Request.Put(...config);
+}
+
+export function DeleteMapping (...config : RequestMappingArray) {
+    return Request.Delete(...config);
+}
+
+export function RequestBody (
+    target       : any | Function,
+    propertyKey ?: string,
+    paramIndex  ?: number
+) {
+    return Request.Body(target, propertyKey, paramIndex);
 }
 
 export default Request;

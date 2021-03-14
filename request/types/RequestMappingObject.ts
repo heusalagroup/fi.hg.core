@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import RequestMethod, {isRequestMethod} from "./RequestMethod";
 import InterfaceUtils from "../RequestInterfaceUtils";
 import {every, isArray, isString} from "../../modules/lodash";

@@ -1,3 +1,5 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
 import {every, keys, has, isFunction, isObject, some, map, filter} from "../modules/lodash";
 
 export class RequestInterfaceUtils {

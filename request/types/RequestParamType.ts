@@ -1,8 +1,10 @@
-import {isNumber, isString} from "../../modules/lodash";
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
+import {isNumber, isString} from "../../modules/lodash";
 
 export enum RequestParamType {
 
+    BODY,
     STRING,
     INTEGER,
     NUMBER
@@ -11,7 +13,7 @@ export enum RequestParamType {
 
 export function isRequestParamType (value : any) : value is RequestParamType {
 
-    return isNumber(value) && value >= 0 && value <= 2;
+    return isNumber(value) && value >= 0 && value <= 3;
 
 }
 
@@ -22,6 +24,7 @@ export function parseRequestParamType (value: any) : RequestParamType {
     if (isString(value)) {
         const lowerCaseValue = value.toLowerCase();
         switch (lowerCaseValue) {
+            case 'body'    : return RequestParamType.BODY;
             case 'string'  : return RequestParamType.STRING;
             case 'integer' : return RequestParamType.INTEGER;
             case 'number'  : return RequestParamType.NUMBER;
@@ -35,6 +38,7 @@ export function parseRequestParamType (value: any) : RequestParamType {
 export function stringifyRequestParamType (value : RequestParamType) : string {
 
     switch (value) {
+        case RequestParamType.BODY     : return 'body';
         case RequestParamType.STRING   : return 'string';
         case RequestParamType.INTEGER  : return 'integer';
         case RequestParamType.NUMBER   : return 'number';
