@@ -66,7 +66,22 @@ export default class PgPersister implements Persister {
         const select = `SELECT * FROM ${tableName}`;
         try {
             const result = await this.pool.query(select);
-            return result.rows.map((row) => this.toEntity(row, metadata));
+            return result.rows.map((row: any) => this.toEntity(row, metadata));
+        } catch (err) {
+            return await Promise.reject(err);
+        }
+    }
+
+    public async findAllById<T>(ids: any[], metadata: EntityMetadata): Promise<T[]> {
+        try {
+            const { tableName } = metadata;
+            const idColumnName = this.getIdColumnName(metadata);
+            const placeholders = Array.from({ length: ids.length }, (_, i) => i + 1)
+                .map((i) => `$${i}`)
+                .reduce((prev, curr) => `${prev},${curr}`);
+            const select = `SELECT * FROM ${tableName} WHERE ${idColumnName} IN (${placeholders})`;
+            const result = await this.pool.query(select, ids);
+            return result.rows.map((row: any) => this.toEntity(row, metadata));
         } catch (err) {
             return await Promise.reject(err);
         }
@@ -79,6 +94,18 @@ export default class PgPersister implements Persister {
         try {
             const result = await this.pool.query(select, [id]);
             return this.toEntity(result.rows[0], metadata) as T;
+        } catch (err) {
+            return await Promise.reject(err);
+        }
+    }
+
+    public async findByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
+        try {
+            const { tableName } = metadata;
+            const columnName = this.getColumnName(property, metadata.fields);
+            const select = `SELECT * FROM ${tableName} WHERE ${columnName} = $1`;
+            const result = await this.pool.query(select, [value]);
+            return result.rows.map((row: any) => this.toEntity(row, metadata));
         } catch (err) {
             return await Promise.reject(err);
         }
