@@ -6,7 +6,7 @@ import RequestController, {
     hasInternalRequestMappingObject
 } from "../request/types/RequestController";
 import RequestMethod, {parseRequestMethod, stringifyRequestMethod} from "../request/types/RequestMethod";
-import {filter, forEach, has, isNull, keys, map, some, trim, reduce} from "../modules/lodash";
+import {filter, forEach, has, isNull, keys, map, some, trim, reduce, concat} from "../modules/lodash";
 import RequestControllerMappingObject from "../request/types/RequestControllerMappingObject";
 import RequestMappingObject from "../request/types/RequestMappingObject";
 import RequestStatus, {isRequestStatus} from "../request/types/RequestStatus";
@@ -67,27 +67,51 @@ export class RequestRouter {
 
         LOG.debug('Request: ', stringifyRequestMethod(method), requestPathName, requestMappings);
 
-        const allRoutes = RequestRouter._parseMappingArray(requestMappings);
+        const allRoutes : RequestRouterMappingObject = RequestRouter._parseMappingArray(requestMappings);
+
+        LOG.debug('allRoutes: ', allRoutes);
 
         if (!has(allRoutes, requestPathName)) {
             return RequestStatus.NotFound;
         }
 
-        const routes = allRoutes[requestPathName];
+        const routes : Array<RequestRouterMappingPropertyObject> = filter(
+            allRoutes[requestPathName],
+            (item : RequestRouterMappingPropertyObject) : boolean => {
+                return item.methods.indexOf(method) >= 0;
+            }
+        );
+
+        LOG.debug('routes: ', routes);
+
+        if (routes.length === 0) {
+            return RequestStatus.MethodNotAllowed;
+        }
 
         let result : any = {
             // routes
         };
 
-        // Check method if at least one is defined
-        forEach(routes, (route : RequestRouterMappingPropertyObject) => {
-            if (route.methods.length !== 0) {
-                if (route.methods.indexOf(method) < 0) {
-                    result = RequestStatus.MethodNotAllowed;
-                    return true;
-                }
-            }
-        });
+        // // Check method if at least one is defined
+        // const allRouteMethods = reduce(routes, (list : Array<RequestMethod>, route : RequestRouterMappingPropertyObject) => {
+        //
+        //     if (route.methods) {
+        //         return concat(list, route.methods);
+        //     }
+        //
+        //     return list;
+        //
+        // }, []);
+        //
+        // if (allRouteMethods.length !== 0) {
+        //     if (allRouteMethods.indexOf(method) < 0) {
+        //         result = RequestStatus.MethodNotAllowed;
+        //         return true;
+        //     }
+        // } else {
+        //     result = RequestStatus.MethodNotAllowed;
+        //     return true;
+        // }
 
         const requestBodyRequired = parseRequestBody ? some(routes, item => item?.requestBodyRequired === true) : false;
 

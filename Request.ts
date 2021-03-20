@@ -233,19 +233,19 @@ export class Request {
     }
 
     public static Get (...config : RequestMappingArray) {
-        return Request.mapping(Request.Method.GET, ...config);
+        return Request.Mapping(Request.Method.GET, ...config);
     }
 
     public static Post (...config : RequestMappingArray) {
-        return Request.mapping(Request.Method.POST, ...config);
+        return Request.Mapping(Request.Method.POST, ...config);
     }
 
     public static Delete (...config : RequestMappingArray) {
-        return Request.mapping(Request.Method.DELETE, ...config);
+        return Request.Mapping(Request.Method.DELETE, ...config);
     }
 
     public static Put (...config : RequestMappingArray) {
-        return Request.mapping(Request.Method.PUT, ...config);
+        return Request.Mapping(Request.Method.PUT, ...config);
     }
 
 
