@@ -162,10 +162,8 @@ FooService.refreshData();
 
 HTTP request mapping annotations for TypeScript in the same style as in Java's Spring @RequestMapping.
 
-**_This implementation is very experimental._**
-
 ```typescript
-import Request, {GetMapping, PostMapping, RequestBody} from "./src/nor/ts/Request";
+import Request, {GetMapping, PostMapping, RequestBody, RequestEntity} from "./src/nor/ts/Request";
 
 export interface ListDTO<T> {
     pageNumber: number;
@@ -192,19 +190,19 @@ export class UserController {
         // const parsedPageNumber = pageNumber ? parseInt(pageNumber, 10) : 0;
         // const parsedPageSize   = pageSize   ? parseInt(pageSize, 10)   : 10;
 
-        return {
+        return RequestEntity.ok({
             pageNumber: pageNumber,
             pageSize: pageSize,
             content: this._userService.getUserList(pageNumber, pageSize),
-        };
+        });
     }
 
     @PostMapping("/addUser")
     async addUser (@RequestBody user : Json) {
         await this._userService.addUser(user);
-        return {
+        return RequestEntity.ok({
             user: user
-        };
+        });
     }
     
 }
