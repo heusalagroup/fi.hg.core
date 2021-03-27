@@ -1,15 +1,53 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {isObject, isString} from "../../modules/lodash";
-import InterfaceUtils from "../RequestInterfaceUtils";
-import RequestStatus, {isRequestStatus, stringifyRequestStatus} from "./RequestStatus";
+import RequestStatus, {stringifyRequestStatus} from "./RequestStatus";
+import {ReadonlyJsonObject} from "../../Json";
 import RequestType from "./RequestType";
 
-export interface RequestError {
+export class RequestError extends Error {
 
-    readonly type    : RequestType.ERROR;
-    readonly status  : RequestStatus;
-    readonly message : string;
+    public readonly status  : RequestStatus;
+
+    private readonly __proto__: any;
+
+    constructor(
+        status  : number,
+        message : string | undefined = undefined
+    ) {
+
+        super( message ? message : stringifyRequestStatus(status) );
+
+        const actualProto = new.target.prototype;
+
+        if (Object.setPrototypeOf) {
+            Object.setPrototypeOf(this, actualProto);
+        } else {
+            this.__proto__ = actualProto;
+        }
+
+        this.status  = status;
+
+    }
+
+    public valueOf () : number {
+        return this.status;
+    }
+
+    public toString () : string {
+        return `${this.status} ${this.message}`;
+    }
+
+    public toJSON () : ReadonlyJsonObject {
+        return {
+            type: RequestType.ERROR,
+            status: this.status,
+            message: this.message
+        };
+    }
+
+    public getStatusCode () : number {
+        return this.status;
+    }
 
 }
 
@@ -17,26 +55,13 @@ export function createRequestError (
     status  : RequestStatus,
     message : string | undefined = undefined
 ) : RequestError {
-
-    if (message === undefined) {
-        message = stringifyRequestStatus(status);
-    }
-
-    return {
-        type: RequestType.ERROR,
-        status,
-        message
-    };
-
+    return new RequestError(status, message);
 }
 
 export function isRequestError (value : any) : value is RequestError {
     return (
-        isObject(value)
-        && InterfaceUtils.hasPropertyStatus(value)
-        && InterfaceUtils.hasPropertyMessage(value)
-        && isRequestStatus(value.status)
-        && isString(value.message)
+        !!value
+        && value instanceof RequestError
     );
 }
 

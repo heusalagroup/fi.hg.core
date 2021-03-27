@@ -6,6 +6,15 @@ This git repository contains only the source code for a compile time use case. I
 
 See [sendanor/typescript-package](https://github.com/sendanor/typescript-package) for a full package example. Although, keep in mind, this repository is not intended to be used as a NPM package dependency.
 
+## Releases
+
+We don't have traditional releases. 
+
+This project evolves directly to our git repository in an agile manner.
+
+However, we can make releases for a commercial customer. One stable release is 16 000 € + taxes. The payment will include 
+one month of agile development with the customer. It will also include one year of support for that release branch.
+
 ## Index
 
  * [Install & maintain our library](#install--maintain-our-library)

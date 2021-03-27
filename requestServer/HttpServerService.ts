@@ -93,23 +93,31 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
 
     }
 
-    private _onRequest (req: IncomingMessage, res: ServerResponse) {
+    private async _callRequestHandler (req: IncomingMessage, res: ServerResponse) : Promise<void> {
 
-        if (this._handler !== undefined) {
+        if ( this._handler !== undefined ) {
+
             try {
-
-                this._handler(req, res);
-
-                // FIXME: Handle possible async promise
-
+                await this._handler(req, res);
             } catch (e) {
                 LOG.error('Response handler has an error: ', e);
             }
+
+            if (!res.writableFinished) {
+                res.end();
+            }
+
         } else {
-            LOG.error('We did not have a handler for the request.');
+            LOG.error('No handler configured for the request.');
             res.end('Error');
         }
 
+    }
+
+    private _onRequest (req: IncomingMessage, res: ServerResponse) {
+        this._callRequestHandler(req, res).catch(err => {
+            LOG.error('Request has an error: ', err);
+        });
     }
 
     private _onListen () {

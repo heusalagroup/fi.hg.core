@@ -9,7 +9,7 @@ import RequestMethod, {parseRequestMethod, stringifyRequestMethod} from "../requ
 import {filter, forEach, has, isNull, keys, map, some, trim, reduce, concat} from "../modules/lodash";
 import RequestControllerMappingObject from "../request/types/RequestControllerMappingObject";
 import RequestMappingObject from "../request/types/RequestMappingObject";
-import RequestStatus, {isRequestStatus} from "../request/types/RequestStatus";
+import {isRequestStatus} from "../request/types/RequestStatus";
 import RequestParamType from "../request/types/RequestParamType";
 import LogService from "../LogService";
 import {RequestRouterMappingPropertyObject} from "./types/RequestRouterMappingPropertyObject";
@@ -17,7 +17,9 @@ import {RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
 import {RequestParamObject} from "../request/types/RequestParamObject";
 import {RequestControllerMethodObject} from "../request/types/RequestControllerMethodObject";
 import {isRequestQueryParamObject} from "../request/types/RequestQueryParamObject";
-import Json from "../Json";
+import Json, {isReadonlyJsonAny, isReadonlyJsonArray, isReadonlyJsonObject, ReadonlyJsonObject} from "../Json";
+import ResponseEntity, {isResponseEntity} from "../request/ResponseEntity";
+import {isRequestError} from "../request/types/RequestError";
 
 const LOG = LogService.createLogger('RequestRouter');
 
@@ -45,13 +47,13 @@ export class RequestRouter {
         methodString      : RequestMethod,
         urlString         : string                   | undefined = undefined,
         parseRequestBody  : ParseRequestBodyCallback | undefined = undefined
-    ) : Promise<any> {
+    ) : Promise<ResponseEntity<any>> {
 
         const requestMappings : Array<RequestControllerMappingObject> = this._getRequestMappings();
 
         if (requestMappings.length === 0) {
             LOG.error('No request mappers defined to handle the request!');
-            return RequestStatus.NotFound;
+            return ResponseEntity.notFound();
         }
 
         LOG.debug('raw url: ', urlString);
@@ -72,7 +74,7 @@ export class RequestRouter {
         LOG.debug('allRoutes: ', allRoutes);
 
         if (!has(allRoutes, requestPathName)) {
-            return RequestStatus.NotFound;
+            return ResponseEntity.notFound();
         }
 
         const routes : Array<RequestRouterMappingPropertyObject> = filter(
@@ -85,33 +87,10 @@ export class RequestRouter {
         LOG.debug('routes: ', routes);
 
         if (routes.length === 0) {
-            return RequestStatus.MethodNotAllowed;
+            return ResponseEntity.methodNotAllowed();
         }
 
-        let result : any = {
-            // routes
-        };
-
-        // // Check method if at least one is defined
-        // const allRouteMethods = reduce(routes, (list : Array<RequestMethod>, route : RequestRouterMappingPropertyObject) => {
-        //
-        //     if (route.methods) {
-        //         return concat(list, route.methods);
-        //     }
-        //
-        //     return list;
-        //
-        // }, []);
-        //
-        // if (allRouteMethods.length !== 0) {
-        //     if (allRouteMethods.indexOf(method) < 0) {
-        //         result = RequestStatus.MethodNotAllowed;
-        //         return true;
-        //     }
-        // } else {
-        //     result = RequestStatus.MethodNotAllowed;
-        //     return true;
-        // }
+        let responseEntity : ResponseEntity<any> | undefined = undefined;
 
         const requestBodyRequired = parseRequestBody ? some(routes, item => item?.requestBodyRequired === true) : false;
 
@@ -121,39 +100,123 @@ export class RequestRouter {
 
         LOG.debug('handleRequest: requestBody: ', requestBody);
 
-        if (!isRequestStatus(result)) {
+        // Handle requests using controllers
+        await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
-            // Handle requests using controllers
-            await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
+            const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams);
 
-                const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams);
+            LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
-                LOG.debug('handleRequest: stepParams 1: ', stepParams);
+            return previousPromise.then(async () => {
 
-                const stepResultPromise : Promise<any> | any = route.controller[route.propertyName](...stepParams);
+                LOG.debug('handleRequest: stepParams 2: ', stepParams);
 
-                return previousPromise.then(async () => {
+                const stepResult = await route.controller[route.propertyName](...stepParams);
 
-                    LOG.debug('handleRequest: stepParams 2: ', stepParams);
+                if (isRequestStatus(stepResult)) {
 
-                    const stepResult = await stepResultPromise;
+                    responseEntity = new ResponseEntity<any>(stepResult);
 
-                    result = {
-                        ...result,
-                        ...stepResult
-                    };
+                } else if (isRequestError(stepResult)) {
 
-                    LOG.debug('handleRequest: result changed: ', result);
+                    responseEntity = new ResponseEntity<ReadonlyJsonObject>(stepResult.toJSON(), stepResult.getStatusCode());
 
-                });
+                } else if (isResponseEntity(stepResult)) {
 
-            }, Promise.resolve());
+                    // FIXME: What if we already have stepResult??
+                    if (responseEntity !== undefined) {
+                        LOG.warn('Warning! ResponseEntity from previous call ignored.');
+                    }
 
+                    responseEntity = stepResult;
+
+                } else if (isReadonlyJsonArray(stepResult)) {
+
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        responseEntity = new ResponseEntity<any>(
+                            concat(responseEntity.getBody(), stepResult),
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                } else if (isReadonlyJsonObject(stepResult)) {
+
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        responseEntity = new ResponseEntity<any>(
+                            {
+                                ...responseEntity.getBody(),
+                                ...stepResult
+                            },
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                } else if (isReadonlyJsonAny(stepResult)) {
+
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        LOG.warn('Warning! ResponseEntity from previous call ignored.');
+
+                        responseEntity = new ResponseEntity<any>(
+                            stepResult,
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                } else {
+
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        LOG.warn('Warning! ResponseEntity from previous call ignored.');
+
+                        responseEntity = new ResponseEntity<any>(
+                            stepResult,
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                }
+
+                LOG.debug('handleRequest: result changed: ', responseEntity);
+
+            });
+
+        }, Promise.resolve());
+
+        LOG.debug('handleRequest: result finished: ', responseEntity);
+
+        // This never happens really, since 'routes' will always have more than one item at this point.
+        if (responseEntity === undefined) {
+            return ResponseEntity.noContent();
         }
 
-        LOG.debug('handleRequest: result finished: ', result);
-
-        return result;
+        return responseEntity;
 
     }
 

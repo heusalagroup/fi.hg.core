@@ -3,17 +3,18 @@
 import HttpServerService from "./requestServer/HttpServerService";
 import {IncomingMessage, ServerResponse} from "http";
 import RequestRouter from "./requestServer/RequestRouter";
-import {isRequestStatus} from "./request/types/RequestStatus";
-import {createRequestError, isRequestError} from "./request/types/RequestError";
+import RequestStatus, {isRequestStatus, stringifyRequestStatus} from "./request/types/RequestStatus";
+import RequestError, {createRequestError, isRequestError} from "./request/types/RequestError";
 import URL from "url";
 import ServerService from "./requestServer/types/ServerService";
 import {RequestHandler} from "./requestServer/types/RequestHandler";
 import {parseRequestMethod} from "./request/types/RequestMethod";
 import LogService from "./LogService";
-import RequestType from "./request/types/RequestType";
 import {isRequestController} from "./request/types/RequestController";
 import Json from "./Json";
 import NodeHttpUtils from "./requestClient/NodeHttpUtils";
+import ResponseEntity from "./request/ResponseEntity";
+import {isString} from "./modules/lodash";
 
 const LOG = LogService.createLogger('RequestServer');
 
@@ -72,11 +73,11 @@ export class RequestServer {
     private async _handleRequest(
         req: IncomingMessage,
         res: ServerResponse
-    ): Promise<void> {
+    ) : Promise<void> {
 
         try {
 
-            const responseData = await this._router.handleRequest(
+            const responseData : ResponseEntity<any> = await this._router.handleRequest(
                 parseRequestMethod(req.method),
                 req.url,
                 async () : Promise<Json | undefined> => NodeHttpUtils.getRequestDataAsJson(req)
@@ -86,7 +87,7 @@ export class RequestServer {
 
         } catch (err) {
 
-            LOG.error('Error: ', err);
+            LOG.debug('Error: ', err);
 
             this._handleErrorResponse(err, res);
 
@@ -95,27 +96,25 @@ export class RequestServer {
     }
 
     private _handleResponse(
-        body: any,
-        res: ServerResponse
+        responseEntity : ResponseEntity<any>,
+        res            : ServerResponse
     ): void {
 
-        // FIXME: This number detection should be something that's activated using annotations
-        if (isRequestStatus(body)) {
+        const statusCode : RequestStatus | number = responseEntity.getStatusCode();
 
-            body = createRequestError(body);
+        res.statusCode    = statusCode;
+        res.statusMessage = stringifyRequestStatus(statusCode);
 
-            res.statusCode = body.status;
-            res.statusMessage = body.message;
-
-            // FIXME: This error detection without an exception should be something that's activated using annotations
-        } else if (isRequestError(body)) {
-
-            res.statusCode = body.status;
-            res.statusMessage = body.message;
-
+        if (responseEntity.hasBody()) {
+            const body = responseEntity.getBody();
+            if (isString(body)) {
+                res.end(body);
+            } else {
+                res.end(JSON.stringify(body, null, 2));
+            }
+        } else {
+            res.end();
         }
-
-        res.end(JSON.stringify(body, null, 2));
 
     }
 
@@ -124,27 +123,37 @@ export class RequestServer {
         res: ServerResponse
     ): void {
 
-        let statusCode = 500;
-        let statusMessage = "Internal Error";
+        let responseEntity : ResponseEntity<RequestError> | undefined;
 
         if (isRequestStatus(error)) {
-            error = createRequestError(error);
-            statusCode = error.status;
-            statusMessage = error.message;
+
+            responseEntity = new ResponseEntity(error);
+
+        } else if (isRequestError(error)) {
+
+            responseEntity = new ResponseEntity(error, error.getStatusCode());
+
+        } else {
+
+            LOG.error('Exception: ', error);
+
+            // FIXME: We should have an public API for testing production mode
+            if ( process?.env?.NODE_ENV === 'production' ) {
+
+                responseEntity = ResponseEntity.internalServerError();
+
+            } else {
+
+                responseEntity = new ResponseEntity<RequestError>(
+                    createRequestError(RequestStatus.InternalServerError, `Internal Server Error: ${error}`),
+                    RequestStatus.InternalServerError
+                );
+
+            }
+
         }
 
-        if (isRequestError(error)) {
-            statusCode = error.status;
-            statusMessage = error.message;
-        }
-
-        res.statusCode = statusCode;
-        res.statusMessage = statusMessage;
-        res.end(JSON.stringify({
-            type: RequestType.ERROR,
-            status: statusCode,
-            message: statusMessage
-        }, null, 2));
+        this._handleResponse(responseEntity, res);
 
     }
 

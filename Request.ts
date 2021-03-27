@@ -9,7 +9,9 @@ import RequestParamType, {stringifyRequestParamType} from "./request/types/Reque
 import {isFunction, isNumber, isObject, isString} from "./modules/lodash";
 import RequestStatus from "./request/types/RequestStatus";
 import RequestType from "./request/types/RequestType";
-import {createRequestError} from "./request/types/RequestError";
+import RequestError, {createRequestError} from "./request/types/RequestError";
+import ResponseEntity from "./request/ResponseEntity";
+import Headers from "./request/Headers";
 
 const LOG = LogService.createLogger('Request');
 
@@ -25,10 +27,11 @@ interface RequestMappingDecorator {
 
 export class Request {
 
-    public static Method    = RequestMethod;
-    public static Status    = RequestStatus;
-    public static ParamType = RequestParamType;
-    public static Type      = RequestType;
+    public static Method         = RequestMethod;
+    public static Status         = RequestStatus;
+    public static ParamType      = RequestParamType;
+    public static Type           = RequestType;
+    public static Error          = RequestError;
 
     public static Mapping (
         ...config : RequestMappingArray
@@ -343,5 +346,11 @@ export function RequestBody (
 ) {
     return Request.Body(target, propertyKey, paramIndex);
 }
+
+export {
+    ResponseEntity,
+    Headers,
+    RequestError
+};
 
 export default Request;
