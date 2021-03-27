@@ -56,22 +56,22 @@ export class RequestRouter {
             return ResponseEntity.notFound();
         }
 
-        LOG.debug('raw url: ', urlString);
+        // LOG.debug('raw url: ', urlString);
 
         const method       : RequestMethod = parseRequestMethod(methodString);
         const urlForParser : string        = `http://localhost${urlString ?? ''}`;
 
         const parsedUrl = new URL.URL(urlForParser);
 
-        LOG.debug('parsedUrl: ', parsedUrl);
+        // LOG.debug('parsedUrl: ', parsedUrl);
 
         const requestPathName = parsedUrl.pathname;
 
-        LOG.debug('Request: ', stringifyRequestMethod(method), requestPathName, requestMappings);
+        // LOG.debug('Request: ', stringifyRequestMethod(method), requestPathName, requestMappings);
 
         const allRoutes : RequestRouterMappingObject = RequestRouter._parseMappingArray(requestMappings);
 
-        LOG.debug('allRoutes: ', allRoutes);
+        // LOG.debug('allRoutes: ', allRoutes);
 
         if (!has(allRoutes, requestPathName)) {
             return ResponseEntity.notFound();
@@ -84,7 +84,7 @@ export class RequestRouter {
             }
         );
 
-        LOG.debug('routes: ', routes);
+        // LOG.debug('routes: ', routes);
 
         if (routes.length === 0) {
             return ResponseEntity.methodNotAllowed();
@@ -94,22 +94,22 @@ export class RequestRouter {
 
         const requestBodyRequired = parseRequestBody ? some(routes, item => item?.requestBodyRequired === true) : false;
 
-        LOG.debug('handleRequest: requestBodyRequired: ', requestBodyRequired);
+        // LOG.debug('handleRequest: requestBodyRequired: ', requestBodyRequired);
 
         const requestBody = parseRequestBody && requestBodyRequired ? await parseRequestBody() : undefined;
 
-        LOG.debug('handleRequest: requestBody: ', requestBody);
+        // LOG.debug('handleRequest: requestBody: ', requestBody);
 
         // Handle requests using controllers
         await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
             const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams);
 
-            LOG.debug('handleRequest: stepParams 1: ', stepParams);
+            // LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
             return previousPromise.then(async () => {
 
-                LOG.debug('handleRequest: stepParams 2: ', stepParams);
+                // LOG.debug('handleRequest: stepParams 2: ', stepParams);
 
                 const stepResult = await route.controller[route.propertyName](...stepParams);
 
@@ -203,7 +203,7 @@ export class RequestRouter {
 
                 }
 
-                LOG.debug('handleRequest: result changed: ', responseEntity);
+                // LOG.debug('handleRequest: result changed: ', responseEntity);
 
             });
 
