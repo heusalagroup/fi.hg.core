@@ -181,24 +181,26 @@ export class UserController {
     }
 
     @GetMapping("/", "/list")
-    getUserList(
+    public async getUserList(
         @Request.param("p", Request.ParamType.INTEGER)
         pageNumber: number = 0,
         @Request.param("l", Request.ParamType.INTEGER)
         pageSize: number = 10
-    ): ListDTO<UserModel> {
+    ): Promise<ResponseEntity<ListDTO<UserModel>>> {
+        
         // const parsedPageNumber = pageNumber ? parseInt(pageNumber, 10) : 0;
         // const parsedPageSize   = pageSize   ? parseInt(pageSize, 10)   : 10;
 
         return ResponseEntity.ok({
             pageNumber: pageNumber,
             pageSize: pageSize,
-            content: this._userService.getUserList(pageNumber, pageSize),
+            content: await this._userService.getUserList(pageNumber, pageSize),
         });
+        
     }
 
     @PostMapping("/addUser")
-    async addUser (@RequestBody user : Json) {
+    public async addUser (@RequestBody user : Json) : Promise<ResponseEntity<Json>> {
         await this._userService.addUser(user);
         return ResponseEntity.ok({
             user: user
