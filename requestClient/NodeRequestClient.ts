@@ -4,16 +4,22 @@ import RequestClientInterface from "./RequestClientInterface";
 import {ClientRequest, IncomingHttpHeaders, IncomingMessage} from "http";
 import NodeHttpUtils from "./NodeHttpUtils";
 import LogService from "../LogService";
+import URL from "url";
+import fsPromises from "fs/promises";
+import {forEach, isString, reduce, split} from "../modules/lodash";
+import {constants as fsConstants, Stats} from "fs";
+import PATH from "path";
 
 const LOG = LogService.createLogger('NodeRequestClient');
 
 export interface HttpClientOptions {
 
-    hostname ?: string;
-    port     ?: number;
-    path     ?: string;
-    method   ?: string;
-    headers  ?: IncomingHttpHeaders;
+    hostname   ?: string;
+    port       ?: number;
+    path       ?: string;
+    method     ?: string;
+    headers    ?: IncomingHttpHeaders;
+    socketPath ?: string;
 
 }
 
@@ -23,6 +29,7 @@ export interface HttpClientCallback {
 
 export interface HttpModule {
 
+    request (options : HttpClientOptions, callback : HttpClientCallback) : ClientRequest;
     request (url: string, options : HttpClientOptions, callback : HttpClientCallback) : ClientRequest;
 
 }
@@ -45,72 +52,242 @@ export class NodeRequestClient implements RequestClientInterface {
         this._http = http;
     }
 
-    public jsonRequest (
+    public async jsonRequest (
         method   : RequestMethod,
         url      : string,
         headers ?: IncomingHttpHeaders,
         data    ?: Json
     ) : Promise<Json| undefined> {
         switch (method) {
-            case RequestMethod.GET:    return this._getJson(url, headers, data);
-            case RequestMethod.POST:   return this._postJson(url, headers, data);
-            case RequestMethod.PUT:    return this._putJson(url, headers, data);
-            case RequestMethod.DELETE: return this._deleteJson(url, headers, data);
+            case RequestMethod.GET:    return await this._getJson(url, headers, data);
+            case RequestMethod.POST:   return await this._postJson(url, headers, data);
+            case RequestMethod.PUT:    return await this._putJson(url, headers, data);
+            case RequestMethod.DELETE: return await this._deleteJson(url, headers, data);
             default:                   throw new TypeError(`[Node]RequestClient: Unsupported method: ${method}`);
         }
     }
 
-    private _request (
+    /**
+     * If the result is true, this is a socket file.
+     * If the result is false, you cannot find socket from the parent file.
+     * If the result is undefined, you may search parent paths.
+     *
+     * @param path
+     * @private
+     */
+    private async _checkSocketFile (path : string) : Promise<boolean|undefined> {
+
+        try {
+
+            // LOG.debug('_checkSocketFile: path =', path);
+
+            const stat : Stats = await fsPromises.stat(path);
+
+            // LOG.debug('_checkSocketFile: stat =', stat);
+
+            if ( stat.isSocket()    ) return true;
+
+            // if ( stat.isFile()      ) return false;
+            // if ( stat.isDirectory() ) return false;
+
+            return false;
+
+        } catch (err) {
+
+            const code = err?.code;
+
+            if (code === 'ENOTDIR') {
+                // LOG.debug('_checkSocketFile: ENOTDIR: ', err);
+                return undefined;
+            }
+
+            if (code === 'ENOENT') {
+                // LOG.debug('_checkSocketFile: ENOENT: ', err);
+                return undefined;
+            }
+
+            LOG.error(`_checkSocketFile: Error "${code}" passed on: `, err);
+
+            throw err;
+
+        }
+
+    }
+
+    private async _findSocketFile (fullPath : string) : Promise<string | undefined> {
+
+        // LOG.debug('_findSocketFile: fullPath: ', fullPath);
+
+        let socketExists : boolean | undefined = await this._checkSocketFile(fullPath);
+
+        // LOG.debug('_findSocketFile: socketExists: ', socketExists);
+
+        if (socketExists === true) return fullPath;
+        if (socketExists === false) return undefined;
+
+        const parentPath = PATH.dirname(fullPath);
+        // LOG.debug('_findSocketFile: parentPath: ', parentPath);
+
+        if ( parentPath === "/" || parentPath === fullPath ) {
+            return undefined;
+        }
+
+        return this._findSocketFile(parentPath);
+
+    }
+
+    private async _httpRequest (
         url      : string,
         options  : HttpClientOptions,
         body    ?: Json
-    ) : Promise<JsonHttpResponse> {
-        LOG.debug('_request: url, options, body = ', url, options, body);
-        return new Promise( (resolve, reject) => {
+    ) : Promise<IncomingMessage> {
+
+        LOG.debug('_httpRequest: url, options, body = ', url, options, body);
+
+        const bodyString : string | undefined = body ? JSON.stringify(body) + '\n' : undefined;
+
+        const urlParsed = new URL.URL(url);
+        LOG.debug('urlParsed = ', urlParsed);
+
+        const protocol : string = urlParsed?.protocol ?? '';
+
+        if ( protocol === 'unix:' || protocol === 'socket:' ) {
+
+            const fullSocketPath = urlParsed?.pathname ? urlParsed?.pathname : '/';
+
+            if (fullSocketPath === '/') {
+                throw new TypeError(`No socket path found for unix protocol URL: ${url}`);
+            }
+
+            LOG.debug('_httpRequest: fullSocketPath: ', fullSocketPath);
+
+            const realSocketPath : string | undefined = await this._findSocketFile(fullSocketPath);
+
+            if (!realSocketPath) {
+                throw new TypeError(`No socket path found for unix protocol URL: ${url}`);
+            }
+
+            const socketSuffix = realSocketPath.length < fullSocketPath.length ? fullSocketPath.substr(realSocketPath.length) : '';
+
+            const path : string = `${socketSuffix}${urlParsed.search !== '?' ? urlParsed.search : ''}`;
+
+            LOG.debug('Using unix socket: ', realSocketPath, path, urlParsed);
+
+            options = {
+                ...options,
+                socketPath: realSocketPath,
+                path
+            };
+
+            url = '';
+
+        }
+
+        LOG.debug('Calling inside a promise...');
+
+        return await new Promise( (resolve, reject) => {
+            let resolved = false;
             try {
 
-                const bodyString : string | undefined = body ? JSON.stringify(body) + '\n' : undefined;
+                const callback = (res: IncomingMessage) => {
+                    if (resolved) {
+                        LOG.warn('Warning! Request had already ended when the response was received.');
+                    } else {
+                        resolved = true;
+                        resolve(res);
+                    }
+                };
 
-                const req = this._http.request(url, options, (response : IncomingMessage) => {
-                    try {
-                        resolve( NodeHttpUtils.getRequestDataAsJson(response).then((result : Json | undefined ) => {
+                let req : ClientRequest | undefined;
 
-                            const statusCode = response?.statusCode ?? 0;
+                if ( !url ) {
 
-                            LOG.debug('_request: statusCode = ', statusCode);
+                    LOG.debug('Requesting with options ', options);
+                    req = this._http.request(options, callback);
 
-                            const myResponse : JsonHttpResponse = {
-                                statusCode,
-                                headers: response.headers,
-                                body: result
-                            };
+                } else {
 
-                            LOG.debug('_request: myResponse = ', myResponse);
+                    LOG.debug(`Requesting "${url}" with options:`, options);
+                    req = this._http.request(url, options, callback);
 
-                            return myResponse;
+                }
 
-                        }) );
-                    } catch(err) {
+                req.on('error', err => {
+                    if (resolved) {
+
+                        LOG.warn('Warning! Request had already ended when the response was received.');
+
+                        LOG.debug('Error from event: ', err);
+
+                    } else {
+                        LOG.debug('Passing on error from event: ', err);
+                        resolved = true;
                         reject(err);
                     }
                 });
 
-                req.on('error', reject);
-
                 if (bodyString) {
-                    LOG.debug('_request: bodyString = ', bodyString);
+
+                    LOG.debug('_request: writing bodyString = ', bodyString);
+
                     req.write(bodyString);
+
+                } else {
+                    LOG.debug('_request: no body');
                 }
 
                 req.end();
 
             } catch(err) {
-                reject(err);
+
+                if (resolved) {
+
+                    LOG.warn('Warning! Request had already ended when the response was received.');
+
+                    LOG.debug('Exception: ', err);
+
+                } else {
+                    LOG.debug('Passing on error: ', err);
+                    resolved = true;
+                    reject(err);
+                }
+
             }
         });
     }
 
-    private _getJson (
+    private async _request (
+        url      : string,
+        options  : HttpClientOptions,
+        body    ?: Json
+    ) : Promise<JsonHttpResponse> {
+
+        LOG.debug('_request: url, options, body = ', url, options, body);
+
+        const response : IncomingMessage = await this._httpRequest(url, options, body);
+
+        LOG.debug('Reading response for request...');
+
+        const result : Json | undefined = await NodeHttpUtils.getRequestDataAsJson(response);
+
+        LOG.debug('Received: ', result);
+
+        const statusCode = response?.statusCode ?? 0;
+        LOG.debug('_request: statusCode = ', statusCode);
+
+        const myResponse : JsonHttpResponse = {
+            statusCode,
+            headers: response.headers,
+            body: result
+        };
+
+        LOG.debug('_request: myResponse = ', myResponse);
+
+        return myResponse;
+
+    }
+
+    private async _getJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
         data    ?: Json
@@ -134,7 +311,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
     }
 
-    private _putJson (
+    private async _putJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
         data    ?: Json
@@ -158,7 +335,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
     }
 
-    private _postJson (
+    private async _postJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
         data    ?: Json
@@ -182,7 +359,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
     }
 
-    private _deleteJson (
+    private async _deleteJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
         data    ?: Json
@@ -213,6 +390,8 @@ export class NodeRequestClient implements RequestClientInterface {
         if ( statusCode < 200 || statusCode >= 400 ) {
             throw new Error('Response was not OK');
         }
+
+        LOG.debug(`Successful response with status ${statusCode}: `, response);
 
         return response.body;
 

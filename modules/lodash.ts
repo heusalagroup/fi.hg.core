@@ -13,6 +13,7 @@ import indexOf from 'lodash/indexOf.js';
 import sortBy from 'lodash/sortBy.js';
 import filter from 'lodash/filter.js';
 import forEach from 'lodash/forEach.js';
+import split from 'lodash/split.js';
 import keys from 'lodash/keys.js';
 import trim from 'lodash/trim.js';
 import has from 'lodash/has.js';
@@ -37,6 +38,7 @@ export {
     slice,
     indexOf,
     sortBy,
+    split,
     filter,
     forEach,
     keys,

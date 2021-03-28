@@ -209,7 +209,7 @@ export class RequestRouter {
 
         }, Promise.resolve());
 
-        LOG.debug('handleRequest: result finished: ', responseEntity);
+        LOG.debug('handleRequest: result finished: ' + responseEntity);
 
         // This never happens really, since 'routes' will always have more than one item at this point.
         if (responseEntity === undefined) {

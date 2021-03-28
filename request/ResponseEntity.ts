@@ -1,7 +1,9 @@
-import RequestStatus from "./types/RequestStatus";
+import RequestStatus, {stringifyRequestStatus} from "./types/RequestStatus";
 import {isNumber} from "../modules/lodash";
 import Headers, {isHeaders} from "./Headers";
 import HeadersObject, {isHeadersObject} from "./types/HeadersObject";
+import {isReadonlyJsonAny} from "../Json";
+import StringUtils from "../StringUtils";
 
 export type EntityStatusTypes = RequestStatus | number;
 
@@ -120,6 +122,41 @@ export class ResponseEntity<T> {
     public getBody () : T {
         if (this._body === undefined) throw new TypeError('No body');
         return this._body;
+    }
+
+    public toString () : string {
+
+        const status : string = stringifyRequestStatus(this._status);
+
+        const headersObject : Headers = this._headers;
+        const headers : string = headersObject.isEmpty() ? '' : StringUtils.toString(headersObject);
+
+        const body : any = this._body;
+
+        if (body === undefined) {
+
+            if (headers) {
+                return `ResponseEntity(${status}, ${headers})`;
+            } else {
+                return `ResponseEntity(${status})`;
+            }
+
+        }
+
+        let bodyDisplayValue : string = '';
+
+        if (isReadonlyJsonAny(body)) {
+            bodyDisplayValue = JSON.stringify(body, null, 2);
+        } else {
+            bodyDisplayValue = StringUtils.toString(body);
+        }
+
+        if (headers) {
+            return `ResponseEntity(${status}, ${headers}, Body(${bodyDisplayValue}))`;
+        } else {
+            return `ResponseEntity(${status}, Body(${bodyDisplayValue}))`;
+        }
+
     }
 
     public static accepted<T> () { return new ResponseEntity<T>(RequestStatus.Accepted); }

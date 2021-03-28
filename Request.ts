@@ -51,13 +51,13 @@ export class Request {
 
                 if (propertyKey === undefined) {
 
-                    // LOG.debug('.mapping for RequestController: config=', config, 'target=', target);
+                    // LOG.debug('.mapping for ContainerController: config=', config, 'target=', target);
 
                     RequestControllerUtils.attachControllerMapping(target, config);
 
                 } else {
 
-                    // LOG.debug(".mapping for RequestController's method: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=', descriptor);
+                    // LOG.debug(".mapping for ContainerController's method: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=', descriptor);
 
                     RequestControllerUtils.attachControllerMethodMapping(target, config, propertyKey);
 
@@ -67,13 +67,13 @@ export class Request {
 
                 if (propertyKey === undefined) {
 
-                    // LOG.debug('.mapping for RequestController through constructor: config=', config, 'target=', target);
+                    // LOG.debug('.mapping for ContainerController through constructor: config=', config, 'target=', target);
 
                     RequestControllerUtils.attachControllerMapping(target.constructor, config);
 
                 } else {
 
-                    // LOG.debug(".mapping for RequestController's method through constructor: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=', descriptor);
+                    // LOG.debug(".mapping for ContainerController's method through constructor: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=', descriptor);
 
                     RequestControllerUtils.attachControllerMethodMapping(target.constructor, config, propertyKey);
 

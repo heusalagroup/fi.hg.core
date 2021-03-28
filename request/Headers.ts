@@ -1,5 +1,5 @@
 import HeadersObject from "./types/HeadersObject";
-import {concat, forEach, has, isArray, isString, keys, trim} from "../modules/lodash";
+import {concat, forEach, has, isArray, isString, keys, map, trim} from "../modules/lodash";
 import LogService from "../LogService";
 
 const LOG = LogService.createLogger('Headers');
@@ -71,7 +71,11 @@ export class Headers {
     }
 
     public isEmpty () : boolean {
-        return !!this._value && keys(this._value).length < 1;
+
+        const headersObject : HeadersObject | undefined = this._value;
+
+        return !headersObject || keys(headersObject).length === 0;
+
     }
 
     public keySet () : Set<string> {
@@ -189,7 +193,43 @@ export class Headers {
     }
 
     public valueOf () : HeadersObject | undefined {
-        return this._value;
+        return this._value ?? undefined;
+    }
+
+    public toString () : string {
+
+        const headersObject = this._value;
+
+        if ( !headersObject || this.isEmpty() ) return 'Headers()';
+
+        const headerKeys : Array<string> = keys(headersObject);
+
+        const items : Array<string> = map(headerKeys, (headerKey : string) => {
+
+            const headerValue : string | string[] | undefined = headersObject[headerKey];
+
+            if (!headerValue) return `${headerKey}`;
+
+            if (isArray(headerValue)) return `${headerKey}: ${headerValue.map((item : string) => {
+                
+                if ( headerValue.indexOf(';') >= 0 || headerValue.indexOf(',') >= 0 ) {
+                    return `"${headerValue}"`;
+                }
+                
+                return headerValue;
+                
+            }).join(', ')}`;
+
+            if (headerValue.indexOf(';') >= 0) {
+                return `${headerKey}: "${headerValue}"`;
+            }
+
+            return `${headerKey}: ${headerValue}`;
+
+        });
+
+        return `Headers(${items.join('; ')})`;
+
     }
 
 }
