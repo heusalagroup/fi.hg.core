@@ -209,6 +209,18 @@ export class UserController {
         
     }
 
+    @GetMapping("/items/{id}")
+    public async getUserList(
+        @PathVariable('id')
+        id: string
+    ): Promise<ResponseEntity<Json>> {
+        
+        return ResponseEntity.ok({
+           itemId: id
+        });
+        
+    }
+
     @PostMapping("/addUser")
     public async addUser (
         @RequestBody   user    : Json,
@@ -274,7 +286,7 @@ export default class User extends Entity {
     @Column("age")
     public age: number;
 
-    ...
+    //...
 }
 ```
 
@@ -298,8 +310,8 @@ import PgPersister from "../../repository/persistence/PgPersister";
 export class UserController {
     createUser(): UserDto {
         const userRepository = new UserRepository(new PgPersister());
-        userRepository.save(new User(...));
-        ...
+        userRepository.save(new User(/*...*/));
+        // ...
     }
 }
 ```

@@ -6,8 +6,8 @@ import {every, isArray, isString} from "../../modules/lodash";
 
 export interface RequestMappingObject {
 
-    methods  : Array<RequestMethod>;
-    paths    : Array<string>;
+    readonly methods  : RequestMethod[];
+    readonly paths    : string[];
 
 }
 

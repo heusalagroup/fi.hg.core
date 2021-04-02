@@ -16,6 +16,8 @@ import RequestHeaderParamObject from "./types/RequestHeaderParamObject";
 import RequestQueryParamObject from "./types/RequestQueryParamObject";
 import RequestHeaderMapParamObject, {DefaultHeaderMapValuesType} from "./types/RequestHeaderMapParamObject";
 import RequestParamObjectType from "./types/RequestParamObjectType";
+import RequestPathVariableParamObject from "./types/RequestPathVariableParamObject";
+import RequestPathVariableMapParamObject, {DefaultPathVariableMapValuesType} from "./types/RequestPathVariableMapParamObject";
 
 export class RequestControllerUtils {
 
@@ -249,7 +251,7 @@ export class RequestControllerUtils {
         paramIndex   : number,
         headerName   : string,
         paramType    : RequestParamValueType,
-        isRequired   : boolean,
+        isRequired   : boolean | undefined,
         defaultValue : string | undefined
     ) {
 
@@ -257,13 +259,52 @@ export class RequestControllerUtils {
             objectType   : RequestParamObjectType.REQUEST_HEADER,
             headerName   : headerName,
             valueType    : paramType,
-            isRequired   : isRequired,
+            isRequired   : isRequired ?? false,
             defaultValue : defaultValue
         };
 
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
 
     }
+
+    static setControllerMethodPathVariable (
+        controller   : RequestController,
+        propertyKey  : string,
+        paramIndex   : number,
+        variableName : string,
+        paramType    : RequestParamValueType,
+        isRequired   : boolean | undefined,
+        defaultValue : string | undefined
+    ) {
+
+        const newParam : RequestPathVariableParamObject = {
+            objectType   : RequestParamObjectType.PATH_VARIABLE,
+            variableName : variableName,
+            valueType    : paramType,
+            isRequired   : isRequired ?? true,
+            defaultValue : defaultValue
+        };
+
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+
+    }
+
+    static setControllerMethodPathVariableMap (
+        controller    : RequestController,
+        propertyKey   : string,
+        paramIndex    : number,
+        defaultValues : DefaultPathVariableMapValuesType | undefined
+    ) {
+
+        const newParam : RequestPathVariableMapParamObject = {
+            objectType    : RequestParamObjectType.PATH_VARIABLE_MAP,
+            defaultValues : defaultValues
+        };
+
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+
+    }
+
 
     static setControllerMethodHeaderMap (
         controller    : RequestController,

@@ -13,6 +13,7 @@ import RequestError, {createRequestError} from "./request/types/RequestError";
 import ResponseEntity from "./request/ResponseEntity";
 import Headers from "./request/Headers";
 import {DefaultHeaderMapValuesType} from "./request/types/RequestHeaderMapParamObject";
+import {DefaultPathVariableMapValuesType} from "./request/types/RequestPathVariableMapParamObject";
 
 const LOG = LogService.createLogger('Request');
 
@@ -58,6 +59,30 @@ export function isRequestHeaderOptions (value : any) : value is RequestHeaderOpt
     );
 
 }
+
+export interface RequestPathVariableListOptions {
+
+    defaultValues ?: {[key: string] : string};
+
+}
+
+export interface RequestPathVariableOptions {
+
+    required     ?: boolean;
+    defaultValue ?: string | undefined;
+
+}
+
+export function isRequestPathVariableOptions (value : any) : value is RequestPathVariableOptions {
+
+    return (
+        !!value
+        && (     value?.required === undefined || isBoolean(value?.required)    )
+        && ( value?.defaultValue === undefined || isString(value?.defaultValue) )
+    );
+
+}
+
 
 export class Request {
 
@@ -264,8 +289,8 @@ export class Request {
 
             const headerNameOpts : RequestHeaderOptions | undefined = arg2;
 
-            let isRequired   : boolean            = false;
-            let defaultValue : string | undefined = undefined;
+            let isRequired   : boolean | undefined = undefined;
+            let defaultValue : string  | undefined = undefined;
 
             if (headerNameOpts === undefined) {
 
@@ -275,7 +300,7 @@ export class Request {
 
             } else if ( isObject(headerNameOpts)) {
 
-                isRequired   = headerNameOpts?.required     ?? false;
+                isRequired   = headerNameOpts?.required     ?? undefined;
                 defaultValue = headerNameOpts?.defaultValue ?? undefined;
 
             } else {
@@ -343,6 +368,146 @@ export class Request {
         };
 
     }
+
+
+    public static PathVariable (
+        opts ?: RequestPathVariableListOptions
+    ) : RequestMethodParamDecorator;
+
+    public static PathVariable (
+        headerName  : string,
+        opts       ?: RequestPathVariableOptions
+    ) : RequestMethodParamDecorator;
+
+    public static PathVariable (
+        target       : any | Function,
+        propertyKey  : string,
+        paramIndex   : number
+    ) : void;
+
+    public static PathVariable (
+        arg1 ?: string | RequestPathVariableListOptions | any | Function,
+        arg2 ?: string | RequestPathVariableOptions | boolean | undefined,
+        arg3 ?: number
+    ) : void | RequestMethodParamDecorator {
+
+        LOG.debug('Request.PathVariable: ', arg1, arg2, arg3);
+
+        if ( isString(arg2) && isNumber(arg3) ) {
+
+            const target      : any | Function = arg1;
+            const propertyKey : string         = arg2;
+            const paramIndex  : number         = arg3;
+
+            if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+                RequestControllerUtils.setControllerMethodPathVariableMap(target, propertyKey, paramIndex, undefined);
+                return;
+            }
+
+            if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+                RequestControllerUtils.setControllerMethodPathVariableMap(target.constructor, propertyKey, paramIndex, undefined);
+                return;
+            }
+
+            LOG.warn('.PathVariable: Unrecognized configuration: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+            return;
+
+        }
+
+        const variableName     : string | RequestPathVariableListOptions | undefined = arg1;
+
+        if (isString(variableName)) {
+
+            if (!(arg2 === undefined || isRequestPathVariableOptions(arg2))) {
+                throw new TypeError(`RequestPathVariable: Argument 2 is not type of RequestPathVariableOptions: ${arg2}`);
+            }
+
+            const headerNameOpts : RequestPathVariableOptions | undefined = arg2;
+
+            let isRequired   : boolean | undefined = undefined;
+            let defaultValue : string  | undefined = undefined;
+
+            if (headerNameOpts === undefined) {
+
+            } else if (isBoolean(headerNameOpts)) {
+
+                isRequired = headerNameOpts;
+
+            } else if ( isObject(headerNameOpts)) {
+
+                isRequired   = headerNameOpts?.required     ?? undefined;
+                defaultValue = headerNameOpts?.defaultValue ?? undefined;
+
+            } else {
+                throw new TypeError('RequestPathVariable: Invalid type of options');
+            }
+
+            LOG.debug('.PathVariable: init: ', variableName);
+
+            return (
+                target       : any | Function,
+                propertyKey ?: string,
+                paramIndex  ?: number
+            ) => {
+
+                if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+                    RequestControllerUtils.setControllerMethodPathVariable(target, propertyKey, paramIndex, variableName, RequestParamValueType.STRING, isRequired, defaultValue);
+                    return;
+                }
+
+                if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+                    RequestControllerUtils.setControllerMethodPathVariable(target.constructor, propertyKey, paramIndex, variableName, RequestParamValueType.STRING, isRequired, defaultValue);
+                    return;
+                }
+
+                LOG.warn('.PathVariable: Unrecognized configuration: ',
+                    "; target=", target,
+                    "; propertyKey=", propertyKey,
+                    "; paramIndex=", paramIndex);
+
+            };
+
+        }
+
+        let opts : RequestPathVariableListOptions | undefined = variableName;
+
+        if ( opts === undefined || isObject(opts?.defaultValues) ) {
+
+        } else {
+            throw new TypeError('RequestPathVariable: Invalid type of options');
+        }
+
+        const defaultValues : DefaultPathVariableMapValuesType | undefined = opts ? opts?.defaultValues ?? undefined : undefined;
+
+        return (
+            target       : any | Function,
+            propertyKey ?: string,
+            paramIndex  ?: number
+        ) => {
+
+            if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+                RequestControllerUtils.setControllerMethodPathVariableMap(target, propertyKey, paramIndex, defaultValues);
+                return;
+            }
+
+            if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+                RequestControllerUtils.setControllerMethodPathVariableMap(target.constructor, propertyKey, paramIndex, defaultValues);
+                return;
+            }
+
+            LOG.warn('.PathVariable: Unrecognized configuration: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+        };
+
+    }
+
 
     /**
      *
@@ -552,6 +717,30 @@ export function RequestHeader (
     //
     // }
 
+}
+
+export function PathVariable (
+    opts ?: RequestPathVariableListOptions
+) : RequestMethodParamDecorator;
+
+export function PathVariable (
+    headerName  : string,
+    opts       ?: RequestPathVariableOptions
+) : RequestMethodParamDecorator;
+
+export function PathVariable (
+    target       : any | Function,
+    propertyKey  : string,
+    paramIndex   : number
+) : void;
+
+export function PathVariable (
+    arg1 ?: string | RequestPathVariableListOptions | any | Function,
+    arg2 ?: string | RequestPathVariableOptions | boolean | undefined,
+    arg3 ?: number
+) : void | RequestMethodParamDecorator {
+    // @ts-ignore
+    return Request.PathVariable(arg1, arg2, arg3);
 }
 
 export function GetMapping (...config : RequestMappingArray) {

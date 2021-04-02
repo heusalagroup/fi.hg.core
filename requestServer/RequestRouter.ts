@@ -24,6 +24,9 @@ import RequestParamObjectType from "../request/types/RequestParamObjectType";
 import RequestHeaderParamObject from "../request/types/RequestHeaderParamObject";
 import Headers from "../request/Headers";
 import RequestHeaderMapParamObject, {DefaultHeaderMapValuesType} from "../request/types/RequestHeaderMapParamObject";
+import RouteUtils from "./RouteUtils";
+import BaseRoutes, {RouteParamValuesObject} from "./types/BaseRoutes";
+import RequestPathVariableParamObject from "../request/types/RequestPathVariableParamObject";
 
 const LOG = LogService.createLogger('RequestRouter');
 
@@ -31,19 +34,48 @@ export interface ParseRequestBodyCallback {
     () : Json | undefined | Promise<Json | undefined>;
 }
 
+export interface RequestContext {
+
+    readonly method        ?: RequestMethod;
+    readonly pathName      ?: string;
+    readonly queryParams   ?: URLSearchParams;
+    readonly routes        ?: Array<RequestRouterMappingPropertyObject> | undefined;
+    readonly bodyRequired  ?: boolean;
+    readonly pathVariables ?: RouteParamValuesObject;
+
+}
+
 export class RequestRouter {
 
     private readonly _controllers : Array<RequestController>;
+    private _routes               : BaseRoutes | undefined;
 
     public constructor () {
 
         this._controllers = [];
+        this._routes      = undefined;
 
     }
 
     public attachController (controller : RequestController) {
 
         this._controllers.push(controller);
+
+        this._routes = undefined;
+
+    }
+
+    private _initializeRoutes () {
+
+        LOG.debug('Initializing routes.');
+
+        const requestMappings : Array<RequestControllerMappingObject> = this._getRequestMappings();
+
+        if ( requestMappings.length ) {
+            this._routes = RouteUtils.createRoutes( RequestRouter._parseMappingObject(requestMappings) );
+        } else {
+            this._routes = RouteUtils.createRoutes( {} );
+        }
 
     }
 
@@ -56,61 +88,75 @@ export class RequestRouter {
 
         try {
 
-            const requestMappings : Array<RequestControllerMappingObject> = this._getRequestMappings();
+            const method : RequestMethod = parseRequestMethod(methodString);
 
-            if (requestMappings.length === 0) {
-                LOG.error('No request mappers defined to handle the request!');
-                return ResponseEntity.notFound();
+            const {
+                pathName,
+                queryParams
+            } : RequestContext = RequestRouter._parseRequestPath(urlString);
+
+            const requestPathName : string | undefined = pathName;
+            // LOG.debug('requestPathName: ', requestPathName);
+
+            const requestQueryParams : URLSearchParams | undefined = queryParams;
+            // LOG.debug('requestQueryParams: ', requestQueryParams);
+
+            if (requestQueryParams === undefined) {
+                LOG.error('handleRequest: requestQueryParams was not initialized');
+                return ResponseEntity.internalServerError().body({
+                    error: 'Internal Server Error'
+                });
             }
 
-            // LOG.debug('raw url: ', urlString);
-
-            const method       : RequestMethod = parseRequestMethod(methodString);
-            const urlForParser : string        = `http://localhost${urlString ?? ''}`;
-
-            const parsedUrl = new URL.URL(urlForParser);
-
-            // LOG.debug('parsedUrl: ', parsedUrl);
-
-            const requestPathName = parsedUrl.pathname;
-
-            // LOG.debug('Request: ', stringifyRequestMethod(method), requestPathName, requestMappings);
-
-            const allRoutes : RequestRouterMappingObject = RequestRouter._parseMappingArray(requestMappings);
-
-            // LOG.debug('allRoutes: ', allRoutes);
-
-            if (!has(allRoutes, requestPathName)) {
-                return ResponseEntity.notFound();
+            if (requestPathName === undefined) {
+                LOG.error('handleRequest: requestPathName was not initialized');
+                return ResponseEntity.internalServerError().body({
+                    error: 'Internal Server Error'
+                });
             }
 
-            const routes : Array<RequestRouterMappingPropertyObject> = filter(
-                allRoutes[requestPathName],
-                (item : RequestRouterMappingPropertyObject) : boolean => {
-                    return item.methods.indexOf(method) >= 0;
-                }
-            );
+            const {
+                routes,
+                bodyRequired,
+                pathVariables
+            } : RequestContext = this._getRequestRoutesContext(method, requestPathName);
+
+            if ( !parseRequestBody && bodyRequired ) {
+
+                LOG.error('handleRequest: parseRequestBody was not provided and body is required');
+
+                return ResponseEntity.internalServerError().body({
+                    error: 'Internal Server Error'
+                });
+
+            }
 
             // LOG.debug('routes: ', routes);
 
+            if (routes === undefined) {
+                return ResponseEntity.methodNotAllowed().body({
+                    error: 'Method Not Allowed'
+                });
+            }
+
             if (routes.length === 0) {
-                return ResponseEntity.methodNotAllowed();
+                return ResponseEntity.notFound().body({
+                    error: 'Not Found'
+                });
             }
 
             let responseEntity : ResponseEntity<any> | undefined = undefined;
 
-            const requestBodyRequired = parseRequestBody ? some(routes, item => item?.requestBodyRequired === true) : false;
-
             // LOG.debug('handleRequest: requestBodyRequired: ', requestBodyRequired);
 
-            const requestBody = parseRequestBody && requestBodyRequired ? await parseRequestBody() : undefined;
+            const requestBody = parseRequestBody && bodyRequired ? await parseRequestBody() : undefined;
 
             // LOG.debug('handleRequest: requestBody: ', requestBody);
 
             // Handle requests using controllers
             await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
-                const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams, requestHeaders);
+                const stepParams = RequestRouter._bindRequestActionParams(requestQueryParams, requestBody, route.propertyParams, requestHeaders, pathVariables);
 
                 // LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
@@ -227,6 +273,22 @@ export class RequestRouter {
 
         } catch (err) {
 
+            if (isRequestError(err)) {
+
+                const status = err?.status ?? 0;
+
+                if (status === 404) {
+                    return ResponseEntity.notFound().body(err.toJSON());
+                }
+
+                if (status >= 400 && status < 500) {
+                    return ResponseEntity.badRequest().status(status).body(err.toJSON());
+                }
+
+                return ResponseEntity.internalServerError().status(status).body(err.toJSON());
+
+            }
+
             LOG.error('Exception: ', err);
 
             return ResponseEntity.internalServerError<Json>().body({
@@ -235,6 +297,74 @@ export class RequestRouter {
             });
 
         }
+
+    }
+
+    private static _parseRequestPath (urlString : string | undefined) : RequestContext {
+
+        const urlForParser : string        = `http://localhost${urlString ?? ''}`;
+
+        const parsedUrl = new URL.URL(urlForParser);
+
+        // LOG.debug('parsedUrl: ', parsedUrl);
+
+        const pathName    = parsedUrl.pathname;
+        const queryParams = parsedUrl.searchParams;
+
+        return {
+            pathName,
+            queryParams
+        };
+
+    }
+
+    private _getRequestRoutesContext (
+        method          : RequestMethod,
+        requestPathName : string
+    ) : RequestContext {
+
+        if (!this._routes) {
+            this._initializeRoutes();
+        }
+
+        if ( !this._routes || !this._routes.hasRoute(requestPathName) ) {
+            return {
+                routes: [],
+                bodyRequired: false
+            };
+        }
+
+        // LOG.debug('_getRequestRoutesContext: requestPathName: ', requestPathName);
+        // LOG.debug('_getRequestRoutesContext: method: ', method);
+
+        let [routes, pathVariables] = this._routes.getRoute(requestPathName);
+
+        routes = filter(
+            routes,
+            (item : RequestRouterMappingPropertyObject) : boolean => {
+                return item.methods.indexOf(method) >= 0;
+            }
+        );
+
+        // LOG.debug('_getRequestRoutesContext: routes: ', routes);
+
+        if (!routes.length) {
+
+            // There were matching routes, but not for this method; Method not allowed.
+            return {
+                routes: undefined,
+                bodyRequired: false
+            };
+
+        }
+
+        const requestBodyRequired = some(routes, item => item?.requestBodyRequired === true);
+
+        return {
+            routes,
+            pathVariables,
+            bodyRequired: requestBodyRequired
+        };
 
     }
 
@@ -260,7 +390,7 @@ export class RequestRouter {
 
     }
 
-    private static _parseMappingArray (
+    private static _parseMappingObject (
         requestMappings : Array<RequestControllerMappingObject>
     ) : RequestRouterMappingObject {
 
@@ -304,14 +434,15 @@ export class RequestRouter {
                             forEach(propertyValue.mappings, (propertyMappingItem : RequestMappingObject) => {
 
                                 // Filters away any property routes which do not have common methods
-                                const propertyMethods : Array<RequestMethod> = propertyMappingItem.methods;
+                                const propertyMethods : RequestMethod[] = propertyMappingItem.methods;
+
                                 if (!RequestRouter._matchMethods(rootMethods, propertyMethods)) {
                                     return;
                                 }
 
-                                const propertyMethodsCommonWithRoot = RequestRouter._parseCommonMethods(rootMethods, propertyMethods);
+                                const propertyMethodsCommonWithRoot : RequestMethod[] = RequestRouter._parseCommonMethods(rootMethods, propertyMethods);
 
-                                const propertyPaths : Array<string> = propertyMappingItem.paths;
+                                const propertyPaths : string[] = propertyMappingItem.paths;
 
                                 forEach(propertyPaths, (propertyPath : string) => {
 
@@ -344,13 +475,13 @@ export class RequestRouter {
 
                 forEach(controllerPropertyNames, (propertyKey: string) => {
 
-                    const propertyValue  : RequestControllerMethodObject       = controllerProperties[propertyKey];
+                    const propertyValue  : RequestControllerMethodObject  = controllerProperties[propertyKey];
                     const propertyParams : Array<RequestParamObject|null> = propertyValue.params;
 
                     forEach(propertyValue.mappings, (propertyMappingItem : RequestMappingObject) => {
 
-                        const propertyMethods : Array<RequestMethod> = propertyMappingItem.methods;
-                        const propertyPaths   : Array<string>        = propertyMappingItem.paths;
+                        const propertyMethods : RequestMethod[] = propertyMappingItem.methods;
+                        const propertyPaths   : string[]        = propertyMappingItem.paths;
 
                         forEach(propertyPaths, (propertyPath : string) => {
 
@@ -380,8 +511,8 @@ export class RequestRouter {
     }
 
     private static _matchMethods (
-        rootMethods : Array<RequestMethod>,
-        propertyMethods : Array<RequestMethod>
+        rootMethods     : RequestMethod[],
+        propertyMethods : RequestMethod[]
     ) : boolean {
 
         if (rootMethods.length === 0) return true;
@@ -397,18 +528,18 @@ export class RequestRouter {
     }
 
     private static _parseCommonMethods (
-        rootMethods : Array<RequestMethod>,
-        propertyMethods : Array<RequestMethod>
-    ) : Array<RequestMethod> {
+        rootMethods     : RequestMethod[],
+        propertyMethods : RequestMethod[]
+    ) : RequestMethod[] {
         return (
             rootMethods.length !== 0
                 ? filter(
-                propertyMethods,
-                (propertyMethod: RequestMethod) : boolean => {
-                    return some(rootMethods, (rootMethod : RequestMethod) : boolean => {
-                        return rootMethod === propertyMethod;
-                    });
-                }
+                    propertyMethods,
+                    (propertyMethod: RequestMethod) : boolean => {
+                        return some(rootMethods, (rootMethod : RequestMethod) : boolean => {
+                            return rootMethod === propertyMethod;
+                        });
+                    }
                 )
                 : propertyMethods
         );
@@ -431,10 +562,11 @@ export class RequestRouter {
     }
 
     private static _bindRequestActionParams (
-        searchParams   : URLSearchParams,
-        requestBody    : Json | undefined,
-        params         : Array<RequestParamObject|null>,
-        requestHeaders : Headers
+        searchParams      : URLSearchParams,
+        requestBody       : Json | undefined,
+        params            : Array<RequestParamObject|null>,
+        requestHeaders    : Headers,
+        pathVariables     : RouteParamValuesObject | undefined
     ) : Array<any> {
 
         return map(params, (item : RequestParamObject|null) : any => {
@@ -515,6 +647,29 @@ export class RequestRouter {
                             return requestHeaders.clone();
                         }
 
+                    }
+
+                }
+
+                case RequestParamObjectType.PATH_VARIABLE: {
+
+                    const pathParamItem : RequestPathVariableParamObject = item as RequestPathVariableParamObject;
+
+                    const variableName = pathParamItem.variableName;
+
+                    const variableValue = pathVariables && has(pathVariables, variableName) ? pathVariables[variableName] : undefined;
+
+                    if ( variableValue !== undefined && variableValue !== '' ) {
+
+                        return variableValue;
+
+                    } else {
+
+                        if (pathParamItem.isRequired) {
+                            throw new RequestError(404, `Not Found`);
+                        }
+
+                        return pathParamItem.defaultValue ?? undefined;
                     }
 
                 }

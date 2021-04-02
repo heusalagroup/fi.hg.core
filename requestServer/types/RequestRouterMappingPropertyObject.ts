@@ -5,11 +5,11 @@ import {RequestParamObject} from "../../request/types/RequestParamObject";
 
 export interface RequestRouterMappingPropertyObject {
 
-    requestBodyRequired  : boolean;
-    methods              : Array<RequestMethod>;
-    controller           : any;
-    propertyName         : string;
-    propertyParams       : Array<RequestParamObject | null>;
+    readonly requestBodyRequired  : boolean;
+    readonly methods              : Array<RequestMethod>;
+    readonly controller           : any;
+    readonly propertyName         : string;
+    readonly propertyParams       : Array<RequestParamObject | null>;
 
 }
 
