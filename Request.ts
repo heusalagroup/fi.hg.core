@@ -5,7 +5,7 @@ import LogService from "./LogService";
 import {isRequestController} from "./request/types/RequestController";
 import RequestControllerUtils from "./request/RequestControllerUtils";
 import RequestMappingArray from "./request/types/RequestMappingArray";
-import RequestParamValueType from "./request/types/RequestParamValueType";
+import RequestParamValueType, {isRequestParamValueType} from "./request/types/RequestParamValueType";
 import {isBoolean, isFunction, isNumber, isObject, isString} from "./modules/lodash";
 import RequestStatus from "./request/types/RequestStatus";
 import RequestType from "./request/types/RequestType";
@@ -135,32 +135,74 @@ export class Request {
     }
 
     public static Param (
-        queryParam : string,
-        paramType  : RequestParamValueType = Request.ParamType.STRING
-    ) {
+        queryParam  : string,
+        paramType  ?: RequestParamValueType
+    ) : RequestMethodParamDecorator;
 
-        return (
-            target       : any | Function,
-            propertyKey ?: string,
-            paramIndex  ?: number
-        ) => {
+    public static Param (
+        target       : any | Function,
+        propertyKey ?: string,
+        paramIndex  ?: number
+    ) : void;
 
-            if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
-                RequestControllerUtils.setControllerMethodQueryParam(target, propertyKey, paramIndex, queryParam, paramType);
-                return;
-            }
+    public static Param (
+        arg1  : any | Function | string,
+        arg2 ?: string | RequestParamValueType,
+        arg3 ?: number
+    ) : RequestMethodParamDecorator | void {
 
-            if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
-                RequestControllerUtils.setControllerMethodQueryParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
-                return;
-            }
+        if ( isString(arg1) && arg3 === undefined && ( arg2 === undefined || isRequestParamValueType(arg2) ) ) {
 
-            LOG.warn('.Param: Unrecognized configuration: ',
-                "; target=", target,
-                "; propertyKey=", propertyKey,
-                "; paramIndex=", paramIndex);
+            const queryParam = arg1;
+            const paramType  : RequestParamValueType = arg2 ?? RequestParamValueType.STRING;
+
+            return (
+                target       : any | Function,
+                propertyKey ?: string,
+                paramIndex  ?: number
+            ) => {
+
+                if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+                    RequestControllerUtils.setControllerMethodQueryParam(target, propertyKey, paramIndex, queryParam, paramType);
+                    return;
+                }
+
+                if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+                    RequestControllerUtils.setControllerMethodQueryParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
+                    return;
+                }
+
+                LOG.warn('.Param: Unrecognized configuration: ',
+                    "; target=", target,
+                    "; propertyKey=", propertyKey,
+                    "; paramIndex=", paramIndex);
+
+            };
 
         }
+
+        const target      = arg1;
+        const propertyKey = arg2;
+        const paramIndex  = arg3;
+        const paramType   = RequestParamValueType.STRING;
+
+        // FIXME: We cannot get the name of the parameter yet, so this will break later!
+        const queryParam = `${paramIndex}`;
+
+        if ( isFunction(target) && isRequestController(target) && isString(propertyKey) && isNumber(paramIndex) ) {
+            RequestControllerUtils.setControllerMethodQueryParam(target, propertyKey, paramIndex, queryParam, paramType);
+            return;
+        }
+
+        if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) && isString(propertyKey) && isNumber(paramIndex) ) {
+            RequestControllerUtils.setControllerMethodQueryParam(target.constructor, propertyKey, paramIndex, queryParam, paramType);
+            return;
+        }
+
+        LOG.warn('.Param: Unrecognized configuration: ',
+            "; target=", target,
+            "; propertyKey=", propertyKey,
+            "; paramIndex=", paramIndex);
 
     }
 
@@ -441,10 +483,23 @@ export function RequestMapping (...config : RequestMappingArray) {
 }
 
 export function RequestParam (
-    queryParam : string,
-    paramType  : RequestParamValueType = Request.ParamType.STRING
-) {
-    return Request.Param(queryParam, paramType);
+    queryParam  : string,
+    paramType  ?: RequestParamValueType
+) : RequestMethodParamDecorator;
+
+export function RequestParam (
+    target       : any | Function,
+    propertyKey ?: string,
+    paramIndex  ?: number
+) : void;
+
+export function RequestParam (
+    arg1  : any | Function | string,
+    arg2 ?: string | RequestParamValueType,
+    arg3 ?: number
+) : RequestMethodParamDecorator | void {
+    // @ts-ignore
+    return Request.Param(arg1, arg2, arg3);
 }
 
 // RequestHeader overloads & implementation

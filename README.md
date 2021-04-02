@@ -163,7 +163,15 @@ FooService.refreshData();
 HTTP request mapping annotations for TypeScript in the same style as in Java's Spring @RequestMapping.
 
 ```typescript
-import Request, {GetMapping, PostMapping, RequestBody, ResponseEntity} from "./src/nor/ts/Request";
+import Request, {
+    GetMapping, 
+    PostMapping, 
+    RequestBody, 
+    ResponseEntity, 
+    RequestHeader, 
+    RequestParam,
+    Headers
+} from "./src/nor/ts/Request";
 
 export interface ListDTO<T> {
     pageNumber: number;
@@ -171,8 +179,8 @@ export interface ListDTO<T> {
     content: Array<T>;
 }
 
-@Request.Mapping("/foo/users")
-@Request.Mapping("/users")
+@RequestMapping("/foo/users")
+@RequestMapping("/users")
 export class UserController {
     private readonly _userService: UserService;
 
@@ -182,10 +190,12 @@ export class UserController {
 
     @GetMapping("/", "/list")
     public async getUserList(
-        @Request.param("p", Request.ParamType.INTEGER)
+        @RequestParam("p", Request.ParamType.INTEGER)
         pageNumber: number = 0,
-        @Request.param("l", Request.ParamType.INTEGER)
-        pageSize: number = 10
+        @RequestParam("l", Request.ParamType.INTEGER)
+        pageSize: number = 10,
+        @RequestHeader('accept', {defaultValue: '*/*'})
+        accept: string
     ): Promise<ResponseEntity<ListDTO<UserModel>>> {
         
         // const parsedPageNumber = pageNumber ? parseInt(pageNumber, 10) : 0;
@@ -200,11 +210,20 @@ export class UserController {
     }
 
     @PostMapping("/addUser")
-    public async addUser (@RequestBody user : Json) : Promise<ResponseEntity<Json>> {
+    public async addUser (
+        @RequestBody   user    : Json,
+        @RequestHeader headers : Headers
+    ) : Promise<ResponseEntity<Json>> {
+        
+        const host = headers.getHost();
+        
         await this._userService.addUser(user);
+        
         return ResponseEntity.ok({
-            user: user
+            user: user,
+            host: host
         });
+        
     }
     
 }
@@ -213,6 +232,8 @@ export class UserController {
 You can also use:
 
  * `@Request.Mapping` instead of `@RequestMapping`,
+ * `@Request.Param` instead of `@RequestParam`,
+ * `@Request.Header` instead of `@RequestHeader`,
  * `@Request.Body` instead of `@RequestBody`,
  * `@Request.Get(...)` instead of `GetMapping(...)` or `Request.Mapping(Request.Method.GET, ...)`
  * `@Request.Put(...)` instead of `PutMapping(...)` or `Request.Mapping(Request.Method.PUT, ...)`
