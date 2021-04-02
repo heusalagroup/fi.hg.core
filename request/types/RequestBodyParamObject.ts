@@ -1,18 +1,21 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestParamType, {isRequestParamType} from "./RequestParamType";
-import InterfaceUtils from "../RequestInterfaceUtils";
+import RequestParamValueType, {isRequestParamValueType} from "./RequestParamValueType";
+import RequestParamObjectType from "./RequestParamObjectType";
 
 export interface RequestBodyParamObject {
 
-    type: RequestParamType.BODY;
+    objectType : RequestParamObjectType.REQUEST_BODY;
+    valueType  : RequestParamValueType;
 
 }
 
-export function isRequestBodyParamObject(value: any): value is RequestBodyParamObject {
+export function isRequestBodyParamObject (value: any): value is RequestBodyParamObject {
     return (
-        InterfaceUtils.isObject(value)
-        && InterfaceUtils.hasPropertyType(value) && isRequestParamType(value.type)
-        && value.type === RequestParamType.BODY
+        !!value
+        && value?.objectType === RequestParamObjectType.REQUEST_BODY
+        && isRequestParamValueType(value?.valueType)
     );
 }
+
+export default RequestBodyParamObject;

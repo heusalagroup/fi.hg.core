@@ -159,17 +159,17 @@ export class ResponseEntity<T> {
 
     }
 
-    public static accepted<T> () { return new ResponseEntity<T>(RequestStatus.Accepted); }
-    public static badRequest<T> () { return new ResponseEntity<T>(RequestStatus.BadRequest); }
-    public static created<T> (location: string) { return new ResponseEntity<T>(new Headers({"Location": location}), RequestStatus.Created); }
-    public static noContent<T> () { return new ResponseEntity<T>(RequestStatus.NoContent); }
-    public static notFound<T> () { return new ResponseEntity<T>(RequestStatus.NotFound); }
-    public static notImplemented<T> () { return new ResponseEntity<T>(RequestStatus.NotImplemented); }
-    public static internalServerError<T> () { return new ResponseEntity<T>(RequestStatus.InternalServerError); }
-    public static methodNotAllowed<T> () { return new ResponseEntity<T>(RequestStatus.MethodNotAllowed); }
-    public static unprocessableEntity<T> () { return new ResponseEntity<T>(RequestStatus.UnprocessableEntity); }
+    public static accepted<T>                   () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.Accepted); }
+    public static badRequest<T>                 () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.BadRequest); }
+    public static created<T>    (location: string) : ResponseEntity<T> { return new ResponseEntity<T>(new Headers({"Location": location}), RequestStatus.Created); }
+    public static noContent<T>                  () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.NoContent); }
+    public static notFound<T>                   () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.NotFound); }
+    public static notImplemented<T>             () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.NotImplemented); }
+    public static internalServerError<T>        () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.InternalServerError); }
+    public static methodNotAllowed<T>           () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.MethodNotAllowed); }
+    public static unprocessableEntity<T>        () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.UnprocessableEntity); }
 
-    public static ok<T> (body?: T) { return body ? new ResponseEntity<T>(body, RequestStatus.OK) : new ResponseEntity<T>(RequestStatus.OK); }
+    public static ok<T> (body?: T) : ResponseEntity<T> { return body ? new ResponseEntity<T>(body, RequestStatus.OK) : new ResponseEntity<T>(RequestStatus.OK); }
 
 }
 

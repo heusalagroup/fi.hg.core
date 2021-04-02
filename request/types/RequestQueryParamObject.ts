@@ -1,21 +1,25 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestParamType, {isRequestParamType} from "./RequestParamType";
+import RequestParamValueType, {isRequestParamValueType} from "./RequestParamValueType";
 import InterfaceUtils from "../RequestInterfaceUtils";
 import {isString} from "../../modules/lodash";
+import RequestParamObjectType from "./RequestParamObjectType";
 
 export interface RequestQueryParamObject {
 
-    type: RequestParamType;
-    queryParam: string;
+    objectType : RequestParamObjectType.QUERY_PARAM;
+    valueType  : RequestParamValueType;
+    queryParam : string;
 
 }
 
 export function isRequestQueryParamObject(value: any): value is RequestQueryParamObject {
     return (
-        InterfaceUtils.isObject(value)
-        && InterfaceUtils.hasPropertyQueryParam(value) && isString(value.queryParam)
-        && InterfaceUtils.hasPropertyType(value) && isRequestParamType(value.type)
-        && value.type !== RequestParamType.BODY
+        !!value
+        && value?.objectType === RequestParamObjectType.QUERY_PARAM
+        && isString(value?.queryParam)
+        && isRequestParamValueType(value?.valueType)
     );
 }
+
+export default RequestQueryParamObject;

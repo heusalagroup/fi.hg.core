@@ -1,7 +1,11 @@
 import {every, isArray, isObject, isString, keys} from "../../modules/lodash";
 
 export interface HeadersObject {
-    readonly [key: string]: string | string[] | undefined;
+    readonly [key: string]: string | readonly string[] | undefined;
+}
+
+export interface ChangeableHeadersObject {
+    [key: string]: string | readonly string[] | undefined;
 }
 
 export function isHeadersObject (value : any) : value is HeadersObject {

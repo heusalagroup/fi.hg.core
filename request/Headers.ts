@@ -1,34 +1,57 @@
-import HeadersObject from "./types/HeadersObject";
+import HeadersObject, {ChangeableHeadersObject} from "./types/HeadersObject";
 import {concat, forEach, has, isArray, isString, keys, map, trim} from "../modules/lodash";
 import LogService from "../LogService";
+import {isReadonlyJsonArray} from "../Json";
 
 const LOG = LogService.createLogger('Headers');
 
 export class Headers {
 
-    private _value : HeadersObject | undefined;
+    private _value              : HeadersObject | undefined;
+    private _uninitializedValue : HeadersObject | undefined;
 
     constructor (value ?: HeadersObject) {
 
-        this._value = undefined;
+        this._value              = undefined;
+        this._uninitializedValue = value;
 
-        if (value) {
-            this.addAll(value);
+    }
+
+    private _initializeValue () {
+
+        const value = this._value;
+        const uninitializedValue = this._uninitializedValue;
+        try {
+
+            if (uninitializedValue) {
+                this._uninitializedValue = undefined;
+                this.addAll(uninitializedValue);
+            }
+
+        } catch(err) {
+            this._value = value;
+            this._uninitializedValue = uninitializedValue;
+            throw err;
         }
 
     }
 
     public clear () {
         this._value = {};
+        this._uninitializedValue = undefined;
     }
 
     public add (headerName: string, headerValue : string) {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         LOG.debug('add header: ', headerName, headerValue);
 
         headerName = headerName.toLowerCase();
 
-        const originalHeader : string | string[] | undefined = this._value && has(this._value, headerName) ? this._value[headerName] : undefined;
+        const originalHeader : string | readonly string[] | undefined = this._value && has(this._value, headerName) ? this._value[headerName] : undefined;
 
         if (this._value === undefined) {
 
@@ -38,7 +61,7 @@ export class Headers {
 
         } else if (originalHeader !== undefined) {
 
-            if (isArray(originalHeader)) {
+            if (isReadonlyJsonArray(originalHeader)) {
 
                 this._value = {
                     ...this._value,
@@ -66,11 +89,22 @@ export class Headers {
     }
 
     public containsKey (headerName : string) : boolean {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
         headerName = headerName.toLowerCase();
+
         return has(this._value, headerName);
+
     }
 
     public isEmpty () : boolean {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         const headersObject : HeadersObject | undefined = this._value;
 
@@ -79,6 +113,10 @@ export class Headers {
     }
 
     public keySet () : Set<string> {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         const set : Set<string> = new Set();
 
@@ -90,28 +128,54 @@ export class Headers {
 
     }
 
-    public getValue (headerName: string) : string | string[] | undefined {
+    public getValue (headerName: string) : string | readonly string[] | undefined {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
         if (!this._value) return undefined;
+
         headerName = headerName.toLowerCase();
+
         return has(this._value, headerName) ? this._value[headerName] : undefined;
+
     }
 
     public getFirst (headerName: string) : string | undefined {
-        const value : string | string[] | undefined = this.getValue(headerName);
-        if (isArray(value)) {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
+        const value : string | readonly string[] | undefined = this.getValue(headerName);
+
+        if (isReadonlyJsonArray(value)) {
             return value.length ? value[0] : undefined;
         }
+
         return value;
+
     }
 
     public getHost () : string | undefined {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
         return this.getFirst('host');
+
     }
 
-    public addAll (key : string, values : string[]) : void;
+    public addAll (key : string, values : readonly string[]) : void;
     public addAll (values : HeadersObject) : void;
 
-    public addAll (arg1 : HeadersObject | string, arg2 ?: string[]) {
+    public addAll (arg1 : HeadersObject | string, arg2 ?: readonly string[]) {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         if (isString(arg1)) {
 
@@ -129,9 +193,9 @@ export class Headers {
 
             forEach(keys(values), (headerKey : string) => {
 
-                const headerValue : string | string[] | undefined = values[headerKey];
+                const headerValue : string | readonly string[] | undefined = values[headerKey];
 
-                if (isArray(headerValue)) {
+                if (isReadonlyJsonArray(headerValue)) {
 
                     forEach(headerValue, (item : string) => {
                         this.add(headerKey, item);
@@ -149,13 +213,17 @@ export class Headers {
 
     }
 
-    public remove (headerName : string) : string | string[] | undefined {
+    public remove (headerName : string) : string | readonly string[] | undefined {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         headerName = headerName.toLowerCase();
 
         const originalValue = this.getValue(headerName);
 
-        const newValues = {...this._value};
+        const newValues : ChangeableHeadersObject = {...this._value};
 
         if (newValues && has(newValues, headerName)) {
             delete newValues[headerName];
@@ -168,6 +236,10 @@ export class Headers {
     }
 
     public set (headerName : string, headerValue : string | undefined) {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         headerName = headerName.toLowerCase();
 
@@ -186,6 +258,10 @@ export class Headers {
 
     public setAll (values : { [key: string]: string }) {
 
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
         forEach(keys(values), (headerKey : string) => {
             this.set(headerKey, values[headerKey]);
         });
@@ -193,10 +269,20 @@ export class Headers {
     }
 
     public valueOf () : HeadersObject | undefined {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
         return this._value ?? undefined;
+
     }
 
     public toString () : string {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
 
         const headersObject = this._value;
 
@@ -206,7 +292,7 @@ export class Headers {
 
         const items : Array<string> = map(headerKeys, (headerKey : string) => {
 
-            const headerValue : string | string[] | undefined = headersObject[headerKey];
+            const headerValue : string | readonly string[] | undefined = headersObject[headerKey];
 
             if (!headerValue) return `${headerKey}`;
 
@@ -229,6 +315,18 @@ export class Headers {
         });
 
         return `Headers(${items.join('; ')})`;
+
+    }
+
+    public clone () : Headers {
+
+        if (this._uninitializedValue) {
+            this._initializeValue();
+        }
+
+        return new Headers( this._value ? {
+            ...this._value
+        } : undefined );
 
     }
 

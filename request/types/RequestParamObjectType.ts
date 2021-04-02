@@ -1,0 +1,61 @@
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
+import {isNumber, isString} from "../../modules/lodash";
+
+export enum RequestParamObjectType {
+
+    REQUEST_BODY,
+    QUERY_PARAM,
+    REQUEST_HEADER,
+    REQUEST_HEADER_MAP
+
+}
+
+export function isRequestParamObjectType (value : any) : value is RequestParamObjectType {
+
+    if (!isNumber(value)) return false;
+
+    switch(value) {
+        case RequestParamObjectType.REQUEST_BODY:
+        case RequestParamObjectType.QUERY_PARAM:
+        case RequestParamObjectType.REQUEST_HEADER:
+        case RequestParamObjectType.REQUEST_HEADER_MAP:
+            return true;
+    }
+
+    return false;
+
+}
+
+export function parseRequestParamObjectType (value: any) : RequestParamObjectType {
+
+    if (isRequestParamObjectType(value)) return value;
+
+    if (isString(value)) {
+        const lowerCaseValue = value.toLowerCase();
+        switch (lowerCaseValue) {
+            case 'body'        : return RequestParamObjectType.REQUEST_BODY;
+            case 'query_param' : return RequestParamObjectType.QUERY_PARAM;
+            case 'header'      : return RequestParamObjectType.REQUEST_HEADER;
+            case 'header_map'  : return RequestParamObjectType.REQUEST_HEADER_MAP;
+        }
+    }
+
+    throw new TypeError(`Value was not parsable to RequestParamObjectType: "${value}"`);
+
+}
+
+export function stringifyRequestParamObjectType (value : RequestParamObjectType) : string {
+
+    switch (value) {
+        case RequestParamObjectType.REQUEST_BODY        : return 'body';
+        case RequestParamObjectType.QUERY_PARAM : return 'query_param';
+        case RequestParamObjectType.REQUEST_HEADER      : return 'header';
+        case RequestParamObjectType.REQUEST_HEADER_MAP  : return 'header_map';
+    }
+
+    throw new TypeError(`Unsupported value: "${value}"`);
+
+}
+
+export default RequestParamObjectType;

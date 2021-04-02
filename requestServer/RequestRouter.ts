@@ -5,21 +5,25 @@ import RequestController, {
     getInternalRequestMappingObject,
     hasInternalRequestMappingObject
 } from "../request/types/RequestController";
-import RequestMethod, {parseRequestMethod, stringifyRequestMethod} from "../request/types/RequestMethod";
+import RequestMethod, {parseRequestMethod} from "../request/types/RequestMethod";
 import {filter, forEach, has, isNull, keys, map, some, trim, reduce, concat} from "../modules/lodash";
 import RequestControllerMappingObject from "../request/types/RequestControllerMappingObject";
 import RequestMappingObject from "../request/types/RequestMappingObject";
 import {isRequestStatus} from "../request/types/RequestStatus";
-import RequestParamType from "../request/types/RequestParamType";
+import RequestParamValueType from "../request/types/RequestParamValueType";
 import LogService from "../LogService";
 import {RequestRouterMappingPropertyObject} from "./types/RequestRouterMappingPropertyObject";
 import {RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
 import {RequestParamObject} from "../request/types/RequestParamObject";
 import {RequestControllerMethodObject} from "../request/types/RequestControllerMethodObject";
-import {isRequestQueryParamObject} from "../request/types/RequestQueryParamObject";
+import RequestQueryParamObject, {isRequestQueryParamObject} from "../request/types/RequestQueryParamObject";
 import Json, {isReadonlyJsonAny, isReadonlyJsonArray, isReadonlyJsonObject, ReadonlyJsonObject} from "../Json";
 import ResponseEntity, {isResponseEntity} from "../request/ResponseEntity";
-import {isRequestError} from "../request/types/RequestError";
+import RequestError, {isRequestError} from "../request/types/RequestError";
+import RequestParamObjectType from "../request/types/RequestParamObjectType";
+import RequestHeaderParamObject from "../request/types/RequestHeaderParamObject";
+import Headers from "../request/Headers";
+import RequestHeaderMapParamObject, {DefaultHeaderMapValuesType} from "../request/types/RequestHeaderMapParamObject";
 
 const LOG = LogService.createLogger('RequestRouter');
 
@@ -46,7 +50,8 @@ export class RequestRouter {
     public async handleRequest (
         methodString      : RequestMethod,
         urlString         : string                   | undefined = undefined,
-        parseRequestBody  : ParseRequestBodyCallback | undefined = undefined
+        parseRequestBody  : ParseRequestBodyCallback | undefined = undefined,
+        requestHeaders    : Headers
     ) : Promise<ResponseEntity<any>> {
 
         const requestMappings : Array<RequestControllerMappingObject> = this._getRequestMappings();
@@ -103,7 +108,7 @@ export class RequestRouter {
         // Handle requests using controllers
         await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
-            const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams);
+            const stepParams = RequestRouter._bindRequestActionParams(parsedUrl.searchParams, requestBody, route.propertyParams, requestHeaders);
 
             // LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
@@ -413,9 +418,10 @@ export class RequestRouter {
     }
 
     private static _bindRequestActionParams (
-        searchParams : URLSearchParams,
-        requestBody  : Json | undefined,
-        params       : Array<RequestParamObject|null>
+        searchParams   : URLSearchParams,
+        requestBody    : Json | undefined,
+        params         : Array<RequestParamObject|null>,
+        requestHeaders : Headers
     ) : Array<any> {
 
         return map(params, (item : RequestParamObject|null) : any => {
@@ -424,21 +430,87 @@ export class RequestRouter {
                 return undefined;
             }
 
-            if ( item.type === RequestParamType.BODY ) {
-                return requestBody;
+            const objectType : RequestParamObjectType | undefined = item?.objectType;
+
+            switch (objectType) {
+
+                case RequestParamObjectType.REQUEST_BODY:
+                    return requestBody;
+
+                case RequestParamObjectType.QUERY_PARAM: {
+
+                    const queryParamItem : RequestQueryParamObject = item as RequestQueryParamObject;
+
+                    const key = queryParamItem.queryParam;
+
+                    if (!searchParams.has(key)) return undefined;
+
+                    const value : string | null = searchParams.get(key);
+
+                    if (isNull(value)) return undefined;
+
+                    return RequestRouter._castParam(value, queryParamItem.valueType);
+
+                }
+
+                case RequestParamObjectType.REQUEST_HEADER: {
+
+                    const headerItem : RequestHeaderParamObject = item as RequestHeaderParamObject;
+
+                    const headerName = headerItem.headerName;
+
+                    if (!requestHeaders.containsKey(headerName)) {
+
+                        if (headerItem.isRequired) {
+                            throw new RequestError(400, `Bad Request: Header missing: ${headerName}`);
+                        }
+
+                        return headerItem?.defaultValue ?? undefined;
+
+                    }
+
+                    const headerValue : string | undefined = requestHeaders.getFirst(headerName);
+
+                    if ( headerValue === undefined ) return undefined;
+
+                    return RequestRouter._castParam(headerValue, headerItem.valueType);
+
+                }
+
+                case RequestParamObjectType.REQUEST_HEADER_MAP: {
+
+                    const headerItem : RequestHeaderMapParamObject = item as RequestHeaderMapParamObject;
+
+                    const defaultHeaders : DefaultHeaderMapValuesType | undefined = headerItem?.defaultValues;
+
+                    if (requestHeaders.isEmpty()) {
+
+                        if (defaultHeaders) {
+                            return new Headers(defaultHeaders);
+                        } else {
+                            return new Headers();
+                        }
+
+                    } else {
+
+                        if (defaultHeaders) {
+                            return new Headers( {
+                                ...defaultHeaders,
+                                ...requestHeaders.valueOf()
+                            } );
+                        } else {
+                            return requestHeaders.clone();
+                        }
+
+                    }
+
+                }
+
             }
 
             // FIXME: Handle types
             if (isRequestQueryParamObject(item)) {
 
-                const key = item.queryParam;
-                if (!searchParams.has(key)) return undefined;
-
-                const value : string | null = searchParams.get(key);
-
-                if (isNull(value)) return undefined;
-
-                return RequestRouter._castParam(value, item.type);
 
             }
 
@@ -450,18 +522,21 @@ export class RequestRouter {
 
     private static _castParam (
         value : string,
-        type  : RequestParamType
+        type  : RequestParamValueType
     ) : any {
 
         switch (type) {
 
-            case RequestParamType.STRING:
+            case RequestParamValueType.JSON:
+                return JSON.parse(value);
+
+            case RequestParamValueType.STRING:
                 return value;
 
-            case RequestParamType.INTEGER:
+            case RequestParamValueType.INTEGER:
                 return parseInt(value, 10);
 
-            case RequestParamType.NUMBER:
+            case RequestParamValueType.NUMBER:
                 return parseFloat(value);
 
         }

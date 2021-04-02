@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import HttpServerService from "./requestServer/HttpServerService";
-import {IncomingMessage, ServerResponse} from "http";
+import {IncomingHttpHeaders, IncomingMessage, ServerResponse} from "http";
 import RequestRouter from "./requestServer/RequestRouter";
 import RequestStatus, {isRequestStatus, stringifyRequestStatus} from "./request/types/RequestStatus";
 import RequestError, {createRequestError, isRequestError} from "./request/types/RequestError";
@@ -14,7 +14,7 @@ import {isRequestController} from "./request/types/RequestController";
 import Json from "./Json";
 import NodeHttpUtils from "./requestClient/NodeHttpUtils";
 import ResponseEntity from "./request/ResponseEntity";
-import {forEach, isString, keys} from "./modules/lodash";
+import {isString} from "./modules/lodash";
 import Headers from "./request/Headers";
 
 const LOG = LogService.createLogger('RequestServer');
@@ -81,7 +81,8 @@ export class RequestServer {
             const responseData : ResponseEntity<any> = await this._router.handleRequest(
                 parseRequestMethod(req.method),
                 req.url,
-                async () : Promise<Json | undefined> => NodeHttpUtils.getRequestDataAsJson(req)
+                async () : Promise<Json | undefined> => NodeHttpUtils.getRequestDataAsJson(req),
+                this._parseRequestHeaders(req.headers)
             );
 
             this._handleResponse(responseData, res);
@@ -167,6 +168,15 @@ export class RequestServer {
 
     }
 
+    /**
+     *
+     * @param value
+     * @private
+     */
+    private _parseRequestHeaders (value : IncomingHttpHeaders) : Headers {
+        return new Headers(value);
+    }
+
     static createServerService(
         config: string
     ): ServerService<IncomingMessage, ServerResponse> {
@@ -186,7 +196,6 @@ export class RequestServer {
         }
 
     }
-
 
 }
 
