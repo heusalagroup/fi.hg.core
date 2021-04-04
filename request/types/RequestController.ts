@@ -5,7 +5,7 @@ import RequestControllerMappingObject, {
     explainRequestControllerMappingObject,
     isRequestControllerMappingObject
 } from "./RequestControllerMappingObject";
-import {has} from "../../modules/lodash";
+import {has, isFunction, isObject} from "../../modules/lodash";
 import LogService from "../../LogService";
 
 const LOG = LogService.createLogger('RequestController');

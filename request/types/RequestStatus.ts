@@ -55,7 +55,7 @@ export enum RequestStatus {
     UnavailableForLegalReasons    = 451,
 
     /**
-     * @deprecated Use InternalServerError
+     * @deprecated Use RequestStatus.InternalServerError
      */
     InternalError                 = 500,
 

@@ -1,23 +1,25 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import RequestController, {
-    getInternalRequestMappingObject,
+    getInternalRequestMappingObject, isRequestController,
     setInternalRequestMappingObject
 } from "./types/RequestController";
 import RequestMappingObject from "./types/RequestMappingObject";
 import RequestMappingArray from "./types/RequestMappingArray";
 import {isRequestMethod} from "./types/RequestMethod";
-import {concat, filter, has, isString} from "../modules/lodash";
+import {concat, filter, has, isFunction, isObject, isString} from "../modules/lodash";
 import RequestControllerMappingObject from "./types/RequestControllerMappingObject";
 import RequestParamValueType from "./types/RequestParamValueType";
-import {RequestParamObject} from "./types/RequestParamObject";
+import RequestParamObject from "./types/RequestParamObject";
 import RequestBodyParamObject from "./types/RequestBodyParamObject";
 import RequestHeaderParamObject from "./types/RequestHeaderParamObject";
 import RequestQueryParamObject from "./types/RequestQueryParamObject";
-import RequestHeaderMapParamObject, {DefaultHeaderMapValuesType} from "./types/RequestHeaderMapParamObject";
+import RequestHeaderMapParamObject from "./types/RequestHeaderMapParamObject";
 import RequestParamObjectType from "./types/RequestParamObjectType";
 import RequestPathVariableParamObject from "./types/RequestPathVariableParamObject";
-import RequestPathVariableMapParamObject, {DefaultPathVariableMapValuesType} from "./types/RequestPathVariableMapParamObject";
+import RequestPathVariableMapParamObject from "./types/RequestPathVariableMapParamObject";
+import DefaultHeaderMapValuesType from "./types/DefaultHeaderMapValuesType";
+import DefaultPathVariableMapValuesType from "./types/DefaultPathVariableMapValuesType";
 
 export class RequestControllerUtils {
 
@@ -222,6 +224,20 @@ export class RequestControllerUtils {
             }
 
         }
+
+    }
+
+    static findController (target : any) : RequestController | undefined {
+
+        if ( isFunction(target) && isRequestController(target) ) {
+            return target;
+        }
+
+        if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) ) {
+            return target.constructor;
+        }
+
+        return undefined;
 
     }
 

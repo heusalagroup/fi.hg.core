@@ -243,14 +243,14 @@ export class UserController {
 
 You can also use:
 
- * `@Request.Mapping` instead of `@RequestMapping`,
- * `@Request.Param` instead of `@RequestParam`,
- * `@Request.Header` instead of `@RequestHeader`,
- * `@Request.Body` instead of `@RequestBody`,
- * `@Request.Get(...)` instead of `GetMapping(...)` or `Request.Mapping(Request.Method.GET, ...)`
- * `@Request.Put(...)` instead of `PutMapping(...)` or `Request.Mapping(Request.Method.PUT, ...)`
- * `@Request.Post(...)` instead of `PostMapping(...)` or `Request.Mapping(Request.Method.POST, ...)`
- * `@Request.Delete(...)` instead of `DeleteMapping(...)` or `Request.Mapping(Request.Method.DELETE, ...)`
+ * `@Request.mapping` instead of `@RequestMapping`,
+ * `@Request.param` instead of `@RequestParam`,
+ * `@Request.header` instead of `@RequestHeader`,
+ * `@Request.body` instead of `@RequestBody`,
+ * `@Request.getMapping(...)` instead of `GetMapping(...)` or `Request.mapping(Request.Method.GET, ...)`
+ * `@Request.putMapping(...)` instead of `PutMapping(...)` or `Request.mapping(Request.Method.PUT, ...)`
+ * `@Request.postMapping(...)` instead of `PostMapping(...)` or `Request.mapping(Request.Method.POST, ...)`
+ * `@Request.deleteMapping(...)` instead of `DeleteMapping(...)` or `Request.mapping(Request.Method.DELETE, ...)`
 
 For the actual server implementing REST API, see next chapter.
 

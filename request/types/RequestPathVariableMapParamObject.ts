@@ -1,18 +1,5 @@
-import {isObject, isString} from "../../modules/lodash";
-import RequestInterfaceUtils from "../RequestInterfaceUtils";
 import RequestParamObjectType from "./RequestParamObjectType";
-
-export type DefaultPathVariableMapValuesType = {[key: string] : string};
-
-export function isDefaultPathVariableMapValuesType (value : any) : value is DefaultPathVariableMapValuesType {
-
-    return (
-        !!value
-        && isObject(value)
-        && RequestInterfaceUtils.everyPropertyIs<string>(value, isString)
-    );
-
-}
+import {DefaultPathVariableMapValuesType, isDefaultPathVariableMapValuesType} from "./DefaultPathVariableMapValuesType";
 
 export interface RequestPathVariableMapParamObject {
 
