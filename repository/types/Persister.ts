@@ -2,7 +2,7 @@
 
 import EntityMetadata from "./EntityMetadata";
 
-export default interface Persister {
+export interface Persister {
     insert<T>(entity: T, metadata: EntityMetadata): Promise<T>;
     update<T>(entity: T, metadata: EntityMetadata): Promise<T>;
     delete<T>(entity: T, metadata: EntityMetadata): Promise<void>;
@@ -11,3 +11,5 @@ export default interface Persister {
     findById<T>(id: any, metadata: EntityMetadata): Promise<T | undefined>;
     findByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]>;
 }
+
+export default Persister;

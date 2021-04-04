@@ -25,6 +25,51 @@ import isFunction from 'lodash/isFunction.js';
 import isString from 'lodash/isString.js';
 import isNumber from 'lodash/isNumber.js';
 
+export function isBooleanOrUndefined (value : any) : value is boolean | undefined {
+    return (
+        value === undefined
+        || isBoolean(value)
+    );
+}
+
+export function isNumberOrUndefined (value : any) : value is number | undefined {
+    return (
+        value === undefined
+        || isNumber(value)
+    );
+}
+
+export function isStringOrUndefined (value : any) : value is string | undefined {
+    return (
+        value === undefined
+        || isString(value)
+    );
+}
+
+export function isStringArray (value : any) : value is string[] {
+    return (
+        !!value
+        && isArray(value)
+        && every(value, isString)
+    );
+}
+
+export function isBooleanArray (value : any) : value is boolean[] {
+    return (
+        !!value
+        && isArray(value)
+        && every(value, isBoolean)
+    );
+}
+
+export function isNumberArray (value : any) : value is number[] {
+    return (
+        !!value
+        && isArray(value)
+        && every(value, isNumber)
+    );
+}
+
 export {
     map,
     some,

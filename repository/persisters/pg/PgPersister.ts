@@ -1,10 +1,11 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
+// @ts-ignore
 import { Pool } from "pg";
-import EntityMetadata, { KeyValuePairs, EntityField } from "./EntityMetadata";
-import Persister from "./Persister";
+import EntityMetadata, { KeyValuePairs, EntityField } from "../../types/EntityMetadata";
+import Persister from "../../types/Persister";
 
-export default class PgPersister implements Persister {
+export class PgPersister implements Persister {
     private pool: Pool;
 
     constructor(host: string, user: string, password: string, database: string) {
@@ -133,3 +134,5 @@ export default class PgPersister implements Persister {
         return field.propertyName === metadata.idPropertyName;
     }
 }
+
+export default PgPersister;

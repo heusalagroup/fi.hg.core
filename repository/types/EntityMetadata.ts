@@ -7,7 +7,7 @@ export interface EntityField {
     columnName: string;
 }
 
-export default interface EntityMetadata {
+export interface EntityMetadata {
     tableName: string;
     idPropertyName: string;
     fields: EntityField[];
@@ -16,3 +16,5 @@ export default interface EntityMetadata {
 export interface KeyValuePairs {
     [key: string]: any;
 }
+
+export default EntityMetadata;

@@ -2,7 +2,7 @@
 
 import "reflect-metadata";
 
-import EntityMetadata from "./persistence/EntityMetadata";
+import EntityMetadata from "./types/EntityMetadata";
 
 const metadataKey = Symbol("metadata");
 
@@ -45,3 +45,5 @@ export class Entity {
         return Reflect.getMetadata(metadataKey, this.constructor);
     }
 }
+
+export default Entity;
