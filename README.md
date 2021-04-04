@@ -269,9 +269,9 @@ See also our [`ProcessUtils`](#processutils) for best practices implementing com
 
 ## CrudRepository
 
-Spring Data like annotation mechanism for entities and simple CrudRepository implementation.
+Spring Data like annotation mechanism for entities and simple `CrudRepository` implementation.
 
-Then define `User` class for your entities:
+First define `User` class for your entities:
 
 ```typescript
 import { Table, Entity, Id, Column } from "./nor/ts/repository/Entity";
@@ -325,13 +325,13 @@ export class UserController {
 
 You will also need to install `pg` module for `PgPersister`:
 
-```
+```shell
 npm install --save pg @types/pg
 ```
 
 We also have an identical `MySqlPersister`. In that case, install `mysql` module:
 
-```
+```shell
 npm install --save mysql @types/mysql
 ```
 
