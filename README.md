@@ -12,7 +12,7 @@ We don't have traditional releases.
 
 This project evolves directly to our git repository in an agile manner.
 
-However, we can make releases for a commercial customer. One stable release is 16 000 € + taxes. The payment will include 
+However, we can make releases for a commercial customer. One stable release is 16 000 € + taxes. The payment may include 
 one month of agile development with the customer. It will also include one year of support for that release branch.
 
 ## Index
@@ -271,8 +271,10 @@ See also our [`ProcessUtils`](#processutils) for best practices implementing com
 
 Spring Data like annotation mechanism for entities and simple CrudRepository implementation.
 
+Then define `User` class for your entities:
+
 ```typescript
-import { Table, Entity, Id, Column } from "../nor/ts/crud-repository/Entity";
+import { Table, Entity, Id, Column } from "./nor/ts/repository/Entity";
 
 @Table("users")
 export default class User extends Entity {
@@ -290,22 +292,27 @@ export default class User extends Entity {
 }
 ```
 
+...and a repository class for these entities:
+
 ```typescript
 import User from "../model/User";
-import CrudRepository from "../nor/ts/crud-repository/CrudRepository";
-import Persister from "../nor/ts/crud-repository/persistence/Persister";
+import CrudRepository, {Persister} from "./nor/ts/repository/CrudRepository";
 
 export default class UserRepository extends CrudRepository<User> {
+
     constructor(persister: Persister) {
         super(new User(), persister);
     }
+    
 }
 ```
 
+Then use it in your code:
+
 ```typescript
-import User from "../../model/User";
-import UserRepository from "../../repository/UserRepository";
-import PgPersister from "../../repository/persistence/PgPersister";
+import User from "./model/User";
+import UserRepository from "./UserRepository";
+import PgPersister from "./nor/ts/repository/persisters/pg/PgPersister";
 
 export class UserController {
     createUser(): UserDto {
@@ -315,6 +322,22 @@ export class UserController {
     }
 }
 ```
+
+You will also need to install `pg` module for `PgPersister`:
+
+```
+npm install --save pg @types/pg
+```
+
+We also have an identical `MySqlPersister`. In that case, install `mysql` module:
+
+```
+npm install --save mysql @types/mysql
+```
+
+We are also planning to implement `HttpPersister`, which would make it possible to use the API without a local dependency
+for these modules. It would connect over an HTTP REST interface to a separate microservice with the real MySQL or 
+PostgreSQL pool (including the dependency).
 
 ## ProcessUtils
 

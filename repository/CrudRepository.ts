@@ -5,6 +5,10 @@ import EntityMetadata, { KeyValuePairs } from "./types/EntityMetadata";
 import Persister from "./types/Persister";
 import RepositoryEntityError from "./types/RepositoryEntityError";
 
+export {
+    Persister
+}
+
 export class CrudRepository<T extends Entity> {
 
     private readonly _persister: Persister;
