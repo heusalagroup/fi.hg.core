@@ -19,15 +19,19 @@ const UPDATE_QUERY_STRING                = (assignmentListQueryString : string) 
 
 export class MySqlPersister implements Persister {
 
-    private readonly _pool : mysql.Pool;
+    private readonly _pool        : mysql.Pool;
+    private readonly _tablePrefix : string;
 
     public constructor (
         host            : string,
         user            : string,
         password        : string,
         database        : string,
+        tablePrefix     : string = '',
         connectionLimit : number = 10
     ) {
+
+        this._tablePrefix = tablePrefix;
 
         this._pool = mysql.createPool({
             connectionLimit,
@@ -52,10 +56,12 @@ export class MySqlPersister implements Persister {
         const colNames = fields.map((col : EntityField) => col.columnName);
 
         const insertValues = map(entities, (item : T) => {
-            return fields.map((col : EntityField) => col.propertyName).map((p : string) => (item as any)[p]);
+            return fields.map((col : EntityField) => {
+                return (item as any)[col.propertyName];
+            });
         });
 
-        const queryValues = [tableName, colNames, insertValues];
+        const queryValues = [`${this._tablePrefix}${tableName}`, colNames, insertValues];
 
         const [results] = await this._query(INSERT_QUERY_STRING, queryValues);
 
@@ -81,7 +87,7 @@ export class MySqlPersister implements Persister {
 
         const idColName = MySqlPersister._getIdColumnName(metadata);
 
-        const id = MySqlPersister._getId(entity, metadata);
+        const id = MySqlPersister._getId(entity, metadata, this._tablePrefix);
 
         const fields = metadata.fields.filter((fld: EntityField) => !MySqlPersister._isIdField(fld, metadata));
 
@@ -100,7 +106,7 @@ export class MySqlPersister implements Persister {
         const assignmentListQueryString = fields.map( () => `?? = ?` ).join(', ');
 
         const queryString = UPDATE_QUERY_STRING(assignmentListQueryString);
-        const queryValues = [tableName, ...assignmentListValues, idColName, id];
+        const queryValues = [`${this._tablePrefix}${tableName}`, ...assignmentListValues, idColName, id];
 
         await this._query(queryString, queryValues);
 
@@ -120,9 +126,9 @@ export class MySqlPersister implements Persister {
 
         const idColName = MySqlPersister._getIdColumnName(metadata);
 
-        const id = MySqlPersister._getId(entity, metadata);
+        const id = MySqlPersister._getId(entity, metadata, this._tablePrefix);
 
-        const deleteValues = [tableName, idColName, id];
+        const deleteValues = [`${this._tablePrefix}${tableName}`, idColName, id];
 
         await this._query(DELETE_BY_ID_QUERY_STRING, deleteValues);
 
@@ -132,7 +138,7 @@ export class MySqlPersister implements Persister {
 
         const { tableName } = metadata;
 
-        const [results] = await this._query(SELECT_ALL_QUERY_STRING, [tableName]);
+        const [results] = await this._query(SELECT_ALL_QUERY_STRING, [`${this._tablePrefix}${tableName}`]);
 
         return results.map((row: any) => MySqlPersister._toEntity(row, metadata));
 
@@ -144,7 +150,7 @@ export class MySqlPersister implements Persister {
 
         const idColumnName : string = MySqlPersister._getIdColumnName(metadata);
 
-        const queryValues = [tableName, idColumnName, ids];
+        const queryValues = [`${this._tablePrefix}${tableName}`, idColumnName, ids];
 
         const [results] = await this._query(SELECT_BY_COLUMN_LIST_QUERY_STRING, queryValues);
 
@@ -158,7 +164,7 @@ export class MySqlPersister implements Persister {
 
         const idColumnName = MySqlPersister._getIdColumnName(metadata);
 
-        const [results] = await this._query(SELECT_BY_COLUMN_QUERY_STRING, [tableName, idColumnName, id]);
+        const [results] = await this._query(SELECT_BY_COLUMN_QUERY_STRING, [`${this._tablePrefix}${tableName}`, idColumnName, id]);
 
         return results.length >= 1 && results[0] ? MySqlPersister._toEntity(results[0], metadata) : undefined;
 
@@ -170,7 +176,7 @@ export class MySqlPersister implements Persister {
 
         const columnName = MySqlPersister._getColumnName(property, metadata.fields);
 
-        const [results] = await this._query(SELECT_BY_COLUMN_QUERY_STRING, [tableName, columnName, value]);
+        const [results] = await this._query(SELECT_BY_COLUMN_QUERY_STRING, [`${this._tablePrefix}${tableName}`, columnName, value]);
 
         return results.map( (row: any) => MySqlPersister._toEntity(row, metadata) );
 
@@ -182,16 +188,18 @@ export class MySqlPersister implements Persister {
         values ?: any[]
     ) : Promise<QueryResultPair> {
 
-        return new Promise((resolve, reject) => {
-
-            return this._pool.query(query, values, (error : MysqlError | null, results ?: any, fields?: FieldInfo[]) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve([results, fields]);
-                }
-            });
-
+        return await new Promise((resolve, reject) => {
+            try {
+                this._pool.query(query, values, (error : MysqlError | null, results ?: any, fields?: FieldInfo[]) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve([results, fields]);
+                    }
+                });
+            } catch (err) {
+                reject(err);
+            }
         });
 
     }
@@ -221,7 +229,11 @@ export class MySqlPersister implements Persister {
         return MySqlPersister._getColumnName(metadata.idPropertyName, metadata.fields);
     }
 
-    private static _getId (entity: KeyValuePairs, metadata: EntityMetadata) {
+    private static _getId (
+        entity: KeyValuePairs,
+        metadata: EntityMetadata,
+        tablePrefix : string
+    ) {
 
         const id = entity[metadata.idPropertyName];
 
@@ -229,7 +241,7 @@ export class MySqlPersister implements Persister {
             return id;
         }
 
-        throw new RepositoryError(RepositoryError.Code.ID_NOT_FOUND_FOR_TABLE, `Id property not found for table: "${metadata.tableName}"`);
+        throw new RepositoryError(RepositoryError.Code.ID_NOT_FOUND_FOR_TABLE, `Id property not found for table: "${ tablePrefix }${ metadata.tableName }"`);
 
     }
 

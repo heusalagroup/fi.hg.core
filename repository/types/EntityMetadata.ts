@@ -3,8 +3,8 @@
 import "reflect-metadata";
 
 export interface EntityField {
-    propertyName: string;
-    columnName: string;
+    propertyName : string;
+    columnName   : string;
 }
 
 export interface EntityMetadata {
