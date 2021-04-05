@@ -2,22 +2,27 @@
 
 // @ts-ignore
 import mysql, {FieldInfo, MysqlError} from "mysql";
-import EntityMetadata, { KeyValuePairs, EntityField } from "../../types/EntityMetadata";
+
+import EntityMetadata, {EntityField, KeyValuePairs} from "../../types/EntityMetadata";
 import Persister from "../../types/Persister";
 import RepositoryError from "../../types/RepositoryError";
 import RepositoryEntityError from "../../types/RepositoryEntityError";
 import {isArray, map, reduce} from "../../../modules/lodash";
+import Entity, {EntityIdTypes} from "../../Entity";
+import {
+    DELETE_BY_ID_QUERY_STRING,
+    INSERT_QUERY_STRING,
+    SELECT_ALL_QUERY_STRING,
+    SELECT_BY_COLUMN_LIST_QUERY_STRING,
+    SELECT_BY_COLUMN_QUERY_STRING,
+    UPDATE_QUERY_STRING
+} from "./MySqlConstants";
 
 export type QueryResultPair = [any, readonly FieldInfo[] | undefined];
 
-const INSERT_QUERY_STRING                = 'INSERT INTO ?? (??) VALUES ?';
-const DELETE_BY_ID_QUERY_STRING          = 'DELETE FROM ?? WHERE ?? = ?';
-const SELECT_ALL_QUERY_STRING            = 'SELECT * FROM ??';
-const SELECT_BY_COLUMN_QUERY_STRING      = 'SELECT * FROM ?? WHERE ?? = ?';
-const SELECT_BY_COLUMN_LIST_QUERY_STRING = 'SELECT * FROM ?? WHERE ?? IN (?)';
-const UPDATE_QUERY_STRING                = (assignmentListQueryString : string) => `UPDATE ?? SET ${ assignmentListQueryString } WHERE ?? = ?`;
-
-export class MySqlPersister implements Persister {
+export class MySqlPersister
+    implements Persister
+{
 
     private readonly _pool        : mysql.Pool;
     private readonly _tablePrefix : string;
@@ -43,7 +48,7 @@ export class MySqlPersister implements Persister {
 
     }
 
-    public async insert<T>(entities: T | T[], metadata: EntityMetadata): Promise<T> {
+    public async insert<T extends Entity, IdType extends EntityIdTypes> (entities: T | T[], metadata: EntityMetadata): Promise<T> {
 
         if (!isArray(entities)) {
             entities = [entities];
@@ -81,13 +86,13 @@ export class MySqlPersister implements Persister {
 
     }
 
-    public async update<T>(entity: T, metadata: EntityMetadata): Promise<T> {
+    public async update<T extends Entity, IdType extends EntityIdTypes> (entity: T, metadata: EntityMetadata): Promise<T> {
 
         const { tableName } = metadata;
 
         const idColName = MySqlPersister._getIdColumnName(metadata);
 
-        const id = MySqlPersister._getId(entity, metadata, this._tablePrefix);
+        const id : IdType = MySqlPersister._getId<T, IdType>(entity, metadata, this._tablePrefix);
 
         const fields = metadata.fields.filter((fld: EntityField) => !MySqlPersister._isIdField(fld, metadata));
 
@@ -120,7 +125,7 @@ export class MySqlPersister implements Persister {
 
     }
 
-    public async delete<T>(entity: T, metadata: EntityMetadata): Promise<void> {
+    public async delete<T extends Entity, IdType extends EntityIdTypes> (entity: T, metadata: EntityMetadata): Promise<void> {
 
         const { tableName } = metadata;
 
@@ -134,17 +139,17 @@ export class MySqlPersister implements Persister {
 
     }
 
-    public async findAll<T>(metadata: EntityMetadata): Promise<T[]> {
+    public async findAll<T extends Entity, IdType extends EntityIdTypes> (metadata: EntityMetadata): Promise<T[]> {
 
         const { tableName } = metadata;
 
         const [results] = await this._query(SELECT_ALL_QUERY_STRING, [`${this._tablePrefix}${tableName}`]);
 
-        return results.map((row: any) => MySqlPersister._toEntity(row, metadata));
+        return results.map((row: any) => MySqlPersister._toEntity<T, IdType>(row, metadata));
 
     }
 
-    public async findAllById<T>(ids: any[], metadata: EntityMetadata): Promise<T[]> {
+    public async findAllById<T extends Entity, IdType extends EntityIdTypes> (ids: IdType[], metadata: EntityMetadata): Promise<T[]> {
 
         const { tableName } = metadata;
 
@@ -154,11 +159,11 @@ export class MySqlPersister implements Persister {
 
         const [results] = await this._query(SELECT_BY_COLUMN_LIST_QUERY_STRING, queryValues);
 
-        return results.map((row: any) => MySqlPersister._toEntity(row, metadata));
+        return results.map((row: any) => MySqlPersister._toEntity<T, IdType>(row, metadata));
 
     }
 
-    public async findById<T>(id: any, metadata: EntityMetadata): Promise<T | undefined> {
+    public async findById<T extends Entity, IdType extends EntityIdTypes> (id: IdType, metadata: EntityMetadata): Promise<T | undefined> {
 
         const { tableName } = metadata;
 
@@ -166,11 +171,11 @@ export class MySqlPersister implements Persister {
 
         const [results] = await this._query(SELECT_BY_COLUMN_QUERY_STRING, [`${this._tablePrefix}${tableName}`, idColumnName, id]);
 
-        return results.length >= 1 && results[0] ? MySqlPersister._toEntity(results[0], metadata) : undefined;
+        return results.length >= 1 && results[0] ? MySqlPersister._toEntity<T, IdType>(results[0], metadata) : undefined;
 
     }
 
-    public async findByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
+    public async findByProperty<T extends Entity, IdType extends EntityIdTypes> (property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
 
         const { tableName } = metadata;
 
@@ -178,7 +183,7 @@ export class MySqlPersister implements Persister {
 
         const [results] = await this._query(SELECT_BY_COLUMN_QUERY_STRING, [`${this._tablePrefix}${tableName}`, columnName, value]);
 
-        return results.map( (row: any) => MySqlPersister._toEntity(row, metadata) );
+        return results.map( (row: any) => MySqlPersister._toEntity<T, IdType>(row, metadata) );
 
     }
 
@@ -205,7 +210,7 @@ export class MySqlPersister implements Persister {
     }
 
 
-    private static _toEntity<T> (entity: KeyValuePairs, metadata: EntityMetadata): T {
+    private static _toEntity<T extends Entity, IdType extends EntityIdTypes> (entity: KeyValuePairs, metadata: EntityMetadata): T {
         return (
             metadata.fields
             .map((fld) => ({ [fld.propertyName]: entity[fld.columnName] }))
@@ -229,11 +234,11 @@ export class MySqlPersister implements Persister {
         return MySqlPersister._getColumnName(metadata.idPropertyName, metadata.fields);
     }
 
-    private static _getId (
+    private static _getId<T extends Entity, IdType extends EntityIdTypes> (
         entity: KeyValuePairs,
         metadata: EntityMetadata,
         tablePrefix : string
-    ) {
+    ) : IdType {
 
         const id = entity[metadata.idPropertyName];
 

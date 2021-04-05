@@ -3,14 +3,36 @@
 import "reflect-metadata";
 
 export interface EntityField {
+
+    /**
+     * The property name on the class
+     */
     propertyName : string;
+
+    /**
+     * The field name in the database table
+     */
     columnName   : string;
+
 }
 
 export interface EntityMetadata {
-    tableName: string;
-    idPropertyName: string;
-    fields: EntityField[];
+
+    /**
+     * The SQL table name
+     */
+    tableName      : string;
+
+    /**
+     * The property name of the primary key
+     */
+    idPropertyName : string;
+
+    /**
+     * Metadata for fields
+     */
+    fields         : EntityField[];
+
 }
 
 export interface KeyValuePairs {

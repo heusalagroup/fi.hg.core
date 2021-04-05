@@ -59,4 +59,9 @@ export class Entity {
     }
 }
 
+/**
+ * Base type for all supported ID types
+ */
+export type EntityIdTypes = string | number;
+
 export default Entity;
