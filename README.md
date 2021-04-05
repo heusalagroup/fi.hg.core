@@ -277,13 +277,17 @@ First define `User` class for your entities:
 import { Table, Entity, Id, Column } from "./nor/ts/repository/Entity";
 
 @Table("users")
-export default class User extends Entity {
+export class User extends Entity {
+
     @Id()
     @Column("id")
     public id?: string;
 
     @Column("name")
     public name: string;
+
+    @Column("email")
+    public email: string;
 
     @Column("age")
     public age: number;
@@ -292,35 +296,61 @@ export default class User extends Entity {
 }
 ```
 
-...and a repository class for these entities:
+Then create an repository interface for your entities:
 
 ```typescript
-import User from "../model/User";
-import CrudRepository, {Persister} from "./nor/ts/repository/CrudRepository";
+import {User} from "./model/User";
+import { CrudRepository, Persister } from "./nor/ts/Repository";
 
-export default class UserRepository extends CrudRepository<User> {
+export interface UserRepository extends CrudRepository<User, string> {
 
-    constructor(persister: Persister) {
-        super(new User(), persister);
+    findAllByEmail (email : string) : Promise<User[]>;
+    findAllByAge   (age : number)   : Promise<User[]>;
+    findAllByName  (name : string)  : Promise<User[]>;
+    
+}
+```
+
+**Note!** You don't need to implement these methods. The framework does that under the hood for you. In fact, this these
+methods will be created even if you don't declare them in your interface. *Declaring is only necessary for TypeScript to 
+they exist in your interface.*
+
+Then use it in your code:
+
+```typescript
+import {User} from "./model/User";
+import {UserRepository} from "./UserRepository";
+import PgPersister from "./nor/ts/repository/persisters/pg/PgPersister";
+
+export interface UserDto {
+    id    ?: string;
+    email ?: string;
+}
+
+export class UserController {
+    
+    private readonly _userRepository : UserRepository;
+    
+    constructor (userRepository : UserRepository) {
+       this._userRepository = userRepository;
+    }
+    
+    public async createUser (): Promise<UserDto> {
+        
+        const newUser = new User(/*...*/);
+        
+        const addedUser = await this._userRepository.save(newUser);
+        
+        return {id: addedUser.id};
+       
     }
     
 }
 ```
 
-Then use it in your code:
-
 ```typescript
-import User from "./model/User";
-import UserRepository from "./UserRepository";
-import PgPersister from "./nor/ts/repository/persisters/pg/PgPersister";
-
-export class UserController {
-    createUser(): UserDto {
-        const userRepository = new UserRepository(new PgPersister());
-        userRepository.save(new User(/*...*/));
-        // ...
-    }
-}
+const pgPersister    : Persister = new PgPersister();
+const userRepository : UserRepository = createCrudRepositoryWithPersister<UserRepository, User, string>(new User(), pgPersister);
 ```
 
 You will also need to install `pg` module for `PgPersister`:
