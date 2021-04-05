@@ -20,11 +20,15 @@ import has from 'lodash/has.js';
 import isBoolean from 'lodash/isBoolean.js';
 import isObject from 'lodash/isObject.js';
 import isNull from 'lodash/isNull.js';
-import isArray from 'lodash/isArray.js';
+import {default as _isArray} from 'lodash/isArray.js';
 import isFunction from 'lodash/isFunction.js';
 import isString from 'lodash/isString.js';
 import isNumber from 'lodash/isNumber.js';
 import startsWith from 'lodash/startsWith.js';
+
+export function isArray (value : any) : value is any[] | readonly any[] {
+    return _isArray(value);
+}
 
 export function isBooleanOrUndefined (value : any) : value is boolean | undefined {
     return (
@@ -93,7 +97,6 @@ export {
     isObject,
     isNull,
     isFunction,
-    isArray,
     isString,
     isNumber,
     startsWith,

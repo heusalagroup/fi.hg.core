@@ -14,7 +14,7 @@ import {isRequestController} from "./request/types/RequestController";
 import Json from "./Json";
 import NodeHttpUtils from "./requestClient/node/NodeHttpUtils";
 import ResponseEntity from "./request/ResponseEntity";
-import {isString} from "./modules/lodash";
+import {isArray, isString} from "./modules/lodash";
 import Headers from "./request/Headers";
 
 const LOG = LogService.createLogger('RequestServer');
@@ -110,9 +110,17 @@ export class RequestServer {
         const headers : Headers = responseEntity.getHeaders();
         if (!headers.isEmpty()) {
             headers.keySet().forEach((headerKey : string) => {
+
                 const headerValue = headers.getValue(headerKey) ?? '';
+
                 LOG.debug(`Setting response header as "${headerKey}": "${headerValue}"`);
-                res.setHeader(headerKey, headerValue);
+
+                if (isArray(headerValue)) {
+                    res.setHeader(headerKey, [...headerValue] as string[]);
+                } else {
+                    res.setHeader(headerKey, headerValue);
+                }
+
             });
         }
 

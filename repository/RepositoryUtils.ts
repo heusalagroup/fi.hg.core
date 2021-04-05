@@ -1,6 +1,6 @@
 import EntityMetadata, {EntityField} from "./types/EntityMetadata";
 import {forEach, has} from "../modules/lodash";
-import CrudRepository from "./types/CrudRepository";
+import CrudRepository from "./CrudRepository";
 import Entity, {EntityIdTypes} from "./Entity";
 
 export class RepositoryUtils {

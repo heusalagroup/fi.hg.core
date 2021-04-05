@@ -6,8 +6,10 @@ import NodeHttpUtils from "./NodeHttpUtils";
 import LogService from "../../LogService";
 import URL from "url";
 import PATH from "path";
-import {OptionalFsPromises} from "../optional-modules";
 import {Stats} from "fs";
+import {REQUEST_CLIENT_NODE_ENABLED} from "../request-client-constants";
+
+export const FsPromises = REQUEST_CLIENT_NODE_ENABLED ? require("fs").promises : undefined;
 
 const LOG = LogService.createLogger('NodeRequestClient');
 
@@ -80,7 +82,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
             // LOG.debug('_checkSocketFile: path =', path);
 
-            const stat : Stats = await OptionalFsPromises.stat(path);
+            const stat : Stats = await FsPromises.stat(path);
 
             // LOG.debug('_checkSocketFile: stat =', stat);
 

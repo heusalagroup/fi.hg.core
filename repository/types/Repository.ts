@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import {Entity, EntityIdTypes} from "../Entity";
-import Persister from "./Persister";
+import Persister from "../Persister";
 import EntityMetadata from "./EntityMetadata";
 
 export interface StaticRepository <T extends Entity, ID extends EntityIdTypes> {

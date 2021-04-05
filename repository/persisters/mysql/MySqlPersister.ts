@@ -4,7 +4,7 @@
 import mysql, {FieldInfo, MysqlError} from "mysql";
 
 import EntityMetadata, {EntityField} from "../../types/EntityMetadata";
-import Persister from "../../types/Persister";
+import Persister from "../../Persister";
 import RepositoryError from "../../types/RepositoryError";
 import RepositoryEntityError from "../../types/RepositoryEntityError";
 import {isArray, map, reduce} from "../../../modules/lodash";

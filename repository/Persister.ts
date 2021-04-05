@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import EntityMetadata from "./EntityMetadata";
-import Entity, {EntityIdTypes} from "../Entity";
+import EntityMetadata from "./types/EntityMetadata";
+import Entity, {EntityIdTypes} from "./Entity";
 
 export interface Persister {
 

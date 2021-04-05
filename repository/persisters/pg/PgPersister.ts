@@ -3,7 +3,7 @@
 // @ts-ignore
 import { Pool } from "pg";
 import EntityMetadata, { KeyValuePairs, EntityField } from "../../types/EntityMetadata";
-import Persister from "../../types/Persister";
+import Persister from "../../Persister";
 
 export class PgPersister implements Persister {
     private pool: Pool;

@@ -1,8 +1,8 @@
 import {Entity, EntityIdTypes} from "../Entity";
-import Persister from "./Persister";
+import Persister from "../Persister";
 import EntityMetadata, {KeyValuePairs} from "./EntityMetadata";
 import RepositoryEntityError from "./RepositoryEntityError";
-import CrudRepository from "./CrudRepository";
+import CrudRepository from "../CrudRepository";
 import {map, reduce} from "../../modules/lodash";
 import EntityUtils from "../EntityUtils";
 

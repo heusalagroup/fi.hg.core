@@ -304,7 +304,8 @@ Then create a repository interface for your entities:
 
 ```typescript
 import {User} from "./model/User";
-import { CrudRepository, Persister } from "./nor/ts/Repository";
+import CrudRepository from "./nor/ts/repository/CrudRepository";
+import Persister from "./nor/ts/repository/Persister";
 
 export interface UserRepository extends CrudRepository<User, string> {
 

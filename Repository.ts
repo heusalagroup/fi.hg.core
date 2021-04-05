@@ -1,18 +1,11 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import Persister from "./repository/types/Persister";
+import Persister from "./repository/Persister";
 import Repository from "./repository/types/Repository";
-import CrudRepository from "./repository/types/CrudRepository";
 import CrudRepositoryImpl from "./repository/types/CrudRepositoryImpl";
 import Entity, {EntityIdTypes} from "./repository/Entity";
 import RepositoryUtils from "./repository/RepositoryUtils";
 import EntityMetadata from "./repository/types/EntityMetadata";
-
-export {
-    Persister,
-    Repository,
-    CrudRepository
-}
 
 export function createCrudRepositoryWithPersister<
     T extends Entity,
