@@ -320,7 +320,6 @@ Then use it in your code:
 ```typescript
 import {User} from "./model/User";
 import {UserRepository} from "./UserRepository";
-import PgPersister from "./nor/ts/repository/persisters/pg/PgPersister";
 
 export interface UserDto {
     id    ?: string;
@@ -349,7 +348,13 @@ export class UserController {
 ```
 
 ```typescript
+import PgPersister from "./nor/ts/repository/persisters/pg/PgPersister";
+import {createCrudRepositoryWithPersister} from "./nor/ts/Repository";
+import {User} from "./model/User";
+import {UserRepository} from "./UserRepository";
+
 const pgPersister    : Persister = new PgPersister();
+
 const userRepository : UserRepository = createCrudRepositoryWithPersister<UserRepository, User, string>(new User(), pgPersister);
 ```
 
