@@ -316,8 +316,8 @@ export interface UserRepository extends CrudRepository<User, string> {
 ```
 
 **Note!** You don't need to implement these methods. The framework does that under the hood for you. In fact, these
-methods will always be created -- even if you don't declare them in your interface. *Declaring is only necessary for TypeScript to 
-they exist in your interface.*
+methods will always be created -- even if you don't declare them in your interface. *Declaring is only necessary for 
+TypeScript and your IDE to know they exist in your interface.*
 
 ### Controller example
 
