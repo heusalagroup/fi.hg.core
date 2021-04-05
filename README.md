@@ -271,6 +271,8 @@ See also our [`ProcessUtils`](#processutils) for best practices implementing com
 
 We also provide a Spring Data inspired annotation mechanism for entities and `CrudRepository` implementation.
 
+### Entity class example
+
 First define a class for your entity -- we'll create `User` class:
 
 ```typescript
@@ -296,6 +298,8 @@ export class User extends Entity {
 }
 ```
 
+### Repository interface example
+
 Then create a repository interface for your entities:
 
 ```typescript
@@ -314,6 +318,8 @@ export interface UserRepository extends CrudRepository<User, string> {
 **Note!** You don't need to implement these methods. The framework does that under the hood for you. In fact, this these
 methods will be created even if you don't declare them in your interface. *Declaring is only necessary for TypeScript to 
 they exist in your interface.*
+
+### Controller example
 
 Then use it in your controller like this:
 
@@ -347,6 +353,8 @@ export class UserController {
 }
 ```
 
+### Main runtime example
+
 Finally, put everything together in your main runtime file:
 
 ```typescript
@@ -360,6 +368,8 @@ const pgPersister    : Persister = new PgPersister();
 const userRepository : UserRepository = createCrudRepositoryWithPersister<UserRepository, User, string>(new User(), pgPersister);
 ```
 
+### Required dependencies
+
 You will also need to install `pg` module for `PgPersister`:
 
 ```shell
@@ -371,6 +381,8 @@ We also have an identical `MySqlPersister`. In that case, install `mysql` module
 ```shell
 npm install --save mysql @types/mysql
 ```
+
+### Where we're going on with our Data implementation
 
 We are also planning to implement `HttpPersister`, which would make it possible to use the API without a local dependency
 for these modules. It would connect over an HTTP REST interface to a separate microservice with the real MySQL or 
