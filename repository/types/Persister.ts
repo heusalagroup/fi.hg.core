@@ -5,40 +5,97 @@ import Entity, {EntityIdTypes} from "../Entity";
 
 export interface Persister {
 
-    insert<T extends Entity, IdType extends EntityIdTypes> (
-        entity   : T | T[],
-        metadata : EntityMetadata
-    ): Promise<T>;
+    count<
+        T extends Entity,
+        ID extends EntityIdTypes
+    >(metadata: EntityMetadata) : Promise<number>;
 
-    update<T extends Entity, IdType extends EntityIdTypes> (
-        entity   : T,
-        metadata : EntityMetadata
-    ): Promise<T>;
+    countByProperty<
+        T extends Entity,
+        ID extends EntityIdTypes
+    >(
+        property : string,
+        value    : any,
+        metadata: EntityMetadata
+    ) : Promise<number>;
 
-    delete<T extends Entity, IdType extends EntityIdTypes> (
-        entity   : T,
+
+    existsByProperty<
+        T extends Entity,
+        ID extends EntityIdTypes
+        > (
+        property : string,
+        value    : any,
+        metadata: EntityMetadata
+    ) : Promise<boolean>;
+
+
+    deleteById<
+        T extends Entity,
+        ID extends EntityIdTypes
+    > (
+        id       : ID,
         metadata : EntityMetadata
     ): Promise<void>;
 
-    findAll<T extends Entity, IdType extends EntityIdTypes> (
+    deleteAll<
+        T extends Entity,
+        ID extends EntityIdTypes
+    > (metadata: EntityMetadata) : Promise<void>;
+
+    deleteAllById<
+        T extends Entity,
+        ID extends EntityIdTypes
+    > (
+        ids: ID[],
+        metadata: EntityMetadata
+    ) : Promise<void>;
+
+    deleteAllByProperty<
+        T extends Entity,
+        ID extends EntityIdTypes
+    > (
+        property : string,
+        value    : any,
+        metadata : EntityMetadata
+    ): Promise<void>;
+
+
+    findAll<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata
     ): Promise<T[]>;
 
-    findAllById<T extends Entity, IdType extends EntityIdTypes> (
-        ids      : IdType[],
+    findAllById<T extends Entity, ID extends EntityIdTypes> (
+        ids      : ID[],
         metadata : EntityMetadata
     ): Promise<T[]>
 
-    findById<T extends Entity, IdType extends EntityIdTypes> (
-        id       : IdType,
-        metadata : EntityMetadata
-    ): Promise<T | undefined>;
-
-    findByProperty<T extends Entity, IdType extends EntityIdTypes> (
+    findAllByProperty<T extends Entity, ID extends EntityIdTypes> (
         property : string,
         value    : any,
         metadata : EntityMetadata
     ): Promise<T[]>;
+
+    findById<T extends Entity, ID extends EntityIdTypes> (
+        id       : ID,
+        metadata : EntityMetadata
+    ): Promise<T | undefined>;
+
+    findByProperty<T extends Entity, ID extends EntityIdTypes> (
+        property : string,
+        value    : any,
+        metadata : EntityMetadata
+    ): Promise<T | undefined>;
+
+    insert<T extends Entity, ID extends EntityIdTypes> (
+        entity   : T | T[],
+        metadata : EntityMetadata
+    ): Promise<T>;
+
+    update<T extends Entity, ID extends EntityIdTypes> (
+        entity   : T,
+        metadata : EntityMetadata
+    ): Promise<T>;
 
 }
 

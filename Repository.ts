@@ -14,15 +14,19 @@ export {
     CrudRepository
 }
 
-export function createCrudRepositoryWithPersister<RepositoryType, T extends Entity, IdType extends EntityIdTypes = string> (
+export function createCrudRepositoryWithPersister<
+    T extends Entity,
+    ID extends EntityIdTypes,
+    RepositoryType extends Repository<T, ID>
+> (
     emptyEntity : T,
     persister   : Persister
 ) : RepositoryType {
 
     const entityMetadata : EntityMetadata = emptyEntity.getMetadata();
 
-    class FinalCrudRepositoryImpl<T extends Entity, IdType extends EntityIdTypes>
-        extends CrudRepositoryImpl<T, IdType> {
+    class FinalCrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
+        extends CrudRepositoryImpl<T, ID> {
 
         constructor (
             persister : Persister
@@ -36,7 +40,7 @@ export function createCrudRepositoryWithPersister<RepositoryType, T extends Enti
 
     const newImpl = (new FinalCrudRepositoryImpl(persister));
 
-    RepositoryUtils.generateDefaultMethods<T, IdType>(FinalCrudRepositoryImpl.prototype, entityMetadata);
+    RepositoryUtils.generateDefaultMethods<T, ID, RepositoryType>(FinalCrudRepositoryImpl.prototype, entityMetadata);
 
     // @ts-ignore
     return newImpl as RepositoryType;

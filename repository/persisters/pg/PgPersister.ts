@@ -100,7 +100,7 @@ export class PgPersister implements Persister {
         }
     }
 
-    public async findByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
+    public async findAllByProperty<T>(property: string, value: any, metadata: EntityMetadata): Promise<T[]> {
         try {
             const { tableName } = metadata;
             const columnName = this.getColumnName(property, metadata.fields);

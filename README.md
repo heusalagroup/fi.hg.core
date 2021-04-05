@@ -308,16 +308,21 @@ import { CrudRepository, Persister } from "./nor/ts/Repository";
 
 export interface UserRepository extends CrudRepository<User, string> {
 
-    findAllByEmail (email : string) : Promise<User[]>;
-    findAllByAge   (age : number)   : Promise<User[]>;
-    findAllByName  (name : string)  : Promise<User[]>;
+    findAllByEmail   (email : string) : Promise<User[]>;
+    findByEmail      (email : string) : Promise<User | undefined>;
+    countByEmail     (email : string) : Promise<number>;
+    existsByEmail    (email : string) : Promise<boolean>;
+    deleteAllByEmail (email : string) : Promise<void>;
     
 }
 ```
 
-**Note!** You don't need to implement these methods. The framework does that under the hood for you. In fact, these
-methods will always be created -- even if you don't declare them in your interface. *Declaring is only necessary for 
-TypeScript and your IDE to know they exist in your interface.*
+**Note!** *You don't need to implement these methods.*
+
+The framework does that under the hood for you. 
+
+In fact, these methods will always be created -- even if you don't declare them in your interface. Declaration is only 
+necessary for TypeScript and your IDE to know they exist in your interface.
 
 ### Controller example
 

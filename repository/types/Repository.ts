@@ -1,39 +1,67 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import { Entity } from "../Entity";
+import {Entity, EntityIdTypes} from "../Entity";
 import Persister from "./Persister";
 import EntityMetadata from "./EntityMetadata";
 
-export interface StaticRepository <T extends Entity, IdType = string> {
+export interface StaticRepository <T extends Entity, ID extends EntityIdTypes> {
 
     new (
         emptyMetadata : EntityMetadata,
         persister     : Persister
-    ) : Repository<T, IdType>;
+    ) : Repository<T, ID>;
 
 }
 
-export interface Repository<T extends Entity, IdType = string> {
+export interface Repository<T extends Entity, ID extends EntityIdTypes> {
 
-    save (entity: T): Promise<T>;
+    count () : Promise<number>;
 
     delete (entity: T): Promise<void>;
 
+    deleteById (id : ID): Promise<void>;
+
+    deleteAll (): Promise<void>;
+    deleteAll (entities: T[]): Promise<void>;
+
+    deleteAllById (ids: ID[]): Promise<void>;
+
+    existsById (id : ID): Promise<boolean>;
+
     findAll (): Promise<T[]>;
 
-    findAllById (ids: any[]): Promise<T[]>;
+    findAllById (ids: ID[]): Promise<T[]>;
 
-    findById (id: any): Promise<T | undefined>;
+    findById (id: ID): Promise<T | undefined>;
 
+    /**
+     *
+     * @deprecated Use `Repository.findAllByPropertyName(value)` instead.
+     * @param propertyName
+     * @param value
+     */
     find (propertyName: string, value: any): Promise<T[]>;
+
+    save (entity: T): Promise<T>;
+
+    saveAll (entities: T[]): Promise<T[]>;
+
+
+    /**
+     * Warning! You shouldn't use Persister directly through this API.
+     *
+     * This interface is exposed as public for our own internal implementation, because TypeScript doesn't
+     * support a concept like "friends" found from other languages.
+     */
+    __getPersister () : Persister;
 
 }
 
-export function createRepository<T extends Entity, IdType> (
-    ctor           : StaticRepository<T, IdType>,
+export function createRepository<T extends Entity, ID extends EntityIdTypes> (
+    ctor           : StaticRepository<T, ID>,
     entityMetadata : EntityMetadata,
     persister      : Persister
-) : Repository<T, IdType> {
+) : Repository<T, ID> {
     return new ctor(entityMetadata, persister)
 }
 
