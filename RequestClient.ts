@@ -1,9 +1,12 @@
 import RequestMethod from "./request/types/RequestMethod";
 import Json from "./Json";
-import {FetchRequestClient} from "./requestClient/FetchRequestClient";
 import RequestClientInterface from "./requestClient/RequestClientInterface";
-import NodeRequestClient from "./requestClient/NodeRequestClient";
 import LogService from "./LogService";
+import {
+    OptionalFetchRequestClient,
+    OptionalHTTP,
+    OptionalNodeRequestClient
+} from "./requestClient/optional-modules";
 
 const LOG = LogService.createLogger('RequestClient');
 
@@ -57,15 +60,14 @@ export class RequestClient {
 
     private static _initClient () : RequestClientInterface {
 
-        if ( typeof window !== 'undefined' && window.fetch ) {
+        if ( OptionalFetchRequestClient ) {
             LOG.debug('Detected browser environment');
-            return new FetchRequestClient( window.fetch.bind(window) );
+            return new OptionalFetchRequestClient( window.fetch.bind(window) );
         }
 
-        if ( typeof process !== 'undefined' ) {
+        if ( OptionalNodeRequestClient ) {
             LOG.debug('Detected NodeJS environment');
-            const http = require('http');
-            return new NodeRequestClient(http);
+            return new OptionalNodeRequestClient(OptionalHTTP);
         }
 
         throw new TypeError(`Could not detect request client implementation`);

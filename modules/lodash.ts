@@ -24,6 +24,7 @@ import isArray from 'lodash/isArray.js';
 import isFunction from 'lodash/isFunction.js';
 import isString from 'lodash/isString.js';
 import isNumber from 'lodash/isNumber.js';
+import startsWith from 'lodash/startsWith.js';
 
 export function isBooleanOrUndefined (value : any) : value is boolean | undefined {
     return (
@@ -95,5 +96,6 @@ export {
     isArray,
     isString,
     isNumber,
+    startsWith,
     has
 };

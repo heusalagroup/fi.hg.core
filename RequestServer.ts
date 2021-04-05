@@ -12,7 +12,7 @@ import {parseRequestMethod} from "./request/types/RequestMethod";
 import LogService from "./LogService";
 import {isRequestController} from "./request/types/RequestController";
 import Json from "./Json";
-import NodeHttpUtils from "./requestClient/NodeHttpUtils";
+import NodeHttpUtils from "./requestClient/node/NodeHttpUtils";
 import ResponseEntity from "./request/ResponseEntity";
 import {isString} from "./modules/lodash";
 import Headers from "./request/Headers";

@@ -1,5 +1,5 @@
 import {IncomingMessage} from "http";
-import Json from "../Json";
+import Json from "../../Json";
 
 /**
  * The type definitions for Node were inciting to use strict type list, even though NodeJS manual tells just "string".

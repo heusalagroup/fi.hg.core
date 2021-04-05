@@ -1,14 +1,13 @@
-import RequestMethod from "../request/types/RequestMethod";
-import Json from "../Json";
-import RequestClientInterface from "./RequestClientInterface";
+import RequestMethod from "../../request/types/RequestMethod";
+import Json from "../../Json";
+import RequestClientInterface from "../RequestClientInterface";
 import {ClientRequest, IncomingHttpHeaders, IncomingMessage} from "http";
 import NodeHttpUtils from "./NodeHttpUtils";
-import LogService from "../LogService";
+import LogService from "../../LogService";
 import URL from "url";
-import fsPromises from "fs/promises";
-import {forEach, isString, reduce, split} from "../modules/lodash";
-import {constants as fsConstants, Stats} from "fs";
 import PATH from "path";
+import {OptionalFsPromises} from "../optional-modules";
+import {Stats} from "fs";
 
 const LOG = LogService.createLogger('NodeRequestClient');
 
@@ -81,7 +80,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
             // LOG.debug('_checkSocketFile: path =', path);
 
-            const stat : Stats = await fsPromises.stat(path);
+            const stat : Stats = await OptionalFsPromises.stat(path);
 
             // LOG.debug('_checkSocketFile: stat =', stat);
 

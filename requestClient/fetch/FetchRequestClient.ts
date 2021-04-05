@@ -1,6 +1,6 @@
-import RequestMethod from "../request/types/RequestMethod";
-import Json from "../Json";
-import RequestClientInterface from "./RequestClientInterface";
+import RequestMethod from "../../request/types/RequestMethod";
+import Json from "../../Json";
+import RequestClientInterface from "../RequestClientInterface";
 
 export interface FetchInterface {
     (input: string, init?: RequestInit): Promise<Response>;
