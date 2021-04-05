@@ -25,7 +25,7 @@ one month of agile development with the customer. It will also include one year 
  * [Observer](#observer)
  * [Request](#request)
  * [RequestServer](#requestserver)
- * [CrudRepository](#crudrepository)
+ * [Repository](#repository)
  * [ProcessUtils](#processutils)
    * [ProcessUtils.initEnvFromDefaultFiles()](#processutilsinitenvfromdefaultfiles)
    * [ProcessUtils.setupDestroyHandler(...)](#processutilssetupdestroyhandlershutdownhandler-errorhandler)
@@ -267,11 +267,11 @@ server.start();
 
 See also our [`ProcessUtils`](#processutils) for best practices implementing complete runtime support.
 
-## CrudRepository
+## Repository
 
-Spring Data like annotation mechanism for entities and simple `CrudRepository` implementation.
+We also provide a Spring Data inspired annotation mechanism for entities and `CrudRepository` implementation.
 
-First define `User` class for your entities:
+First define a class for your entity -- we'll create `User` class:
 
 ```typescript
 import { Table, Entity, Id, Column } from "./nor/ts/repository/Entity";
@@ -296,7 +296,7 @@ export class User extends Entity {
 }
 ```
 
-Then create an repository interface for your entities:
+Then create a repository interface for your entities:
 
 ```typescript
 import {User} from "./model/User";
@@ -315,7 +315,7 @@ export interface UserRepository extends CrudRepository<User, string> {
 methods will be created even if you don't declare them in your interface. *Declaring is only necessary for TypeScript to 
 they exist in your interface.*
 
-Then use it in your code:
+Then use it in your controller like this:
 
 ```typescript
 import {User} from "./model/User";
@@ -346,6 +346,8 @@ export class UserController {
     
 }
 ```
+
+Finally, put everything together in your main runtime file:
 
 ```typescript
 import PgPersister from "./nor/ts/repository/persisters/pg/PgPersister";
