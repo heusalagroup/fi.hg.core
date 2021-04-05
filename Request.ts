@@ -782,8 +782,8 @@ export function PathVariable (
 
 // noinspection JSUnusedGlobalSymbols
 export function PathVariable (
-    headerName  : string,
-    opts       ?: RequestPathVariableOptions
+    variableName  : string,
+    opts         ?: RequestPathVariableOptions
 ) : RequestMethodParamDecorator;
 
 // noinspection JSUnusedGlobalSymbols
