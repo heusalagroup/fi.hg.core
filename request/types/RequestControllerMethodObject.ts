@@ -11,6 +11,9 @@ export interface RequestControllerMethodObject {
     mappings             : Array<RequestMappingObject>;
     params               : Array<RequestParamObject | null>;
 
+    // If any defined, this method is a model attribute builder for these model names
+    modelAttributes      : string[];
+
 }
 
 export function isRequestControllerMethodObject(value: any): value is RequestControllerMethodObject {

@@ -9,7 +9,8 @@ export enum RequestParamObjectType {
     REQUEST_HEADER,
     REQUEST_HEADER_MAP,
     PATH_VARIABLE,
-    PATH_VARIABLE_MAP
+    PATH_VARIABLE_MAP,
+    MODEL_ATTRIBUTE
 
 }
 
@@ -24,6 +25,7 @@ export function isRequestParamObjectType (value : any) : value is RequestParamOb
         case RequestParamObjectType.REQUEST_HEADER_MAP:
         case RequestParamObjectType.PATH_VARIABLE:
         case RequestParamObjectType.PATH_VARIABLE_MAP:
+        case RequestParamObjectType.MODEL_ATTRIBUTE:
             return true;
     }
 
@@ -44,6 +46,7 @@ export function parseRequestParamObjectType (value: any) : RequestParamObjectTyp
             case 'header_map'         : return RequestParamObjectType.REQUEST_HEADER_MAP;
             case 'path_variable'      : return RequestParamObjectType.PATH_VARIABLE;
             case 'path_variable_map'  : return RequestParamObjectType.PATH_VARIABLE_MAP;
+            case 'model_attribute'  : return RequestParamObjectType.MODEL_ATTRIBUTE;
         }
     }
 
@@ -60,6 +63,7 @@ export function stringifyRequestParamObjectType (value : RequestParamObjectType)
         case RequestParamObjectType.REQUEST_HEADER_MAP  : return 'header_map';
         case RequestParamObjectType.PATH_VARIABLE       : return 'path_variable';
         case RequestParamObjectType.PATH_VARIABLE_MAP   : return 'path_variable_map';
+        case RequestParamObjectType.MODEL_ATTRIBUTE     : return 'model_attribute';
     }
 
     throw new TypeError(`Unsupported value: "${value}"`);

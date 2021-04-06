@@ -6,6 +6,7 @@ import RequestHeaderParamObject, {isRequestHeaderParamObject} from "./RequestHea
 import RequestHeaderMapParamObject, {isRequestHeaderMapParamObject} from "./RequestHeaderMapParamObject";
 import RequestPathVariableParamObject, {isRequestPathVariableParamObject} from "./RequestPathVariableParamObject";
 import RequestPathVariableMapParamObject, {isRequestPathVariableMapParamObject} from "./RequestPathVariableMapParamObject";
+import RequestModelAttributeParamObject, {isRequestModelAttributeParamObject} from "./RequestModelAttributeParamObject";
 
 export type RequestParamObject = (
     RequestQueryParamObject
@@ -14,6 +15,7 @@ export type RequestParamObject = (
     | RequestHeaderMapParamObject
     | RequestPathVariableParamObject
     | RequestPathVariableMapParamObject
+    | RequestModelAttributeParamObject
 );
 
 export function isRequestParamObject(value: any): value is RequestParamObject {
@@ -24,6 +26,7 @@ export function isRequestParamObject(value: any): value is RequestParamObject {
         || isRequestHeaderMapParamObject(value)
         || isRequestPathVariableParamObject(value)
         || isRequestPathVariableMapParamObject(value)
+        || isRequestModelAttributeParamObject(value)
     );
 }
 

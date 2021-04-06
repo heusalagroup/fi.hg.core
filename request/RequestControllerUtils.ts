@@ -20,6 +20,10 @@ import RequestPathVariableParamObject from "./types/RequestPathVariableParamObje
 import RequestPathVariableMapParamObject from "./types/RequestPathVariableMapParamObject";
 import DefaultHeaderMapValuesType from "./types/DefaultHeaderMapValuesType";
 import DefaultPathVariableMapValuesType from "./types/DefaultPathVariableMapValuesType";
+import RequestModelAttributeParamObject from "./types/RequestModelAttributeParamObject";
+import LogService from "../LogService";
+
+const LOG = LogService.createLogger('RequestControllerUtils');
 
 export class RequestControllerUtils {
 
@@ -80,8 +84,9 @@ export class RequestControllerUtils {
                 mappings: [],
                 controllerProperties: {
                     [propertyKey] : {
-                        mappings : [parsedObject],
-                        params   : []
+                        mappings        : [parsedObject],
+                        params          : [],
+                        modelAttributes : []
                     }
                 }
             });
@@ -93,8 +98,9 @@ export class RequestControllerUtils {
                 controllerProperties: {
                     ...origMapping.controllerProperties,
                     [propertyKey] : {
-                        mappings : [parsedObject],
-                        params   : []
+                        mappings        : [parsedObject],
+                        params          : [],
+                        modelAttributes : []
                     }
                 }
             });
@@ -138,6 +144,7 @@ export class RequestControllerUtils {
                         [propertyKey] : {
                             requestBodyRequired : true,
                             mappings            : [],
+                            modelAttributes     : [],
                             params              : params
                         }
                     }
@@ -150,6 +157,7 @@ export class RequestControllerUtils {
                     controllerProperties: {
                         [propertyKey] : {
                             mappings : [],
+                            modelAttributes     : [],
                             params   : params
                         }
                     }
@@ -169,6 +177,7 @@ export class RequestControllerUtils {
                         ...origMapping.controllerProperties,
                         [propertyKey] : {
                             requestBodyRequired: true,
+                            modelAttributes     : [],
                             mappings : [],
                             params   : params
                         }
@@ -183,6 +192,7 @@ export class RequestControllerUtils {
                         ...origMapping.controllerProperties,
                         [propertyKey]: {
                             mappings: [],
+                            modelAttributes : [],
                             params: params
                         }
                     }
@@ -238,6 +248,81 @@ export class RequestControllerUtils {
         }
 
         return undefined;
+
+    }
+
+    static setControllerMethodModelAttributeParam (
+        controller    : RequestController,
+        propertyKey   : string,
+        paramIndex    : number,
+        attributeName : string,
+        paramType     : RequestParamValueType
+    ) {
+
+        LOG.debug('setControllerMethodModelAttributeParam: attributeName =', attributeName, paramType);
+
+        const newParam : RequestModelAttributeParamObject = {
+            objectType    : RequestParamObjectType.MODEL_ATTRIBUTE,
+            attributeName : attributeName,
+            valueType     : paramType
+        };
+
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+
+    }
+
+    static attachControllerMethodModelAttributeBuilder (
+        controller         : RequestController,
+        propertyKey        : string,
+        propertyDescriptor : PropertyDescriptor,
+        attributeName      : string
+    ) {
+
+        LOG.debug('attachControllerMethodModelAttributeBuilder: attributeName =', attributeName, propertyKey);
+
+        const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+
+        if (origMapping === undefined) {
+
+            setInternalRequestMappingObject(controller, {
+                mappings: [],
+                controllerProperties: {
+                    [propertyKey] : {
+                        mappings        : [],
+                        params          : [],
+                        modelAttributes : [attributeName]
+                    }
+                }
+            });
+
+        } else if (!has(origMapping.controllerProperties, propertyKey)) {
+
+            setInternalRequestMappingObject(controller, {
+                ...origMapping,
+                controllerProperties: {
+                    ...origMapping.controllerProperties,
+                    [propertyKey] : {
+                        mappings : [],
+                        params   : [],
+                        modelAttributes : [attributeName]
+                    }
+                }
+            });
+
+        } else {
+
+            setInternalRequestMappingObject(controller, {
+                ...origMapping,
+                controllerProperties: {
+                    ...origMapping.controllerProperties,
+                    [propertyKey] : {
+                        ...origMapping.controllerProperties[propertyKey],
+                        modelAttributes: concat([attributeName], origMapping.controllerProperties[propertyKey].modelAttributes)
+                    }
+                }
+            });
+
+        }
 
     }
 

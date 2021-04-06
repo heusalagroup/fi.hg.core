@@ -6,7 +6,7 @@ import RequestController, {
     hasInternalRequestMappingObject
 } from "../request/types/RequestController";
 import RequestMethod, {parseRequestMethod} from "../request/types/RequestMethod";
-import {filter, forEach, has, isNull, keys, map, some, trim, reduce, concat} from "../modules/lodash";
+import {filter, forEach, has, isNull, keys, map, some, trim, reduce, concat, find} from "../modules/lodash";
 import RequestControllerMappingObject from "../request/types/RequestControllerMappingObject";
 import RequestMappingObject from "../request/types/RequestMappingObject";
 import {isRequestStatus} from "../request/types/RequestStatus";
@@ -28,6 +28,7 @@ import RequestHeaderMapParamObject from "../request/types/RequestHeaderMapParamO
 import RouteUtils from "./RouteUtils";
 import BaseRoutes, {RouteParamValuesObject} from "./types/BaseRoutes";
 import RequestPathVariableParamObject from "../request/types/RequestPathVariableParamObject";
+import RequestModelAttributeParamObject from "../request/types/RequestModelAttributeParamObject";
 
 const LOG = LogService.createLogger('RequestRouter');
 
@@ -46,15 +47,31 @@ export interface RequestContext {
 
 }
 
+/**
+ * Three item array with following items:
+ *
+ * 1. Attribute name     : string
+ * 2. Property name      : string
+ * 3. Property arguments : (RequestParamObject | null)[]
+ *
+ */
+type ModelAttributeProperty = [string, string, (RequestParamObject | null)[]];
+
 export class RequestRouter {
 
     private readonly _controllers : Array<RequestController>;
     private _routes               : BaseRoutes | undefined;
+    private _modelAttributeNames  : Map<RequestController, ModelAttributeProperty[]> | undefined;
+    private _requestMappings      : Array<RequestControllerMappingObject> | undefined;
+    private _initialized          : boolean;
 
     public constructor () {
 
-        this._controllers = [];
-        this._routes      = undefined;
+        this._controllers             = [];
+        this._routes                  = undefined;
+        this._requestMappings         = undefined;
+        this._modelAttributeNames     = undefined;
+        this._initialized             = false;
 
     }
 
@@ -66,17 +83,93 @@ export class RequestRouter {
 
     }
 
+    private _initializeRequestMappings () {
+
+        LOG.debug('Initializing request mappings.');
+
+        if (!this._requestMappings) {
+            this._requestMappings = this._getRequestMappings();
+        }
+
+    }
+
+    private _initializeRouter () {
+
+        if (!this._initialized) {
+
+            this._initialized = true;
+
+            LOG.debug('Initializing...');
+
+            this._initializeRequestMappings();
+            this._initializeRoutes();
+            this._initializeRequiredModelAttributeNames();
+
+        }
+
+    }
+
     private _initializeRoutes () {
 
         LOG.debug('Initializing routes.');
 
-        const requestMappings : Array<RequestControllerMappingObject> = this._getRequestMappings();
-
-        if ( requestMappings.length ) {
-            this._routes = RouteUtils.createRoutes( RequestRouter._parseMappingObject(requestMappings) );
+        if ( this._requestMappings?.length ) {
+            this._routes = RouteUtils.createRoutes( RequestRouter._parseMappingObject(this._requestMappings) );
         } else {
             this._routes = RouteUtils.createRoutes( {} );
         }
+
+    }
+
+    private _initializeRequiredModelAttributeNames () {
+
+        LOG.debug('Initializing model attributes.');
+
+        let values : [RequestController, ModelAttributeProperty[]][] = [];
+
+        if ( this._requestMappings?.length ) {
+            values = reduce(
+                this._requestMappings,
+                (arr: [RequestController, ModelAttributeProperty[]][], item: RequestControllerMappingObject) => {
+
+                    const controller = item.controller;
+
+                    const controllerUniqueAttributeNames : ModelAttributeProperty[] = reduce(
+                        keys(item.controllerProperties),
+                        (arr2: ModelAttributeProperty[], propertyKey : string) => {
+
+                            LOG.debug('_initializeRequiredModelAttributeNames: propertyKey: ', propertyKey);
+
+                            const propertyValue : RequestControllerMethodObject = item.controllerProperties[propertyKey];
+
+                            const propertyAttributeNames : string[] = propertyValue.modelAttributes;
+
+                            LOG.debug('_initializeRequiredModelAttributeNames: propertyAttributeNames: ', propertyAttributeNames);
+
+                            const params : (RequestParamObject|null)[] = propertyValue.params;
+
+                            forEach(propertyAttributeNames, (attributeName : string) => {
+                                LOG.debug('_initializeRequiredModelAttributeNames: attributeName: ', attributeName);
+                                if ( find(arr2, (i : ModelAttributeProperty) => i[0] === attributeName) === undefined ) {
+                                    arr2.push([attributeName, propertyKey, params]);
+                                }
+                            });
+
+                            return arr2;
+
+                    }, []);
+
+                    LOG.debug('controllerUniqueAttributeNames: ', controllerUniqueAttributeNames);
+
+                    values.push([controller, controllerUniqueAttributeNames]);
+
+                    return arr;
+
+                }, values
+            );
+        }
+
+        this._modelAttributeNames = new Map<RequestController, ModelAttributeProperty[]>(values);
 
     }
 
@@ -114,6 +207,10 @@ export class RequestRouter {
                 return ResponseEntity.internalServerError().body({
                     error: 'Internal Server Error'
                 });
+            }
+
+            if ( !this._initialized ) {
+                this._initializeRouter();
             }
 
             const {
@@ -154,112 +251,148 @@ export class RequestRouter {
 
             // LOG.debug('handleRequest: requestBody: ', requestBody);
 
+            const requestModelAttributes = new Map<RequestController, Map<string, any>>();
+
             // Handle requests using controllers
             await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
-                const stepParams = RequestRouter._bindRequestActionParams(requestQueryParams, requestBody, route.propertyParams, requestHeaders, pathVariables);
+                const routeController     = route.controller;
+                const routePropertyName   = route.propertyName;
+                const routePropertyParams = route.propertyParams;
+
+                await previousPromise;
+
+                if ( !requestModelAttributes.has(routeController) && this._modelAttributeNames && this._modelAttributeNames.has(routeController) ) {
+
+                    LOG.debug('Populating attributes');
+
+                    const modelAttributeValues = new Map<string, any>();
+
+                    requestModelAttributes.set(routeController, modelAttributeValues);
+
+                    const attributeNamePairs : ModelAttributeProperty[] = this._modelAttributeNames.get(routeController) ?? [];
+
+                    LOG.debug('attributeNamePairs: ', attributeNamePairs);
+
+                    await reduce(attributeNamePairs, async (p : Promise<void>, pair : ModelAttributeProperty) : Promise<void> => {
+
+                        const [attributeName, propertyName, propertyParams] = pair;
+
+                        await p;
+
+                        LOG.debug('attributeName: ', attributeName);
+                        LOG.debug('propertyName: ', propertyName);
+                        LOG.debug('propertyParams: ', propertyParams);
+
+                        const stepParams = RequestRouter._bindRequestActionParams(requestQueryParams, requestBody, propertyParams, requestHeaders, pathVariables, modelAttributeValues );
+
+                        const stepResult : any = await routeController[propertyName](...stepParams);
+
+                        modelAttributeValues.set(attributeName, stepResult);
+
+                    }, Promise.resolve());
+
+                }
+
+                const stepParams = RequestRouter._bindRequestActionParams(requestQueryParams, requestBody, routePropertyParams, requestHeaders, pathVariables, requestModelAttributes.get(routeController) ?? new Map<string, any>() );
 
                 // LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
-                return previousPromise.then(async () => {
+                // LOG.debug('handleRequest: stepParams 2: ', stepParams);
 
-                    // LOG.debug('handleRequest: stepParams 2: ', stepParams);
+                const stepResult = await routeController[routePropertyName](...stepParams);
 
-                    const stepResult = await route.controller[route.propertyName](...stepParams);
+                if (isRequestStatus(stepResult)) {
 
-                    if (isRequestStatus(stepResult)) {
+                    responseEntity = new ResponseEntity<any>(stepResult);
 
-                        responseEntity = new ResponseEntity<any>(stepResult);
+                } else if (isRequestError(stepResult)) {
 
-                    } else if (isRequestError(stepResult)) {
+                    responseEntity = new ResponseEntity<ReadonlyJsonObject>(stepResult.toJSON(), stepResult.getStatusCode());
 
-                        responseEntity = new ResponseEntity<ReadonlyJsonObject>(stepResult.toJSON(), stepResult.getStatusCode());
+                } else if (isResponseEntity(stepResult)) {
 
-                    } else if (isResponseEntity(stepResult)) {
+                    // FIXME: What if we already have stepResult??
+                    if (responseEntity !== undefined) {
+                        LOG.warn('Warning! ResponseEntity from previous call ignored.');
+                    }
 
-                        // FIXME: What if we already have stepResult??
-                        if (responseEntity !== undefined) {
-                            LOG.warn('Warning! ResponseEntity from previous call ignored.');
-                        }
+                    responseEntity = stepResult;
 
-                        responseEntity = stepResult;
+                } else if (isReadonlyJsonArray(stepResult)) {
 
-                    } else if (isReadonlyJsonArray(stepResult)) {
+                    if (responseEntity === undefined) {
 
-                        if (responseEntity === undefined) {
-
-                            responseEntity = ResponseEntity.ok(stepResult);
-
-                        } else {
-
-                            responseEntity = new ResponseEntity<any>(
-                                concat(responseEntity.getBody(), stepResult),
-                                responseEntity.getHeaders(),
-                                responseEntity.getStatusCode()
-                            );
-
-                        }
-
-                    } else if (isReadonlyJsonObject(stepResult)) {
-
-                        if (responseEntity === undefined) {
-
-                            responseEntity = ResponseEntity.ok(stepResult);
-
-                        } else {
-
-                            responseEntity = new ResponseEntity<any>(
-                                {
-                                    ...responseEntity.getBody(),
-                                    ...stepResult
-                                },
-                                responseEntity.getHeaders(),
-                                responseEntity.getStatusCode()
-                            );
-
-                        }
-
-                    } else if (isReadonlyJsonAny(stepResult)) {
-
-                        if (responseEntity === undefined) {
-
-                            responseEntity = ResponseEntity.ok(stepResult);
-
-                        } else {
-
-                            LOG.warn('Warning! ResponseEntity from previous call ignored.');
-
-                            responseEntity = new ResponseEntity<any>(
-                                stepResult,
-                                responseEntity.getHeaders(),
-                                responseEntity.getStatusCode()
-                            );
-
-                        }
+                        responseEntity = ResponseEntity.ok(stepResult);
 
                     } else {
 
-                        if (responseEntity === undefined) {
-
-                            responseEntity = ResponseEntity.ok(stepResult);
-
-                        } else {
-
-                            LOG.warn('Warning! ResponseEntity from previous call ignored.');
-
-                            responseEntity = new ResponseEntity<any>(
-                                stepResult,
-                                responseEntity.getHeaders(),
-                                responseEntity.getStatusCode()
-                            );
-
-                        }
+                        responseEntity = new ResponseEntity<any>(
+                            concat(responseEntity.getBody(), stepResult),
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
 
                     }
 
-                    // LOG.debug('handleRequest: result changed: ', responseEntity);
+                } else if (isReadonlyJsonObject(stepResult)) {
 
-                });
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        responseEntity = new ResponseEntity<any>(
+                            {
+                                ...responseEntity.getBody(),
+                                ...stepResult
+                            },
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                } else if (isReadonlyJsonAny(stepResult)) {
+
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        LOG.warn('Warning! ResponseEntity from previous call ignored.');
+
+                        responseEntity = new ResponseEntity<any>(
+                            stepResult,
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                } else {
+
+                    if (responseEntity === undefined) {
+
+                        responseEntity = ResponseEntity.ok(stepResult);
+
+                    } else {
+
+                        LOG.warn('Warning! ResponseEntity from previous call ignored.');
+
+                        responseEntity = new ResponseEntity<any>(
+                            stepResult,
+                            responseEntity.getHeaders(),
+                            responseEntity.getStatusCode()
+                        );
+
+                    }
+
+                }
+
+                // LOG.debug('handleRequest: result changed: ', responseEntity);
 
             }, Promise.resolve());
 
@@ -323,10 +456,6 @@ export class RequestRouter {
         method          : RequestMethod,
         requestPathName : string
     ) : RequestContext {
-
-        if (!this._routes) {
-            this._initializeRoutes();
-        }
 
         if ( !this._routes || !this._routes.hasRoute(requestPathName) ) {
             return {
@@ -565,9 +694,10 @@ export class RequestRouter {
     private static _bindRequestActionParams (
         searchParams      : URLSearchParams,
         requestBody       : Json | undefined,
-        params            : Array<RequestParamObject|null>,
+        params            : (RequestParamObject|null)[],
         requestHeaders    : Headers,
-        pathVariables     : RouteParamValuesObject | undefined
+        pathVariables     : RouteParamValuesObject | undefined,
+        modelAttributes   : Map<string, any>
     ) : Array<any> {
 
         return map(params, (item : RequestParamObject|null) : any => {
@@ -674,6 +804,17 @@ export class RequestRouter {
                     }
 
                 }
+
+                case RequestParamObjectType.MODEL_ATTRIBUTE: {
+
+                    const modelAttributeItem : RequestModelAttributeParamObject = item as RequestModelAttributeParamObject;
+
+                    const key = modelAttributeItem.attributeName;
+
+                    return modelAttributes.has(key) ? modelAttributes.get(key) : undefined;
+
+                }
+
 
             }
 

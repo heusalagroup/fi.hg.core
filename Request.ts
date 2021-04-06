@@ -14,12 +14,13 @@ import ResponseEntity from "./request/ResponseEntity";
 import Headers from "./request/Headers";
 import DefaultHeaderMapValuesType from "./request/types/DefaultHeaderMapValuesType";
 import DefaultPathVariableMapValuesType from "./request/types/DefaultPathVariableMapValuesType";
-import RequestMappingDecorator from "./request/types/RequestMappingDecorator";
-import RequestMethodParamDecorator from "./request/types/RequestMethodParamDecorator";
+import MethodDecoratorFunction from "./request/types/MethodDecoratorFunction";
+import ParameterDecoratorFunction from "./request/types/ParameterDecoratorFunction";
 import RequestHeaderListOptions, {isRequestHeaderListOptions} from "./request/types/RequestHeaderListOptions";
 import RequestHeaderOptions, {isRequestHeaderOptions} from "./request/types/RequestHeaderOptions";
 import RequestPathVariableListOptions from "./request/types/RequestPathVariableListOptions";
 import RequestPathVariableOptions, {isRequestPathVariableOptions} from "./request/types/RequestPathVariableOptions";
+import ParameterOrMethodDecoratorFunction from "./request/types/ParameterOrMethodDecoratorFunction";
 
 const LOG = LogService.createLogger('Request');
 
@@ -40,7 +41,7 @@ export class Request {
      */
     public static mapping (
         ...config : RequestMappingArray
-    ) : RequestMappingDecorator {
+    ) : MethodDecoratorFunction {
 
         // LOG.debug('mapping: init: ', config);
 
@@ -77,7 +78,7 @@ export class Request {
      */
     public static Mapping (
         ...config : RequestMappingArray
-    ) : RequestMappingDecorator {
+    ) : MethodDecoratorFunction {
         return Request.mapping(...config);
     }
 
@@ -86,7 +87,7 @@ export class Request {
     public static param (
         queryParam  : string,
         paramType  ?: RequestParamValueType
-    ) : RequestMethodParamDecorator;
+    ) : ParameterDecoratorFunction;
 
     public static param (
         target       : any | Function,
@@ -105,7 +106,7 @@ export class Request {
         arg1  : any | Function | string,
         arg2 ?: string | RequestParamValueType,
         arg3 ?: number
-    ) : RequestMethodParamDecorator | void {
+    ) : ParameterDecoratorFunction | void {
 
         if ( isString(arg1) && arg3 === undefined && ( arg2 === undefined || isRequestParamValueType(arg2) ) ) {
 
@@ -199,7 +200,7 @@ export class Request {
         arg1  : any | Function | string,
         arg2 ?: string | RequestParamValueType,
         arg3 ?: number
-    ) : RequestMethodParamDecorator | void {
+    ) : ParameterDecoratorFunction | void {
         // @ts-ignore
         return Request.param(arg1, arg2, arg3);
     }
@@ -208,12 +209,12 @@ export class Request {
 
     public static header (
         opts ?: RequestHeaderListOptions
-    ) : RequestMethodParamDecorator;
+    ) : ParameterDecoratorFunction;
 
     public static header (
         headerName  : string,
         opts       ?: RequestHeaderOptions
-    ) : RequestMethodParamDecorator;
+    ) : ParameterDecoratorFunction;
 
     public static header (
         target       : any | Function,
@@ -225,7 +226,7 @@ export class Request {
         arg1 ?: string | RequestHeaderListOptions | any | Function,
         arg2 ?: string | RequestHeaderOptions | boolean | undefined,
         arg3 ?: number
-    ) : void | RequestMethodParamDecorator {
+    ) : void | ParameterDecoratorFunction {
 
         LOG.debug('Request.Header: ', arg1, arg2, arg3);
 
@@ -366,7 +367,7 @@ export class Request {
         arg1 ?: string | RequestHeaderListOptions | any | Function,
         arg2 ?: string | RequestHeaderOptions | boolean | undefined,
         arg3 ?: number
-    ) : void | RequestMethodParamDecorator {
+    ) : void | ParameterDecoratorFunction {
         // @ts-ignore
         return Request.header(arg1, arg2, arg3);
     }
@@ -375,12 +376,12 @@ export class Request {
 
     public static pathVariable (
         opts ?: RequestPathVariableListOptions
-    ) : RequestMethodParamDecorator;
+    ) : ParameterDecoratorFunction;
 
     public static pathVariable (
         headerName  : string,
         opts       ?: RequestPathVariableOptions
-    ) : RequestMethodParamDecorator;
+    ) : ParameterDecoratorFunction;
 
     public static pathVariable (
         target       : any | Function,
@@ -394,13 +395,12 @@ export class Request {
      * @param arg1
      * @param arg2
      * @param arg3
-     * @constructor
      */
     public static pathVariable (
         arg1 ?: string | RequestPathVariableListOptions | any | Function,
         arg2 ?: string | RequestPathVariableOptions | boolean | undefined,
         arg3 ?: number
-    ) : void | RequestMethodParamDecorator {
+    ) : void | ParameterDecoratorFunction {
 
         LOG.debug('Request.PathVariable: ', arg1, arg2, arg3);
 
@@ -537,10 +537,68 @@ export class Request {
         arg1 ?: string | RequestPathVariableListOptions | any | Function,
         arg2 ?: string | RequestPathVariableOptions | boolean | undefined,
         arg3 ?: number
-    ) : void | RequestMethodParamDecorator {
+    ) : void | ParameterDecoratorFunction {
         // @ts-ignore
         return Request.pathVariable(arg1, arg2, arg3);
     }
+
+
+    // @ModelAttribute
+
+    /**
+     * The implementation
+     *
+     * @param attributeName
+     */
+    public static modelAttribute (
+        attributeName : string
+    ) : ParameterOrMethodDecoratorFunction {
+
+        LOG.debug('Request.modelAttribute: ', attributeName);
+
+        if (!isString(attributeName)) {
+            throw new TypeError(`Request.modelAttribute: Argument 1 is not string: ${attributeName}`);
+        }
+
+        // Return types:
+        // - ParameterDecoratorFunction  = any | Function, string, PropertyDescriptor
+        // - MethodDecoratorFunction     = any | Function, string, number
+        return (
+            target       : any | Function,
+            propertyKey ?: string,
+            paramIndex  ?: number | PropertyDescriptor
+        ) => {
+
+            if ( isString(propertyKey) ) {
+
+                const requestController: RequestController | undefined = RequestControllerUtils.findController(target);
+
+                if (requestController !== undefined) {
+
+                    if (isNumber(paramIndex)) {
+
+                        RequestControllerUtils.setControllerMethodModelAttributeParam(requestController, propertyKey, paramIndex, attributeName, RequestParamValueType.JSON);
+                        return;
+
+                    } else if (paramIndex !== undefined) {
+
+                        RequestControllerUtils.attachControllerMethodModelAttributeBuilder(requestController, propertyKey, paramIndex, attributeName);
+                        return;
+
+                    }
+
+                }
+            }
+
+            LOG.warn('.modelAttribute: Unrecognized configuration: ',
+                "; target=", target,
+                "; propertyKey=", propertyKey,
+                "; paramIndex=", paramIndex);
+
+        };
+
+    }
+
 
     // @RequestBody
 
@@ -722,7 +780,7 @@ export function RequestMapping (...config : RequestMappingArray) {
 export function RequestParam (
     queryParam  : string,
     paramType  ?: RequestParamValueType
-) : RequestMethodParamDecorator;
+) : ParameterDecoratorFunction;
 
 // noinspection JSUnusedGlobalSymbols
 export function RequestParam (
@@ -736,7 +794,7 @@ export function RequestParam (
     arg1  : any | Function | string,
     arg2 ?: string | RequestParamValueType,
     arg3 ?: number
-) : RequestMethodParamDecorator | void {
+) : ParameterDecoratorFunction | void {
     // @ts-ignore
     return Request.param(arg1, arg2, arg3);
 }
@@ -746,13 +804,13 @@ export function RequestParam (
 // noinspection JSUnusedGlobalSymbols
 export function RequestHeader (
     opts ?: RequestHeaderListOptions
-) : RequestMethodParamDecorator;
+) : ParameterDecoratorFunction;
 
 // noinspection JSUnusedGlobalSymbols
 export function RequestHeader (
     headerName  : string,
     opts       ?: RequestHeaderOptions
-) : RequestMethodParamDecorator;
+) : ParameterDecoratorFunction;
 
 // noinspection JSUnusedGlobalSymbols
 export function RequestHeader (
@@ -766,7 +824,7 @@ export function RequestHeader (
     arg1 ?: string | RequestHeaderListOptions | Function | any,
     arg2 ?: string | RequestHeaderOptions | boolean | undefined,
     arg3 ?: number
-) : RequestMethodParamDecorator | void {
+) : ParameterDecoratorFunction | void {
 
     LOG.debug('RequestHeader: ', arg1, arg2, arg3);
 
@@ -775,16 +833,17 @@ export function RequestHeader (
 
 }
 
+
 // noinspection JSUnusedGlobalSymbols
 export function PathVariable (
     opts ?: RequestPathVariableListOptions
-) : RequestMethodParamDecorator;
+) : ParameterDecoratorFunction;
 
 // noinspection JSUnusedGlobalSymbols
 export function PathVariable (
     variableName  : string,
     opts         ?: RequestPathVariableOptions
-) : RequestMethodParamDecorator;
+) : ParameterDecoratorFunction;
 
 // noinspection JSUnusedGlobalSymbols
 export function PathVariable (
@@ -798,9 +857,17 @@ export function PathVariable (
     arg1 ?: string | RequestPathVariableListOptions | any | Function,
     arg2 ?: string | RequestPathVariableOptions | boolean | undefined,
     arg3 ?: number
-) : void | RequestMethodParamDecorator {
+) : void | ParameterDecoratorFunction {
     // @ts-ignore
     return Request.pathVariable(arg1, arg2, arg3);
+}
+
+
+// noinspection JSUnusedGlobalSymbols
+export function ModelAttribute (
+    attributeName : string
+) : ParameterOrMethodDecoratorFunction {
+    return Request.modelAttribute(attributeName);
 }
 
 // noinspection JSUnusedGlobalSymbols
