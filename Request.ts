@@ -639,6 +639,11 @@ export class Request {
         return Request.body(target, propertyKey, paramIndex);
     }
 
+    // @OptionsMapping / @Request.Options
+
+    public static optionsMapping (...config : RequestMappingArray) {
+        return Request.mapping(Request.Method.OPTIONS, ...config);
+    }
 
     // @GetMapping / @Request.Get
 
@@ -868,6 +873,11 @@ export function ModelAttribute (
     attributeName : string
 ) : ParameterOrMethodDecoratorFunction {
     return Request.modelAttribute(attributeName);
+}
+
+// noinspection JSUnusedGlobalSymbols
+export function OptionsMapping (...config : RequestMappingArray) {
+    return Request.optionsMapping(...config);
 }
 
 // noinspection JSUnusedGlobalSymbols
