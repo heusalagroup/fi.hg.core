@@ -4,6 +4,7 @@ import {isNumber, isString} from "../../modules/lodash";
 
 export enum RequestMethod {
 
+    OPTIONS,
     GET,
     POST,
     PUT,
@@ -14,10 +15,11 @@ export enum RequestMethod {
 export function stringifyRequestMethod (value : RequestMethod) : string {
     if (isNumber(value)) {
         switch (value) {
-            case RequestMethod.GET    : return 'get';
-            case RequestMethod.POST   : return 'post';
-            case RequestMethod.PUT    : return 'put';
-            case RequestMethod.DELETE : return 'delete';
+            case RequestMethod.OPTIONS  : return 'options';
+            case RequestMethod.GET      : return 'get';
+            case RequestMethod.POST     : return 'post';
+            case RequestMethod.PUT      : return 'put';
+            case RequestMethod.DELETE   : return 'delete';
         }
     }
     throw new TypeError(`Unsupported value for stringifyRequestMethod(): ${value}`)
@@ -35,10 +37,11 @@ export function parseRequestMethod (value: any) : RequestMethod {
         value = value.toLowerCase();
         switch(value) {
 
-            case 'get'   : return RequestMethod.GET;
-            case 'post'  : return RequestMethod.POST;
-            case 'put'   : return RequestMethod.PUT;
-            case 'delete': return RequestMethod.DELETE;
+            case 'options' : return RequestMethod.OPTIONS;
+            case 'get'     : return RequestMethod.GET;
+            case 'post'    : return RequestMethod.POST;
+            case 'put'     : return RequestMethod.PUT;
+            case 'delete'  : return RequestMethod.DELETE;
 
             default: break;
 

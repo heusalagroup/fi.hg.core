@@ -1,9 +1,10 @@
 import RequestStatus, {stringifyRequestStatus} from "./types/RequestStatus";
-import {isNumber} from "../modules/lodash";
+import {isNumber, map} from "../modules/lodash";
 import Headers, {isHeaders} from "./Headers";
 import HeadersObject, {isHeadersObject} from "./types/HeadersObject";
 import {isReadonlyJsonAny} from "../Json";
 import StringUtils from "../StringUtils";
+import {parseRequestMethod, RequestMethod, stringifyRequestMethod} from "./types/RequestMethod";
 
 export type EntityStatusTypes = RequestStatus | number;
 
@@ -115,6 +116,20 @@ export class ResponseEntity<T> {
         return this._headers;
     }
 
+    public allow (...methods: string[]) : ResponseEntity<T>;
+    public allow (...methods: RequestMethod[]) : ResponseEntity<T>;
+
+    public allow (...methods: (RequestMethod|string)[]) : ResponseEntity<T> {
+
+        const parsedMethods : RequestMethod[] = map(methods, parseRequestMethod);
+        const stringMethods : string[]        = map(parsedMethods, (item : RequestMethod) => stringifyRequestMethod(item).toUpperCase());
+
+        this._headers.set('Allow', stringMethods.join(', '));
+
+        return this;
+
+    }
+
     public hasBody () : boolean {
         return this._body !== undefined;
     }
@@ -162,7 +177,7 @@ export class ResponseEntity<T> {
     public static accepted<T>                   () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.Accepted); }
     public static badRequest<T>                 () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.BadRequest); }
     public static created<T>    (location: string) : ResponseEntity<T> { return new ResponseEntity<T>(new Headers({"Location": location}), RequestStatus.Created); }
-    public static noContent<T>                  () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.NoContent); }
+    public static noContent                     () : ResponseEntity<void> { return new ResponseEntity<void>(RequestStatus.NoContent); }
     public static notFound<T>                   () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.NotFound); }
     public static notImplemented<T>             () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.NotImplemented); }
     public static internalServerError<T>        () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.InternalServerError); }
