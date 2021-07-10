@@ -27,13 +27,13 @@ export type ObserverRecord<EventName extends keyof any> = Record<EventName, Obse
  * class FooService {
  *
  *     private static _data : any;
- *     private static _observer : Observer<FooEvent> = {};
+ *     private static _observer : Observer<FooEvent> = new Observer<FooEvent>("FooService");
  *
  *     public static getData () : any {
  *         return this._data;
  *     }
  *
- *     public static on (name : FooEvent, callback) : ObserverDestructor {
+ *     public static on (name : FooEvent, callback: ObserverCallback<FooEvent>) : ObserverDestructor {
  *         return this._observer.listenEvent(name, callback);
  *     }
  *

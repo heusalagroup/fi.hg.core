@@ -124,7 +124,6 @@ enum FooEvent {
 
 class FooService {
     private static _data: any;
-    private static _observer: Observer<FooEvent> = {};
 
     private static _data : any;
     private static _observer : Observer<FooEvent> = new Observer<FooEvent>("GeoIpService");
