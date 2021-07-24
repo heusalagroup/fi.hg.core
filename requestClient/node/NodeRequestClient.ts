@@ -45,12 +45,15 @@ export interface JsonHttpResponse {
 
 export class NodeRequestClient implements RequestClientInterface {
 
-    private _http : HttpModule;
+    private readonly _http : HttpModule;
+    private readonly _https : HttpModule;
 
     constructor (
-        http : HttpModule
+        http : HttpModule,
+        https : HttpModule
     ) {
         this._http = http;
+        this._https = https;
     }
 
     public async jsonRequest (
@@ -62,6 +65,7 @@ export class NodeRequestClient implements RequestClientInterface {
         switch (method) {
             case RequestMethod.GET:    return await this._getJson(url, headers, data);
             case RequestMethod.POST:   return await this._postJson(url, headers, data);
+            case RequestMethod.PATCH:  return await this._patchJson(url, headers, data);
             case RequestMethod.PUT:    return await this._putJson(url, headers, data);
             case RequestMethod.DELETE: return await this._deleteJson(url, headers, data);
             default:                   throw new TypeError(`[Node]RequestClient: Unsupported method: ${method}`);
@@ -150,6 +154,8 @@ export class NodeRequestClient implements RequestClientInterface {
         const urlParsed = new URL.URL(url);
         LOG.debug('urlParsed = ', urlParsed);
 
+        let httpModule : HttpModule | undefined;
+
         const protocol : string = urlParsed?.protocol ?? '';
 
         if ( protocol === 'unix:' || protocol === 'socket:' ) {
@@ -182,6 +188,12 @@ export class NodeRequestClient implements RequestClientInterface {
 
             url = '';
 
+            httpModule = this._http;
+
+        } else if (protocol === 'https:') {
+            httpModule = this._https;
+        } else {
+            httpModule = this._http;
         }
 
         LOG.debug('Calling inside a promise...');
@@ -189,6 +201,10 @@ export class NodeRequestClient implements RequestClientInterface {
         return await new Promise( (resolve, reject) => {
             let resolved = false;
             try {
+
+                if (!httpModule) {
+                    throw new Error('HTTP module not defined. This error should not happen.');
+                }
 
                 const callback = (res: IncomingMessage) => {
                     if (resolved) {
@@ -204,12 +220,12 @@ export class NodeRequestClient implements RequestClientInterface {
                 if ( !url ) {
 
                     LOG.debug('Requesting with options ', options);
-                    req = this._http.request(options, callback);
+                    req = httpModule.request(options, callback);
 
                 } else {
 
                     LOG.debug(`Requesting "${url}" with options:`, options);
-                    req = this._http.request(url, options, callback);
+                    req = httpModule.request(url, options, callback);
 
                 }
 
@@ -344,6 +360,30 @@ export class NodeRequestClient implements RequestClientInterface {
 
         const options : HttpClientOptions = {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        return this._request(url, options, data).then(NodeRequestClient._successResponse);
+
+    }
+
+    private async _patchJson (
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: Json
+    ) : Promise<Json| undefined> {
+
+        const options : HttpClientOptions = {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             }

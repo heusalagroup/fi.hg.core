@@ -7,6 +7,7 @@ import NodeRequestClient from "./requestClient/node/NodeRequestClient";
 import FetchRequestClient from "./requestClient/fetch/FetchRequestClient";
 
 export const HTTP = REQUEST_CLIENT_NODE_ENABLED ? require('http') : undefined;
+export const HTTPS = REQUEST_CLIENT_NODE_ENABLED ? require('https') : undefined;
 
 const LOG = LogService.createLogger('RequestClient');
 
@@ -40,6 +41,15 @@ export class RequestClient {
         return this._client.jsonRequest(RequestMethod.POST, url, headers, data);
     }
 
+    public static patchJson (
+        url      : string,
+        data    ?: Json,
+        headers ?: {[key: string]: string}
+    ) : Promise<Json| undefined> {
+        LOG.debug('.patchJson: ', url, data, headers);
+        return this._client.jsonRequest(RequestMethod.PATCH, url, headers, data);
+    }
+
     public static putJson (
         url      : string,
         data    ?: Json,
@@ -67,7 +77,7 @@ export class RequestClient {
 
         if ( REQUEST_CLIENT_NODE_ENABLED ) {
             LOG.debug('Detected NodeJS environment');
-            return new NodeRequestClient(HTTP);
+            return new NodeRequestClient(HTTP, HTTPS);
         }
 
         throw new TypeError(`Could not detect request client implementation`);

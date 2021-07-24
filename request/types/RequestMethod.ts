@@ -8,7 +8,8 @@ export enum RequestMethod {
     GET,
     POST,
     PUT,
-    DELETE
+    DELETE,
+    PATCH
 
 }
 
@@ -20,13 +21,14 @@ export function stringifyRequestMethod (value : RequestMethod) : string {
             case RequestMethod.POST     : return 'post';
             case RequestMethod.PUT      : return 'put';
             case RequestMethod.DELETE   : return 'delete';
+            case RequestMethod.PATCH    : return 'patch';
         }
     }
     throw new TypeError(`Unsupported value for stringifyRequestMethod(): ${value}`)
 }
 
 export function isRequestMethod (value: any) : value is RequestMethod {
-    return isNumber(value) && value >= 0 && value <= 3;
+    return isNumber(value) && value >= 0 && value <= 5;
 }
 
 export function parseRequestMethod (value: any) : RequestMethod {
@@ -42,6 +44,7 @@ export function parseRequestMethod (value: any) : RequestMethod {
             case 'post'    : return RequestMethod.POST;
             case 'put'     : return RequestMethod.PUT;
             case 'delete'  : return RequestMethod.DELETE;
+            case 'patch'   : return RequestMethod.PATCH;
 
             default: break;
 
