@@ -2,18 +2,26 @@
 
 Our enterprise library for TypeScript.
 
+### It's MIT licenced
+
+### It doesn't have many runtime dependencies
+
+### We don't have traditional releases
+
+We don't have traditional releases.  This project evolves directly to our git repository in an agile manner.
+
 This git repository contains only the source code for a compile time use case. It is meant to be used as a git submodule in a NodeJS or webpack project.
 
 See [sendanor/typescript-package](https://github.com/sendanor/typescript-package) for a full package example. Although, keep in mind, this repository is not intended to be used as a NPM package dependency.
 
-## Releases
+### We can make stable releases for a commercial customer
 
-We don't have traditional releases. 
+#### We can make stable releases for a commercial customer
 
-This project evolves directly to our git repository in an agile manner.
+One stable release is 8000 € + taxes.
 
-However, we can make releases for a commercial customer. One stable release is 16 000 € + taxes. The payment may include 
-one month of agile development with the customer. It will also include one year of support for that release branch.
+The payment includes a month of agile development with the customer, and a year of
+support for that release branch.
 
 ## Index
 
@@ -40,7 +48,7 @@ Setup git submodule:
 
 ```shell
 mkdir -p src/nor
-git submodule add https://github.com/sendanor/typescript src/nor/ts
+git submodule add git@github.com:sendanor/typescript.git src/nor/ts
 git config -f .gitmodules submodule.src/nor/ts.branch main
 ```
 
