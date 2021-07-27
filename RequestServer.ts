@@ -81,7 +81,7 @@ export class RequestServer {
             const responseData : ResponseEntity<any> = await this._router.handleRequest(
                 parseRequestMethod(req.method),
                 req.url,
-                async () : Promise<Json | undefined> => NodeHttpUtils.getRequestDataAsJson(req),
+                (headers: Headers) => RequestServer._requestBodyParser(req, headers),
                 this._parseRequestHeaders(req.headers)
             );
 
@@ -92,6 +92,25 @@ export class RequestServer {
             LOG.debug('Error: ', err);
 
             this._handleErrorResponse(err, res);
+
+        }
+
+    }
+
+    private static async _requestBodyParser (
+        req: IncomingMessage,
+        headers : Headers
+    ) : Promise<Json | undefined> {
+
+        const contentType : string = headers.getFirst('content-type')?.toLowerCase() ?? 'application/json';
+
+        switch (contentType) {
+
+            case 'application/x-www-form-urlencoded':
+                return NodeHttpUtils.getRequestDataAsFormUrlEncoded(req);
+
+            default:
+                return NodeHttpUtils.getRequestDataAsJson(req);
 
         }
 

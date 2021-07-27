@@ -33,7 +33,7 @@ import RequestModelAttributeParamObject from "../request/types/RequestModelAttri
 const LOG = LogService.createLogger('RequestRouter');
 
 export interface ParseRequestBodyCallback {
-    () : Json | undefined | Promise<Json | undefined>;
+    (headers: Headers) : Json | undefined | Promise<Json | undefined>;
 }
 
 export interface RequestContext {
@@ -247,7 +247,7 @@ export class RequestRouter {
 
             // LOG.debug('handleRequest: requestBodyRequired: ', requestBodyRequired);
 
-            const requestBody = parseRequestBody && bodyRequired ? await parseRequestBody() : undefined;
+            const requestBody = parseRequestBody && bodyRequired ? await parseRequestBody(requestHeaders) : undefined;
 
             // LOG.debug('handleRequest: requestBody: ', requestBody);
 

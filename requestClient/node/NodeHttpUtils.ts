@@ -1,5 +1,6 @@
 import {IncomingMessage} from "http";
 import Json from "../../Json";
+import * as QueryString from "querystring";
 
 /**
  * The type definitions for Node were inciting to use strict type list, even though NodeJS manual tells just "string".
@@ -55,6 +56,26 @@ export class NodeHttpUtils {
         const buffer = await NodeHttpUtils.getRequestDataAsBuffer(request);
 
         return buffer.toString(encoding);
+
+    }
+
+    /**
+     * Get request body data as "application/x-www-form-urlencoded".
+     *
+     * @param request
+     * @return The request input data. If request data is an empty string, an `undefined` will be returned.
+     */
+    public static async getRequestDataAsFormUrlEncoded (
+        request : IncomingMessage
+    ) : Promise<Json | undefined> {
+
+        const dataString = await NodeHttpUtils.getRequestDataAsString(request);
+
+        if (dataString === "") {
+            return undefined;
+        }
+
+        return QueryString.parse(dataString);
 
     }
 
