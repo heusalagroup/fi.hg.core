@@ -100,16 +100,16 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
             try {
                 await this._handler(req, res);
             } catch (e) {
-                LOG.error('Response handler has an error: ', e);
+                LOG.error(`"${req.method} ${req.url}": Response handler had an error: `, e);
             }
 
-            if (!res.writableFinished) {
-                LOG.warn(`Warning! Request handler for "${req.method} ${req.url}" did not close the response.`);
+            if (!res.writableEnded) {
+                LOG.warn(`"${req.method} ${req.url}": Warning! Request handler did not close the response.`);
                 res.end();
             }
 
         } else {
-            LOG.error('No handler configured for the request.');
+            LOG.error(`"${req.method} ${req.url}": No handler configured"`);
             res.end('Error');
         }
 
