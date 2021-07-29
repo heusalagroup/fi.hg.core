@@ -104,7 +104,7 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
             }
 
             if (!res.writableFinished) {
-                LOG.warn('Warning! Request handler did not close the response.');
+                LOG.warn(`Warning! Request handler for "${req.method} ${req.url}" did not close the response.`);
                 res.end();
             }
 
