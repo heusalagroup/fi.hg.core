@@ -81,17 +81,38 @@ export class RequestServer {
             const responseData : ResponseEntity<any> = await this._router.handleRequest(
                 parseRequestMethod(req.method),
                 req.url,
-                async () : Promise<Json | undefined> => NodeHttpUtils.getRequestDataAsJson(req),
+                (headers: Headers) => RequestServer._requestBodyParser(req, headers),
                 this._parseRequestHeaders(req.headers)
             );
+
+            LOG.debug(`"${req.method} ${req.url}": Processing responseEntity`);
 
             this._handleResponse(responseData, res);
 
         } catch (err) {
 
-            LOG.debug('Error: ', err);
+            LOG.debug('Error at _handleRequest, passing it on: ', err);
 
             this._handleErrorResponse(err, res);
+
+        }
+
+    }
+
+    private static async _requestBodyParser (
+        req: IncomingMessage,
+        headers : Headers
+    ) : Promise<Json | undefined> {
+
+        const contentType : string = headers.getFirst('content-type')?.toLowerCase() ?? 'application/json';
+
+        switch (contentType) {
+
+            case 'application/x-www-form-urlencoded':
+                return NodeHttpUtils.getRequestDataAsFormUrlEncoded(req);
+
+            default:
+                return NodeHttpUtils.getRequestDataAsJson(req);
 
         }
 
@@ -108,12 +129,13 @@ export class RequestServer {
         res.statusMessage = stringifyRequestStatus(statusCode);
 
         const headers : Headers = responseEntity.getHeaders();
+
         if (!headers.isEmpty()) {
             headers.keySet().forEach((headerKey : string) => {
 
                 const headerValue = headers.getValue(headerKey) ?? '';
 
-                LOG.debug(`Setting response header as "${headerKey}": "${headerValue}"`);
+                LOG.debug(`_handleResponse: Setting response header as "${headerKey}": "${headerValue}"`);
 
                 if (isArray(headerValue)) {
                     res.setHeader(headerKey, [...headerValue] as string[]);
@@ -127,11 +149,14 @@ export class RequestServer {
         if (responseEntity.hasBody()) {
             const body = responseEntity.getBody();
             if (isString(body)) {
+                LOG.debug('_handleResponse: Ending as text ', statusCode, body);
                 res.end(body);
             } else {
+                LOG.debug('_handleResponse: Ending as json ', statusCode, body);
                 res.end(JSON.stringify(body, null, 2));
             }
         } else {
+            LOG.debug('_handleResponse: Ending without body ', statusCode);
             res.end();
         }
 
