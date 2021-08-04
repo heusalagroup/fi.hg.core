@@ -171,8 +171,20 @@ export function everyProperty<K extends string = string, T = any> (
     return everyKey<K>(value, isKey) && everyValue<T>(value, isItem);
 }
 
+/**
+ *
+ * @FIXME: Does not detect Date... and probably others too.
+ * @param value
+ */
 export function isRegularObject (value: any) : value is { [name: string]: any } {
-    return _isObject(value) && !isArray(value) && everyKey(value, isString);
+
+    if (!_isObject(value)) return false;
+    if (value instanceof Date) return false;
+    if (isFunction(value)) return false;
+    if (isArray(value)) return false;
+
+    return everyKey(value, isString);
+
 }
 
 export function isPromise (value: any) : value is Promise<any> {
