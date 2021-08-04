@@ -28,12 +28,25 @@ import {
     every
 } from "./modules/lodash";
 
+/**
+ *
+ */
 export class Test {
 
+    /**
+     *
+     * @param value
+     * @deprecated Use `isString`, etc instead from the modules/lodash.ts
+     */
     static isString (value: any) : value is string {
         return isString(value);
     }
 
+    /**
+     *
+     * @param value
+     * @deprecated Use `isNumber`, etc instead from the modules/lodash.ts
+     */
     static isNumber (value: any) : value is number {
         return isNumber(value);
     }
@@ -42,6 +55,7 @@ export class Test {
      * Test if it is an regular object (eg. all keys are strings).
      *
      * @param value
+     * @deprecated Use `isRegularObject`, etc instead from the modules/lodash.ts
      */
     static isRegularObject (value: any) : value is { [name: string]: any } {
         return isObject(value) && !isArray(value) && every(keys(value), (key : any) => isString(key));
@@ -51,11 +65,17 @@ export class Test {
      * Test if the value is an array
      *
      * @param value
+     * @deprecated Use `isArray`, etc instead from the modules/lodash.ts
      */
     static isArray (value: any) : value is Array<any> {
         return isArray(value);
     }
 
+    /**
+     *
+     * @param value
+     * @deprecated Use `isPromise`, etc instead from the modules/lodash.ts
+     */
     static isPromise (value: any) : value is Promise<any> {
         // @ts-ignore
         return isObject(value) && !!value.then && !!value.catch;

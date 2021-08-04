@@ -3,7 +3,7 @@
 import {filter, forEach, has} from "./modules/lodash";
 
 export interface ObserverCallback<EventName extends keyof any> {
-    (event: EventName, ...args : Array<any>) : void;
+    (event: EventName, ...args : any[]) : void;
 }
 
 export interface ObserverDestructor {
