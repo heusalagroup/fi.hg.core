@@ -33,6 +33,14 @@ import toSafeInteger from 'lodash/toSafeInteger.js';
 import startsWith from 'lodash/startsWith.js';
 import values from 'lodash/values.js';
 
+export interface StringifyCallback<T = any> {
+    (value: T) : string;
+}
+
+export interface ParserCallback<T> {
+    (value: any) : T | undefined;
+}
+
 export interface TestCallback {
     (value: any) : boolean;
 }
