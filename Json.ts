@@ -130,5 +130,12 @@ export function isReadonlyJsonArray<T extends ReadonlyJsonAny = ReadonlyJsonAny>
     return isArray<T>(value, createOr(isItemOf, isUndefined));
 }
 
+export function parseJson (value: any) : JsonAny | undefined {
+    try {
+        return JSON.parse(value);
+    } catch (err) {
+        return undefined;
+    }
+}
 
 export default JsonAny;

@@ -218,6 +218,24 @@ export function isObject<K extends string = string, T = any> (
 
 }
 
+export function parseFunctionSignature (f: any) : string | undefined {
+
+    if (!isFunction(f)) return undefined;
+
+    let fString = trim(`${f}`);
+
+    if (startsWith(fString, 'function ')) {
+        fString = trim(fString.substr('function '.length));
+    }
+
+    const index = fString.indexOf('{');
+    if (index >= 0) {
+        return trim(fString.substr(0, index));
+    }
+    return trim(fString);
+
+}
+
 export {
     map,
     some,
