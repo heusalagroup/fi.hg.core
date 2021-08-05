@@ -26,7 +26,7 @@ import { default as _isArray } from 'lodash/isArray.js';
 import isFunction from 'lodash/isFunction.js';
 import { default as _isString } from 'lodash/isString.js';
 import isNumber from 'lodash/isNumber.js';
-import isInteger from 'lodash/isInteger.js';
+import { default as _isInteger } from 'lodash/isInteger.js';
 import { default as _isSafeInteger } from 'lodash/isSafeInteger.js';
 import toInteger from 'lodash/toInteger.js';
 import toSafeInteger from 'lodash/toSafeInteger.js';
@@ -135,8 +135,9 @@ export function isNumberArray (value : any) : value is number[] {
 
 export function parseInteger (value: any) : number | undefined {
 
-    if (isString(value, 1)) {
+    if (isString(value)) {
         value = trim(value);
+        if (value.length === 0) return undefined;
     }
 
     const parsedValue = toSafeInteger(value);
@@ -145,8 +146,44 @@ export function parseInteger (value: any) : number | undefined {
 
 }
 
-export function isSafeInteger (value : any) : value is number {
-    return _isSafeInteger(value);
+export function isInteger (
+    value      : any,
+    rangeStart : number | undefined = undefined,
+    rangeEnd   : number | undefined = undefined
+) : value is number {
+
+    if (!_isInteger(value)) return false;
+
+    if (rangeStart !== undefined && value < rangeStart) {
+        return false;
+    }
+
+    if (rangeEnd !== undefined && value > rangeEnd) {
+        return false;
+    }
+
+    return true;
+
+}
+
+export function isSafeInteger (
+    value      : any,
+    rangeStart : number | undefined = undefined,
+    rangeEnd   : number | undefined = undefined
+) : value is number {
+
+    if (!_isSafeInteger(value)) return false;
+
+    if (rangeStart !== undefined && value < rangeStart) {
+        return false;
+    }
+
+    if (rangeEnd !== undefined && value > rangeEnd) {
+        return false;
+    }
+
+    return true;
+
 }
 
 export function everyKey<T extends string = string> (
@@ -236,6 +273,14 @@ export function parseFunctionSignature (f: any) : string | undefined {
 
 }
 
+export function getOtherKeys (obj: any, acceptedKeys: string[]) : string[] {
+    return filter(keys(obj), (key : string) : boolean => !acceptedKeys.includes(key));
+}
+
+export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
+    return isObject(obj) && getOtherKeys(obj, acceptedKeys).length === 0;
+}
+
 export {
     map,
     some,
@@ -259,7 +304,6 @@ export {
     isNull,
     isFunction,
     isNumber,
-    isInteger,
     toInteger,
     toSafeInteger,
     startsWith,
