@@ -76,6 +76,19 @@ export function isArray<T = any> (
 
 }
 
+export function isArrayOrUndefined<T = any> (
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined = undefined,
+    maxLength : number | undefined = undefined
+) : value is (T[] | readonly T[] | undefined) {
+
+    if (value === undefined) return true;
+
+    return isArray<T>(value, isItem, minLength, maxLength);
+
+}
+
 export function isBooleanOrUndefined (value : any) : value is boolean | undefined {
     return isUndefined(value) || isBoolean(value);
 }
@@ -194,41 +207,74 @@ export function isSafeInteger (
 
 }
 
-export function everyKey<T extends string = string> (
+export function everyKey<T extends keyof any = string> (
     value : any,
-    isKey : TestCallback | undefined
+    isKey : TestCallback
 ) : value is {[P in T]: any} {
     return _isObject(value) && every(keys(value), isKey);
 }
 
 export function everyValue<T = any> (
     value  : any,
-    isItem : TestCallback | undefined
+    isItem : TestCallback
 ) : value is {[key: string]: T} {
     return _isObject(value) && every(values(value), isItem);
 }
 
-export function everyProperty<K extends string = string, T = any> (
+export function everyProperty<K extends keyof any = string, T = any> (
     value  : any,
-    isKey  : TestCallback | undefined,
-    isItem : TestCallback | undefined
+    isKey  : TestCallback | undefined = isString,
+    isItem : TestCallback | undefined = undefined
 ) : value is {[P in K]: T} {
-    return everyKey<K>(value, isKey) && everyValue<T>(value, isItem);
+
+    if ( isItem !== undefined && !everyValue<T>(value, isItem) ) {
+        return false;
+    }
+
+    if ( isKey !== undefined ) {
+        return everyKey<K>(value, isKey);
+    }
+
+    return everyKey<K>(value, isString);
+
 }
 
 /**
  *
- * @FIXME: Does not detect Date... and probably others too.
  * @param value
+ * @param isKey
+ * @param isItem
  */
-export function isRegularObject (value: any) : value is { [name: string]: any } {
+export function isRegularObject<K extends keyof any = string, T=any> (
+    value  : any,
+    isKey  : TestCallback = isString,
+    isItem : TestCallback | undefined = undefined
+) : value is {[P in K]: T} {
 
     if (!_isObject(value)) return false;
     if (value instanceof Date) return false;
     if (isFunction(value)) return false;
     if (isArray(value)) return false;
 
-    return everyKey(value, isString);
+    return everyProperty<K,T>(value, isKey, isItem);
+
+}
+
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ */
+export function isRegularObjectOrUndefined<K extends keyof any = string, T=any> (
+    value  : any,
+    isKey  : TestCallback = isString,
+    isItem : TestCallback | undefined = undefined
+) : value is ({[P in K]: T} | undefined) {
+
+    if (value === undefined) return true;
+
+    return isRegularObject<K,T>(value, isKey, isItem);
 
 }
 
