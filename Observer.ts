@@ -2,8 +2,8 @@
 
 import {filter, forEach, has} from "./modules/lodash";
 
-export interface ObserverCallback<EventName extends keyof any> {
-    (event: EventName, ...args : any[]) : void;
+export interface ObserverCallback<EventName extends keyof any, T extends any[] = any[] > {
+    (event: EventName, ...args : T) : void;
 }
 
 export interface ObserverDestructor {
