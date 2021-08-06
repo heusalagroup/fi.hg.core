@@ -30,8 +30,9 @@ import {
     isUndefined,
     everyProperty,
     createOr,
-    TestCallback
+    TestCallbackNonStandard, isArrayOf
 } from "./modules/lodash";
+
 
 export interface WritableJsonSerializable {
     toJSON () : JsonAny;
@@ -40,6 +41,7 @@ export interface WritableJsonSerializable {
 export interface ReadonlyJsonSerializable {
     toJSON () : ReadonlyJsonAny;
 }
+
 
 export type JsonSerializable                = WritableJsonSerializable | ReadonlyJsonSerializable;
 export type FlatJsonValue                   = string | number | boolean | null;
@@ -89,11 +91,20 @@ export function isJsonAnyOrUndefined (value: any) : value is JsonAny | ReadonlyJ
  * Will accept objects with undefined values, which usually disappear from the JSON when stringified.
  *
  * @param value
+ */
+export function isJsonObject (value : any) : value is JsonObject | ReadonlyJsonObject {
+    return isRegularObject(value) && everyProperty<string, JsonAny>(value, isString, createOr(isJsonAny, isUndefined));
+}
+
+/**
+ * Will accept objects with undefined values, which usually disappear from the JSON when stringified.
+ *
+ * @param value
  * @param isPropertyOf
  */
-export function isJsonObject<T extends JsonAny = JsonAny> (
+export function isJsonObjectOf<T extends JsonAny = JsonAny> (
     value        : any,
-    isPropertyOf : TestCallback = isJsonAny
+    isPropertyOf : TestCallbackNonStandard = isJsonAny
 ) : value is JsonObject | ReadonlyJsonObject {
     return isRegularObject(value) && everyProperty<string, T>(value, isString, createOr(isPropertyOf, isUndefined));
 }
@@ -102,13 +113,24 @@ export function isJsonObject<T extends JsonAny = JsonAny> (
  * Will also accept arrays with undefined values, too, although these will usually convert to null.
  *
  * @param value
+ */
+export function isJsonArray (
+    value    : any
+) : value is JsonArrayOf<JsonAny> {
+    return isArrayOf<JsonAny>(value, createOr(isJsonAny, isUndefined));
+}
+
+/**
+ * Will also accept arrays with undefined values, too, although these will usually convert to null.
+ *
+ * @param value
  * @param isItemOf
  */
-export function isJsonArray<T extends JsonAny = JsonAny> (
+export function isJsonArrayOf<T extends JsonAny = JsonAny> (
     value    : any,
-    isItemOf : TestCallback = isJsonAny
+    isItemOf : TestCallbackNonStandard = isJsonAny
 ) : value is JsonArrayOf<T> {
-    return isArray<T>(value, createOr(isItemOf, isUndefined));
+    return isArrayOf<T>(value, createOr(isItemOf, isUndefined));
 }
 
 
@@ -116,18 +138,28 @@ export function isReadonlyJsonAny (value: any) : value is ReadonlyJsonAny {
     return isFlatJsonValue(value) || isReadonlyJsonArray(value) || isReadonlyJsonObject(value);
 }
 
-export function isReadonlyJsonObject<T extends ReadonlyJsonAny = ReadonlyJsonAny> (
+export function isReadonlyJsonObject (value : any) : value is ReadonlyJsonObjectOf<ReadonlyJsonAny> {
+    return isRegularObject(value) && everyProperty<string, ReadonlyJsonAny>(value, isString, createOr(isReadonlyJsonAny, isUndefined));
+}
+
+export function isReadonlyJsonObjectOf<T extends ReadonlyJsonAny = ReadonlyJsonAny> (
     value        : any,
-    isPropertyOf : TestCallback = isReadonlyJsonAny
+    isPropertyOf : TestCallbackNonStandard = isReadonlyJsonAny
 ) : value is ReadonlyJsonObjectOf<T> {
     return isRegularObject(value) && everyProperty<string, T>(value, isString, createOr(isPropertyOf, isUndefined));
 }
 
 export function isReadonlyJsonArray<T extends ReadonlyJsonAny = ReadonlyJsonAny> (
+    value : any
+) : value is ReadonlyJsonArrayOf<ReadonlyJsonAny> {
+    return isArrayOf<ReadonlyJsonAny>(value, createOr(isReadonlyJsonAny, isUndefined));
+}
+
+export function isReadonlyJsonArrayOf<T extends ReadonlyJsonAny = ReadonlyJsonAny> (
     value    : any,
-    isItemOf : TestCallback = isReadonlyJsonAny
+    isItemOf : TestCallbackNonStandard = isReadonlyJsonAny
 ) : value is ReadonlyJsonArrayOf<T> {
-    return isArray<T>(value, createOr(isItemOf, isUndefined));
+    return isArrayOf<T>(value, createOr(isItemOf, isUndefined));
 }
 
 export function parseJson (value: any) : JsonAny | undefined {

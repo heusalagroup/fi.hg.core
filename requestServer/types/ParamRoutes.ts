@@ -119,9 +119,9 @@ export class ParamRoutes implements BaseRoutes {
 
             let paramValues : RouteParamValuesObject = {};
 
-            const isMatch : boolean = every(paramKeys, (paramKey : string | null, paramIndex : number) => {
+            if ( every<string>(paramKeys, (paramKey: string | null, paramIndex: number): boolean => {
 
-                if (isString(paramKey)) {
+                if ( isString(paramKey) ) {
 
                     paramValues[paramKey] = requestParts[paramIndex];
 
@@ -133,13 +133,11 @@ export class ParamRoutes implements BaseRoutes {
 
                 }
 
-            });
-
-            if (!isMatch) {
-                return [undefined, undefined];
+            }) ) {
+                return [ itemValue, paramValues ];
+            } else {
+                return [ undefined, undefined ];
             }
-
-            return [itemValue, paramValues];
 
         };
 

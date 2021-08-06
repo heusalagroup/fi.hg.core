@@ -1,6 +1,16 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {every, keys, has, isFunction, isObject, some, map, filter} from "../modules/lodash";
+import {
+    every,
+    keys,
+    has,
+    isFunction,
+    isObject,
+    some,
+    map,
+    filter,
+    TestCallback
+} from "../modules/lodash";
 
 export class RequestInterfaceUtils {
 
@@ -72,7 +82,7 @@ export class RequestInterfaceUtils {
 
     static everyPropertyIs<T> (
         value: {[key: string] : any},
-        test : Function
+        test : TestCallback
     ) : value is {[key: string] : T} {
 
         return every(map(keys(value), (key : string) : any => value[key]), test);
