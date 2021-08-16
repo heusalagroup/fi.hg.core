@@ -28,7 +28,7 @@ export class RequestClient {
         url      : string,
         headers ?: {[key: string]: string}
     ) : Promise<Json| undefined> {
-        LOG.debug('.getJson: ', url, headers);
+        // LOG.debug('.getJson: ', url, headers);
         return this._client.jsonRequest(RequestMethod.GET, url, headers);
     }
 

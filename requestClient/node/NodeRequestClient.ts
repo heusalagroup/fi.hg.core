@@ -147,12 +147,12 @@ export class NodeRequestClient implements RequestClientInterface {
         body    ?: Json
     ) : Promise<IncomingMessage> {
 
-        LOG.debug('_httpRequest: url, options, body = ', url, options, body);
+        // LOG.debug('_httpRequest: url, options, body = ', url, options, body);
 
         const bodyString : string | undefined = body ? JSON.stringify(body) + '\n' : undefined;
 
         const urlParsed = new URL.URL(url);
-        LOG.debug('urlParsed = ', urlParsed);
+        // LOG.debug('urlParsed = ', urlParsed);
 
         let httpModule : HttpModule | undefined;
 
@@ -166,7 +166,7 @@ export class NodeRequestClient implements RequestClientInterface {
                 throw new TypeError(`No socket path found for unix protocol URL: ${url}`);
             }
 
-            LOG.debug('_httpRequest: fullSocketPath: ', fullSocketPath);
+            // LOG.debug('_httpRequest: fullSocketPath: ', fullSocketPath);
 
             const realSocketPath : string | undefined = await this._findSocketFile(fullSocketPath);
 
@@ -178,7 +178,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
             const path : string = `${socketSuffix}${urlParsed.search !== '?' ? urlParsed.search : ''}`;
 
-            LOG.debug('Using unix socket: ', realSocketPath, path, urlParsed);
+            // LOG.debug('Using unix socket: ', realSocketPath, path, urlParsed);
 
             options = {
                 ...options,
@@ -196,7 +196,7 @@ export class NodeRequestClient implements RequestClientInterface {
             httpModule = this._http;
         }
 
-        LOG.debug('Calling inside a promise...');
+        // LOG.debug('Calling inside a promise...');
 
         return await new Promise( (resolve, reject) => {
             let resolved = false;
@@ -217,17 +217,22 @@ export class NodeRequestClient implements RequestClientInterface {
 
                 let req : ClientRequest | undefined;
 
-                if ( !url ) {
+                if ( url ) {
 
-                    LOG.debug('Requesting with options ', options);
-                    req = httpModule.request(options, callback);
+                    options = {
+                        ...options,
+                        hostname: urlParsed.hostname,
+                        port: (urlParsed?.port ? parseInt(urlParsed.port, 10) : undefined) ?? (protocol === "https:" ? 443 : 80),
+                        path: urlParsed.pathname + urlParsed.search
+                    };
+
+                    // LOG.debug(`Requesting "${url}" with options:`, options);
 
                 } else {
-
-                    LOG.debug(`Requesting "${url}" with options:`, options);
-                    req = httpModule.request(url, options, callback);
-
+                    // LOG.debug('Requesting with options ', options);
                 }
+
+                req = httpModule.request(options, callback);
 
                 req.on('error', err => {
                     if (resolved) {
@@ -245,12 +250,12 @@ export class NodeRequestClient implements RequestClientInterface {
 
                 if (bodyString) {
 
-                    LOG.debug('_request: writing bodyString = ', bodyString);
+                    // LOG.debug('_request: writing bodyString = ', bodyString);
 
                     req.write(bodyString);
 
                 } else {
-                    LOG.debug('_request: no body');
+                    // LOG.debug('_request: no body');
                 }
 
                 req.end();
@@ -279,18 +284,18 @@ export class NodeRequestClient implements RequestClientInterface {
         body    ?: Json
     ) : Promise<JsonHttpResponse> {
 
-        LOG.debug('_request: url, options, body = ', url, options, body);
+        // LOG.debug('_request: url, options, body = ', url, options, body);
 
         const response : IncomingMessage = await this._httpRequest(url, options, body);
 
-        LOG.debug('Reading response for request...');
+        // LOG.debug('Reading response for request...');
 
         const result : Json | undefined = await NodeHttpUtils.getRequestDataAsJson(response);
 
-        LOG.debug('Received: ', result);
+        // LOG.debug('Received: ', result);
 
         const statusCode = response?.statusCode ?? 0;
-        LOG.debug('_request: statusCode = ', statusCode);
+        // LOG.debug('_request: statusCode = ', statusCode);
 
         const myResponse : JsonHttpResponse = {
             statusCode,
@@ -298,7 +303,7 @@ export class NodeRequestClient implements RequestClientInterface {
             body: result
         };
 
-        LOG.debug('_request: myResponse = ', myResponse);
+        // LOG.debug('_request: myResponse = ', myResponse);
 
         return myResponse;
 
@@ -432,7 +437,7 @@ export class NodeRequestClient implements RequestClientInterface {
             throw new Error('Response was not OK');
         }
 
-        LOG.debug(`Successful response with status ${statusCode}: `, response);
+        // LOG.debug(`Successful response with status ${statusCode}: `, response);
 
         return response.body;
 
