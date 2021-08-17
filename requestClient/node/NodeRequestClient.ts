@@ -102,12 +102,12 @@ export class NodeRequestClient implements RequestClientInterface {
             const code = err?.code;
 
             if (code === 'ENOTDIR') {
-                // LOG.debug('_checkSocketFile: ENOTDIR: ', err);
+                LOG.debug('_checkSocketFile: ENOTDIR: ', err);
                 return undefined;
             }
 
             if (code === 'ENOENT') {
-                // LOG.debug('_checkSocketFile: ENOENT: ', err);
+                LOG.debug('_checkSocketFile: ENOENT: ', err);
                 return undefined;
             }
 
@@ -434,10 +434,11 @@ export class NodeRequestClient implements RequestClientInterface {
         const statusCode = response?.statusCode;
 
         if ( statusCode < 200 || statusCode >= 400 ) {
-            throw new Error('Response was not OK');
+            LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
+            throw new Error(`Response was not OK: Status code ${statusCode}`);
         }
 
-        // LOG.debug(`Successful response with status ${statusCode}: `, response);
+        LOG.debug(`Successful response with status ${statusCode}: `, response);
 
         return response.body;
 
