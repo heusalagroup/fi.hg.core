@@ -909,10 +909,4 @@ export function RequestBody (
     return Request.body(target, propertyKey, paramIndex);
 }
 
-export {
-    ResponseEntity,
-    Headers,
-    RequestError
-};
-
 export default Request;
