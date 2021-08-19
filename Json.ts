@@ -25,7 +25,6 @@ import {
     isString,
     isBoolean,
     isNull,
-    isArray,
     isRegularObject,
     isUndefined,
     everyProperty,
