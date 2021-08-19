@@ -28,7 +28,7 @@ import RequestHeaderMapParamObject from "../request/types/RequestHeaderMapParamO
 import RouteUtils from "./RouteUtils";
 import BaseRoutes, {RouteParamValuesObject} from "./types/BaseRoutes";
 import RequestPathVariableParamObject from "../request/types/RequestPathVariableParamObject";
-import RequestModelAttributeParamObject from "../request/types/RequestModelAttributeParamObject";
+import RequestModelAttributeParamObject, { isRequestModelAttributeParamObject } from "../request/types/RequestModelAttributeParamObject";
 
 const LOG = LogService.createLogger('RequestRouter');
 
@@ -262,15 +262,27 @@ export class RequestRouter {
 
                 await previousPromise;
 
-                if ( !requestModelAttributes.has(routeController) && this._modelAttributeNames && this._modelAttributeNames.has(routeController) ) {
+                if ( this._modelAttributeNames && this._modelAttributeNames.has(routeController) ) {
 
-                    LOG.debug('Populating attributes');
+                    LOG.debug(`Populating attributes for property ${routePropertyName}`);
 
-                    const modelAttributeValues = new Map<string, any>();
+                    const modelAttributeValues : Map<string, any> = RequestRouter._getOrCreateRequestModelAttributesForController(requestModelAttributes, routeController);
 
-                    requestModelAttributes.set(routeController, modelAttributeValues);
+                    const routeAttributeNames : string[] = map(
+                        filter(routePropertyParams, (item : any) : item is RequestModelAttributeParamObject => isRequestModelAttributeParamObject(item)),
+                        (item : RequestModelAttributeParamObject) : string => item.attributeName
+                    );
 
-                    const attributeNamePairs : ModelAttributeProperty[] = this._modelAttributeNames.get(routeController) ?? [];
+                    LOG.debug('route attributeNames: ', routeAttributeNames);
+
+                    const allModelAttributeNamesForRouteController = this._modelAttributeNames.get(routeController);
+
+                    LOG.debug('all attributeNamePairs: ', allModelAttributeNamesForRouteController);
+
+                    const attributeNamePairs : ModelAttributeProperty[] = filter(
+                        allModelAttributeNamesForRouteController ?? [],
+                        (item : ModelAttributeProperty) : boolean => routeAttributeNames.includes(item[0])
+                    );
 
                     LOG.debug('attributeNamePairs: ', attributeNamePairs);
 
@@ -846,6 +858,23 @@ export class RequestRouter {
         }
 
         throw new TypeError(`Unsupported type: ${type}`)
+    }
+
+    private static _getOrCreateRequestModelAttributesForController (
+        requestModelAttributes : Map<RequestController, Map<string, any>>,
+        routeController: any
+    ) : Map<string, any> {
+
+        let modelAttributeValues : Map<string, any> | undefined = requestModelAttributes.get(routeController);
+
+        if ( modelAttributeValues != undefined ) {
+            return modelAttributeValues;
+        }
+
+        modelAttributeValues = new Map<string, any>();
+        requestModelAttributes.set(routeController, modelAttributeValues);
+        return modelAttributeValues;
+
     }
 
 }
