@@ -201,6 +201,10 @@ export function isInteger (value : any) : value is number {
     return _isInteger(value);
 }
 
+export function isIntegerOrUndefined (value : any) : value is number | undefined {
+    return isUndefined(value) || _isInteger(value);
+}
+
 export function isIntegerOf (
     value      : any,
     rangeStart : number | undefined = undefined,

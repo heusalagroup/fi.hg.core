@@ -3,16 +3,21 @@
 import RequestStatus, {stringifyRequestStatus} from "./RequestStatus";
 import {ReadonlyJsonObject} from "../../Json";
 import RequestType from "./RequestType";
+import RequestMethod from "./RequestMethod";
 
 export class RequestError extends Error {
 
     public readonly status  : RequestStatus;
+    public readonly method  : RequestMethod | undefined;
+    public readonly url     : string | undefined;
 
     private readonly __proto__: any;
 
     constructor(
         status  : number,
-        message : string | undefined = undefined
+        message : string        | undefined = undefined,
+        method  : RequestMethod | undefined = undefined,
+        url     : string        | undefined = undefined
     ) {
 
         super( message ? message : stringifyRequestStatus(status) );
@@ -26,6 +31,8 @@ export class RequestError extends Error {
         }
 
         this.status  = status;
+        this.method  = method;
+        this.url     = url;
 
     }
 
@@ -47,6 +54,14 @@ export class RequestError extends Error {
 
     public getStatusCode () : number {
         return this.status;
+    }
+
+    public getMethod () : RequestMethod | undefined {
+        return this.method;
+    }
+
+    public getUrl () : string | undefined {
+        return this.url;
     }
 
 }

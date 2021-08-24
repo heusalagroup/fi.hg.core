@@ -1,6 +1,7 @@
-import RequestMethod from "../../request/types/RequestMethod";
+import RequestMethod, { stringifyRequestMethod } from "../../request/types/RequestMethod";
 import Json from "../../Json";
 import RequestClientInterface from "../RequestClientInterface";
+import RequestError from "../../request/types/RequestError";
 
 export interface FetchInterface {
     (input: string, init?: RequestInit): Promise<Response>;
@@ -56,7 +57,7 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(FetchRequestClient._successResponse);
+        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.GET));
 
     }
 
@@ -87,7 +88,7 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(FetchRequestClient._successResponse);
+        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.PUT));
 
     }
 
@@ -118,7 +119,7 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(FetchRequestClient._successResponse);
+        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.POST));
 
     }
 
@@ -149,14 +150,18 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(FetchRequestClient._successResponse);
+        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.DELETE));
 
     }
 
-    private static _successResponse (response: Response) : Promise<Json> {
+    private static _successResponse (response: Response, method: RequestMethod) : Promise<Json> {
 
-        if (!response.ok) {
-            throw new Error('Response was not OK');
+        const statusCode = response.status;
+
+        if ( !response.ok || (statusCode < 200 || statusCode >= 400) ) {
+            const url        = response.url;
+            //LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
+            throw new RequestError(statusCode, `${statusCode} ${response.statusText} for ${stringifyRequestMethod(method)} ${url}`,method, url);
         }
 
         return response.json();

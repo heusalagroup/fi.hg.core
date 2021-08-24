@@ -1,4 +1,4 @@
-import RequestMethod from "../../request/types/RequestMethod";
+import RequestMethod, { stringifyRequestMethod } from "../../request/types/RequestMethod";
 import Json from "../../Json";
 import RequestClientInterface from "../RequestClientInterface";
 import {ClientRequest, IncomingHttpHeaders, IncomingMessage} from "http";
@@ -8,6 +8,7 @@ import URL from "url";
 import PATH from "path";
 import {Stats} from "fs";
 import {REQUEST_CLIENT_NODE_ENABLED} from "../request-client-constants";
+import RequestError from "../../request/types/RequestError";
 
 export const FsPromises = REQUEST_CLIENT_NODE_ENABLED ? require("fs").promises : undefined;
 
@@ -37,6 +38,8 @@ export interface HttpModule {
 
 export interface JsonHttpResponse {
 
+    readonly method      : RequestMethod;
+    readonly url         : string;
     readonly statusCode  : number;
     readonly headers    ?: IncomingHttpHeaders;
     readonly body       ?: Json;
@@ -279,6 +282,7 @@ export class NodeRequestClient implements RequestClientInterface {
     }
 
     private async _request (
+        method   : RequestMethod,
         url      : string,
         options  : HttpClientOptions,
         body    ?: Json
@@ -298,6 +302,8 @@ export class NodeRequestClient implements RequestClientInterface {
         // LOG.debug('_request: statusCode = ', statusCode);
 
         const myResponse : JsonHttpResponse = {
+            method: method,
+            url,
             statusCode,
             headers: response.headers,
             body: result
@@ -329,7 +335,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(url, options, data).then(NodeRequestClient._successResponse);
+        return this._request(RequestMethod.GET, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -353,7 +359,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(url, options, data).then(NodeRequestClient._successResponse);
+        return this._request(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -377,7 +383,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(url, options, data).then(NodeRequestClient._successResponse);
+        return this._request(RequestMethod.POST, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -401,7 +407,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(url, options, data).then(NodeRequestClient._successResponse);
+        return this._request(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -425,7 +431,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(url, options, data).then(NodeRequestClient._successResponse);
+        return this._request(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -435,7 +441,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
         if ( statusCode < 200 || statusCode >= 400 ) {
             //LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
-            throw new Error(`Response was not OK: Status code ${statusCode}`);
+            throw new RequestError(statusCode, `Error ${statusCode} for ${stringifyRequestMethod(response.method)} ${response.url}`, response.method, response.url);
         }
 
         //LOG.debug(`Successful response with status ${statusCode}: `, response);
