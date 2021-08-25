@@ -168,6 +168,10 @@ export function isStringArray (value : any) : value is string[] {
     );
 }
 
+export function isStringArrayOrUndefined (value : any) : value is string[] | undefined {
+    return isUndefined(value) || isStringArray(value);
+}
+
 export function isBooleanArray (value : any) : value is boolean[] {
     return (
         !!value
@@ -295,6 +299,44 @@ export function everyProperty<K extends keyof any = string, T = any> (
 
 }
 
+export function assertEveryProperty<K extends keyof any = string, T = any> (
+    value       : any,
+    isKey       : TestCallback | undefined = isString,
+    isItem      : TestCallback | undefined = undefined,
+    explainKey   : ExplainCallback | undefined = undefined,
+    explainValue : ExplainCallback | undefined = undefined
+) : void {
+
+    if ( isItem !== undefined && !everyValue<T>(value, isItem) ) {
+        const valueArray = values(value);
+        // @ts-ignore
+        const itemIndex : number = findIndex(valueArray, (item) : boolean => !isItem(item));
+        const itemKey : string = keys(value)[itemIndex];
+        const itemValue : string = valueArray[itemIndex];
+        if (explainValue) {
+            throw new TypeError(`Property "${itemKey}": value not correct: ${explainValue(itemValue)}`);
+        } else {
+            throw new TypeError(`Property "${itemKey}": value not correct: ${JSON.stringify(itemValue, null, 2)}`);
+        }
+    }
+
+    if ( isKey !== undefined ) {
+        // @ts-ignore
+        const key : any = find(keys(value), (key) : boolean => !isKey(key));
+        if (explainKey) {
+            throw new TypeError(`Property "${key}": key was not correct: ${explainKey(key)}`);
+        } else {
+            throw new TypeError(`Property "${key}": key was not correct: ${JSON.stringify(key, null, 2)}`);
+        }
+
+    }
+
+    // @ts-ignore
+    const key : any = find(keys(value), (key) : boolean => !isString(key));
+    throw new TypeError(`Property "${key}": key was not string: ${key}`);
+
+}
+
 /**
  *
  * @param value
@@ -331,6 +373,65 @@ export function isRegularObjectOf<K extends keyof any = string, T=any> (
 
     return everyProperty<K,T>(value, isKey, isItem);
 
+}
+
+export interface AssertCallback {
+    (value: any) : void;
+}
+
+export interface ExplainCallback {
+    (value: any) : string;
+}
+
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @param explainKey
+ * @param explainValue
+ */
+export function assertRegularObjectOf<K extends keyof any = string, T=any> (
+    value       : any,
+    isKey       : TestCallback = isString,
+    isItem      : TestCallback | undefined = undefined,
+    explainKey   : ExplainCallback | undefined = undefined,
+    explainValue : ExplainCallback | undefined = undefined
+) : void {
+
+    if (!_isObject(value)) {
+        throw new TypeError(`value was not object`);
+    }
+
+    if (value instanceof Date){
+        throw new TypeError(`value was Date`);
+    }
+
+    if (isFunction(value)){
+        throw new TypeError(`value was Function`);
+    }
+
+    if (isArray(value)){
+        throw new TypeError(`value was array`);
+    }
+
+    assertEveryProperty<K,T>(value, isKey, isItem, explainKey, explainValue);
+
+}
+
+export function explainRegularObjectOf<K extends keyof any = string, T=any> (
+    value  : any,
+    isKey  : TestCallback = isString,
+    isItem : TestCallback | undefined = undefined,
+    explainKey   : ExplainCallback | undefined = undefined,
+    explainValue : ExplainCallback | undefined = undefined
+) {
+    try {
+        assertRegularObjectOf(value, isKey, isItem, explainKey, explainValue);
+        return 'No errors detected';
+    } catch (err) {
+        return err.message;
+    }
 }
 
 /**
