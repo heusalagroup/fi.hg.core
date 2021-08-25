@@ -4,11 +4,12 @@ import RequestParamObjectType from "./RequestParamObjectType";
 
 export interface RequestPathVariableParamObject {
 
-    objectType    : RequestParamObjectType.PATH_VARIABLE;
-    valueType     : RequestParamValueType;
-    variableName  : string;
-    isRequired    : boolean;
-    defaultValue  : string | undefined;
+    readonly objectType    : RequestParamObjectType.PATH_VARIABLE;
+    readonly valueType     : RequestParamValueType;
+    readonly variableName  : string;
+    readonly isRequired    : boolean;
+    readonly defaultValue  : string | undefined;
+    readonly decodeValue   : boolean;
 
 }
 

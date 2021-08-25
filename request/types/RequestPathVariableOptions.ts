@@ -1,9 +1,13 @@
-import {isBoolean, isString} from "../../modules/lodash";
+import {
+    isBooleanOrUndefined,
+    isStringOrUndefined
+} from "../../modules/lodash";
 
 export interface RequestPathVariableOptions {
 
-    required?: boolean;
-    defaultValue?: string | undefined;
+    readonly required      ?: boolean;
+    readonly defaultValue  ?: string | undefined;
+    readonly decodeValue   ?: boolean;
 
 }
 
@@ -11,8 +15,9 @@ export function isRequestPathVariableOptions(value: any): value is RequestPathVa
 
     return (
         !!value
-        && (value?.required === undefined || isBoolean(value?.required))
-        && (value?.defaultValue === undefined || isString(value?.defaultValue))
+        && isBooleanOrUndefined(value?.required)
+        && isStringOrUndefined(value?.defaultValue)
+        && isBooleanOrUndefined(value?.decodeValue)
     );
 
 }

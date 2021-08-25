@@ -428,6 +428,7 @@ export class Request {
 
             let isRequired   : boolean | undefined = undefined;
             let defaultValue : string  | undefined = undefined;
+            let decodeValue  : boolean             = true;
 
             if (headerNameOpts === undefined) {
 
@@ -439,6 +440,7 @@ export class Request {
 
                 isRequired   = headerNameOpts?.required     ?? undefined;
                 defaultValue = headerNameOpts?.defaultValue ?? undefined;
+                decodeValue  = headerNameOpts?.decodeValue  ?? true;
 
             } else {
                 throw new TypeError('RequestPathVariable: Invalid type of options');
@@ -457,7 +459,7 @@ export class Request {
                     const requestController : RequestController | undefined = RequestControllerUtils.findController(target);
 
                     if (requestController !== undefined) {
-                        RequestControllerUtils.setControllerMethodPathVariable(requestController, propertyKey, paramIndex, variableName, RequestParamValueType.STRING, isRequired, defaultValue);
+                        RequestControllerUtils.setControllerMethodPathVariable(requestController, propertyKey, paramIndex, variableName, RequestParamValueType.STRING, isRequired, decodeValue, defaultValue);
                         return;
                     }
 

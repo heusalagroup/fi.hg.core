@@ -375,6 +375,7 @@ export class RequestControllerUtils {
         variableName : string,
         paramType    : RequestParamValueType,
         isRequired   : boolean | undefined,
+        decodeValue  : boolean | undefined,
         defaultValue : string | undefined
     ) {
 
@@ -383,6 +384,7 @@ export class RequestControllerUtils {
             variableName : variableName,
             valueType    : paramType,
             isRequired   : isRequired ?? true,
+            decodeValue  : decodeValue ?? true,
             defaultValue : defaultValue
         };
 

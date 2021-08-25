@@ -804,6 +804,10 @@ export class RequestRouter {
 
                     if ( variableValue !== undefined && variableValue !== '' ) {
 
+                        if (pathParamItem.decodeValue) {
+                            return decodeURIComponent(variableValue);
+                        }
+
                         return variableValue;
 
                     } else {
