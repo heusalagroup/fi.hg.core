@@ -99,6 +99,15 @@ export function isJsonObject (value : any) : value is JsonObject | ReadonlyJsonO
  * Will accept objects with undefined values, which usually disappear from the JSON when stringified.
  *
  * @param value
+ */
+export function isJsonObjectOrUndefined (value : any) : value is JsonObject | ReadonlyJsonObject | undefined {
+    return isUndefined(value) || isJsonObject(value);
+}
+
+/**
+ * Will accept objects with undefined values, which usually disappear from the JSON when stringified.
+ *
+ * @param value
  * @param isPropertyOf
  */
 export function isJsonObjectOf<T extends JsonAny = JsonAny> (
