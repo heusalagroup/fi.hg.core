@@ -549,5 +549,6 @@ export {
     toInteger,
     toSafeInteger,
     startsWith,
-    has
+    has,
+    values
 };
