@@ -525,6 +525,12 @@ export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
     return isObject(obj) && getOtherKeys(obj, acceptedKeys).length === 0;
 }
 
+export function parseNonEmptyString (value: any) : string | undefined {
+    if (value === undefined) return undefined;
+    if (value === '') return undefined;
+    return `${value}`;
+}
+
 export {
     map,
     get,
