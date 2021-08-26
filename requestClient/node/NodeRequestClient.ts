@@ -440,7 +440,7 @@ export class NodeRequestClient implements RequestClientInterface {
         const statusCode = response?.statusCode;
 
         if ( statusCode < 200 || statusCode >= 400 ) {
-            //LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
+            LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
             throw new RequestError(statusCode, `Error ${statusCode} for ${stringifyRequestMethod(response.method)} ${response.url}`, response.method, response.url);
         }
 
