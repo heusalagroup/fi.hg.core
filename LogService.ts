@@ -1,50 +1,19 @@
-// Copyright (c) 2020 Sendanor. All rights reserved.
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-export enum LogLevel {
-
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR
-
-}
-
-export class Logger {
-
-    readonly name : string;
-
-    constructor (name : string) {
-        this.name = name;
-    }
-
-    public debug (...args : Array<any>) {
-        LogService.debug(`[${this.name}]`, ...args);
-    }
-
-    public info (...args : Array<any>) {
-        LogService.info(`[${this.name}]`, ...args);
-    }
-
-    public warn (...args : Array<any>) {
-        LogService.warn(`[${this.name}]`, ...args);
-    }
-
-    public error (...args : Array<any>) {
-        LogService.error(`[${this.name}]`, ...args);
-    }
-
-}
+import { LogLevel } from "./types/LogLevel";
+import { ContextLogger } from "./types/ContextLogger";
+import Logger from "./types/Logger";
 
 export class LogService {
 
     private static _level  : LogLevel = LogLevel.DEBUG;
-    private static _logger : any = console;
+    private static _logger : Logger   = console;
 
     public static setLogLevel (value : LogLevel) {
         this._level = value;
     }
 
-    public static setLogger (value : any) {
+    public static setLogger (value : Logger) {
         if (!value) throw new TypeError(`The logger was not defined`);
         this._logger = value;
     }
@@ -73,8 +42,8 @@ export class LogService {
         }
     }
 
-    public static createLogger (name : string) : Logger {
-        return new Logger(name);
+    public static createLogger (name : string) : ContextLogger {
+        return new ContextLogger(name, LogService);
     }
 
 }

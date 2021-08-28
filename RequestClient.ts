@@ -76,7 +76,8 @@ export class RequestClient {
         }
 
         if ( REQUEST_CLIENT_NODE_ENABLED ) {
-            LOG.debug('Detected NodeJS environment');
+            // Could not control this with LOG_LEVEL on rolluped content
+            // LOG.debug('Detected NodeJS environment');
             return new NodeRequestClient(HTTP, HTTPS);
         }
 
