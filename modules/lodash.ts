@@ -430,8 +430,8 @@ export function explainRegularObjectOf<K extends keyof any = string, T=any> (
     try {
         assertRegularObjectOf(value, isKey, isItem, explainKey, explainValue);
         return 'No errors detected';
-    } catch (err) {
-        return err.message;
+    } catch (err : any) {
+        return err?.message ?? `${err}`;
     }
 }
 

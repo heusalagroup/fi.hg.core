@@ -100,7 +100,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
             return false;
 
-        } catch (err) {
+        } catch (err : any) {
 
             const code = err?.code;
 
