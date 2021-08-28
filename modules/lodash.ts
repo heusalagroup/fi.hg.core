@@ -526,6 +526,17 @@ export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
     return isObject(obj) && getOtherKeys(obj, acceptedKeys).length === 0;
 }
 
+export function parseBoolean (value: any) : boolean | undefined {
+    if ( value === undefined || value === '' ) return undefined;
+    if ( isBoolean(value) ) return value;
+    return ["true", "t", "on", "1", "enabled"].includes( `${value}`.toLowerCase() );
+}
+
+export function parseString (value: any) : string | undefined {
+    if (value === undefined) return undefined;
+    return `${value}`;
+}
+
 export function parseNonEmptyString (value: any) : string | undefined {
     if (value === undefined) return undefined;
     if (value === '') return undefined;
