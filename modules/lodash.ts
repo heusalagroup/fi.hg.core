@@ -34,6 +34,7 @@ import startsWith from 'lodash/startsWith.js';
 import values from 'lodash/values.js';
 import join from 'lodash/join.js';
 
+
 export interface StringifyCallback<T = any> {
     (value: T) : string;
 }
@@ -50,23 +51,64 @@ export interface TestCallback {
     (value: any, index: number, arr: any[]) : boolean;
 }
 
+export interface AssertCallback {
+    (value: any) : void;
+}
+
+export interface ExplainCallback {
+    (value: any) : string;
+}
+
+/**
+ *
+ * @param callback
+ * @__PURE__
+ * @nosideeffects
+ */
 export function toTestCallback (callback : TestCallbackNonStandard) : TestCallback {
     return (value, index, arr) : boolean => callback(value);
 }
 
+/**
+ *
+ * @param callback
+ * @__PURE__
+ * @nosideeffects
+ */
 export function toTestCallbackNonStandard (callback : TestCallback) : TestCallbackNonStandard {
     // @ts-ignore
     return (value, index, arr) : boolean => callback(value);
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isUndefined (value: any) : value is undefined {
     return value === undefined;
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isArray (value : any) : value is any[] | readonly any[] {
     return _isArray(value);
 }
 
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isArrayOf<T = any> (
     value     : any,
     isItem    : TestCallback | undefined = undefined,
@@ -94,6 +136,12 @@ export function isArrayOf<T = any> (
 
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isArrayOrUndefined (value : any) : value is (any[] | readonly any[] | undefined) {
 
     if (value === undefined) return true;
@@ -102,6 +150,15 @@ export function isArrayOrUndefined (value : any) : value is (any[] | readonly an
 
 }
 
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isArrayOrUndefinedOf<T = any> (
     value     : any,
     isItem    : TestCallback | undefined = undefined,
@@ -115,18 +172,44 @@ export function isArrayOrUndefinedOf<T = any> (
 
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isBooleanOrUndefined (value : any) : value is boolean | undefined {
     return isUndefined(value) || isBoolean(value);
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isNumberOrUndefined (value : any) : value is number | undefined {
     return isUndefined(value) || isNumber(value);
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isString (value : any) : value is string {
     return _isString(value);
 }
 
+/**
+ *
+ * @param value
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isStringOf (
     value     : any,
     minLength : number | undefined = undefined,
@@ -149,10 +232,24 @@ export function isStringOf (
 
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isStringOrUndefined (value : any) : value is string | undefined {
     return isUndefined(value) || isString(value);
 }
 
+/**
+ *
+ * @param value
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isStringOrUndefinedOf (
     value : any,
     minLength : number | undefined = undefined,
@@ -161,6 +258,12 @@ export function isStringOrUndefinedOf (
     return isUndefined(value) || isStringOf(value, minLength, maxLength);
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isStringArray (value : any) : value is string[] {
     return (
         !!value
@@ -169,10 +272,22 @@ export function isStringArray (value : any) : value is string[] {
     );
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isStringArrayOrUndefined (value : any) : value is string[] | undefined {
     return isUndefined(value) || isStringArray(value);
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isBooleanArray (value : any) : value is boolean[] {
     return (
         !!value
@@ -181,6 +296,12 @@ export function isBooleanArray (value : any) : value is boolean[] {
     );
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isNumberArray (value : any) : value is number[] {
     return (
         !!value
@@ -189,6 +310,12 @@ export function isNumberArray (value : any) : value is number[] {
     );
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function parseInteger (value: any) : number | undefined {
 
     if (isString(value)) {
@@ -202,14 +329,34 @@ export function parseInteger (value: any) : number | undefined {
 
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isInteger (value : any) : value is number {
     return _isInteger(value);
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isIntegerOrUndefined (value : any) : value is number | undefined {
     return isUndefined(value) || _isInteger(value);
 }
 
+/**
+ *
+ * @param value
+ * @param rangeStart
+ * @param rangeEnd
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isIntegerOf (
     value      : any,
     rangeStart : number | undefined = undefined,
@@ -230,10 +377,24 @@ export function isIntegerOf (
 
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isSafeInteger (value : any) : value is number {
     return _isSafeInteger(value);
 }
 
+/**
+ *
+ * @param value
+ * @param rangeStart
+ * @param rangeEnd
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isSafeIntegerOf (
     value      : any,
     rangeStart : number | undefined = undefined,
@@ -254,6 +415,13 @@ export function isSafeIntegerOf (
 
 }
 
+/**
+ *
+ * @param value
+ * @param isValue
+ * @__PURE__
+ * @nosideeffects
+ */
 export function some<T = any> (
     value   : any,
     isValue : TestCallback
@@ -261,6 +429,13 @@ export function some<T = any> (
     return _some(value, isValue);
 }
 
+/**
+ *
+ * @param value
+ * @param isValue
+ * @__PURE__
+ * @nosideeffects
+ */
 export function every<T = any> (
     value   : any,
     isValue : TestCallback
@@ -268,6 +443,13 @@ export function every<T = any> (
     return _every(value, isValue);
 }
 
+/**
+ *
+ * @param value
+ * @param isKey
+ * @__PURE__
+ * @nosideeffects
+ */
 export function everyKey<T extends keyof any = string> (
     value : any,
     isKey : TestCallback
@@ -275,6 +457,13 @@ export function everyKey<T extends keyof any = string> (
     return _isObject(value) && every(keys(value), isKey);
 }
 
+/**
+ *
+ * @param value
+ * @param isItem
+ * @__PURE__
+ * @nosideeffects
+ */
 export function everyValue<T = any> (
     value  : any,
     isItem : TestCallback
@@ -282,6 +471,14 @@ export function everyValue<T = any> (
     return _isObject(value) && every(values(value), isItem);
 }
 
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @__PURE__
+ * @nosideeffects
+ */
 export function everyProperty<K extends keyof any = string, T = any> (
     value  : any,
     isKey  : TestCallback | undefined = isString,
@@ -300,6 +497,16 @@ export function everyProperty<K extends keyof any = string, T = any> (
 
 }
 
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @param explainKey
+ * @param explainValue
+ * @__PURE__
+ * @nosideeffects
+ */
 export function assertEveryProperty<K extends keyof any = string, T = any> (
     value       : any,
     isKey       : TestCallback | undefined = isString,
@@ -341,6 +548,8 @@ export function assertEveryProperty<K extends keyof any = string, T = any> (
 /**
  *
  * @param value
+ * @__PURE__
+ * @nosideeffects
  */
 export function isRegularObject (
     value  : any
@@ -360,6 +569,8 @@ export function isRegularObject (
  * @param value
  * @param isKey
  * @param isItem
+ * @__PURE__
+ * @nosideeffects
  */
 export function isRegularObjectOf<K extends keyof any = string, T=any> (
     value  : any,
@@ -376,14 +587,6 @@ export function isRegularObjectOf<K extends keyof any = string, T=any> (
 
 }
 
-export interface AssertCallback {
-    (value: any) : void;
-}
-
-export interface ExplainCallback {
-    (value: any) : string;
-}
-
 /**
  *
  * @param value
@@ -391,6 +594,8 @@ export interface ExplainCallback {
  * @param isItem
  * @param explainKey
  * @param explainValue
+ * @__PURE__
+ * @nosideeffects
  */
 export function assertRegularObjectOf<K extends keyof any = string, T=any> (
     value       : any,
@@ -420,6 +625,16 @@ export function assertRegularObjectOf<K extends keyof any = string, T=any> (
 
 }
 
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @param explainKey
+ * @param explainValue
+ * @__PURE__
+ * @nosideeffects
+ */
 export function explainRegularObjectOf<K extends keyof any = string, T=any> (
     value  : any,
     isKey  : TestCallback = isString,
@@ -440,6 +655,8 @@ export function explainRegularObjectOf<K extends keyof any = string, T=any> (
  * @param value
  * @param isKey
  * @param isItem
+ * @__PURE__
+ * @nosideeffects
  */
 export function isRegularObjectOrUndefinedOf<K extends keyof any = string, T=any> (
     value  : any,
@@ -456,6 +673,8 @@ export function isRegularObjectOrUndefinedOf<K extends keyof any = string, T=any
 /**
  *
  * @param value
+ * @__PURE__
+ * @nosideeffects
  */
 export function isRegularObjectOrUndefined (value : any) : value is ({[P in string]: any} | undefined) {
 
@@ -465,23 +684,55 @@ export function isRegularObjectOrUndefined (value : any) : value is ({[P in stri
 
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isPromise (value: any) : value is Promise<any> {
     // @ts-ignore
     return _isObject(value) && !!value.then && !!value.catch;
 }
 
+/**
+ *
+ * @param callbacks
+ * @__PURE__
+ * @nosideeffects
+ */
 export function createOr<T = any> (...callbacks: (TestCallback|TestCallbackNonStandard)[]) : TestCallback {
     return (value : any) : value is T => some(callbacks, callback => callback(value));
 }
 
+/**
+ *
+ * @param callbacks
+ * @__PURE__
+ * @nosideeffects
+ */
 export function createAnd<T = any> (...callbacks: (TestCallback|TestCallbackNonStandard)[]) : TestCallback {
     return (value : any) : value is T => every(callbacks, callback => callback(value));
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isObject (value: any) : value is {[P in string]: any} {
     return _isObject(value);
 }
 
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isObjectOf<K extends string = string, T = any> (
     value: any,
     isKey  : TestCallback | undefined = undefined,
@@ -500,6 +751,12 @@ export function isObjectOf<K extends string = string, T = any> (
 
 }
 
+/**
+ *
+ * @param f
+ * @__PURE__
+ * @nosideeffects
+ */
 export function parseFunctionSignature (f: any) : string | undefined {
 
     if (!isFunction(f)) return undefined;
@@ -518,25 +775,57 @@ export function parseFunctionSignature (f: any) : string | undefined {
 
 }
 
+/**
+ *
+ * @param obj
+ * @param acceptedKeys
+ * @__PURE__
+ * @nosideeffects
+ */
 export function getOtherKeys (obj: any, acceptedKeys: string[]) : string[] {
     return filter(keys(obj), (key : string) : boolean => !acceptedKeys.includes(key));
 }
 
+/**
+ *
+ * @param obj
+ * @param acceptedKeys
+ * @__PURE__
+ * @nosideeffects
+ */
 export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
     return isObject(obj) && getOtherKeys(obj, acceptedKeys).length === 0;
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function parseBoolean (value: any) : boolean | undefined {
     if ( value === undefined || value === '' ) return undefined;
     if ( isBoolean(value) ) return value;
     return ["true", "t", "on", "1", "enabled"].includes( `${value}`.toLowerCase() );
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function parseString (value: any) : string | undefined {
     if (value === undefined) return undefined;
     return `${value}`;
 }
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function parseNonEmptyString (value: any) : string | undefined {
     if (value === undefined) return undefined;
     if (value === '') return undefined;
@@ -551,6 +840,8 @@ export function parseNonEmptyString (value: any) : string | undefined {
  * @returns Every path to scalar properties.
  *          If the value is not an array or object, will return the baseKey itself if it's defined.
  *          If the baseKey is not defined or is empty, will return an empty array.
+ * @__PURE__
+ * @nosideeffects
  */
 export function pathsToScalarItems (
     value   : any,
