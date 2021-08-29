@@ -160,7 +160,7 @@ export function isReadonlyJsonObjectOf<T extends ReadonlyJsonAny = ReadonlyJsonA
 export function isReadonlyJsonArray<T extends ReadonlyJsonAny = ReadonlyJsonAny> (
     value : any
 ) : value is ReadonlyJsonArrayOf<ReadonlyJsonAny> {
-    return isArrayOf<ReadonlyJsonAny>(value, createOr(isReadonlyJsonAny, isUndefined));
+    return isArrayOf<T>(value, createOr(isReadonlyJsonAny, isUndefined));
 }
 
 export function isReadonlyJsonArrayOf<T extends ReadonlyJsonAny = ReadonlyJsonAny> (

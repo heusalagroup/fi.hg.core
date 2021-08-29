@@ -120,9 +120,12 @@ export class Headers {
 
         const set : Set<string> = new Set();
 
-        forEach(keys(this._value), (key : string) => {
-            set.add(key);
-        });
+        if (this._value !== undefined) {
+            const list : string[] = keys(this._value);
+            forEach(list, (key : string) => {
+                set.add(key);
+            });
+        }
 
         return set;
 

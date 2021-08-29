@@ -16,7 +16,6 @@ import sortBy from 'lodash/sortBy.js';
 import filter from 'lodash/filter.js';
 import forEach from 'lodash/forEach.js';
 import split from 'lodash/split.js';
-import keys from 'lodash/keys.js';
 import trim from 'lodash/trim.js';
 import has from 'lodash/has.js';
 import isBoolean from 'lodash/isBoolean.js';
@@ -45,6 +44,10 @@ export interface ParserCallback<T> {
 
 export interface TestCallbackNonStandard {
     (value: any, arg2 ?: undefined|number|string|boolean, arg3 ?: undefined|number|string|boolean) : boolean;
+}
+
+export interface TestCallbackNonStandardOf<T> {
+    (value: any, arg2 ?: undefined|number|string|boolean, arg3 ?: undefined|number|string|boolean) : value is T;
 }
 
 export interface TestCallback {
@@ -425,7 +428,7 @@ export function isSafeIntegerOf (
 export function some<T = any> (
     value   : any,
     isValue : TestCallback
-) : boolean {
+) : value is (T|any)[] {
     return _some(value, isValue);
 }
 
@@ -507,41 +510,40 @@ export function everyProperty<K extends keyof any = string, T = any> (
  * @__PURE__
  * @nosideeffects
  */
-export function assertEveryProperty<K extends keyof any = string, T = any> (
-    value       : any,
-    isKey       : TestCallback | undefined = isString,
-    isItem      : TestCallback | undefined = undefined,
-    explainKey   : ExplainCallback | undefined = undefined,
-    explainValue : ExplainCallback | undefined = undefined
+export function assertEveryProperty<
+    K extends keyof any = string,
+    T                   = any
+> (
+    value        : any,
+    isKey        : TestCallbackNonStandardOf<K> | undefined = undefined,
+    isItem       : TestCallbackNonStandardOf<K> | undefined = undefined,
+    explainKey   : ExplainCallback         | undefined = undefined,
+    explainValue : ExplainCallback         | undefined = undefined
 ) : void {
 
-    if ( isItem !== undefined && !everyValue<T>(value, isItem) ) {
-        const valueArray = values(value);
-        // @ts-ignore
-        const itemIndex : number = findIndex(valueArray, (item) : boolean => !isItem(item));
-        const itemKey : string = keys(value)[itemIndex];
-        const itemValue : string = valueArray[itemIndex];
+    const isKeyTest : TestCallbackNonStandardOf<K> = isKey === undefined ? isString as TestCallbackNonStandardOf<K> : isKey;
+
+    if ( isItem !== undefined && !everyValue<T>(value, (item : T) : boolean => isItem(item)) ) {
+
+        const valueArray : T[]                      = values(value);
+        const itemIndex  : number                   = findIndex(valueArray, (item : T) : boolean => !isItem(item));
+        const itemKey    : string | Symbol | number = keys(value)[itemIndex];
+        const itemValue  : T                        = valueArray[itemIndex];
         if (explainValue) {
             throw new TypeError(`Property "${itemKey}": value not correct: ${explainValue(itemValue)}`);
         } else {
             throw new TypeError(`Property "${itemKey}": value not correct: ${JSON.stringify(itemValue, null, 2)}`);
         }
-    }
-
-    if ( isKey !== undefined ) {
-        // @ts-ignore
-        const key : any = find(keys(value), (key) : boolean => !isKey(key));
-        if (explainKey) {
-            throw new TypeError(`Property "${key}": key was not correct: ${explainKey(key)}`);
-        } else {
-            throw new TypeError(`Property "${key}": key was not correct: ${JSON.stringify(key, null, 2)}`);
-        }
 
     }
 
-    // @ts-ignore
-    const key : any = find(keys(value), (key) : boolean => !isString(key));
-    throw new TypeError(`Property "${key}": key was not string: ${key}`);
+    const key : string | Symbol | number | undefined = find(keys(value), (key : Symbol | string | number) : boolean => !isKeyTest(key));
+
+    if (explainKey) {
+        throw new TypeError(`Property "${key}": key was not correct: ${explainKey(key)}`);
+    } else {
+        throw new TypeError(`Property "${key}": key was not correct: ${JSON.stringify(key, null, 2)}`);
+    }
 
 }
 
@@ -597,13 +599,18 @@ export function isRegularObjectOf<K extends keyof any = string, T=any> (
  * @__PURE__
  * @nosideeffects
  */
-export function assertRegularObjectOf<K extends keyof any = string, T=any> (
-    value       : any,
-    isKey       : TestCallback = isString,
-    isItem      : TestCallback | undefined = undefined,
-    explainKey   : ExplainCallback | undefined = undefined,
-    explainValue : ExplainCallback | undefined = undefined
+export function assertRegularObjectOf<
+    K extends keyof any = string,
+    T                   = any
+> (
+    value        : any,
+    isKey        : TestCallbackNonStandardOf<K> | undefined = undefined,
+    isItem       : TestCallbackNonStandardOf<K> | undefined = undefined,
+    explainKey   : ExplainCallback              | undefined = undefined,
+    explainValue : ExplainCallback              | undefined = undefined
 ) : void {
+
+    const isKeyTest : TestCallbackNonStandardOf<K> = isKey === undefined ? isString as TestCallbackNonStandardOf<K> : isKey;
 
     if (!_isObject(value)) {
         throw new TypeError(`value was not object`);
@@ -621,7 +628,7 @@ export function assertRegularObjectOf<K extends keyof any = string, T=any> (
         throw new TypeError(`value was array`);
     }
 
-    assertEveryProperty<K,T>(value, isKey, isItem, explainKey, explainValue);
+    assertEveryProperty<K,T>(value, isKeyTest, isItem, explainKey, explainValue);
 
 }
 
@@ -635,15 +642,18 @@ export function assertRegularObjectOf<K extends keyof any = string, T=any> (
  * @__PURE__
  * @nosideeffects
  */
-export function explainRegularObjectOf<K extends keyof any = string, T=any> (
-    value  : any,
-    isKey  : TestCallback = isString,
-    isItem : TestCallback | undefined = undefined,
-    explainKey   : ExplainCallback | undefined = undefined,
-    explainValue : ExplainCallback | undefined = undefined
+export function explainRegularObjectOf<
+    K extends keyof any = string,
+    T = any
+> (
+    value        : any,
+    isKey        : TestCallbackNonStandardOf<K> | undefined = undefined,
+    isItem       : TestCallbackNonStandardOf<K> | undefined = undefined,
+    explainKey   : ExplainCallback              | undefined = undefined,
+    explainValue : ExplainCallback              | undefined = undefined
 ) {
     try {
-        assertRegularObjectOf(value, isKey, isItem, explainKey, explainValue);
+        assertRegularObjectOf<K, T>(value, isKey, isItem, explainKey, explainValue);
         return 'No errors detected';
     } catch (err : any) {
         return err?.message ?? `${err}`;
@@ -900,6 +910,35 @@ export function pathsToScalarItems (
 
 }
 
+export function keys<
+    T extends keyof any = string
+> (
+    value : any,
+    isKey : TestCallbackNonStandard                    = isString
+) : T[] {
+
+    if (isArray(value)) {
+
+        const indexes : number[] = map(value, (item : any, index: number) => index);
+
+        const items : T[] = filter(indexes, (key: number) => isKey(key)) as T[];
+
+        return items;
+
+    } else if (isObject(value)) {
+
+        const allKeys : (string|Symbol)[] = Reflect.ownKeys(value);
+
+        const items = filter(allKeys, (key: string|Symbol) => isKey(key)) as T[];
+
+        return items;
+
+    }
+
+    return [] as T[];
+
+}
+
 export {
     map,
     get,
@@ -915,7 +954,6 @@ export {
     split,
     filter,
     forEach,
-    keys,
     trim,
     isBoolean,
     isNull,
