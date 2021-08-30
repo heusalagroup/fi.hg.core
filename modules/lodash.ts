@@ -32,6 +32,7 @@ import toSafeInteger from 'lodash/toSafeInteger.js';
 import startsWith from 'lodash/startsWith.js';
 import values from 'lodash/values.js';
 import join from 'lodash/join.js';
+import isEqual from 'lodash/isEqual.js';
 
 
 export interface StringifyCallback<T = any> {
@@ -964,5 +965,6 @@ export {
     startsWith,
     has,
     values,
-    join
+    join,
+    isEqual
 };
