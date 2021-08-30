@@ -517,7 +517,7 @@ export function assertEveryProperty<
 > (
     value        : any,
     isKey        : TestCallbackNonStandardOf<K> | undefined = undefined,
-    isItem       : TestCallbackNonStandardOf<K> | undefined = undefined,
+    isItem       : TestCallbackNonStandardOf<T> | undefined = undefined,
     explainKey   : ExplainCallback         | undefined = undefined,
     explainValue : ExplainCallback         | undefined = undefined
 ) : void {
@@ -606,7 +606,7 @@ export function assertRegularObjectOf<
 > (
     value        : any,
     isKey        : TestCallbackNonStandardOf<K> | undefined = undefined,
-    isItem       : TestCallbackNonStandardOf<K> | undefined = undefined,
+    isItem       : TestCallbackNonStandardOf<T> | undefined = undefined,
     explainKey   : ExplainCallback              | undefined = undefined,
     explainValue : ExplainCallback              | undefined = undefined
 ) : void {
@@ -645,11 +645,11 @@ export function assertRegularObjectOf<
  */
 export function explainRegularObjectOf<
     K extends keyof any = string,
-    T = any
+    T                   = any
 > (
     value        : any,
     isKey        : TestCallbackNonStandardOf<K> | undefined = undefined,
-    isItem       : TestCallbackNonStandardOf<K> | undefined = undefined,
+    isItem       : TestCallbackNonStandardOf<T> | undefined = undefined,
     explainKey   : ExplainCallback              | undefined = undefined,
     explainValue : ExplainCallback              | undefined = undefined
 ) {
