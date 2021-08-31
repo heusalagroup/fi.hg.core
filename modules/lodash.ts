@@ -34,6 +34,7 @@ import startsWith from 'lodash/startsWith.js';
 import values from 'lodash/values.js';
 import join from 'lodash/join.js';
 import isEqual from 'lodash/isEqual.js';
+import first from 'lodash/first.js';
 
 
 export interface StringifyCallback<T = any> {
@@ -967,6 +968,7 @@ export {
     has,
     values,
     uniq,
+    first,
     join,
     isEqual
 };
