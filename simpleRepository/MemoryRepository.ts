@@ -13,11 +13,14 @@ import RepositoryEntry from "./types/RepositoryEntry";
 import Repository from "./types/Repository";
 
 export interface MemoryItem<T> {
+
     readonly id      : string;
     readonly version : number;
     readonly data    : T;
     readonly deleted : boolean;
     readonly members ?: string[];
+    readonly invited ?: string[];
+
 }
 
 /**
@@ -25,7 +28,8 @@ export interface MemoryItem<T> {
  *
  * Intended to be used for development purposes.
  *
- * See also [MatrixCrudRepository](https://github.com/sendanor/matrix/blob/main/MatrixCrudRepository.ts)
+ * See also
+ * [MatrixCrudRepository](https://github.com/sendanor/matrix/blob/main/MatrixCrudRepository.ts)
  */
 export class MemoryRepository<T> implements Repository<T> {
 
@@ -129,7 +133,7 @@ export class MemoryRepository<T> implements Repository<T> {
     public async update (id: string, data: T) : Promise<RepositoryEntry<T>> {
 
         const itemIndex = findIndex(this._items, item => item.id === id);
-        if (itemIndex < 0) throw new TypeError(`No item found: #${id}`);
+        if (itemIndex < 0) throw new TypeError(`No item found: ${id}`);
 
         const prevItem = this._items[itemIndex];
 
@@ -170,6 +174,54 @@ export class MemoryRepository<T> implements Repository<T> {
 
     }
 
+    public async inviteToItem (
+        id       : string,
+        members  : string[]
+    ): Promise<void> {
+
+        const itemIndex = findIndex(this._items, item => item.id === id);
+        if (itemIndex < 0) throw new TypeError(`No item found: ${id}`);
+
+        const prevItem = this._items[itemIndex];
+
+        const prevMembers = prevItem?.members ?? [];
+
+        const nextItem = {
+            ...prevItem,
+            invited: filter(
+                uniq(
+                    concat(
+                        [],
+                        prevItem?.invited ?? [],
+                        members
+                    )
+                ),
+                (item : string) => !prevMembers.includes(item)
+            )
+        };
+
+        this._items[itemIndex] = nextItem;
+
+    }
+
+    public async subscribeToItem (id: string): Promise<void> {
+
+        const itemIndex = findIndex(this._items, item => item.id === id);
+        if (itemIndex < 0) throw new TypeError(`No item found: ${id}`);
+
+        const prevItem    = this._items[itemIndex];
+        const prevMembers = prevItem?.members ?? [];
+        const prevInvited = prevItem?.invited ?? [];
+
+        const nextItem = {
+            ...prevItem,
+            members: concat(prevMembers, prevInvited),
+            invited: []
+        };
+
+        this._items[itemIndex] = nextItem;
+
+    }
 
     private static _createId () : string {
         return crypto.randomBytes(20).toString('hex');

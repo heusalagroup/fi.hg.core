@@ -26,6 +26,10 @@ export interface Repository<T> extends PublicRepository<T> {
 
     deleteById (id: string): Promise<RepositoryEntry<T>>;
 
+    inviteToItem (id: string, members : string[]): Promise<void>;
+
+    subscribeToItem (id: string): Promise<void>;
+
 }
 
 export interface RepositoryFactory<T> {
