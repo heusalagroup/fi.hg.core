@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import RequestStatus, {stringifyRequestStatus} from "./RequestStatus";
-import {ReadonlyJsonObject} from "../../Json";
+import JsonAny, {ReadonlyJsonObject} from "../../Json";
 import RequestType from "./RequestType";
 import RequestMethod from "./RequestMethod";
 
@@ -10,6 +10,7 @@ export class RequestError extends Error {
     public readonly status  : RequestStatus;
     public readonly method  : RequestMethod | undefined;
     public readonly url     : string | undefined;
+    public readonly body    : JsonAny | undefined;
 
     private readonly __proto__: any;
 
@@ -17,7 +18,8 @@ export class RequestError extends Error {
         status  : number,
         message : string        | undefined = undefined,
         method  : RequestMethod | undefined = undefined,
-        url     : string        | undefined = undefined
+        url     : string        | undefined = undefined,
+        body    : JsonAny       | undefined = undefined
     ) {
 
         super( message ? message : stringifyRequestStatus(status) );
@@ -33,6 +35,7 @@ export class RequestError extends Error {
         this.status  = status;
         this.method  = method;
         this.url     = url;
+        this.body     = body;
 
     }
 
@@ -62,6 +65,10 @@ export class RequestError extends Error {
 
     public getUrl () : string | undefined {
         return this.url;
+    }
+
+    public getBody () : JsonAny | undefined {
+        return this.body;
     }
 
 }

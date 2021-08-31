@@ -441,7 +441,13 @@ export class NodeRequestClient implements RequestClientInterface {
 
         if ( statusCode < 200 || statusCode >= 400 ) {
             LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
-            throw new RequestError(statusCode, `Error ${statusCode} for ${stringifyRequestMethod(response.method)} ${response.url}`, response.method, response.url);
+            throw new RequestError(
+                statusCode,
+                `Error ${statusCode} for ${stringifyRequestMethod(response.method)} ${response.url}`,
+                response.method,
+                response.url,
+                response.body
+            );
         }
 
         //LOG.debug(`Successful response with status ${statusCode}: `, response);

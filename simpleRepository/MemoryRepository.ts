@@ -1,11 +1,13 @@
 import crypto from "crypto";
 import {
+    concat,
     filter,
     find,
     findIndex,
     get,
     map,
-    remove
+    remove,
+    uniq
 } from "../modules/lodash";
 import RepositoryEntry from "./types/RepositoryEntry";
 import Repository from "./types/Repository";
@@ -15,6 +17,7 @@ export interface MemoryItem<T> {
     readonly version : number;
     readonly data    : T;
     readonly deleted : boolean;
+    readonly members ?: string[];
 }
 
 /**
@@ -26,10 +29,18 @@ export interface MemoryItem<T> {
  */
 export class MemoryRepository<T> implements Repository<T> {
 
-    private readonly _items : MemoryItem<T>[];
+    private readonly _members : string[];
+    private readonly _items   : MemoryItem<T>[];
 
-    public constructor () {
-        this._items = [];
+    /**
+     *
+     * @param members Array of members to add in any item created
+     */
+    public constructor (
+        members: string[] = []
+    ) {
+        this._members = concat([], members);
+        this._items   = [];
     }
 
     public async getAll () : Promise<RepositoryEntry<T>[]> {
@@ -37,7 +48,8 @@ export class MemoryRepository<T> implements Repository<T> {
             id       : item.id,
             version  : item.version,
             data     : item.data,
-            deleted  : item.deleted
+            deleted  : item.deleted,
+            members  : undefined
         }));
     }
 
@@ -57,13 +69,17 @@ export class MemoryRepository<T> implements Repository<T> {
                 id       : item.id,
                 version  : item.version,
                 data     : item.data,
-                deleted  : item.deleted
+                deleted  : item.deleted,
+                members  : undefined
             })
         );
 
     }
 
-    public async createItem (data: T) : Promise<RepositoryEntry<T>> {
+    public async createItem (
+        data: T,
+        members : string[] = []
+    ) : Promise<RepositoryEntry<T>> {
 
         const id = MemoryRepository._createId();
 
@@ -72,10 +88,11 @@ export class MemoryRepository<T> implements Repository<T> {
         if (existingItem) throw new Error(`ID "${id}" was not unique`);
 
         const item : MemoryItem<T> = {
-            id: MemoryRepository._createId(),
-            version: 1,
-            data: data,
-            deleted: false
+            id      : MemoryRepository._createId(),
+            version : 1,
+            data    : data,
+            deleted : false,
+            members : uniq(concat([], members ? members : [], this._members))
         };
 
         this._items.push(item);
@@ -84,20 +101,29 @@ export class MemoryRepository<T> implements Repository<T> {
             id      : item.id,
             version : item.version,
             data    : item.data,
-            deleted : item.deleted
+            deleted : item.deleted,
+            members : item.members ? concat([], item.members) : undefined
         };
 
     }
 
-    public async findById (id: string) : Promise<RepositoryEntry<T> | undefined> {
+    public async findById (
+        id              : string,
+        includeMembers ?: boolean
+    ) : Promise<RepositoryEntry<T> | undefined> {
+
         const item = find(this._items, form => form.id === id);
+
         if (item === undefined) return undefined;
+
         return {
             id      : item.id,
             version : item.version,
             data    : item.data,
-            deleted : item.deleted
+            deleted : item.deleted,
+            members : includeMembers && item.members?.length ? concat([], item.members) : undefined
         };
+
     }
 
     public async update (id: string, data: T) : Promise<RepositoryEntry<T>> {
@@ -119,7 +145,8 @@ export class MemoryRepository<T> implements Repository<T> {
             id      : nextItem.id,
             version : nextItem.version,
             data    : nextItem.data,
-            deleted : nextItem.deleted
+            deleted : nextItem.deleted,
+            members : undefined
         };
 
     }
@@ -137,7 +164,8 @@ export class MemoryRepository<T> implements Repository<T> {
             id: item.id,
             data: item.data,
             version: item.version + 1,
-            deleted: true
+            deleted: true,
+            members: undefined
         };
 
     }

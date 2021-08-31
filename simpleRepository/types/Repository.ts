@@ -5,7 +5,10 @@ import PublicRepository from "./PublicRepository";
 
 export interface Repository<T> extends PublicRepository<T> {
 
-    findById (id: string): Promise<RepositoryEntry<T> | undefined>;
+    findById (
+        id              : string,
+        includeMembers ?: boolean
+    ): Promise<RepositoryEntry<T> | undefined>;
 
     getAll (): Promise<RepositoryEntry<T>[]>;
 
@@ -15,7 +18,8 @@ export interface Repository<T> extends PublicRepository<T> {
     ): Promise<RepositoryEntry<T>[]>;
 
     createItem (
-        data: T
+        data    : T,
+        members ?: string[]
     ): Promise<RepositoryEntry<T>>;
 
     update (id: string, data: T): Promise<RepositoryEntry<T>>;

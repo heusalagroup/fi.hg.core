@@ -2,6 +2,7 @@
 
 import {
     hasNoOtherKeys,
+    isArrayOrUndefinedOf,
     isBooleanOrUndefined,
     isNumber,
     isRegularObject,
@@ -10,10 +11,17 @@ import {
 } from "../../modules/lodash";
 
 export interface RepositoryEntry<T> {
+
     readonly data     : T;
     readonly id       : string;
     readonly version  : number;
     readonly deleted ?: boolean;
+
+    /**
+     * Users who have active access to the resource (eg. joined in the Matrix room)
+     */
+    readonly members ?: string[];
+
 }
 
 export function isRepositoryEntry<T> (
@@ -26,12 +34,14 @@ export function isRepositoryEntry<T> (
             'data',
             'id',
             'version',
-            'deleted'
+            'deleted',
+            'members'
         ])
         && isT(value?.data)
         && isString(value?.id)
         && isNumber(value?.version)
         && isBooleanOrUndefined(value?.deleted)
+        && isArrayOrUndefinedOf<string>(value?.members, isString)
     );
 }
 

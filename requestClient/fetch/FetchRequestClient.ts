@@ -159,9 +159,18 @@ export class FetchRequestClient implements RequestClientInterface {
         const statusCode = response.status;
 
         if ( !response.ok || (statusCode < 200 || statusCode >= 400) ) {
-            const url        = response.url;
+            const url     = response.url;
+            const message = `${statusCode} ${response.statusText} for ${stringifyRequestMethod(method)} ${url}`;
             //LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
-            throw new RequestError(statusCode, `${statusCode} ${response.statusText} for ${stringifyRequestMethod(method)} ${url}`,method, url);
+            return response.json().then(body => {
+                throw new RequestError(
+                    statusCode,
+                    message,
+                    method,
+                    url,
+                    body
+                );
+            });
         }
 
         return response.json();

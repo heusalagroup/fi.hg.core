@@ -11,6 +11,7 @@ import reduce from 'lodash/reduce.js';
 import remove from 'lodash/remove.js';
 import slice from 'lodash/slice.js';
 import indexOf from 'lodash/indexOf.js';
+import uniq from 'lodash/uniq.js';
 import findIndex from 'lodash/findIndex.js';
 import sortBy from 'lodash/sortBy.js';
 import filter from 'lodash/filter.js';
@@ -965,6 +966,7 @@ export {
     startsWith,
     has,
     values,
+    uniq,
     join,
     isEqual
 };
