@@ -9,6 +9,7 @@ import {
     isString,
     TestCallbackNonStandard
 } from "../../modules/lodash";
+import { RepositoryMember } from "./RepositoryMember";
 
 export interface RepositoryEntry<T> {
 
@@ -20,7 +21,7 @@ export interface RepositoryEntry<T> {
     /**
      * Users who have active access to the resource (eg. joined in the Matrix room)
      */
-    readonly members ?: string[];
+    readonly members ?: RepositoryMember[];
 
 }
 

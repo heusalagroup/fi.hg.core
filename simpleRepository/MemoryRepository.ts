@@ -62,13 +62,15 @@ export class MemoryRepository<T> implements Repository<T> {
         propertyValue : any
     ): Promise<RepositoryEntry<T>[]> {
 
-        const items = this._items;
+        const items : MemoryItem<T>[] = this._items;
+
+        const filteredItems : MemoryItem<T>[] = filter(
+            items,
+            (item: MemoryItem<T>) : boolean => get(item?.data, propertyName) === propertyValue
+        );
 
         return map(
-            filter(
-                items,
-                (item: RepositoryEntry<T>) : boolean => get(item?.data, propertyName) === propertyValue
-            ),
+            filteredItems,
             (item: MemoryItem<T>) : RepositoryEntry<T> => ({
                 id       : item.id,
                 version  : item.version,
@@ -106,7 +108,7 @@ export class MemoryRepository<T> implements Repository<T> {
             version : item.version,
             data    : item.data,
             deleted : item.deleted,
-            members : item.members ? concat([], item.members) : undefined
+            members : item.members ? map(item.members, id => ({id})) : undefined
         };
 
     }
@@ -125,7 +127,7 @@ export class MemoryRepository<T> implements Repository<T> {
             version : item.version,
             data    : item.data,
             deleted : item.deleted,
-            members : includeMembers && item.members?.length ? concat([], item.members) : undefined
+            members : includeMembers && item.members?.length ? map(item.members, id => ({id})) : undefined
         };
 
     }
