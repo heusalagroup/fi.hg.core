@@ -26,6 +26,17 @@ export function isLogLevel (value: any): value is LogLevel {
     }
 }
 
+export function stringifyLogLevel (value : LogLevel) : string {
+    switch (value) {
+        case LogLevel.DEBUG : return 'DEBUG';
+        case LogLevel.INFO  : return 'INFO';
+        case LogLevel.WARN  : return 'WARN';
+        case LogLevel.ERROR : return 'ERROR';
+        case LogLevel.NONE  : return 'NONE';
+        default             : return `Unknown:${value}`;
+    }
+}
+
 export function parseLogLevel (value: any): LogLevel | undefined {
 
     if ( !value ) return undefined;

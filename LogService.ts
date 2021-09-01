@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import { LogLevel } from "./types/LogLevel";
-import { ContextLogger } from "./types/ContextLogger";
+import LogLevel, { stringifyLogLevel } from "./types/LogLevel";
+import ContextLogger from "./types/ContextLogger";
 import Logger from "./types/Logger";
 
 export class LogService {
@@ -11,6 +11,14 @@ export class LogService {
 
     public static setLogLevel (value : LogLevel) {
         this._level = value;
+    }
+
+    public static getLogLevel () : LogLevel {
+        return this._level;
+    }
+
+    public static getLogLevelString () : string {
+        return stringifyLogLevel(this._level);
     }
 
     public static setLogger (value : Logger) {
