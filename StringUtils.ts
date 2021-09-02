@@ -1,7 +1,7 @@
 import JsonAny, {
     isJsonArray,
-    isJsonObject,
-    JsonObject
+    isJsonObject, isReadonlyJsonArray, isReadonlyJsonObject,
+    JsonObject, ReadonlyJsonAny
 } from "./Json";
 import {
     get,
@@ -22,7 +22,7 @@ const LOG = LogService.createLogger('StringUtils');
 const ACCEPTED_KEYWORD_CHARACTERS = 'qwertyuiopasdfghjklzxcvbnm. \n\t1234567890_'
 
 export interface VariableResolverCallback {
-    (key: string) : JsonAny | undefined;
+    (key: string) : ReadonlyJsonAny | undefined;
 }
 
 export class StringUtils {
@@ -59,17 +59,17 @@ export class StringUtils {
      *
      */
     public static processVariables (
-        input                 : JsonAny | undefined,
+        input                 : ReadonlyJsonAny | undefined,
         resolveVariable       : VariableResolverCallback | JsonObject,
         variablePrefix        : string,
         variableSuffix        : string,
         defaultValue          : JsonAny | undefined = undefined
-    ) : JsonAny | undefined {
+    ) : ReadonlyJsonAny | undefined {
 
-        if (isJsonArray(input)) {
+        if (isReadonlyJsonArray(input)) {
             return map(
                 input,
-                (item : JsonAny) => StringUtils.processVariables(
+                (item : ReadonlyJsonAny) => StringUtils.processVariables(
                     item,
                     resolveVariable,
                     variablePrefix,
@@ -79,12 +79,12 @@ export class StringUtils {
             );
         }
 
-        if (isJsonObject(input)) {
+        if (isReadonlyJsonObject(input)) {
             return reduce(
                 keys(input),
                 (obj: JsonObject, itemKey : string) => {
 
-                    const itemValue : JsonAny | undefined = input[itemKey];
+                    const itemValue : ReadonlyJsonAny | undefined = input[itemKey];
 
                     const parsedItemKey : string = `${StringUtils.processVariables(
                         itemKey,
@@ -100,13 +100,13 @@ export class StringUtils {
                         variablePrefix,
                         variableSuffix,
                         defaultValue
-                    );
+                    ) as JsonAny;
 
                     return obj;
 
                 },
                 {}
-            );
+            ) as ReadonlyJsonAny;
         }
 
         if (isString(input)) {
@@ -139,13 +139,13 @@ export class StringUtils {
         variablePrefix        : string,
         variableSuffix        : string,
         defaultValue          : JsonAny | undefined = undefined
-    ) : JsonAny | undefined {
+    ) : ReadonlyJsonAny | undefined {
 
         if (input.length === 0) return '';
 
         let resolver : VariableResolverCallback | undefined;
         if (!isFunction(resolveVariable)) {
-            resolver = (key: string) => get(resolveVariable, key, defaultValue);
+            resolver = (key: string) : ReadonlyJsonAny => get(resolveVariable, key, defaultValue) as ReadonlyJsonAny;
         } else {
             resolver = resolveVariable;
         }
@@ -209,7 +209,7 @@ export class StringUtils {
 
                 } else {
 
-                    const resolvedValue : JsonAny | undefined = resolver(variableKey);
+                    const resolvedValue : ReadonlyJsonAny | undefined = resolver(variableKey);
                     LOG.debug(`Variable "${variableKey}" at ${keyTokenStartIndex}-${keyTokenEndIndex} resolved as "${resolvedValue}": `, resolvedValue);
 
                     output += `${input.substr(currentParsingStartIndex, keyTokenStartIndex - currentParsingStartIndex)}${resolvedValue}`;
