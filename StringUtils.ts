@@ -12,11 +12,14 @@ import {
     trim,
     map,
     keys,
-    reduce
+    reduce,
+    isNull, every
 } from "./modules/lodash";
 import LogService from "./LogService";
 
 const LOG = LogService.createLogger('StringUtils');
+
+const ACCEPTED_KEYWORD_CHARACTERS = 'qwertyuiopasdfghjklzxcvbnm. \n\t1234567890_'
 
 export interface VariableResolverCallback {
     (key: string) : JsonAny | undefined;
@@ -36,9 +39,10 @@ export class StringUtils {
      * @param values
      */
     public static toString (...values : any[]) : string {
-
-        return values.join("");
-
+        return map(values, item => {
+            if (isNull(item)) return 'null';
+            return `${item}`;
+        }).join("");
     }
 
     /**
@@ -139,8 +143,11 @@ export class StringUtils {
 
         if (input.length === 0) return '';
 
+        let resolver : VariableResolverCallback | undefined;
         if (!isFunction(resolveVariable)) {
-            resolveVariable = (key: string) => get(resolveVariable, key, defaultValue);
+            resolver = (key: string) => get(resolveVariable, key, defaultValue);
+        } else {
+            resolver = resolveVariable;
         }
 
         // Special case which will support typed variables, when the full string is.
@@ -152,45 +159,68 @@ export class StringUtils {
 
             // Make sure we don't have multiple variables in the string
             if ( variableKey.indexOf(variablePrefix) < 0 ) {
+
                 variableKey = trim(variableKey);
-                const resolvedValue = resolveVariable(variableKey);
-                LOG.debug(`Variable "${variableKey}" resolved as `, resolvedValue);
-                return resolvedValue;
+
+                if (every(variableKey, (item : string) => ACCEPTED_KEYWORD_CHARACTERS.includes(item))) {
+                    const resolvedValue = resolver(variableKey);
+                    LOG.debug(`Variable "${variableKey}" resolved as `, resolvedValue);
+                    return resolvedValue;
+                }
 
             }
 
         }
 
         let output = '';
-        let prevIndex = 0;
         let index = 0;
-        do {
+        while ( (index >= 0) && (index < input.length) ) {
 
-            prevIndex = index;
-            index = input.indexOf(variablePrefix);
-            if (index < 0) {
-                output += input.substr(prevIndex);
+            const currentParsingStartIndex = index;
+
+            index = input.indexOf(variablePrefix, currentParsingStartIndex);
+
+            if ( index < 0 ) {
+
+                output += input.substr(currentParsingStartIndex);
+
+                index = input.length;
+
             } else {
 
-                const endIndex = input.indexOf(variableSuffix);
-                if (endIndex < 0) {
-                    throw new TypeError(`Parse error near "${input.substr(prevIndex).substr(0, 20)}". End of variable not detected.`);
+                const keyTokenStartIndex = index;
+
+                const keyNameStartIndex  = index + variablePrefix.length;
+
+                const keyNameEndIndex = input.indexOf(variableSuffix, keyNameStartIndex);
+                if (keyNameEndIndex < 0) {
+                    throw new TypeError(`Parse error near "${input.substr(keyTokenStartIndex).substr(0, 20)}". End of variable not detected.`);
+                }
+
+                const keyTokenEndIndex = keyNameEndIndex + variableSuffix.length;
+
+                const variableKey = trim( input.substr(keyNameStartIndex, keyNameEndIndex - keyNameStartIndex) );
+
+                if (!every(variableKey, (item : string) => ACCEPTED_KEYWORD_CHARACTERS.includes(item))) {
+
+                    output += `${input.substr(currentParsingStartIndex, keyTokenEndIndex - currentParsingStartIndex)}`;
+
+                    index = keyTokenEndIndex;
+
                 } else {
 
-                    const variableKey = trim(input.substr(index + variablePrefix.length, endIndex));
+                    const resolvedValue : JsonAny | undefined = resolver(variableKey);
+                    LOG.debug(`Variable "${variableKey}" at ${keyTokenStartIndex}-${keyTokenEndIndex} resolved as "${resolvedValue}": `, resolvedValue);
 
-                    const resolvedValue : JsonAny = resolveVariable(variableKey);
-                    LOG.debug(`Variable "${variableKey}" at ${index}-${endIndex} resolved as "${resolvedValue}": `, resolvedValue);
+                    output += `${input.substr(currentParsingStartIndex, keyTokenStartIndex - currentParsingStartIndex)}${resolvedValue}`;
 
-                    output += `${input.substr(prevIndex, index)}${resolvedValue}`;
-
-                    index = endIndex + variableSuffix.length;
+                    index = keyTokenEndIndex;
 
                 }
 
             }
 
-        } while ( index >= 0 && index < input.length );
+        }
 
         return output;
 

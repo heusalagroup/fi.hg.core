@@ -6,6 +6,8 @@ import Logger from "./types/Logger";
 
 export class LogService {
 
+    public static Level = LogLevel;
+
     private static _level  : LogLevel = LogLevel.DEBUG;
     private static _logger : Logger   = console;
 
@@ -55,5 +57,7 @@ export class LogService {
     }
 
 }
+
+export { LogLevel };
 
 export default LogService;
