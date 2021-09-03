@@ -75,7 +75,7 @@ export class StringUtils {
                     variablePrefix,
                     variableSuffix,
                     defaultValue
-                )
+                ) as ReadonlyJsonAny
             );
         }
 
