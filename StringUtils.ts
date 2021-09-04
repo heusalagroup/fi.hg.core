@@ -17,8 +17,6 @@ import {
 } from "./modules/lodash";
 import LogService from "./LogService";
 
-const LOG = LogService.createLogger('StringUtils');
-
 const ACCEPTED_KEYWORD_CHARACTERS = 'qwertyuiopasdfghjklzxcvbnm. \n\t1234567890_'
 
 export interface VariableResolverCallback {
@@ -164,7 +162,7 @@ export class StringUtils {
 
                 if (every(variableKey, (item : string) => ACCEPTED_KEYWORD_CHARACTERS.includes(item))) {
                     const resolvedValue = resolver(variableKey);
-                    LOG.debug(`Variable "${variableKey}" resolved as `, resolvedValue);
+                    // LOG.debug(`Variable "${variableKey}" resolved as `, resolvedValue);
                     return resolvedValue;
                 }
 
@@ -210,7 +208,7 @@ export class StringUtils {
                 } else {
 
                     const resolvedValue : ReadonlyJsonAny | undefined = resolver(variableKey);
-                    LOG.debug(`Variable "${variableKey}" at ${keyTokenStartIndex}-${keyTokenEndIndex} resolved as "${resolvedValue}": `, resolvedValue);
+                    // LOG.debug(`Variable "${variableKey}" at ${keyTokenStartIndex}-${keyTokenEndIndex} resolved as "${resolvedValue}": `, resolvedValue);
 
                     output += `${input.substr(currentParsingStartIndex, keyTokenStartIndex - currentParsingStartIndex)}${resolvedValue}`;
 
