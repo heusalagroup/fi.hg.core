@@ -6,14 +6,22 @@ import {
     isString, map, split, startsWith
 } from "./modules/lodash";
 
+// FIXME: Add unit tests
 export type CsvRow = string[];
+export type Csv = CsvRow[];
 
-export function isCsvRow (value : any) : value is CsvRow {
+export function isCsvRow (value: any): value is CsvRow {
     return isArrayOf<string>(value, isString);
 }
 
+export function isCsv (value: any): value is Csv {
+    return isArrayOf<CsvRow>(value, isCsvRow);
+}
+
 /**
+ *
  * @fixme Add support to parse quoted line breaks
+ *
  * @param value
  * @param separator
  * @param quote
@@ -24,31 +32,31 @@ export function parseCsvRow (
     separator : string = ',',
     quote     : string = '"',
     lineBreak : string = '\n'
-) : CsvRow {
+): CsvRow {
 
-    if (separator?.length !== 1) {
+    if ( separator?.length !== 1 ) {
         throw new TypeError(`The separator must be exactly 1 character long: ${separator}`);
     }
 
-    if (quote?.length !== 1) {
+    if ( quote?.length !== 1 ) {
         throw new TypeError(`The quote must be exactly 1 character long: ${quote}`);
     }
 
-    if (isCsvRow(value)) {
+    if ( isCsvRow(value) ) {
         return value;
     }
 
-    if (!isString(value)) {
+    if ( !isString(value) ) {
         value = `${value}`;
     }
 
-    let pieces : string[] = [];
+    let pieces: string[] = [];
     let lastIndex = 0;
-    while (lastIndex < value.length) {
+    while ( lastIndex < value.length ) {
 
         const nextIndex = value.indexOf(separator, lastIndex);
 
-        if (nextIndex < 0) {
+        if ( nextIndex < 0 ) {
             pieces.push(value.substr(lastIndex));
             lastIndex = pieces.length;
             break;
@@ -67,30 +75,34 @@ export function parseCsvRow (
 
 }
 
-export type Csv = CsvRow[];
-
-export function isCsv (value : any) : value is Csv {
-    return isArrayOf<CsvRow>(value, isCsvRow);
-}
-
+/**
+ *
+ * @fixme Add support to detect if the input was just a single CsvRow
+ * @fixme Add support to convert arrays with (JSON able) objects as Csv
+ *
+ * @param value
+ * @param separator
+ * @param quote
+ * @param lineBreak
+ */
 export function parseCsv (
     value     : any,
     separator : string = ',',
     quote     : string = '"',
     lineBreak : string = '\n'
-) : Csv | undefined {
+): Csv | undefined {
 
-    if (isCsv(value)) {
+    if ( isCsv(value) ) {
         return value;
     }
 
-    if (!isString(value)) {
+    if ( !isString(value) ) {
         value = `${value}`;
     }
 
     return map(
         split(value, lineBreak),
-        (item : any) : CsvRow => parseCsvRow(item, separator, quote)
+        (item: any): CsvRow => parseCsvRow(item, separator, quote)
     );
 
 }
@@ -100,15 +112,15 @@ export function stringifyCsvRow (
     separator : string = ',',
     quote     : string = '"',
     lineBreak : string = '\n'
-) : string {
+): string {
 
-    return map(value, (column : string) => {
+    return map(value, (column: string) => {
 
-        if (column.length === 0) return column;
+        if ( column.length === 0 ) return column;
 
         if ( column.indexOf(separator) >= 0 || (column[0] === quote) ) {
-            if (column.indexOf(quote) >= 0 ) {
-                return `${quote}${column.split(quote).join(quote+quote)}${quote}`;
+            if ( column.indexOf(quote) >= 0 ) {
+                return `${quote}${column.split(quote).join(quote + quote)}${quote}`;
             } else {
                 return `${quote}${column}${quote}`;
             }
@@ -120,14 +132,20 @@ export function stringifyCsvRow (
 
 }
 
+/**
+ * @param value
+ * @param separator
+ * @param quote
+ * @param lineBreak
+ */
 export function stringifyCsv (
     value     : Csv,
     separator : string = ',',
     quote     : string = '"',
     lineBreak : string = '\n'
-) : string {
+): string {
 
-    return map(value, (row : CsvRow) => {
+    return map(value, (row: CsvRow) => {
         return stringifyCsvRow(row, separator, quote, lineBreak);
     }).join(lineBreak);
 
