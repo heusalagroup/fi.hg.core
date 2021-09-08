@@ -122,6 +122,30 @@ describe('StringUtils', () => {
             ) ).toStrictEqual(['Hello, enabled', 'Nice time.']);
         });
 
+        test('can process variables inside arrays using a function as typed value - test 2', () => {
+            expect( StringUtils.processVariables(
+                [ '${jsonString}' ],
+                (key: string) => {
+                    if (key === 'jsonString') return 'hello world';
+                    return undefined;
+                },
+                '${',
+                '}'
+            ) ).toStrictEqual(['hello world']);
+        });
+
+        test('can process variable from string using a function as typed value - test 2', () => {
+            expect( StringUtils.processVariables(
+                '${jsonString}',
+                (key: string) => {
+                    if (key === 'jsonString') return 'hello world';
+                    return undefined;
+                },
+                '${',
+                '}'
+            ) ).toStrictEqual('hello world');
+        });
+
         test('can process variables inside objects using a function as typed value', () => {
             expect( StringUtils.processVariables(
                 {

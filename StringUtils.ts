@@ -17,7 +17,8 @@ import {
 } from "./modules/lodash";
 import LogService from "./LogService";
 
-const ACCEPTED_KEYWORD_CHARACTERS = 'qwertyuiopasdfghjklzxcvbnm. \n\t1234567890_'
+const ACCEPTED_KEYWORD_CHARACTERS = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm._1234567890';
+const ACCEPTED_START_KEYWORD_CHARACTERS = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm._';
 
 export interface VariableResolverCallback {
     (key: string) : ReadonlyJsonAny | undefined;
@@ -122,6 +123,23 @@ export class StringUtils {
     }
 
     /**
+     *
+     * @fixme This probably should be inside Pipeline code, not here, and configurable in processVariablesInString().
+     * @param variableKey
+     */
+    public static isValidKeyword (variableKey : string) : boolean {
+
+        if ( variableKey.length <= 0 ) return false;
+
+        if ( ACCEPTED_START_KEYWORD_CHARACTERS.includes(variableKey[0]) ) {
+            return true;
+        }
+
+        return every(variableKey, (item: string) => ACCEPTED_KEYWORD_CHARACTERS.includes(item));
+
+    }
+
+    /**
      * Convert any found variables in the input to corresponding values.
      *
      * The variable keyword may be a path to a variable inner in the `variables` structure.
@@ -149,9 +167,7 @@ export class StringUtils {
         }
 
         // Special case which will support typed variables, when the full string is.
-        if ( startsWith(input, variablePrefix)
-            && endsWith(input, variableSuffix)
-        ) {
+        if ( startsWith(input, variablePrefix) && endsWith(input, variableSuffix) ) {
 
             let variableKey = input.substr(variablePrefix.length, input.length - variablePrefix.length - variableSuffix.length);
 
@@ -160,7 +176,7 @@ export class StringUtils {
 
                 variableKey = trim(variableKey);
 
-                if (every(variableKey, (item : string) => ACCEPTED_KEYWORD_CHARACTERS.includes(item))) {
+                if (StringUtils.isValidKeyword(variableKey)) {
                     const resolvedValue = resolver(variableKey);
                     // LOG.debug(`Variable "${variableKey}" resolved as `, resolvedValue);
                     return resolvedValue;
@@ -199,7 +215,7 @@ export class StringUtils {
 
                 const variableKey = trim( input.substr(keyNameStartIndex, keyNameEndIndex - keyNameStartIndex) );
 
-                if (!every(variableKey, (item : string) => ACCEPTED_KEYWORD_CHARACTERS.includes(item))) {
+                if (!StringUtils.isValidKeyword(variableKey)) {
 
                     output += `${input.substr(currentParsingStartIndex, keyTokenEndIndex - currentParsingStartIndex)}`;
 
