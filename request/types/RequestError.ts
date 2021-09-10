@@ -35,7 +35,7 @@ export class RequestError extends Error {
         this.status  = status;
         this.method  = method;
         this.url     = url;
-        this.body     = body;
+        this.body    = body;
 
     }
 

@@ -140,7 +140,7 @@ export class NodeRequestClient implements RequestClientInterface {
             return undefined;
         }
 
-        return this._findSocketFile(parentPath);
+        return await this._findSocketFile(parentPath);
 
     }
 
@@ -335,7 +335,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(RequestMethod.GET, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._request(RequestMethod.GET, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -359,7 +359,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._request(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -383,7 +383,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(RequestMethod.POST, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._request(RequestMethod.POST, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -407,7 +407,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._request(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
@@ -431,11 +431,11 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return this._request(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._request(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successResponse);
 
     }
 
-    private static _successResponse (response: JsonHttpResponse) : Json | undefined {
+    private static async _successResponse (response: JsonHttpResponse) : Promise<Json | undefined> {
 
         const statusCode = response?.statusCode;
 

@@ -15,57 +15,57 @@ export class RequestClient {
 
     private static _client : RequestClientInterface = RequestClient._initClient();
 
-    public static jsonRequest (
+    public static async jsonRequest (
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: Json
     ) : Promise<Json| undefined> {
-        return this._client.jsonRequest(method, url, headers, data);
+        return await this._client.jsonRequest(method, url, headers, data);
     }
 
-    public static getJson (
+    public static async getJson (
         url      : string,
         headers ?: {[key: string]: string}
     ) : Promise<Json| undefined> {
         // LOG.debug('.getJson: ', url, headers);
-        return this._client.jsonRequest(RequestMethod.GET, url, headers);
+        return await this._client.jsonRequest(RequestMethod.GET, url, headers);
     }
 
-    public static postJson (
+    public static async postJson (
         url      : string,
         data    ?: Json,
         headers ?: {[key: string]: string}
     ) : Promise<Json| undefined> {
         LOG.debug('.postJson: ', url, data, headers);
-        return this._client.jsonRequest(RequestMethod.POST, url, headers, data);
+        return await this._client.jsonRequest(RequestMethod.POST, url, headers, data);
     }
 
-    public static patchJson (
+    public static async patchJson (
         url      : string,
         data    ?: Json,
         headers ?: {[key: string]: string}
     ) : Promise<Json| undefined> {
         LOG.debug('.patchJson: ', url, data, headers);
-        return this._client.jsonRequest(RequestMethod.PATCH, url, headers, data);
+        return await this._client.jsonRequest(RequestMethod.PATCH, url, headers, data);
     }
 
-    public static putJson (
+    public static async putJson (
         url      : string,
         data    ?: Json,
         headers ?: {[key: string]: string}
     ) : Promise<Json| undefined> {
         LOG.debug('.putJson: ', url, data, headers);
-        return this._client.jsonRequest(RequestMethod.PUT, url, headers, data);
+        return await this._client.jsonRequest(RequestMethod.PUT, url, headers, data);
     }
 
-    public static deleteJson (
+    public static async deleteJson (
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: Json
     ) : Promise<Json| undefined> {
         LOG.debug('.deleteJson: ', url, data, headers);
-        return this._client.jsonRequest(RequestMethod.DELETE, url, headers, data);
+        return await this._client.jsonRequest(RequestMethod.DELETE, url, headers, data);
     }
 
     private static _initClient () : RequestClientInterface {
