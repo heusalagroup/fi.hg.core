@@ -1,7 +1,8 @@
 import JsonAny, {
-    isJsonArray,
-    isJsonObject, isReadonlyJsonArray, isReadonlyJsonObject,
-    JsonObject, ReadonlyJsonAny
+    isReadonlyJsonArray,
+    isReadonlyJsonObject,
+    JsonObject,
+    ReadonlyJsonAny
 } from "./Json";
 import {
     get,
@@ -13,9 +14,9 @@ import {
     map,
     keys,
     reduce,
-    isNull, every
+    isNull,
+    every
 } from "./modules/lodash";
-import LogService from "./LogService";
 
 const ACCEPTED_KEYWORD_CHARACTERS = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm._1234567890';
 const ACCEPTED_START_KEYWORD_CHARACTERS = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm._';
