@@ -9,7 +9,7 @@ import {
     isString,
     TestCallbackNonStandard
 } from "../../modules/lodash";
-import { RepositoryMember } from "./RepositoryMember";
+import { isRepositoryMember, RepositoryMember } from "./RepositoryMember";
 
 export interface RepositoryEntry<T> {
 
@@ -42,7 +42,7 @@ export function isRepositoryEntry<T> (
         && isString(value?.id)
         && isNumber(value?.version)
         && isBooleanOrUndefined(value?.deleted)
-        && isArrayOrUndefinedOf<string>(value?.members, isString)
+        && isArrayOrUndefinedOf<RepositoryMember>(value?.members, isRepositoryMember)
     );
 }
 

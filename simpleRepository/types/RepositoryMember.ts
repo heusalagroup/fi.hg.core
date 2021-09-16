@@ -18,12 +18,12 @@ export function isRepositoryMember (value: any): value is RepositoryMember {
         isRegularObject(value)
         && hasNoOtherKeys(value, [
             'id',
-            'display_name',
-            'avatar_url'
+            'displayName',
+            'avatarUrl'
         ])
         && isString(value?.id)
-        && isStringOrUndefined(value?.display_name)
-        && isStringOrUndefined(value?.avatar_url)
+        && isStringOrUndefined(value?.displayName)
+        && isStringOrUndefined(value?.avatarUrl)
     );
 }
 
