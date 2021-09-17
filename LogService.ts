@@ -9,13 +9,16 @@ export class LogService {
     public static Level = LogLevel;
 
     private static _level  : LogLevel = LogLevel.DEBUG;
-    private static _logger : Logger   = console;
+    private static _logger : Logger | any   = console;
 
-    public static setLogLevel (value : LogLevel) {
-        this._level = value;
+    public static setLogLevel (value : LogLevel | undefined) : Logger {
+        if (value) {
+            this._level = value;
+        }
+        return this;
     }
 
-    public static getLogLevel () : LogLevel {
+    public static getLogLevel () : LogLevel | undefined {
         return this._level;
     }
 
@@ -57,7 +60,5 @@ export class LogService {
     }
 
 }
-
-export { LogLevel };
 
 export default LogService;

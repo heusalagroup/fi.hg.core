@@ -16,6 +16,7 @@ import NodeHttpUtils from "./requestClient/node/NodeHttpUtils";
 import ResponseEntity from "./request/ResponseEntity";
 import {isArray, isString} from "./modules/lodash";
 import Headers from "./request/Headers";
+import LogLevel from "./types/LogLevel";
 
 const LOG = LogService.createLogger('RequestServer');
 
@@ -26,6 +27,10 @@ export class RequestServer {
     private readonly _server: ServerService<IncomingMessage, ServerResponse>;
     private readonly _router: RequestRouter;
     private readonly _handleRequestCallback: RequestHandler<any, any>;
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     public constructor(
         config: string = DEFAULT_REQUEST_SERVER_CONFIG_STRING
