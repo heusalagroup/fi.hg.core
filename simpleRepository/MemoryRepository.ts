@@ -132,6 +132,22 @@ export class MemoryRepository<T> implements Repository<T> {
 
     }
 
+    public async waitById (
+        id              : string,
+        includeMembers ?: boolean,
+        timeout        ?: number
+    ): Promise<RepositoryEntry<T> | undefined> {
+        // FIXME: Implement real long polling
+        return new Promise((resolve, reject) => {
+            setTimeout(
+                () => {
+                    resolve(this.findById(id, includeMembers));
+                },
+                timeout ?? 4000
+            )
+        });
+    }
+
     public async update (id: string, data: T) : Promise<RepositoryEntry<T>> {
 
         const itemIndex = findIndex(this._items, item => item.id === id);

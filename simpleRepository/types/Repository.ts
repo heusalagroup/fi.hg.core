@@ -10,6 +10,12 @@ export interface Repository<T> extends PublicRepository<T> {
         includeMembers ?: boolean
     ): Promise<RepositoryEntry<T> | undefined>;
 
+    waitById (
+        id              : string,
+        includeMembers ?: boolean,
+        timeout        ?: number
+    ): Promise<RepositoryEntry<T> | undefined>;
+
     getAll (): Promise<RepositoryEntry<T>[]>;
 
     getAllByProperty (

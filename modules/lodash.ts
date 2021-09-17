@@ -324,6 +324,14 @@ export function isNumberArray (value : any) : value is number[] {
  */
 export function parseInteger (value: any) : number | undefined {
 
+    if (value === undefined) {
+        return undefined;
+    }
+
+    if (isSafeInteger(value)) {
+        return value;
+    }
+
     if (isString(value)) {
         value = trim(value);
         if (value.length === 0) return undefined;
