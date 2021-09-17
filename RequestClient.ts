@@ -5,6 +5,7 @@ import LogService from "./LogService";
 import {REQUEST_CLIENT_FETCH_ENABLED, REQUEST_CLIENT_NODE_ENABLED} from "./requestClient/request-client-constants";
 import NodeRequestClient from "./requestClient/node/NodeRequestClient";
 import FetchRequestClient from "./requestClient/fetch/FetchRequestClient";
+import LogLevel from "./types/LogLevel";
 
 export const HTTP = REQUEST_CLIENT_NODE_ENABLED ? require('http') : undefined;
 export const HTTPS = REQUEST_CLIENT_NODE_ENABLED ? require('https') : undefined;
@@ -12,6 +13,12 @@ export const HTTPS = REQUEST_CLIENT_NODE_ENABLED ? require('https') : undefined;
 const LOG = LogService.createLogger('RequestClient');
 
 export class RequestClient {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+        NodeRequestClient.setLogLevel(level);
+    }
+
 
     private static _client : RequestClientInterface = RequestClient._initClient();
 

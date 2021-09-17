@@ -22,10 +22,15 @@ import DefaultHeaderMapValuesType from "./types/DefaultHeaderMapValuesType";
 import DefaultPathVariableMapValuesType from "./types/DefaultPathVariableMapValuesType";
 import RequestModelAttributeParamObject from "./types/RequestModelAttributeParamObject";
 import LogService from "../LogService";
+import LogLevel from "../types/LogLevel";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
 export class RequestControllerUtils {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     static parseRequestMappings (value : RequestMappingArray) : RequestMappingObject {
 

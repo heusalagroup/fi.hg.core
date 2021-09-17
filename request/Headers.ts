@@ -2,10 +2,15 @@ import HeadersObject, {ChangeableHeadersObject} from "./types/HeadersObject";
 import {concat, forEach, has, isArray, isString, keys, map, trim} from "../modules/lodash";
 import LogService from "../LogService";
 import {isReadonlyJsonArray} from "../Json";
+import LogLevel from "../types/LogLevel";
 
 const LOG = LogService.createLogger('Headers');
 
 export class Headers {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     private _value              : HeadersObject | undefined;
     private _uninitializedValue : HeadersObject | undefined;

@@ -9,6 +9,7 @@ import PATH from "path";
 import {Stats} from "fs";
 import {REQUEST_CLIENT_NODE_ENABLED} from "../request-client-constants";
 import RequestError from "../../request/types/RequestError";
+import LogLevel from "../../types/LogLevel";
 
 export const FsPromises = REQUEST_CLIENT_NODE_ENABLED ? require("fs").promises : undefined;
 
@@ -47,6 +48,11 @@ export interface JsonHttpResponse {
 }
 
 export class NodeRequestClient implements RequestClientInterface {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
+
 
     private readonly _http : HttpModule;
     private readonly _https : HttpModule;

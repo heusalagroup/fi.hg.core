@@ -29,6 +29,7 @@ import RouteUtils from "./RouteUtils";
 import BaseRoutes, {RouteParamValuesObject} from "./types/BaseRoutes";
 import RequestPathVariableParamObject from "../request/types/RequestPathVariableParamObject";
 import RequestModelAttributeParamObject, { isRequestModelAttributeParamObject } from "../request/types/RequestModelAttributeParamObject";
+import LogLevel from "../types/LogLevel";
 
 const LOG = LogService.createLogger('RequestRouter');
 
@@ -58,6 +59,10 @@ export interface RequestContext {
 type ModelAttributeProperty = [string, string, (RequestParamObject | null)[]];
 
 export class RequestRouter {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     private readonly _controllers : Array<RequestController>;
     private _routes               : BaseRoutes | undefined;

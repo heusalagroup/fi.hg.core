@@ -32,6 +32,7 @@ export class RequestServer {
         LOG.setLogLevel(level);
     }
 
+
     public constructor(
         config: string = DEFAULT_REQUEST_SERVER_CONFIG_STRING
     ) {
@@ -64,13 +65,13 @@ export class RequestServer {
 
     }
 
-    start() {
+    public start() {
 
         this._server.start();
 
     }
 
-    stop() {
+    public stop() {
 
         this._server.stop();
 

@@ -10,7 +10,6 @@ import {isBoolean, isNumber, isObject, isString} from "./modules/lodash";
 import RequestStatus from "./request/types/RequestStatus";
 import RequestType from "./request/types/RequestType";
 import RequestError, {createRequestError} from "./request/types/RequestError";
-import ResponseEntity from "./request/ResponseEntity";
 import Headers from "./request/Headers";
 import DefaultHeaderMapValuesType from "./request/types/DefaultHeaderMapValuesType";
 import DefaultPathVariableMapValuesType from "./request/types/DefaultPathVariableMapValuesType";
@@ -21,11 +20,18 @@ import RequestHeaderOptions, {isRequestHeaderOptions} from "./request/types/Requ
 import RequestPathVariableListOptions from "./request/types/RequestPathVariableListOptions";
 import RequestPathVariableOptions, {isRequestPathVariableOptions} from "./request/types/RequestPathVariableOptions";
 import ParameterOrMethodDecoratorFunction from "./request/types/ParameterOrMethodDecoratorFunction";
+import LogLevel from "./types/LogLevel";
 
 const LOG = LogService.createLogger('Request');
 
 // noinspection JSUnusedGlobalSymbols
 export class Request {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+        Headers.setLogLevel(level);
+        RequestControllerUtils.setLogLevel(level);
+    }
 
     public static Method         = RequestMethod;
     public static Status         = RequestStatus;

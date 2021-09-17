@@ -9,6 +9,7 @@ export interface FetchInterface {
 
 export class FetchRequestClient implements RequestClientInterface {
 
+
     private _fetch : FetchInterface;
 
     constructor (fetch : FetchInterface) {
