@@ -29,7 +29,11 @@ import {
     isUndefined,
     everyProperty,
     createOr,
-    TestCallbackNonStandard, isArrayOf
+    TestCallbackNonStandard,
+    isArrayOf,
+    map,
+    reduce,
+    keys
 } from "./modules/lodash";
 
 
@@ -176,6 +180,41 @@ export function parseJson (value: any) : JsonAny | undefined {
     } catch (err) {
         return undefined;
     }
+}
+
+export function closeJsonArray (value: JsonArray | ReadonlyJsonArray) : JsonArray | ReadonlyJsonArray {
+    if (isJsonArray(value)) {
+        return map(value, cloneJson) as JsonArray | ReadonlyJsonArray;
+    }
+    throw new TypeError(`closeJsonArray: Not an JSON array: ${value}`);
+}
+
+export function cloneJsonObject (value: JsonObject | ReadonlyJsonObject) : JsonObject | ReadonlyJsonObject {
+    if (isJsonObject(value)) {
+        return reduce(
+            keys(value),
+            (obj: {[key: string]: any}, key: string) : JsonObject => {
+                obj[key] = cloneJson(value[key]);
+                return obj;
+            },
+            {} as JsonObject | ReadonlyJsonObject
+        );
+    }
+    throw new TypeError(`cloneJsonObject: Not an JSON object: ${value}`);
+}
+
+export function cloneJson (value: any) : JsonAny | ReadonlyJsonAny | undefined {
+
+    if (value === undefined) return undefined;
+    if (value === null) return null;
+    if (isString(value)) return value;
+    if (isNumber(value)) return value;
+    if (isBoolean(value)) return value;
+    if (isJsonArray(value)) return closeJsonArray(value);
+    if (isJsonObject(value)) return cloneJsonObject(value);
+
+    throw new TypeError(`cloneJson: Not JSON compatible value: ${value}`);
+
 }
 
 export default JsonAny;
