@@ -5,7 +5,9 @@ import LogService from "./LogService";
 import RequestController from "./request/types/RequestController";
 import RequestControllerUtils from "./request/RequestControllerUtils";
 import RequestMappingArray from "./request/types/RequestMappingArray";
-import RequestParamValueType, {isRequestParamValueType} from "./request/types/RequestParamValueType";
+import RequestParamValueType, {
+    isRequestParamValueTypeOrUndefined
+} from "./request/types/RequestParamValueType";
 import {isBoolean, isNumber, isObject, isString} from "./modules/lodash";
 import RequestStatus from "./request/types/RequestStatus";
 import RequestType from "./request/types/RequestType";
@@ -16,9 +18,15 @@ import DefaultPathVariableMapValuesType from "./request/types/DefaultPathVariabl
 import MethodDecoratorFunction from "./request/types/MethodDecoratorFunction";
 import ParameterDecoratorFunction from "./request/types/ParameterDecoratorFunction";
 import RequestHeaderListOptions, {isRequestHeaderListOptions} from "./request/types/RequestHeaderListOptions";
-import RequestHeaderOptions, {isRequestHeaderOptions} from "./request/types/RequestHeaderOptions";
+import RequestHeaderOptions, {
+    isRequestHeaderOptions,
+    isRequestHeaderOptionsOrUndefined
+} from "./request/types/RequestHeaderOptions";
 import RequestPathVariableListOptions from "./request/types/RequestPathVariableListOptions";
-import RequestPathVariableOptions, {isRequestPathVariableOptions} from "./request/types/RequestPathVariableOptions";
+import RequestPathVariableOptions, {
+    isRequestPathVariableOptions,
+    isRequestPathVariableOptionsOrUndefined
+} from "./request/types/RequestPathVariableOptions";
 import ParameterOrMethodDecoratorFunction from "./request/types/ParameterOrMethodDecoratorFunction";
 import LogLevel from "./types/LogLevel";
 
@@ -110,11 +118,11 @@ export class Request {
      */
     public static param (
         arg1  : any | Function | string,
-        arg2 ?: string | RequestParamValueType,
+        arg2 ?: string | RequestParamValueType | undefined,
         arg3 ?: number
     ) : ParameterDecoratorFunction | void {
 
-        if ( isString(arg1) && arg3 === undefined && ( arg2 === undefined || isRequestParamValueType(arg2) ) ) {
+        if ( isString(arg1) && (arg3 === undefined) && isRequestParamValueTypeOrUndefined(arg2) ) {
 
             const queryParam = arg1;
             const paramType  : RequestParamValueType = arg2 ?? RequestParamValueType.STRING;
@@ -245,7 +253,7 @@ export class Request {
 
             const headerName : string = arg1;
 
-            if ( !( arg2 === undefined || isRequestHeaderOptions(arg2) ) ) {
+            if (!isRequestHeaderOptionsOrUndefined(arg2)) {
                 throw new TypeError(`RequestHeader: Argument 2 is not type of RequestHeaderOptions: ${arg2}`);
             }
 
@@ -426,7 +434,7 @@ export class Request {
 
         if (isString(variableName)) {
 
-            if (!(arg2 === undefined || isRequestPathVariableOptions(arg2))) {
+            if (!isRequestPathVariableOptionsOrUndefined(arg2)) {
                 throw new TypeError(`RequestPathVariable: Argument 2 is not type of RequestPathVariableOptions: ${arg2}`);
             }
 

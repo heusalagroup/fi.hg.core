@@ -17,4 +17,8 @@ export function isRequestHeaderOptions(value: any): value is RequestHeaderOption
 
 }
 
+export function isRequestHeaderOptionsOrUndefined (value: any): value is (RequestHeaderOptions|undefined) {
+    return value === undefined || isRequestHeaderOptions(value);
+}
+
 export default RequestHeaderOptions;

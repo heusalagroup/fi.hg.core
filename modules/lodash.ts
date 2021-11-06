@@ -25,7 +25,7 @@ import isNull from 'lodash/isNull.js';
 import { default as _isArray } from 'lodash/isArray.js';
 import isFunction from 'lodash/isFunction.js';
 import { default as _isString } from 'lodash/isString.js';
-import isNumber from 'lodash/isNumber.js';
+import { default as _isNumber } from 'lodash/isNumber.js';
 import { default as _isInteger } from 'lodash/isInteger.js';
 import { default as _isSafeInteger } from 'lodash/isSafeInteger.js';
 import toInteger from 'lodash/toInteger.js';
@@ -206,6 +206,16 @@ export function isNumberOrUndefined (value : any) : value is number | undefined 
  */
 export function isString (value : any) : value is string {
     return _isString(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isNumber (value : any) : value is number {
+    return _isNumber(value);
 }
 
 /**
@@ -969,7 +979,6 @@ export {
     isBoolean,
     isNull,
     isFunction,
-    isNumber,
     toInteger,
     toSafeInteger,
     startsWith,

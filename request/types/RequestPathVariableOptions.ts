@@ -22,4 +22,8 @@ export function isRequestPathVariableOptions(value: any): value is RequestPathVa
 
 }
 
+export function isRequestPathVariableOptionsOrUndefined (value: any): value is RequestPathVariableOptions {
+    return value === undefined || isRequestPathVariableOptions(value);
+}
+
 export default RequestPathVariableOptions;

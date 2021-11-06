@@ -3,6 +3,9 @@
 import {trim} from "./modules/lodash";
 import FS     from 'fs';
 import PATH   from 'path';
+import LogService from './LogService';
+
+const LOG = LogService.createLogger('ProcessUtils');
 
 export class ProcessUtils {
 
@@ -72,29 +75,42 @@ export class ProcessUtils {
 
         let destroyed = false;
 
-        const closeProcess = () => {
-
+        const closeProcessInternal = () => {
             try {
-
                 if (destroyed) return;
-
                 destroyed = true;
-
                 callback();
-
             } catch (err) {
                 errorHandler(err);
             }
-
         };
 
-        process.on('exit', closeProcess);
-        process.on('SIGTERM', closeProcess);
-        process.on('SIGINT', closeProcess);
-        process.on('SIGUSR1', closeProcess);
-        process.on('SIGUSR2', closeProcess);
-        process.on('uncaughtException', closeProcess);
+        const closeProcess = (reason: string) => {
+            return (err ?: any) => {
+                ProcessUtils._printErrors(reason, err);
+                closeProcessInternal();
+            };
+        };
 
+        process.on('exit', closeProcess('exit'));
+        process.on('SIGTERM', closeProcess('SIGTERM'));
+        process.on('SIGINT', closeProcess('SIGINT'));
+        process.on('SIGUSR1', closeProcess('SIGUSR1'));
+        process.on('SIGUSR2', closeProcess('SIGUSR2'));
+        process.on('uncaughtException', closeProcess('uncaughtException'));
+
+    }
+
+    private static _printErrors (reason: string, err ?: any) {
+        try {
+            if (err) {
+                LOG.debug(`Closing process because "${reason}" event: `, err);
+            } else {
+                LOG.debug(`Closing process because "${reason}" event`);
+            }
+        } catch (err2) {
+            console.error('Error while printing errors: ', err2);
+        }
     }
 
 }

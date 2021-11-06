@@ -17,10 +17,22 @@ import ResponseEntity from "./request/ResponseEntity";
 import {isArray, isString} from "./modules/lodash";
 import Headers from "./request/Headers";
 import LogLevel from "./types/LogLevel";
+import Observer, { ObserverCallback, ObserverDestructor } from "./Observer";
 
 const LOG = LogService.createLogger('RequestServer');
 
 export const DEFAULT_REQUEST_SERVER_CONFIG_STRING = 'http://localhost:3000';
+
+export enum RequestServerEvent {
+
+    CONTROLLER_ATTACHED = "RequestServer:controllerAttached",
+    STARTED = "RequestServer:started",
+    STOPPED = "RequestServer:stopped"
+
+}
+
+export type RequestServerDestructor = ObserverDestructor;
+
 
 export class RequestServer {
 
@@ -32,11 +44,22 @@ export class RequestServer {
         LOG.setLogLevel(level);
     }
 
+    private readonly _observer: Observer<RequestServerEvent>;
+
+    public static Event = RequestServerEvent;
+
+    public on (
+        name: RequestServerEvent,
+        callback: ObserverCallback<RequestServerEvent>
+    ): RequestServerDestructor {
+        return this._observer.listenEvent(name, callback);
+    }
 
     public constructor(
         config: string = DEFAULT_REQUEST_SERVER_CONFIG_STRING
     ) {
 
+        this._observer = new Observer<RequestServerEvent>("RequestServer");
         this._server = RequestServer.createServerService(config);
         this._router = new RequestRouter();
 
@@ -46,8 +69,13 @@ export class RequestServer {
 
     }
 
+    public destroy (): void {
+        this._observer.destroy();
+    }
+
     /**
-     * Attach an instance which was previously annotated with our Request annotation implementation.
+     * Attach an instance which was previously annotated with our Request annotation
+     * implementation.
      *
      * @param controller Class instance which has internal Request annotations
      */
@@ -56,25 +84,25 @@ export class RequestServer {
     ) {
 
         if (isRequestController(controller)) {
-
             this._router.attachController(controller);
-
         } else {
             throw new TypeError(`The provided controller was not supported type`);
         }
 
+        this._observer.triggerEvent(RequestServerEvent.CONTROLLER_ATTACHED);
+
     }
 
-    public start() {
-
+    public start () {
+        LOG.debug(`Starting server`);
         this._server.start();
-
+        this._observer.triggerEvent(RequestServerEvent.STARTED);
     }
 
-    public stop() {
-
+    public stop () {
+        LOG.debug(`Stopping server`);
         this._server.stop();
-
+        this._observer.triggerEvent(RequestServerEvent.STOPPED);
     }
 
     private async _handleRequest(
@@ -225,13 +253,10 @@ export class RequestServer {
         if (url.protocol === 'http:') {
 
             const port = url.port ? parseInt(url.port, 10) : 80;
-
             return new HttpServerService(port, url.hostname);
 
         } else {
-
             throw new TypeError(`RequestServer: Protocol "${url.protocol}" not yet supported`);
-
         }
 
     }

@@ -27,6 +27,10 @@ export function isRequestParamValueType (value : any) : value is RequestParamVal
 
 }
 
+export function isRequestParamValueTypeOrUndefined (value : any) : value is (undefined|RequestParamValueType) {
+    return value === undefined || isRequestParamValueType(value);
+}
+
 export function parseRequestParamValueType (value: any) : RequestParamValueType {
 
     if (isRequestParamValueType(value)) return value;

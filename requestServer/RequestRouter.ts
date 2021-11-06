@@ -17,7 +17,13 @@ import {RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
 import {RequestParamObject} from "../request/types/RequestParamObject";
 import {RequestControllerMethodObject} from "../request/types/RequestControllerMethodObject";
 import RequestQueryParamObject from "../request/types/RequestQueryParamObject";
-import Json, {isReadonlyJsonAny, isReadonlyJsonArray, isReadonlyJsonObject, ReadonlyJsonObject} from "../Json";
+import Json, {
+    isReadonlyJsonAny,
+    isReadonlyJsonArray,
+    isReadonlyJsonObject,
+    JsonObject,
+    ReadonlyJsonObject
+} from "../Json";
 import ResponseEntity, {isResponseEntity} from "../request/ResponseEntity";
 import RequestError, {isRequestError} from "../request/types/RequestError";
 import RequestParamObjectType from "../request/types/RequestParamObjectType";
@@ -269,7 +275,7 @@ export class RequestRouter {
 
                 if ( this._modelAttributeNames && this._modelAttributeNames.has(routeController) ) {
 
-                    LOG.debug(`Populating attributes for property ${routePropertyName}`);
+                    LOG.debug(`Populating attributes for property "${routePropertyName}"`);
 
                     const modelAttributeValues : Map<string, any> = RequestRouter._getOrCreateRequestModelAttributesForController(requestModelAttributes, routeController);
 
@@ -317,6 +323,13 @@ export class RequestRouter {
 
                 // LOG.debug('handleRequest: stepParams 2: ', stepParams);
 
+                if (!has(routeController, routePropertyName)) {
+                    LOG.warn(`Warning! No property by name "${routePropertyName}" found in the controller`);
+                    responseEntity = ResponseEntity.notFound<JsonObject>().body({error:"404 - Not Found", code: 404});
+                    return;
+                }
+
+                LOG.debug(`Calling route property by name "${routePropertyName}"`);
                 const stepResult = await routeController[routePropertyName](...stepParams);
 
                 if (isRequestStatus(stepResult)) {
