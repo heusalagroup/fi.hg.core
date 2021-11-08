@@ -1,5 +1,5 @@
 import RequestStatus, {stringifyRequestStatus} from "./types/RequestStatus";
-import {isNumber, map} from "../modules/lodash";
+import { isNumber, map, TestCallback, TestCallbackNonStandard } from "../modules/lodash";
 import Headers, {isHeaders} from "./Headers";
 import HeadersObject, {isHeadersObject} from "./types/HeadersObject";
 import {isReadonlyJsonAny} from "../Json";
@@ -190,6 +190,13 @@ export class ResponseEntity<T> {
 
 export function isResponseEntity (value : any) : value is ResponseEntity<any> {
     return !!value && value instanceof ResponseEntity;
+}
+
+export function isResponseEntityOf<T> (
+    value  : any,
+    isTest : TestCallbackNonStandard
+) : value is ResponseEntity<T> {
+    return !!value && value instanceof ResponseEntity && isTest( value.getBody() );
 }
 
 export default ResponseEntity;
