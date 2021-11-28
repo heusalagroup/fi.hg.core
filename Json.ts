@@ -182,6 +182,10 @@ export function parseJson (value: any) : JsonAny | undefined {
     }
 }
 
+export function isJsonString (value : any) : value is string {
+    return parseJson(value) !== undefined;
+}
+
 export function closeJsonArray (value: JsonArray | ReadonlyJsonArray) : JsonArray | ReadonlyJsonArray {
     if (isJsonArray(value)) {
         return map(value, cloneJson) as JsonArray | ReadonlyJsonArray;
