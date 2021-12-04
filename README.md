@@ -37,14 +37,14 @@ For commercial support check [Sendanor's organization page](https://github.com/s
 
 Run the installation commands from your project's root directory. Usually it's where your `package.json` is located.
 
-For these sample commands we expect your source files to be located in `./src` and we'll use `./src/nor/ts` for location for our sub module.
+For these sample commands we expect your source files to be located in `./src` and we'll use `./src/fi/nor/ts` for location for our submodule.
 
 Setup git submodule:
 
 ```shell
-mkdir -p src/nor
-git submodule add git@github.com:sendanor/typescript.git src/nor/ts
-git config -f .gitmodules submodule.src/nor/ts.branch main
+mkdir -p src/fi/nor
+git submodule add git@github.com:sendanor/typescript.git src/fi/nor/ts
+git config -f .gitmodules submodule.src/fi/nor/ts.branch main
 ```
 
 Next install our required dependencies (newest [lodash library](https://lodash.com/) and [reflect-metadata library](https://www.npmjs.com/package/reflect-metadata)):
@@ -101,7 +101,7 @@ It wouldn't be possible to use compile time optimizations and other ENV based fe
 Our simple wrapper for `console` which allows naming the log context.
 
 ```typescript
-import LogService from "./src/nor/ts/LogService";
+import LogService from "./src/fi/nor/ts/LogService";
 
 const LOG = LogService.createLogger("FooService");
 
@@ -119,7 +119,7 @@ This is a simple observer implementation for implementing synchronous in-process
 You'll use it like this:
 
 ```typescript
-import Observer from "./src/nor/ts/Observer";
+import Observer from "./src/fi/nor/ts/Observer";
 
 enum FooEvent {
     CHANGED = "FooService:changed",
@@ -173,7 +173,7 @@ import Request, {
     RequestHeader, 
     RequestParam,
     Headers
-} from "./src/nor/ts/Request";
+} from "./src/fi/nor/ts/Request";
 
 export interface ListDTO<T> {
     pageNumber: number;
