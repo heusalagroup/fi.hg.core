@@ -241,6 +241,22 @@ export class StringUtils {
 
     }
 
+    /**
+     * Stringify a number
+     *
+     * @param x
+     * @param thousandSeparator
+     * @param digitSeparator
+     */
+    public static formatNumber (
+        x                 : number,
+        thousandSeparator : string = ' ',
+        digitSeparator    : string = '.'
+    ) : string {
+        return x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator).replace(/\./, digitSeparator);
+    }
+
+
 }
 
 export default StringUtils;
