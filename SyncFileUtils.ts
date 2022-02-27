@@ -6,14 +6,20 @@ import path from "path";
 import { ReadonlyJsonAny } from "./Json";
 import { keys } from "./modules/lodash";
 
-const LOG = LogService.createLogger('mkdirp');
+const LOG = LogService.createLogger('SyncFileUtils');
 
 export class SyncFileUtils {
 
+    static directoryExits (dirPath: string) : boolean {
+        return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
+    }
+
     static mkdirp (dirPath: string) {
 
+        LOG.debug(`mkdirp: Creating directory: `, dirPath);
+
         const paths = [];
-        while (!( fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory() )) {
+        while (!SyncFileUtils.directoryExits(dirPath)) {
             paths.push(dirPath);
             const parentPath = path.dirname(dirPath);
             if (dirPath === parentPath) break;
@@ -22,7 +28,7 @@ export class SyncFileUtils {
 
         while ( paths.length >= 1 ) {
             const dir : string | undefined = paths.pop();
-            LOG.debug(`Creating missing directory: `, dir);
+            LOG.debug(`mkdirp: Creating missing directory: `, dir);
             fs.mkdirSync(dir);
         }
 
