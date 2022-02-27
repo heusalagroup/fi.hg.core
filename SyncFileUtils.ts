@@ -1,0 +1,93 @@
+// Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
+import LogService from "./LogService";
+import fs from "fs";
+import path from "path";
+import { ReadonlyJsonAny } from "./Json";
+import { keys } from "./modules/lodash";
+
+const LOG = LogService.createLogger('mkdirp');
+
+export class SyncFileUtils {
+
+    static mkdirp (dirPath: string) {
+
+        const paths = [];
+        while (!( fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory() )) {
+            paths.push(dirPath);
+            const parentPath = path.dirname(dirPath);
+            if (dirPath === parentPath) break;
+            dirPath = parentPath;
+        }
+
+        while ( paths.length >= 1 ) {
+            const dir : string | undefined = paths.pop();
+            LOG.debug(`Creating missing directory: `, dir);
+            fs.mkdirSync(dir);
+        }
+
+    }
+
+    static readTextFile (
+        sourceFile: string
+    ) : string {
+        return fs.readFileSync(sourceFile, "utf8");
+    }
+
+    static fileExists (targetPath: string) : boolean {
+        return fs.existsSync(targetPath)
+    }
+
+    static readJsonFile (
+        sourceFile: string
+    ) : ReadonlyJsonAny {
+        return JSON.parse(SyncFileUtils.readTextFile(sourceFile));
+    }
+
+    static writeTextFile (
+        targetPath: string,
+        targetDataString : string
+    ) {
+        fs.writeFileSync(targetPath, targetDataString, {encoding: 'utf8'});
+    }
+
+    static writeJsonFile (
+        targetPath: string,
+        targetData : ReadonlyJsonAny
+    ) {
+        const targetDataString = JSON.stringify(targetData, null, 2);
+        SyncFileUtils.writeTextFile(targetPath, targetDataString);
+    }
+
+    static copyTextFileWithReplacements (
+        sourceFile: string,
+        toFile: string,
+        replacements: {readonly [name: string]: string}
+    ) {
+
+        let fileContentString = SyncFileUtils.readTextFile(sourceFile);
+
+        keys(replacements).forEach((key: string) => {
+            const value = replacements[key];
+            fileContentString = fileContentString.replace(key, value);
+        });
+
+        SyncFileUtils.writeTextFile(toFile, fileContentString);
+
+    }
+
+    static copyTextFileWithReplacementsIfMissing (
+        sourceFile: string,
+        toFile: string,
+        replacements: {readonly [name: string]: string}
+    ) {
+
+        if (!SyncFileUtils.fileExists(toFile)) {
+            SyncFileUtils.copyTextFileWithReplacements(sourceFile, toFile, replacements);
+        } else {
+            LOG.warn(`Warning! File already exists: `, toFile);
+        }
+
+    }
+
+}
