@@ -10,6 +10,10 @@ const LOG = LogService.createLogger('SyncFileUtils');
 
 export class SyncFileUtils {
 
+    static isDirectory (dirPath: string) : boolean {
+        return fs.statSync(dirPath).isDirectory();
+    }
+
     static directoryExits (dirPath: string) : boolean {
         return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
     }
