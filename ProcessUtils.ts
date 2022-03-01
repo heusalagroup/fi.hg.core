@@ -104,9 +104,9 @@ export class ProcessUtils {
     private static _printErrors (reason: string, err ?: any) {
         try {
             if (err) {
-                LOG.debug(`Closing process because "${reason}" event: `, err);
+                LOG.error(`Closing process because "${reason}" event: `, err);
             } else {
-                LOG.debug(`Closing process because "${reason}" event`);
+                LOG.error(`Closing process because "${reason}" event`);
             }
         } catch (err2) {
             console.error('Error while printing errors: ', err2);
