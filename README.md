@@ -12,7 +12,7 @@ We don't have traditional releases.  This project evolves directly to our git re
 
 This git repository contains only the source code for a compile time use case. It is meant to be used as a git submodule in a NodeJS or webpack project.
 
-See [sendanor/typescript-package](https://github.com/sendanor/typescript-package) for a full package example. Although, keep in mind, this repository is not intended to be used as a NPM package dependency.
+See [heusalagroup/create-backend](https://github.com/heusalagroup/create-backend) for easy NPM package creator for your project with this core library.
 
 ### Commercial support
 
