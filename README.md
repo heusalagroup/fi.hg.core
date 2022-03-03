@@ -1,4 +1,4 @@
-# sendanor/typescript
+# heusalagroup/core
 
 Our enterprise library for TypeScript.
 
@@ -16,7 +16,7 @@ See [heusalagroup/create-backend](https://github.com/heusalagroup/create-backend
 
 ### Commercial support
 
-For commercial support check [Sendanor's organization page](https://github.com/sendanor).
+TODO
 
 ## Index
 
@@ -310,4 +310,14 @@ ProcessUtils.setupDestroyHandler( () => {
 }, (err : any) => {
     LOG.error('Error while shutting down the service: ', err);
 });
+```
+
+### Upgrade from sendanor organization
+
+This project was originally under Sendanor's organization.
+
+Fix your git's remote:
+
+```shell
+git remote set-url origin git@github.com:heusalagroup/core.git
 ```

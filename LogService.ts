@@ -4,6 +4,8 @@ import LogLevel, { stringifyLogLevel } from "./types/LogLevel";
 import ContextLogger from "./types/ContextLogger";
 import Logger from "./types/Logger";
 
+export { LogLevel, Logger };
+
 export class LogService {
 
     public static Level = LogLevel;
