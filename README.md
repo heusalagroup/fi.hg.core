@@ -1,4 +1,4 @@
-# heusalagroup/core
+# heusalagroup/fi.hg.core
 
 Our enterprise library for TypeScript.
 
@@ -261,7 +261,7 @@ For the actual server implementing REST API, see next chapter.
 This project also includes a simple and pure NodeJS implementation for the REST server implementing [our Request annotated controllers](#request):
 
 ```typescript
-import RequestServer from "./nor/ts/RequestServer";
+import RequestServer from "./fi/hg/core/RequestServer";
 const server = new RequestServer("http://0.0.0.0:3000");
 server.attachController(UserController);
 server.start();
@@ -282,7 +282,7 @@ It's available from [@heusalagroup/fi.hg.repository](https://github.com/heusalag
 This utility class includes a simple implementation for runtime `.env` file support.
 
 ```typescript
-import ProcessUtils from "./nor/ts/ProcessUtils";
+import ProcessUtils from "./fi/hg/core/ProcessUtils";
 
 // Must be first import to define environment variables before anything else
 ProcessUtils.initEnvFromDefaultFiles();
@@ -299,7 +299,7 @@ The `shutdownHandler` will be called only once.
 If an exception is thrown, the `errorHandler` will be called with the exception.
 
 ```typescript
-import ProcessUtils from "./nor/ts/ProcessUtils";
+import ProcessUtils from "./fi/hg/core/ProcessUtils";
 
 const server = new Server();
 
