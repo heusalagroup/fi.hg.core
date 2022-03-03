@@ -37,14 +37,14 @@ TODO
 
 Run the installation commands from your project's root directory. Usually it's where your `package.json` is located.
 
-For these sample commands we expect your source files to be located in `./src` and we'll use `./src/fi/nor/ts` for location for our submodule.
+For these sample commands we expect your source files to be located in `./src` and we'll use `./src/fi/hg/core` for location for our submodule.
 
 Setup git submodule:
 
 ```shell
-mkdir -p src/fi/nor
-git submodule add git@github.com:sendanor/typescript.git src/fi/nor/ts
-git config -f .gitmodules submodule.src/fi/nor/ts.branch main
+mkdir -p src/fi/hg
+git submodule add git@github.com:heusalagroup/fi.hg.core.git src/fi/hg/core
+git config -f .gitmodules submodule.src/fi/hg/core.branch main
 ```
 
 Next install our required dependencies (newest [lodash library](https://lodash.com/) and [reflect-metadata library](https://www.npmjs.com/package/reflect-metadata)):
@@ -67,13 +67,13 @@ Git doesn't automatically clone your sub modules.
 You'll need to command:
 
 ```shell
-git clone --recurse-submodules git@github.com:sendanor/your-project.git your-project
+git clone --recurse-submodules git@github.com:heusalagroup/your-project.git your-project
 ```
 
 ...or:
 
 ```shell
-git clone git@github.com:sendanor/your-project.git your-project
+git clone git@github.com:heusalagroup/your-project.git your-project
 cd your-project
 git submodule init
 git submodule update
@@ -101,7 +101,7 @@ It wouldn't be possible to use compile time optimizations and other ENV based fe
 Our simple wrapper for `console` which allows naming the log context.
 
 ```typescript
-import LogService from "./src/fi/nor/ts/LogService";
+import LogService from "./src/fi/hg/core/LogService";
 
 const LOG = LogService.createLogger("FooService");
 
@@ -119,7 +119,7 @@ This is a simple observer implementation for implementing synchronous in-process
 You'll use it like this:
 
 ```typescript
-import Observer from "./src/fi/nor/ts/Observer";
+import Observer from "./src/fi/hg/core/Observer";
 
 enum FooEvent {
     CHANGED = "FooService:changed",
@@ -173,7 +173,7 @@ import Request, {
     RequestHeader, 
     RequestParam,
     Headers
-} from "./src/fi/nor/ts/Request";
+} from "./src/fi/hg/core/Request";
 
 export interface ListDTO<T> {
     pageNumber: number;
@@ -273,7 +273,7 @@ See also our [`ProcessUtils`](#processutils) for best practices implementing com
 
 We also provide a Spring Data inspired annotation mechanism for entities and `CrudRepository` implementation. 
 
-It's available from [@sendanor/repository](https://github.com/sendanor/repository).
+It's available from [@heusalagroup/fi.hg.repository](https://github.com/heusalagroup/fi.hg.repository).
 
 ## ProcessUtils
 
@@ -312,12 +312,12 @@ ProcessUtils.setupDestroyHandler( () => {
 });
 ```
 
-### Upgrade from sendanor organization
+### Upgrade from previous sendanor organization
 
-This project was originally under Sendanor's organization.
+This project was originally under Sendanor's organization in Github.
 
-Fix your git's remote:
+If that's the case for your local submodule, fix your git's remote:
 
 ```shell
-git remote set-url origin git@github.com:heusalagroup/core.git
+git remote set-url origin git@github.com:heusalagroup/fi.hg.core.git
 ```
