@@ -20,6 +20,8 @@ import split from 'lodash/split.js';
 import trim from 'lodash/trim.js';
 import has from 'lodash/has.js';
 import isBoolean from 'lodash/isBoolean.js';
+import padStart from "lodash/padStart";
+import trimStart from "lodash/trimStart";
 import { default as _isObject } from 'lodash/isObject.js';
 import isNull from 'lodash/isNull.js';
 import { default as _isArray } from 'lodash/isArray.js';
@@ -988,5 +990,7 @@ export {
     uniq,
     first,
     join,
-    isEqual
+    isEqual,
+    padStart,
+    trimStart
 };
