@@ -106,7 +106,11 @@ export class ProcessUtils {
             if (err) {
                 LOG.error(`Closing process because "${reason}" event: `, err);
             } else {
-                LOG.error(`Closing process because "${reason}" event`);
+                if (reason === "exit") {
+                    LOG.debug(`Closing process because "${reason}" event`);
+                } else {
+                    LOG.info(`Closing process because "${reason}" event`);
+                }
             }
         } catch (err2) {
             console.error('Error while printing errors: ', err2);
