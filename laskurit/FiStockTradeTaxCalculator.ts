@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import LogService from "../LogService";
+import { LogService } from "../LogService";
 
 const TAX_FREE_LIMIT = 1000;
 const TRANSFER_TAX_PERCENT = 0.016;
@@ -121,5 +121,3 @@ export class FiStockTradeTaxCalculator {
     }
 
 }
-
-export default FiStockTradeTaxCalculator;

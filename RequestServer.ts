@@ -1,23 +1,24 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import HttpServerService from "./requestServer/HttpServerService";
-import {IncomingHttpHeaders, IncomingMessage, ServerResponse} from "http";
-import RequestRouter from "./requestServer/RequestRouter";
-import RequestStatus, {isRequestStatus, stringifyRequestStatus} from "./request/types/RequestStatus";
-import RequestError, {createRequestError, isRequestError} from "./request/types/RequestError";
 import URL from "url";
-import ServerService from "./requestServer/types/ServerService";
-import {RequestHandler} from "./requestServer/types/RequestHandler";
-import {parseRequestMethod} from "./request/types/RequestMethod";
-import LogService from "./LogService";
-import {isRequestController} from "./request/types/RequestController";
-import Json from "./Json";
-import NodeHttpUtils from "./requestClient/node/NodeHttpUtils";
-import ResponseEntity from "./request/ResponseEntity";
-import {isArray, isString} from "./modules/lodash";
-import Headers from "./request/Headers";
-import LogLevel from "./types/LogLevel";
-import Observer, { ObserverCallback, ObserverDestructor } from "./Observer";
+
+import { HttpServerService } from "./requestServer/HttpServerService";
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse} from "http";
+import { RequestRouter } from "./requestServer/RequestRouter";
+import { RequestStatus, isRequestStatus, stringifyRequestStatus } from "./request/types/RequestStatus";
+import { RequestError, createRequestError, isRequestError } from "./request/types/RequestError";
+import { ServerService } from "./requestServer/types/ServerService";
+import { RequestHandler} from "./requestServer/types/RequestHandler";
+import { parseRequestMethod} from "./request/types/RequestMethod";
+import { LogService } from "./LogService";
+import { isRequestController} from "./request/types/RequestController";
+import { JsonAny } from "./Json";
+import { NodeHttpUtils } from "./requestClient/node/NodeHttpUtils";
+import { ResponseEntity } from "./request/ResponseEntity";
+import { isArray, isString} from "./modules/lodash";
+import { Headers } from "./request/Headers";
+import { LogLevel } from "./types/LogLevel";
+import { Observer, ObserverCallback, ObserverDestructor } from "./Observer";
 
 const LOG = LogService.createLogger('RequestServer');
 
@@ -136,7 +137,7 @@ export class RequestServer {
     private static async _requestBodyParser (
         req: IncomingMessage,
         headers : Headers
-    ) : Promise<Json | undefined> {
+    ) : Promise<JsonAny | undefined> {
 
         const contentType : string = headers.getFirst('content-type')?.toLowerCase() ?? 'application/json';
 
@@ -262,5 +263,3 @@ export class RequestServer {
     }
 
 }
-
-export default RequestServer;

@@ -1,15 +1,19 @@
-import RequestMethod, { stringifyRequestMethod } from "../../request/types/RequestMethod";
-import Json from "../../Json";
-import RequestClientInterface from "../RequestClientInterface";
-import {ClientRequest, IncomingHttpHeaders, IncomingMessage} from "http";
-import NodeHttpUtils from "./NodeHttpUtils";
-import LogService from "../../LogService";
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
 import URL from "url";
 import PATH from "path";
-import {Stats} from "fs";
-import {REQUEST_CLIENT_NODE_ENABLED} from "../request-client-constants";
-import RequestError from "../../request/types/RequestError";
-import LogLevel from "../../types/LogLevel";
+import { Stats } from "fs";
+
+import { RequestMethod , stringifyRequestMethod } from "../../request/types/RequestMethod";
+import { JsonAny } from "../../Json";
+import { RequestClientInterface } from "../RequestClientInterface";
+import { ClientRequest, IncomingHttpHeaders, IncomingMessage} from "http";
+import { NodeHttpUtils } from "./NodeHttpUtils";
+import { LogService } from "../../LogService";
+import { REQUEST_CLIENT_NODE_ENABLED} from "../request-client-constants";
+import { RequestError } from "../../request/types/RequestError";
+import { LogLevel } from "../../types/LogLevel";
 
 export const FsPromises = REQUEST_CLIENT_NODE_ENABLED ? require("fs").promises : undefined;
 
@@ -43,7 +47,7 @@ export interface JsonHttpResponse {
     readonly url         : string;
     readonly statusCode  : number;
     readonly headers    ?: IncomingHttpHeaders;
-    readonly body       ?: Json;
+    readonly body       ?: JsonAny;
 
 }
 
@@ -69,8 +73,8 @@ export class NodeRequestClient implements RequestClientInterface {
         method   : RequestMethod,
         url      : string,
         headers ?: IncomingHttpHeaders,
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
         switch (method) {
             case RequestMethod.GET:    return await this._getJson(url, headers, data);
             case RequestMethod.POST:   return await this._postJson(url, headers, data);
@@ -153,7 +157,7 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _httpRequest (
         url      : string,
         options  : HttpClientOptions,
-        body    ?: Json
+        body    ?: JsonAny
     ) : Promise<IncomingMessage> {
 
         // LOG.debug('_httpRequest: url, options, body = ', url, options, body);
@@ -291,7 +295,7 @@ export class NodeRequestClient implements RequestClientInterface {
         method   : RequestMethod,
         url      : string,
         options  : HttpClientOptions,
-        body    ?: Json
+        body    ?: JsonAny
     ) : Promise<JsonHttpResponse> {
 
         // LOG.debug('_request: url, options, body = ', url, options, body);
@@ -300,7 +304,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
         // LOG.debug('Reading response for request...');
 
-        const result : Json | undefined = await NodeHttpUtils.getRequestDataAsJson(response);
+        const result : JsonAny | undefined = await NodeHttpUtils.getRequestDataAsJson(response);
 
         // LOG.debug('Received: ', result);
 
@@ -324,8 +328,8 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _getJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
-        data    ?: Json
-    ) : Promise< Json | undefined > {
+        data    ?: JsonAny
+    ) : Promise< JsonAny | undefined > {
 
         const options : HttpClientOptions = {
             method: 'GET',
@@ -348,8 +352,8 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _putJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
-        data    ?: Json
-    ) : Promise<Json | undefined > {
+        data    ?: JsonAny
+    ) : Promise<JsonAny | undefined > {
 
         const options : HttpClientOptions = {
             method: 'PUT',
@@ -372,8 +376,8 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _postJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : HttpClientOptions = {
             method: 'POST',
@@ -396,8 +400,8 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _patchJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : HttpClientOptions = {
             method: 'PATCH',
@@ -420,8 +424,8 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _deleteJson (
         url      : string,
         headers ?: IncomingHttpHeaders,
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : HttpClientOptions = {
             method: 'DELETE',
@@ -441,7 +445,7 @@ export class NodeRequestClient implements RequestClientInterface {
 
     }
 
-    private static async _successResponse (response: JsonHttpResponse) : Promise<Json | undefined> {
+    private static async _successResponse (response: JsonHttpResponse) : Promise<JsonAny | undefined> {
 
         const statusCode = response?.statusCode;
 
@@ -463,5 +467,3 @@ export class NodeRequestClient implements RequestClientInterface {
     }
 
 }
-
-export default NodeRequestClient;

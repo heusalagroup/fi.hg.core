@@ -1,28 +1,29 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestController, {
+import {
+    RequestController,
     getInternalRequestMappingObject, isRequestController,
     setInternalRequestMappingObject
 } from "./types/RequestController";
-import RequestMappingObject from "./types/RequestMappingObject";
-import RequestMappingArray from "./types/RequestMappingArray";
-import {isRequestMethod} from "./types/RequestMethod";
-import {concat, filter, has, isFunction, isObject, isString} from "../modules/lodash";
-import RequestControllerMappingObject from "./types/RequestControllerMappingObject";
-import RequestParamValueType from "./types/RequestParamValueType";
-import RequestParamObject from "./types/RequestParamObject";
-import RequestBodyParamObject from "./types/RequestBodyParamObject";
-import RequestHeaderParamObject from "./types/RequestHeaderParamObject";
-import RequestQueryParamObject from "./types/RequestQueryParamObject";
-import RequestHeaderMapParamObject from "./types/RequestHeaderMapParamObject";
-import RequestParamObjectType from "./types/RequestParamObjectType";
-import RequestPathVariableParamObject from "./types/RequestPathVariableParamObject";
-import RequestPathVariableMapParamObject from "./types/RequestPathVariableMapParamObject";
-import DefaultHeaderMapValuesType from "./types/DefaultHeaderMapValuesType";
-import DefaultPathVariableMapValuesType from "./types/DefaultPathVariableMapValuesType";
-import RequestModelAttributeParamObject from "./types/RequestModelAttributeParamObject";
-import LogService from "../LogService";
-import LogLevel from "../types/LogLevel";
+import { RequestMappingObject } from "./types/RequestMappingObject";
+import { RequestMappingArray } from "./types/RequestMappingArray";
+import { isRequestMethod} from "./types/RequestMethod";
+import { concat, filter, has, isFunction, isObject, isString} from "../modules/lodash";
+import { RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
+import { RequestParamValueType } from "./types/RequestParamValueType";
+import { RequestParamObject } from "./types/RequestParamObject";
+import { RequestBodyParamObject } from "./types/RequestBodyParamObject";
+import { RequestHeaderParamObject } from "./types/RequestHeaderParamObject";
+import { RequestQueryParamObject } from "./types/RequestQueryParamObject";
+import { RequestHeaderMapParamObject } from "./types/RequestHeaderMapParamObject";
+import { RequestParamObjectType } from "./types/RequestParamObjectType";
+import { RequestPathVariableParamObject } from "./types/RequestPathVariableParamObject";
+import { RequestPathVariableMapParamObject } from "./types/RequestPathVariableMapParamObject";
+import { DefaultHeaderMapValuesType } from "./types/DefaultHeaderMapValuesType";
+import { DefaultPathVariableMapValuesType } from "./types/DefaultPathVariableMapValuesType";
+import { RequestModelAttributeParamObject } from "./types/RequestModelAttributeParamObject";
+import { LogService } from "../LogService";
+import { LogLevel } from "../types/LogLevel";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
@@ -483,5 +484,3 @@ export class RequestControllerUtils {
     }
 
 }
-
-export default RequestControllerUtils;

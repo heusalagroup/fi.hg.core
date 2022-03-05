@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Sendanor. All rights reserved.
 
-import {filter, forEach, has} from "./modules/lodash";
+import { filter, forEach, has } from "./modules/lodash";
 
 export interface ObserverCallback<EventName extends keyof any, T extends any[] = any[] > {
     (event: EventName, ...args : T) : void;
@@ -190,5 +190,3 @@ export class Observer<EventName extends keyof any> {
     }
 
 }
-
-export default Observer;

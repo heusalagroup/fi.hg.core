@@ -13,5 +13,3 @@ export interface RequestRouterMappingObject {
     [key: string]: Array<RequestRouterMappingPropertyObject>;
 
 }
-
-export default RequestRouterMappingObject;

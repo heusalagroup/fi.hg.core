@@ -1,3 +1,6 @@
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
 import crypto from "crypto";
 import {
     concat,
@@ -9,8 +12,8 @@ import {
     remove,
     uniq
 } from "../modules/lodash";
-import RepositoryEntry from "./types/RepositoryEntry";
-import Repository from "./types/Repository";
+import { RepositoryEntry } from "./types/RepositoryEntry";
+import { Repository } from "./types/Repository";
 
 export interface MemoryItem<T> {
 
@@ -246,5 +249,3 @@ export class MemoryRepository<T> implements Repository<T> {
     }
 
 }
-
-export default MemoryRepository;

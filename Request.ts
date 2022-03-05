@@ -1,34 +1,35 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestMethod from "./request/types/RequestMethod";
-import LogService from "./LogService";
-import RequestController from "./request/types/RequestController";
-import RequestControllerUtils from "./request/RequestControllerUtils";
-import RequestMappingArray from "./request/types/RequestMappingArray";
-import RequestParamValueType, {
+import { RequestMethod } from "./request/types/RequestMethod";
+import { LogService } from "./LogService";
+import { RequestController } from "./request/types/RequestController";
+import { RequestControllerUtils } from "./request/RequestControllerUtils";
+import { RequestMappingArray } from "./request/types/RequestMappingArray";
+import {
+    RequestParamValueType,
     isRequestParamValueTypeOrUndefined
 } from "./request/types/RequestParamValueType";
-import {isBoolean, isNumber, isObject, isString} from "./modules/lodash";
-import RequestStatus from "./request/types/RequestStatus";
-import RequestType from "./request/types/RequestType";
-import RequestError, {createRequestError} from "./request/types/RequestError";
-import Headers from "./request/Headers";
-import DefaultHeaderMapValuesType from "./request/types/DefaultHeaderMapValuesType";
-import DefaultPathVariableMapValuesType from "./request/types/DefaultPathVariableMapValuesType";
-import MethodDecoratorFunction from "./request/types/MethodDecoratorFunction";
-import ParameterDecoratorFunction from "./request/types/ParameterDecoratorFunction";
-import RequestHeaderListOptions, {isRequestHeaderListOptions} from "./request/types/RequestHeaderListOptions";
-import RequestHeaderOptions, {
-    isRequestHeaderOptions,
+import { isBoolean, isNumber, isObject, isString} from "./modules/lodash";
+import { RequestStatus } from "./request/types/RequestStatus";
+import { RequestType } from "./request/types/RequestType";
+import { RequestError , createRequestError} from "./request/types/RequestError";
+import { Headers } from "./request/Headers";
+import { DefaultHeaderMapValuesType } from "./request/types/DefaultHeaderMapValuesType";
+import { DefaultPathVariableMapValuesType } from "./request/types/DefaultPathVariableMapValuesType";
+import { MethodDecoratorFunction } from "./request/types/MethodDecoratorFunction";
+import { ParameterDecoratorFunction } from "./request/types/ParameterDecoratorFunction";
+import { RequestHeaderListOptions, isRequestHeaderListOptions} from "./request/types/RequestHeaderListOptions";
+import {
+    RequestHeaderOptions,
     isRequestHeaderOptionsOrUndefined
 } from "./request/types/RequestHeaderOptions";
-import RequestPathVariableListOptions from "./request/types/RequestPathVariableListOptions";
-import RequestPathVariableOptions, {
-    isRequestPathVariableOptions,
+import { RequestPathVariableListOptions } from "./request/types/RequestPathVariableListOptions";
+import {
+    RequestPathVariableOptions,
     isRequestPathVariableOptionsOrUndefined
 } from "./request/types/RequestPathVariableOptions";
-import ParameterOrMethodDecoratorFunction from "./request/types/ParameterOrMethodDecoratorFunction";
-import LogLevel from "./types/LogLevel";
+import { ParameterOrMethodDecoratorFunction } from "./request/types/ParameterOrMethodDecoratorFunction";
+import { LogLevel } from "./types/LogLevel";
 
 const LOG = LogService.createLogger('Request');
 
@@ -924,5 +925,3 @@ export function RequestBody (
 ) : void {
     return Request.body(target, propertyKey, paramIndex);
 }
-
-export default Request;

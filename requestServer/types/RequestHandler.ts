@@ -3,5 +3,3 @@
 export interface RequestHandler<IncomingMessage, ServerResponse> {
     (req: IncomingMessage, res: ServerResponse): void;
 }
-
-export default RequestHandler;

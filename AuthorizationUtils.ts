@@ -1,6 +1,6 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {startsWith, trim} from "./modules/lodash";
+import { startsWith, trim } from "./modules/lodash";
 
 export class AuthorizationUtils {
 
@@ -13,5 +13,3 @@ export class AuthorizationUtils {
     }
 
 }
-
-export default AuthorizationUtils;

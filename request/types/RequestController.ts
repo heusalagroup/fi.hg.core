@@ -1,12 +1,12 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestInterfaceUtils from "../RequestInterfaceUtils";
-import RequestControllerMappingObject, {
+import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
+import { RequestControllerMappingObject, 
     explainRequestControllerMappingObject,
     isRequestControllerMappingObject
 } from "./RequestControllerMappingObject";
 import {has, isFunction, isObject} from "../../modules/lodash";
-import LogService from "../../LogService";
+import { LogService } from "../../LogService";
 
 const LOG = LogService.createLogger('RequestController');
 
@@ -81,4 +81,4 @@ export function setInternalRequestMappingObject (
 
 }
 
-export default RequestController;
+

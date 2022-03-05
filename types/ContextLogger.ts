@@ -1,7 +1,7 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import Logger from "./Logger";
-import LogLevel from "./LogLevel";
+import { Logger } from "./Logger";
+import { LogLevel } from "./LogLevel";
 
 export class ContextLogger implements Logger {
 
@@ -54,5 +54,3 @@ export class ContextLogger implements Logger {
     }
 
 }
-
-export default ContextLogger;

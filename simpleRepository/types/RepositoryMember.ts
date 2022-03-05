@@ -35,5 +35,3 @@ export function parseRepositoryMember (value: any): RepositoryMember | undefined
     if ( isRepositoryMember(value) ) return value;
     return undefined;
 }
-
-export default RepositoryMember;

@@ -26,4 +26,4 @@ export function isRequestPathVariableOptionsOrUndefined (value: any): value is R
     return value === undefined || isRequestPathVariableOptions(value);
 }
 
-export default RequestPathVariableOptions;
+

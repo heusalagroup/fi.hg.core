@@ -1,46 +1,48 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import URL, {URLSearchParams} from "url";
-import RequestController, {
+import { URL, URLSearchParams } from "url";
+import {
+    RequestController,
     getInternalRequestMappingObject,
     hasInternalRequestMappingObject
 } from "../request/types/RequestController";
-import RequestMethod, {parseRequestMethod} from "../request/types/RequestMethod";
-import {filter, forEach, has, isNull, keys, map, some, trim, reduce, concat, find} from "../modules/lodash";
-import RequestControllerMappingObject from "../request/types/RequestControllerMappingObject";
-import RequestMappingObject from "../request/types/RequestMappingObject";
-import {isRequestStatus} from "../request/types/RequestStatus";
-import RequestParamValueType from "../request/types/RequestParamValueType";
-import LogService from "../LogService";
-import {RequestRouterMappingPropertyObject} from "./types/RequestRouterMappingPropertyObject";
-import {RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
-import {RequestParamObject} from "../request/types/RequestParamObject";
-import {RequestControllerMethodObject} from "../request/types/RequestControllerMethodObject";
-import RequestQueryParamObject from "../request/types/RequestQueryParamObject";
-import Json, {
+import { RequestMethod, parseRequestMethod} from "../request/types/RequestMethod";
+import { filter, forEach, has, isNull, keys, map, some, trim, reduce, concat, find} from "../modules/lodash";
+import { RequestControllerMappingObject } from "../request/types/RequestControllerMappingObject";
+import { RequestMappingObject } from "../request/types/RequestMappingObject";
+import { isRequestStatus} from "../request/types/RequestStatus";
+import { RequestParamValueType } from "../request/types/RequestParamValueType";
+import { LogService } from "../LogService";
+import { RequestRouterMappingPropertyObject} from "./types/RequestRouterMappingPropertyObject";
+import { RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
+import { RequestParamObject} from "../request/types/RequestParamObject";
+import { RequestControllerMethodObject} from "../request/types/RequestControllerMethodObject";
+import { RequestQueryParamObject } from "../request/types/RequestQueryParamObject";
+import {
+    JsonAny,
     isReadonlyJsonAny,
     isReadonlyJsonArray,
     isReadonlyJsonObject,
     JsonObject,
     ReadonlyJsonObject
 } from "../Json";
-import ResponseEntity, {isResponseEntity} from "../request/ResponseEntity";
-import RequestError, {isRequestError} from "../request/types/RequestError";
-import RequestParamObjectType from "../request/types/RequestParamObjectType";
-import RequestHeaderParamObject from "../request/types/RequestHeaderParamObject";
-import Headers from "../request/Headers";
-import DefaultHeaderMapValuesType from "../request/types/DefaultHeaderMapValuesType";
-import RequestHeaderMapParamObject from "../request/types/RequestHeaderMapParamObject";
-import RouteUtils from "./RouteUtils";
-import BaseRoutes, {RouteParamValuesObject} from "./types/BaseRoutes";
-import RequestPathVariableParamObject from "../request/types/RequestPathVariableParamObject";
-import RequestModelAttributeParamObject, { isRequestModelAttributeParamObject } from "../request/types/RequestModelAttributeParamObject";
-import LogLevel from "../types/LogLevel";
+import { ResponseEntity, isResponseEntity} from "../request/ResponseEntity";
+import { RequestError, isRequestError} from "../request/types/RequestError";
+import { RequestParamObjectType } from "../request/types/RequestParamObjectType";
+import { RequestHeaderParamObject } from "../request/types/RequestHeaderParamObject";
+import { Headers } from "../request/Headers";
+import { DefaultHeaderMapValuesType } from "../request/types/DefaultHeaderMapValuesType";
+import { RequestHeaderMapParamObject } from "../request/types/RequestHeaderMapParamObject";
+import { RouteUtils } from "./RouteUtils";
+import { BaseRoutes, RouteParamValuesObject } from "./types/BaseRoutes";
+import { RequestPathVariableParamObject } from "../request/types/RequestPathVariableParamObject";
+import { RequestModelAttributeParamObject , isRequestModelAttributeParamObject } from "../request/types/RequestModelAttributeParamObject";
+import { LogLevel } from "../types/LogLevel";
 
 const LOG = LogService.createLogger('RequestRouter');
 
 export interface ParseRequestBodyCallback {
-    (headers: Headers) : Json | undefined | Promise<Json | undefined>;
+    (headers: Headers) : JsonAny | undefined | Promise<JsonAny | undefined>;
 }
 
 export interface RequestContext {
@@ -455,7 +457,7 @@ export class RequestRouter {
 
             LOG.error('Exception: ', err);
 
-            return ResponseEntity.internalServerError<Json>().body({
+            return ResponseEntity.internalServerError<JsonAny>().body({
                 error: 'Internal Server Error',
                 code: 500
             });
@@ -468,7 +470,7 @@ export class RequestRouter {
 
         const urlForParser : string        = `http://localhost${urlString ?? ''}`;
 
-        const parsedUrl = new URL.URL(urlForParser);
+        const parsedUrl = new URL(urlForParser);
 
         // LOG.debug('parsedUrl: ', parsedUrl);
 
@@ -723,7 +725,7 @@ export class RequestRouter {
 
     private static _bindRequestActionParams (
         searchParams      : URLSearchParams,
-        requestBody       : Json | undefined,
+        requestBody       : JsonAny | undefined,
         params            : (RequestParamObject|null)[],
         requestHeaders    : Headers,
         pathVariables     : RouteParamValuesObject | undefined,
@@ -900,5 +902,3 @@ export class RequestRouter {
     }
 
 }
-
-export default RequestRouter;

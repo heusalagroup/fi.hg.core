@@ -1,8 +1,10 @@
-import HeadersObject, {ChangeableHeadersObject} from "./types/HeadersObject";
+// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+
+import {HeadersObject, ChangeableHeadersObject} from "./types/HeadersObject";
 import {concat, forEach, has, isArray, isString, keys, map, trim} from "../modules/lodash";
-import LogService from "../LogService";
+import { LogService } from "../LogService";
 import {isReadonlyJsonArray} from "../Json";
-import LogLevel from "../types/LogLevel";
+import { LogLevel } from "../types/LogLevel";
 
 const LOG = LogService.createLogger('Headers');
 
@@ -346,5 +348,3 @@ export function isHeaders (value : any) : value is Headers {
         && value instanceof Headers
     );
 }
-
-export default Headers;

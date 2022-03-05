@@ -45,5 +45,3 @@ export function isRepositoryEntry<T> (
         && isArrayOrUndefinedOf<RepositoryMember>(value?.members, isRepositoryMember)
     );
 }
-
-export default RepositoryEntry;

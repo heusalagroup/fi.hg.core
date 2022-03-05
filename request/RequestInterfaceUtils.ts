@@ -106,5 +106,3 @@ export class RequestInterfaceUtils {
     }
 
 }
-
-export default RequestInterfaceUtils;

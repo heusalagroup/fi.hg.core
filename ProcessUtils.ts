@@ -1,9 +1,9 @@
 // Copyright (c) 2020 Sendanor. All rights reserved.
 
-import {trim} from "./modules/lodash";
 import FS     from 'fs';
 import PATH   from 'path';
-import LogService from './LogService';
+import { trim } from "./modules/lodash";
+import { LogService } from './LogService';
 
 const LOG = LogService.createLogger('ProcessUtils');
 
@@ -118,5 +118,3 @@ export class ProcessUtils {
     }
 
 }
-
-export default ProcessUtils;

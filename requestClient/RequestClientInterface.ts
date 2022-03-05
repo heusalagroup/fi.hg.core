@@ -1,5 +1,8 @@
-import RequestMethod from "../request/types/RequestMethod";
-import Json from "../Json";
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
+import { RequestMethod } from "../request/types/RequestMethod";
+import { JsonAny } from "../Json";
 
 export interface RequestClientInterface {
 
@@ -7,9 +10,7 @@ export interface RequestClientInterface {
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
-        data    ?: Json
-    ) : Promise<Json| undefined>;
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined>;
 
 }
-
-export default RequestClientInterface;

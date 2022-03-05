@@ -1,11 +1,11 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestClient from "./RequestClient";
-import LogService from "./LogService";
-import {isString} from "./modules/lodash";
-import RequestError from "./request/types/RequestError";
-import RequestStatus from "./request/types/RequestStatus";
-import AuthorizationUtils from "./AuthorizationUtils";
+import { RequestClient } from "./RequestClient";
+import { LogService } from "./LogService";
+import { isString } from "./modules/lodash";
+import { RequestError } from "./request/types/RequestError";
+import { RequestStatus } from "./request/types/RequestStatus";
+import { AuthorizationUtils } from "./AuthorizationUtils";
 
 const LOG = LogService.createLogger('AuthorizationClientService');
 
@@ -86,6 +86,4 @@ export class AuthorizationClientService {
     }
 
 }
-
-export default AuthorizationClientService;
 

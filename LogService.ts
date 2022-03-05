@@ -1,10 +1,9 @@
+// Copyright (c) 2022- Heusala Group. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import LogLevel, { stringifyLogLevel } from "./types/LogLevel";
-import ContextLogger from "./types/ContextLogger";
-import Logger from "./types/Logger";
-
-export { LogLevel, Logger };
+import { LogLevel, stringifyLogLevel } from "./types/LogLevel";
+import { ContextLogger } from "./types/ContextLogger";
+import { Logger } from "./types/Logger";
 
 export class LogService {
 
@@ -62,5 +61,3 @@ export class LogService {
     }
 
 }
-
-export default LogService;

@@ -1,6 +1,7 @@
+// Copyright (c) 2022. Heusala Group <info@hg.fi>. All rights reserved.
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import LogLevel from "./LogLevel";
+import { LogLevel } from "./LogLevel";
 
 export interface Logger {
 
@@ -16,5 +17,3 @@ export interface Logger {
     error (...args: any[]) : void;
 
 }
-
-export default Logger;

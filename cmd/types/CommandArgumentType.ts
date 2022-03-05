@@ -46,5 +46,3 @@ export function parseCommandArgumentType (value : any) : CommandArgumentType | u
     return undefined;
 
 }
-
-export default CommandArgumentType;

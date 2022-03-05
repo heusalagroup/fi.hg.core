@@ -5,7 +5,7 @@ import {
     isRegularObject,
     TestCallbackNonStandard
 } from "../../modules/lodash";
-import RepositoryEntry from "./RepositoryEntry";
+import { RepositoryEntry } from "./RepositoryEntry";
 
 export interface RepositoryEntryList<T> {
     readonly list : RepositoryEntry<T>[];
@@ -23,5 +23,3 @@ export function isRepositoryEntryList<T> (
         && isArrayOf<T>(value?.list, item => isT(item))
     );
 }
-
-export default RepositoryEntryList;

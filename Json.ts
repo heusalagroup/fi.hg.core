@@ -220,5 +220,3 @@ export function cloneJson (value: any) : JsonAny | ReadonlyJsonAny | undefined {
     throw new TypeError(`cloneJson: Not JSON compatible value: ${value}`);
 
 }
-
-export default JsonAny;

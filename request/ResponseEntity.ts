@@ -1,10 +1,13 @@
-import RequestStatus, {stringifyRequestStatus} from "./types/RequestStatus";
-import { isNumber, map, TestCallback, TestCallbackNonStandard } from "../modules/lodash";
-import Headers, {isHeaders} from "./Headers";
-import HeadersObject, {isHeadersObject} from "./types/HeadersObject";
-import {isReadonlyJsonAny} from "../Json";
-import StringUtils from "../StringUtils";
-import {parseRequestMethod, RequestMethod, stringifyRequestMethod} from "./types/RequestMethod";
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
+import { RequestStatus, stringifyRequestStatus} from "./types/RequestStatus";
+import { isNumber, map, TestCallbackNonStandard } from "../modules/lodash";
+import { Headers, isHeaders} from "./Headers";
+import { HeadersObject } from "./types/HeadersObject";
+import { isReadonlyJsonAny} from "../Json";
+import { StringUtils } from "../StringUtils";
+import { parseRequestMethod, RequestMethod, stringifyRequestMethod} from "./types/RequestMethod";
 
 export type EntityStatusTypes = RequestStatus | number;
 
@@ -198,5 +201,3 @@ export function isResponseEntityOf<T> (
 ) : value is ResponseEntity<T> {
     return !!value && value instanceof ResponseEntity && isTest( value.getBody() );
 }
-
-export default ResponseEntity;

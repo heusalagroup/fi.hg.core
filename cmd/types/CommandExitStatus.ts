@@ -220,5 +220,3 @@ export function parseCommandExitStatus (value: any): CommandExitStatus | undefin
     }
 
 }
-
-export default CommandExitStatus;

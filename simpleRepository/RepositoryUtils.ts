@@ -1,6 +1,7 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import RepositoryEntry from "./types/RepositoryEntry";
+import { RepositoryEntry } from "./types/RepositoryEntry";
+
 import {
     has,
     reduce,
@@ -30,5 +31,3 @@ export class RepositoryUtils {
     }
 
 }
-
-export default RepositoryUtils;

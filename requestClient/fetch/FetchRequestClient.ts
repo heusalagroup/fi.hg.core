@@ -1,7 +1,10 @@
-import RequestMethod, { stringifyRequestMethod } from "../../request/types/RequestMethod";
-import Json from "../../Json";
-import RequestClientInterface from "../RequestClientInterface";
-import RequestError from "../../request/types/RequestError";
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
+import { RequestMethod, stringifyRequestMethod } from "../../request/types/RequestMethod";
+import { JsonAny } from "../../Json";
+import { RequestClientInterface } from "../RequestClientInterface";
+import { RequestError } from "../../request/types/RequestError";
 
 export interface FetchInterface {
     (input: string, init?: RequestInit): Promise<Response>;
@@ -20,8 +23,8 @@ export class FetchRequestClient implements RequestClientInterface {
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
         switch (method) {
             case RequestMethod.GET:    return this._getJson(url, headers, data);
             case RequestMethod.POST:   return this._postJson(url, headers, data);
@@ -34,8 +37,8 @@ export class FetchRequestClient implements RequestClientInterface {
     private _getJson (
         url      : string,
         headers ?: {[key: string]: string},
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : RequestInit = {
             method: 'GET',
@@ -65,8 +68,8 @@ export class FetchRequestClient implements RequestClientInterface {
     private _putJson (
         url      : string,
         headers ?: {[key: string]: string},
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : RequestInit = {
             method: 'PUT',
@@ -96,8 +99,8 @@ export class FetchRequestClient implements RequestClientInterface {
     private _postJson (
         url      : string,
         headers ?: {[key: string]: string},
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : RequestInit = {
             method: 'POST',
@@ -127,8 +130,8 @@ export class FetchRequestClient implements RequestClientInterface {
     private _deleteJson (
         url      : string,
         headers ?: {[key: string]: string},
-        data    ?: Json
-    ) : Promise<Json| undefined> {
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
 
         const options : RequestInit = {
             method: 'DELETE',
@@ -155,7 +158,7 @@ export class FetchRequestClient implements RequestClientInterface {
 
     }
 
-    private static _successResponse (response: Response, method: RequestMethod) : Promise<Json> {
+    private static _successResponse (response: Response, method: RequestMethod) : Promise<JsonAny> {
 
         const statusCode = response.status;
 
@@ -179,5 +182,3 @@ export class FetchRequestClient implements RequestClientInterface {
     }
 
 }
-
-export default FetchRequestClient;

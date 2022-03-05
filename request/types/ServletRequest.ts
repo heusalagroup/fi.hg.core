@@ -1,5 +1,5 @@
 
-import Headers from "../Headers";
+import { Headers } from "../Headers";
 
 export interface ServletRequest {
 
@@ -11,4 +11,4 @@ export interface ServletRequest {
 
 }
 
-export default ServletRequest;
+

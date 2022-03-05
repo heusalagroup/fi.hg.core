@@ -1,8 +1,8 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestMethod from "./types/RequestMethod";
-import {some} from "../modules/lodash";
-import RequestMappingObject from "./types/RequestMappingObject";
+import { RequestMethod } from "./types/RequestMethod";
+import { some } from "../modules/lodash";
+import { RequestMappingObject } from "./types/RequestMappingObject";
 
 export class RequestUtils {
 
@@ -22,5 +22,3 @@ export class RequestUtils {
     }
 
 }
-
-export default RequestUtils;

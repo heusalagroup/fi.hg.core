@@ -1,9 +1,13 @@
-import {IncomingMessage} from "http";
-import Json from "../../Json";
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
 import * as QueryString from "querystring";
+import { IncomingMessage } from "http";
+import { JsonAny } from "../../Json";
 
 /**
- * The type definitions for Node were inciting to use strict type list, even though NodeJS manual tells just "string".
+ * The type definitions for Node were inciting to use strict type list, even though NodeJS manual
+ * tells just "string".
  */
 type BufferEncodingString = "utf-8" | "ascii" | "utf8" | "utf16le" | "ucs2" | "ucs-2" | "base64" | "latin1" | "binary" | "hex" | undefined;
 
@@ -63,11 +67,12 @@ export class NodeHttpUtils {
      * Get request body data as "application/x-www-form-urlencoded".
      *
      * @param request
-     * @return The request input data. If request data is an empty string, an `undefined` will be returned.
+     * @return The request input data. If request data is an empty string, an `undefined` will be
+     *     returned.
      */
     public static async getRequestDataAsFormUrlEncoded (
         request : IncomingMessage
-    ) : Promise<Json | undefined> {
+    ) : Promise<JsonAny | undefined> {
 
         const dataString = await NodeHttpUtils.getRequestDataAsString(request);
 
@@ -83,11 +88,12 @@ export class NodeHttpUtils {
      * Get request body data as JSON.
      *
      * @param request
-     * @return The request input data. If request data is an empty string, an `undefined` will be returned.
+     * @return The request input data. If request data is an empty string, an `undefined` will be
+     *     returned.
      */
     public static async getRequestDataAsJson (
         request : IncomingMessage
-    ) : Promise<Json | undefined> {
+    ) : Promise<JsonAny | undefined> {
 
         const dataString = await NodeHttpUtils.getRequestDataAsString(request);
 
@@ -99,7 +105,4 @@ export class NodeHttpUtils {
 
     }
 
-
 }
-
-export default NodeHttpUtils;
