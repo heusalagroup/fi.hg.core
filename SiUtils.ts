@@ -89,5 +89,3 @@ export class SiUtils {
     }
 
 }
-
-export default SiUtils;
