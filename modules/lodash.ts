@@ -38,6 +38,7 @@ import values from 'lodash/values.js';
 import join from 'lodash/join.js';
 import isEqual from 'lodash/isEqual.js';
 import first from 'lodash/first.js';
+import camelCase from 'lodash/camelCase.js';
 
 export interface StringifyCallback<T = any> {
     (value: T) : string;
@@ -142,6 +143,25 @@ export function isArrayOf<T = any> (
 
     return true;
 
+}
+
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isArrayOfOrUndefined<T = any> (
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : value is T[] | readonly T[] | undefined {
+    if (value === undefined) return true;
+    return isArrayOf(value, isItem, minLength, maxLength);
 }
 
 /**
@@ -991,6 +1011,7 @@ export {
     first,
     join,
     isEqual,
+    camelCase,
     padStart,
     trimStart
 };
