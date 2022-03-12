@@ -10,12 +10,16 @@ export class InitService {
 
     private static _initialized  : boolean = false;
     private static _initializing : boolean = false;
-    private static _initializers : InitCallback[];
+    private static _initializers : InitCallback[] = [];
 
     public static registerInitializer (callback: InitCallback) {
         if (InitService._initialized) throw new TypeError('Service already initialized');
         if (InitService._initializing) throw new TypeError('Service already initializing');
         InitService._initializers.push(callback);
+    }
+
+    public static isInitializing () : boolean {
+        return InitService._initializing;
     }
 
     public static isInitialized () : boolean {
