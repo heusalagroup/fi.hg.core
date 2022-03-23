@@ -80,7 +80,7 @@ export class RequestClient {
 
     private static _initClient () : RequestClientInterface {
 
-        if ( REQUEST_CLIENT_FETCH_ENABLED ) {
+        if ( REQUEST_CLIENT_FETCH_ENABLED  && this._hasWindowObject() ) {
             LOG.debug('Detected browser environment');
             return new FetchRequestClient( window.fetch.bind(window) );
         }
@@ -93,6 +93,10 @@ export class RequestClient {
 
         throw new TypeError(`Could not detect request client implementation`);
 
+    }
+
+    private static _hasWindowObject () : boolean {
+        return typeof window !== 'undefined';
     }
 
 }
