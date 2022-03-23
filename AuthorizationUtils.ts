@@ -1,4 +1,5 @@
-// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+// Copyright (c) 2022. Heusala Group. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor. All rights reserved.
 
 import { startsWith, trim } from "./modules/lodash";
 
@@ -9,7 +10,7 @@ export class AuthorizationUtils {
         if (!startsWith(header, BearerPrefix)) {
             return undefined;
         }
-        return trim(header.substr(BearerPrefix.length));
+        return trim(header.substring(BearerPrefix.length));
     }
 
 }
