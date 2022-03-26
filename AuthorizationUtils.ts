@@ -5,6 +5,10 @@ import { startsWith, trim } from "./modules/lodash";
 
 export class AuthorizationUtils {
 
+    public static createBearerHeader (token: string) : string {
+        return `Bearer ${token}`;
+    }
+
     public static parseBearerToken (header : string) : string | undefined {
         const BearerPrefix = 'Bearer ';
         if (!startsWith(header, BearerPrefix)) {
