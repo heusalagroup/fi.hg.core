@@ -40,6 +40,8 @@ import isEqual from 'lodash/isEqual.js';
 import first from 'lodash/first.js';
 import camelCase from 'lodash/camelCase.js';
 
+import { IS_DEVELOPMENT }from "../constants/environment";
+
 export interface StringifyCallback<T = any> {
     (value: T) : string;
 }
@@ -849,6 +851,20 @@ export function getOtherKeys (obj: any, acceptedKeys: string[]) : string[] {
 export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
     return isObject(obj) && getOtherKeys(obj, acceptedKeys).length === 0;
 }
+
+/**
+ *
+ * @param value
+ * @param array
+ * @__PURE__
+ * @nosideeffects
+ */
+export function hasNoOtherKeysInDevelopment (value: any, array : Array<string> ){
+    return (
+        IS_DEVELOPMENT ? hasNoOtherKeys(value, array) : true
+    )
+}
+
 
 /**
  *
