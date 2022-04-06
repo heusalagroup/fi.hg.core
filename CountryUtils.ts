@@ -4,7 +4,7 @@ import { Country, createCountry } from "./types/Country";
 import { Sovereignty } from "./types/Sovereignty";
 import { CountryCode } from "./types/CountryCode";
 import { keys, map } from "./modules/lodash";
-import { getCountryNameTranslationKey } from "../../sendanor/core/constants/translation";
+import { getCountryNameTranslationKey } from "./translations/country-translation";
 import { TranslationFunction } from "./types/TranslationFunction";
 
 export type CountryAutoCompleteMapping = [CountryCode, string[]][];
@@ -21,7 +21,7 @@ export class CountryUtils {
                 (item: CountryCode) : Country => CountryUtils.createCountryByCode(item)
             );
         }
-        return this._countryList;
+        return this._countryList!;
     }
 
     public static getCountryCodeList () : readonly CountryCode[] {
