@@ -21,13 +21,15 @@ export class CountryUtils {
                 (item: CountryCode) : Country => CountryUtils.createCountryByCode(item)
             );
         }
-        return this._countryList!;
+        if (!this._countryList) throw TypeError(`CountryUtils: Country list not initialized`);
+        return this._countryList;
     }
 
     public static getCountryCodeList () : readonly CountryCode[] {
         if (!this._countryCodeList) {
             this._countryCodeList = CountryUtils.createCountryCodeList();
         }
+        if (!this._countryCodeList) throw TypeError(`CountryUtils: Country code list not initialized`);
         return this._countryCodeList;
     }
 
