@@ -4,7 +4,7 @@ import { Country, createCountry } from "./types/Country";
 import { Sovereignty } from "./types/Sovereignty";
 import { CountryCode } from "./types/CountryCode";
 import { keys, map } from "./modules/lodash";
-import { getCountryNameTranslationKey } from "../../sendanor/core/constants/translation";
+import { getCountryNameTranslationKey } from "./translations/country-translation";
 import { TranslationFunction } from "./types/TranslationFunction";
 
 export type CountryAutoCompleteMapping = [CountryCode, string[]][];
@@ -21,6 +21,7 @@ export class CountryUtils {
                 (item: CountryCode) : Country => CountryUtils.createCountryByCode(item)
             );
         }
+        if (!this._countryList) throw TypeError(`CountryUtils: Country list not initialized`);
         return this._countryList;
     }
 
@@ -28,6 +29,7 @@ export class CountryUtils {
         if (!this._countryCodeList) {
             this._countryCodeList = CountryUtils.createCountryCodeList();
         }
+        if (!this._countryCodeList) throw TypeError(`CountryUtils: Country code list not initialized`);
         return this._countryCodeList;
     }
 
