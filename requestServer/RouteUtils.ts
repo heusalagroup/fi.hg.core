@@ -1,8 +1,11 @@
-import {RequestRouterMappingObject} from "./types/RequestRouterMappingObject";
-import {keys, some, trim} from "../modules/lodash";
-import {BaseRoutes} from "./types/BaseRoutes";
-import {ParamRoutes} from "./types/ParamRoutes";
-import {StaticRoutes} from "./types/StaticRoutes";
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
+import { RequestRouterMappingObject } from "./types/RequestRouterMappingObject";
+import { keys, some } from "../modules/lodash";
+import { BaseRoutes } from "./types/BaseRoutes";
+import { ParamRoutes } from "./types/ParamRoutes";
+import { StaticRoutes } from "./types/StaticRoutes";
 
 export class RouteUtils {
 
@@ -27,5 +30,3 @@ export class RouteUtils {
     }
 
 }
-
-export default RouteUtils;

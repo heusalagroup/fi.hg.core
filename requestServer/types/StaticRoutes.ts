@@ -1,6 +1,9 @@
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
+
 import {BaseRoutes, GetRouteResultType} from "./BaseRoutes";
 import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
-import {has, keys, map} from "../../modules/lodash";
+import {keys, map} from "../../modules/lodash";
 import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
 
 type MappingPropertyKeyValuePair = readonly [string, RequestRouterMappingPropertyObject[]];
@@ -42,5 +45,3 @@ export class StaticRoutes implements BaseRoutes {
     }
 
 }
-
-export default StaticRoutes;

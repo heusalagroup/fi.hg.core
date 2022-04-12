@@ -1,9 +1,9 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestStatus, {stringifyRequestStatus} from "./RequestStatus";
-import JsonAny, {ReadonlyJsonObject} from "../../Json";
-import RequestType from "./RequestType";
-import RequestMethod from "./RequestMethod";
+import { RequestStatus, stringifyRequestStatus} from "./RequestStatus";
+import { JsonAny, ReadonlyJsonObject} from "../../Json";
+import { RequestType } from "./RequestType";
+import { RequestMethod } from "./RequestMethod";
 
 export class RequestError extends Error {
 
@@ -87,4 +87,4 @@ export function isRequestError (value : any) : value is RequestError {
     );
 }
 
-export default RequestError;
+

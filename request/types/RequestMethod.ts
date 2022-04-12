@@ -55,4 +55,4 @@ export function parseRequestMethod (value: any) : RequestMethod {
 
 }
 
-export default RequestMethod;
+

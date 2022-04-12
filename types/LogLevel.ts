@@ -73,5 +73,3 @@ export function parseLogLevel (value: any): LogLevel | undefined {
     }
 
 }
-
-export default LogLevel;

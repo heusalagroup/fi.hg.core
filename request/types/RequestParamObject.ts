@@ -1,12 +1,12 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestQueryParamObject, {isRequestQueryParamObject} from "./RequestQueryParamObject";
-import RequestBodyParamObject, {isRequestBodyParamObject} from "./RequestBodyParamObject";
-import RequestHeaderParamObject, {isRequestHeaderParamObject} from "./RequestHeaderParamObject";
-import RequestHeaderMapParamObject, {isRequestHeaderMapParamObject} from "./RequestHeaderMapParamObject";
-import RequestPathVariableParamObject, {isRequestPathVariableParamObject} from "./RequestPathVariableParamObject";
-import RequestPathVariableMapParamObject, {isRequestPathVariableMapParamObject} from "./RequestPathVariableMapParamObject";
-import RequestModelAttributeParamObject, {isRequestModelAttributeParamObject} from "./RequestModelAttributeParamObject";
+import { RequestQueryParamObject, isRequestQueryParamObject} from "./RequestQueryParamObject";
+import { RequestBodyParamObject, isRequestBodyParamObject} from "./RequestBodyParamObject";
+import { RequestHeaderParamObject, isRequestHeaderParamObject} from "./RequestHeaderParamObject";
+import { RequestHeaderMapParamObject, isRequestHeaderMapParamObject} from "./RequestHeaderMapParamObject";
+import { RequestPathVariableParamObject, isRequestPathVariableParamObject} from "./RequestPathVariableParamObject";
+import { RequestPathVariableMapParamObject, isRequestPathVariableMapParamObject} from "./RequestPathVariableMapParamObject";
+import { RequestModelAttributeParamObject, isRequestModelAttributeParamObject} from "./RequestModelAttributeParamObject";
 
 export type RequestParamObject = (
     RequestQueryParamObject
@@ -30,4 +30,4 @@ export function isRequestParamObject(value: any): value is RequestParamObject {
     );
 }
 
-export default RequestParamObject;
+

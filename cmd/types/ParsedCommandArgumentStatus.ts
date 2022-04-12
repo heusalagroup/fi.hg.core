@@ -6,5 +6,3 @@ export enum ParsedCommandArgumentStatus {
     HELP,
     VERSION
 }
-
-export default ParsedCommandArgumentStatus;

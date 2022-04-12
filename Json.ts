@@ -154,6 +154,10 @@ export function isReadonlyJsonObject (value : any) : value is ReadonlyJsonObject
     return isRegularObject(value) && everyProperty<string, ReadonlyJsonAny>(value, isString, createOr(isReadonlyJsonAny, isUndefined));
 }
 
+export function parseReadonlyJsonObject (value : any) : ReadonlyJsonObject | undefined {
+    return isReadonlyJsonObject(value) ? value : undefined;
+}
+
 export function isReadonlyJsonObjectOf<T extends ReadonlyJsonAny = ReadonlyJsonAny> (
     value        : any,
     isPropertyOf : TestCallbackNonStandard = isReadonlyJsonAny
@@ -220,5 +224,3 @@ export function cloneJson (value: any) : JsonAny | ReadonlyJsonAny | undefined {
     throw new TypeError(`cloneJson: Not JSON compatible value: ${value}`);
 
 }
-
-export default JsonAny;

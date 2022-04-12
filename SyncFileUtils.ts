@@ -1,8 +1,8 @@
-// Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import LogService from "./LogService";
 import fs from "fs";
 import path from "path";
+import { LogService } from "./LogService";
 import { ReadonlyJsonAny } from "./Json";
 import { keys } from "./modules/lodash";
 
@@ -32,6 +32,7 @@ export class SyncFileUtils {
 
         while ( paths.length >= 1 ) {
             const dir : string | undefined = paths.pop();
+            if (!dir) throw new TypeError('No dir');
             LOG.debug(`mkdirp: Creating missing directory: `, dir);
             fs.mkdirSync(dir);
         }

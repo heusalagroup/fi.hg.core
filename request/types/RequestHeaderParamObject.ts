@@ -1,6 +1,6 @@
-import RequestParamValueType, {isRequestParamValueType} from "./RequestParamValueType";
+import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
 import {isBoolean, isString} from "../../modules/lodash";
-import RequestParamObjectType from "./RequestParamObjectType";
+import { RequestParamObjectType } from "./RequestParamObjectType";
 
 export interface RequestHeaderParamObject {
 
@@ -23,4 +23,4 @@ export function isRequestHeaderParamObject (value: any): value is RequestHeaderP
     );
 }
 
-export default RequestHeaderParamObject;
+

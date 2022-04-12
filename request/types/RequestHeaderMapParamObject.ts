@@ -1,4 +1,4 @@
-import RequestParamObjectType from "./RequestParamObjectType";
+import { RequestParamObjectType } from "./RequestParamObjectType";
 import {DefaultHeaderMapValuesType, isDefaultHeaderMapValuesType} from "./DefaultHeaderMapValuesType";
 
 export interface RequestHeaderMapParamObject {
@@ -16,4 +16,4 @@ export function isRequestHeaderMapParamObject (value: any): value is RequestHead
     );
 }
 
-export default RequestHeaderMapParamObject;
+

@@ -1,4 +1,4 @@
-import RequestParamObjectType from "./RequestParamObjectType";
+import { RequestParamObjectType } from "./RequestParamObjectType";
 import {DefaultPathVariableMapValuesType, isDefaultPathVariableMapValuesType} from "./DefaultPathVariableMapValuesType";
 
 export interface RequestPathVariableMapParamObject {
@@ -16,4 +16,4 @@ export function isRequestPathVariableMapParamObject (value: any): value is Reque
     );
 }
 
-export default RequestPathVariableMapParamObject;
+

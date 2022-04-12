@@ -44,4 +44,4 @@ export function parseRequestType (value : any) : RequestType {
 
 }
 
-export default RequestType;
+

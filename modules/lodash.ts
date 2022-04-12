@@ -20,6 +20,8 @@ import split from 'lodash/split.js';
 import trim from 'lodash/trim.js';
 import has from 'lodash/has.js';
 import isBoolean from 'lodash/isBoolean.js';
+import padStart from "lodash/padStart";
+import trimStart from "lodash/trimStart";
 import { default as _isObject } from 'lodash/isObject.js';
 import isNull from 'lodash/isNull.js';
 import { default as _isArray } from 'lodash/isArray.js';
@@ -36,6 +38,9 @@ import values from 'lodash/values.js';
 import join from 'lodash/join.js';
 import isEqual from 'lodash/isEqual.js';
 import first from 'lodash/first.js';
+import camelCase from 'lodash/camelCase.js';
+
+import { IS_DEVELOPMENT }from "../constants/environment";
 
 export interface StringifyCallback<T = any> {
     (value: T) : string;
@@ -140,6 +145,25 @@ export function isArrayOf<T = any> (
 
     return true;
 
+}
+
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isArrayOfOrUndefined<T = any> (
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : value is T[] | readonly T[] | undefined {
+    if (value === undefined) return true;
+    return isArrayOf(value, isItem, minLength, maxLength);
 }
 
 /**
@@ -831,6 +855,20 @@ export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
 /**
  *
  * @param value
+ * @param array
+ * @__PURE__
+ * @nosideeffects
+ */
+export function hasNoOtherKeysInDevelopment (value: any, array : Array<string> ){
+    return (
+        IS_DEVELOPMENT ? hasNoOtherKeys(value, array) : true
+    )
+}
+
+
+/**
+ *
+ * @param value
  * @__PURE__
  * @nosideeffects
  */
@@ -988,5 +1026,8 @@ export {
     uniq,
     first,
     join,
-    isEqual
+    isEqual,
+    camelCase,
+    padStart,
+    trimStart
 };

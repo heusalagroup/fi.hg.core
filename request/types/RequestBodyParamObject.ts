@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestParamValueType, {isRequestParamValueType} from "./RequestParamValueType";
-import RequestParamObjectType from "./RequestParamObjectType";
+import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
+import { RequestParamObjectType } from "./RequestParamObjectType";
 
 export interface RequestBodyParamObject {
 
@@ -18,4 +18,4 @@ export function isRequestBodyParamObject (value: any): value is RequestBodyParam
     );
 }
 
-export default RequestBodyParamObject;
+

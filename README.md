@@ -10,7 +10,7 @@ We don't have traditional releases.  This project evolves directly to our git re
 
 This git repository contains only the source code for a compile time use case. It is meant to be used as a git submodule in a NodeJS or webpack project.
 
-See [heusalagroup/create-backend](https://github.com/heusalagroup/create-backend) for easy NPM package creator for your project with this core library.
+See also [hg.fi](https://hg.fi) for easy NPM package creators for your project and other additional modules from us.
 
 ### License
 

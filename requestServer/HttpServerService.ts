@@ -1,9 +1,9 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import HTTP, {IncomingMessage, RequestListener, ServerResponse} from "http";
-import LogService from "../LogService";
-import ServerService from "./types/ServerService";
-import {RequestHandler} from "./types/RequestHandler";
+import { Server, createServer, IncomingMessage, RequestListener, ServerResponse } from "http";
+import { LogService } from "../LogService";
+import { ServerService } from "./types/ServerService";
+import { RequestHandler } from "./types/RequestHandler";
 
 const LOG = LogService.createLogger('HttpService');
 
@@ -18,7 +18,7 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
     private readonly _closeCallback  : () => void;
     private readonly _listenCallback : () => void;
 
-    private _server            : HTTP.Server;
+    private _server            : Server;
     private _handler           : RequestHandler<IncomingMessage, ServerResponse> | undefined;
 
     /**
@@ -26,7 +26,8 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
      * @param port
      * @param hostname
      * @param handler
-     * @fixme Convert to use a configuration string instead of port + hostname, so that also sockets, etc can be supported.
+     * @fixme Convert to use a configuration string instead of port + hostname, so that also
+     *     sockets, etc can be supported.
      */
     public constructor (
         port     : number                         = DEFAULT_PORT,
@@ -43,7 +44,7 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
         this._hostname = hostname;
         this._port     = port;
         this._handler  = handler;
-        this._server   = HTTP.createServer(this._requestHandler);
+        this._server   = createServer(this._requestHandler);
 
     }
 
@@ -134,5 +135,3 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
     }
 
 }
-
-export default HttpServerService;

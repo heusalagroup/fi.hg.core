@@ -4,4 +4,4 @@ export interface RequestPathVariableListOptions {
 
 }
 
-export default RequestPathVariableListOptions;
+

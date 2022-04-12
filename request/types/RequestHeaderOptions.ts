@@ -21,4 +21,4 @@ export function isRequestHeaderOptionsOrUndefined (value: any): value is (Reques
     return value === undefined || isRequestHeaderOptions(value);
 }
 
-export default RequestHeaderOptions;
+

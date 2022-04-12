@@ -262,4 +262,4 @@ function normaliseStatusString (value: string) : string {
     return value.toLowerCase().replace(/[ _-]+/g, "-");
 }
 
-export default RequestStatus;
+

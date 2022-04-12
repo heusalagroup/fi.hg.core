@@ -1,7 +1,7 @@
 // Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import CommandExitStatus from "../types/CommandExitStatus";
-import CommandArgumentType, { parseCommandArgumentType } from "../types/CommandArgumentType";
+import { CommandExitStatus } from "../types/CommandExitStatus";
+import { CommandArgumentType, parseCommandArgumentType } from "../types/CommandArgumentType";
 import { startsWith } from "../../modules/lodash";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 
@@ -56,11 +56,11 @@ export class CommandArgumentUtils {
 
         do {
 
-            const argName : string | undefined = args.shift();
+            const argName : string = args.shift() ?? '';
 
             if (parsingArgs) {
 
-                const argType : CommandArgumentType = parseCommandArgumentType(argName);
+                const argType : CommandArgumentType | undefined = parseCommandArgumentType(argName);
 
                 switch (argType) {
 
@@ -129,5 +129,3 @@ export class CommandArgumentUtils {
     }
 
 }
-
-export default CommandArgumentUtils;

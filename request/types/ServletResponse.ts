@@ -1,8 +1,8 @@
-import Headers from "../Headers";
-import RequestStatus from "./RequestStatus";
+import { Headers } from "../Headers";
+import { RequestStatus } from "./RequestStatus";
 
 export interface ServletResponse {
 
 }
 
-export default ServletResponse;
+

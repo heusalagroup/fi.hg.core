@@ -70,4 +70,4 @@ export function stringifyRequestParamObjectType (value : RequestParamObjectType)
 
 }
 
-export default RequestParamObjectType;
+

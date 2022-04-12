@@ -3,7 +3,10 @@
 import {
     endsWith,
     isArrayOf,
-    isString, map, split, startsWith
+    isString,
+    map,
+    split,
+    startsWith
 } from "./modules/lodash";
 
 // FIXME: Add unit tests
@@ -150,5 +153,3 @@ export function stringifyCsv (
     }).join(lineBreak);
 
 }
-
-export default Csv;

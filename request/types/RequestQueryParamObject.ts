@@ -1,9 +1,8 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestParamValueType, {isRequestParamValueType} from "./RequestParamValueType";
-import InterfaceUtils from "../RequestInterfaceUtils";
-import {isString} from "../../modules/lodash";
-import RequestParamObjectType from "./RequestParamObjectType";
+import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
+import { isString } from "../../modules/lodash";
+import { RequestParamObjectType } from "./RequestParamObjectType";
 
 export interface RequestQueryParamObject {
 
@@ -22,4 +21,4 @@ export function isRequestQueryParamObject(value: any): value is RequestQueryPara
     );
 }
 
-export default RequestQueryParamObject;
+

@@ -1,7 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import RequestMethod from "../../request/types/RequestMethod";
-import {RequestParamObject} from "../../request/types/RequestParamObject";
+import { RequestMethod } from "../../request/types/RequestMethod";
+import { RequestParamObject } from "../../request/types/RequestParamObject";
 
 export interface RequestRouterMappingPropertyObject {
 
@@ -12,5 +12,3 @@ export interface RequestRouterMappingPropertyObject {
     readonly propertyParams       : Array<RequestParamObject | null>;
 
 }
-
-export default RequestRouterMappingPropertyObject;
