@@ -2,8 +2,6 @@
 
 Our enterprise library for TypeScript.
 
-### It's MIT licenced
-
 ### It doesn't have many runtime dependencies
 
 ### We don't have traditional releases
@@ -14,9 +12,9 @@ This git repository contains only the source code for a compile time use case. I
 
 See [heusalagroup/create-backend](https://github.com/heusalagroup/create-backend) for easy NPM package creator for your project with this core library.
 
-### Commercial support
+### License
 
-TODO
+Copyright (c) Heusala Group. All rights reserved. Licensed under the MIT License (the "[License](./LICENSE)");
 
 ## Index
 
@@ -321,3 +319,4 @@ If that's the case for your local submodule, fix your git's remote:
 ```shell
 git remote set-url origin git@github.com:heusalagroup/fi.hg.core.git
 ```
+
