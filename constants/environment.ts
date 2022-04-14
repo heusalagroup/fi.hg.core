@@ -28,9 +28,13 @@ export const IS_DEVELOPMENT : boolean = !IS_PRODUCTION && !IS_TEST;
  * @nosideeffects
  */
 function _parseNonEmptyString (value : any) : string | undefined {
+    /**
+     * We have this as a separate constant so that the line will not be accidentally replaced in the build process
+     */
+    const startLiteral = '%';
     if (value === undefined) return undefined;
     value = `${value}`;
     if (value === '') return undefined;
-    if (value.startsWith('%'+'{') && value.endsWith('}')) return undefined;
+    if (value.startsWith(startLiteral+'{') && value.endsWith('}')) return undefined;
     return value;
 }
