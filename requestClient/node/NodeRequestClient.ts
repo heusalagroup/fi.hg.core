@@ -14,6 +14,7 @@ import { LogService } from "../../LogService";
 import { REQUEST_CLIENT_NODE_ENABLED} from "../request-client-constants";
 import { RequestError } from "../../request/types/RequestError";
 import { LogLevel } from "../../types/LogLevel";
+import { ContentType } from "../../request/ContentType";
 
 export const FsPromises = REQUEST_CLIENT_NODE_ENABLED ? require("fs").promises : undefined;
 
@@ -42,13 +43,19 @@ export interface HttpModule {
 }
 
 export interface JsonHttpResponse {
-
     readonly method      : RequestMethod;
     readonly url         : string;
     readonly statusCode  : number;
     readonly headers    ?: IncomingHttpHeaders;
     readonly body       ?: JsonAny;
+}
 
+export interface TextHttpResponse {
+    readonly method      : RequestMethod;
+    readonly url         : string;
+    readonly statusCode  : number;
+    readonly headers    ?: IncomingHttpHeaders;
+    readonly body       ?: string;
 }
 
 export class NodeRequestClient implements RequestClientInterface {
@@ -61,13 +68,192 @@ export class NodeRequestClient implements RequestClientInterface {
     private readonly _http : HttpModule;
     private readonly _https : HttpModule;
 
-    constructor (
+    public constructor (
         http : HttpModule,
         https : HttpModule
     ) {
         this._http = http;
         this._https = https;
     }
+
+
+    public async textRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: string
+    ) : Promise<string|undefined> {
+        switch (method) {
+            case RequestMethod.GET:    return await this._getText(url, headers, data);
+            case RequestMethod.POST:   return await this._postText(url, headers, data);
+            case RequestMethod.PATCH:  return await this._patchText(url, headers, data);
+            case RequestMethod.PUT:    return await this._putText(url, headers, data);
+            case RequestMethod.DELETE: return await this._deleteText(url, headers, data);
+            default:                   throw new TypeError(`[Node]RequestClient: Unsupported method: ${method}`);
+        }
+    }
+
+    private async _getText (
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: string
+    ) : Promise< string | undefined > {
+
+        const options : HttpClientOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            }
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        return await this._textRequest(RequestMethod.GET, url, options, data).then(NodeRequestClient._successTextResponse);
+
+    }
+
+    private async _putText (
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: string
+    ) : Promise<string | undefined > {
+
+        const options : HttpClientOptions = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            }
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        return await this._textRequest(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successTextResponse);
+
+    }
+
+    private async _postText (
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: string
+    ) : Promise<string| undefined> {
+
+        const options : HttpClientOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            }
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        return await this._textRequest(RequestMethod.POST, url, options, data).then(NodeRequestClient._successTextResponse);
+
+    }
+
+    private async _patchText (
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: string
+    ) : Promise<string| undefined> {
+
+        const options : HttpClientOptions = {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            }
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        return await this._textRequest(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successTextResponse);
+
+    }
+
+    private async _deleteText (
+        url      : string,
+        headers ?: IncomingHttpHeaders,
+        data    ?: string
+    ) : Promise<string| undefined> {
+
+        const options : HttpClientOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            }
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        return await this._textRequest(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successTextResponse);
+
+    }
+
+    private static async _successTextResponse (response: TextHttpResponse) : Promise<string|undefined> {
+
+        const statusCode = response?.statusCode;
+
+        if ( statusCode < 200 || statusCode >= 400 ) {
+            LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
+            throw new RequestError(
+                statusCode,
+                `Error ${statusCode} for ${stringifyRequestMethod(response.method)} ${response.url}`,
+                response.method,
+                response.url,
+                response.body
+            );
+        }
+
+        //LOG.debug(`Successful response with status ${statusCode}: `, response);
+
+        return response.body;
+
+    }
+
+    private async _textRequest (
+        method   : RequestMethod,
+        url      : string,
+        options  : HttpClientOptions,
+        body    ?: string
+    ) : Promise<TextHttpResponse> {
+        const response : IncomingMessage = await this._httpRequest(url, options, body);
+        const result : string | undefined = await NodeHttpUtils.getRequestDataAsString(response);
+        const statusCode = response?.statusCode ?? 0;
+        return {
+            method,
+            url,
+            statusCode,
+            headers: response.headers,
+            body: result
+        };
+    }
+
+
+
 
     public async jsonRequest (
         method   : RequestMethod,
@@ -263,12 +449,12 @@ export class NodeRequestClient implements RequestClientInterface {
 
                 if (bodyString) {
 
-                    // LOG.debug('_request: writing bodyString = ', bodyString);
+                    // LOG.debug('_jsonRequest: writing bodyString = ', bodyString);
 
                     req.write(bodyString);
 
                 } else {
-                    // LOG.debug('_request: no body');
+                    // LOG.debug('_jsonRequest: no body');
                 }
 
                 req.end();
@@ -291,14 +477,14 @@ export class NodeRequestClient implements RequestClientInterface {
         });
     }
 
-    private async _request (
+    private async _jsonRequest (
         method   : RequestMethod,
         url      : string,
         options  : HttpClientOptions,
         body    ?: JsonAny
     ) : Promise<JsonHttpResponse> {
 
-        // LOG.debug('_request: url, options, body = ', url, options, body);
+        // LOG.debug('_jsonRequest: url, options, body = ', url, options, body);
 
         const response : IncomingMessage = await this._httpRequest(url, options, body);
 
@@ -309,19 +495,15 @@ export class NodeRequestClient implements RequestClientInterface {
         // LOG.debug('Received: ', result);
 
         const statusCode = response?.statusCode ?? 0;
-        // LOG.debug('_request: statusCode = ', statusCode);
+        // LOG.debug('_jsonRequest: statusCode = ', statusCode);
 
-        const myResponse : JsonHttpResponse = {
+        return {
             method: method,
             url,
             statusCode,
             headers: response.headers,
             body: result
         };
-
-        // LOG.debug('_request: myResponse = ', myResponse);
-
-        return myResponse;
 
     }
 
@@ -334,7 +516,7 @@ export class NodeRequestClient implements RequestClientInterface {
         const options : HttpClientOptions = {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             }
         };
 
@@ -345,7 +527,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return await this._request(RequestMethod.GET, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._jsonRequest(RequestMethod.GET, url, options, data).then(NodeRequestClient._successJsonResponse);
 
     }
 
@@ -358,7 +540,7 @@ export class NodeRequestClient implements RequestClientInterface {
         const options : HttpClientOptions = {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             }
         };
 
@@ -369,7 +551,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return await this._request(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._jsonRequest(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successJsonResponse);
 
     }
 
@@ -382,7 +564,7 @@ export class NodeRequestClient implements RequestClientInterface {
         const options : HttpClientOptions = {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             }
         };
 
@@ -393,7 +575,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return await this._request(RequestMethod.POST, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._jsonRequest(RequestMethod.POST, url, options, data).then(NodeRequestClient._successJsonResponse);
 
     }
 
@@ -406,7 +588,7 @@ export class NodeRequestClient implements RequestClientInterface {
         const options : HttpClientOptions = {
             method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             }
         };
 
@@ -417,7 +599,7 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return await this._request(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._jsonRequest(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successJsonResponse);
 
     }
 
@@ -430,7 +612,7 @@ export class NodeRequestClient implements RequestClientInterface {
         const options : HttpClientOptions = {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             }
         };
 
@@ -441,11 +623,11 @@ export class NodeRequestClient implements RequestClientInterface {
             };
         }
 
-        return await this._request(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successResponse);
+        return await this._jsonRequest(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successJsonResponse);
 
     }
 
-    private static async _successResponse (response: JsonHttpResponse) : Promise<JsonAny | undefined> {
+    private static async _successJsonResponse (response: JsonHttpResponse) : Promise<JsonAny | undefined> {
 
         const statusCode = response?.statusCode;
 

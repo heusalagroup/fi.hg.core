@@ -11,6 +11,13 @@ export interface RequestClientInterface {
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: JsonAny
-    ) : Promise<JsonAny| undefined>;
+    ) : Promise<JsonAny|undefined>;
+
+    textRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string|undefined>;
 
 }

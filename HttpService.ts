@@ -137,7 +137,7 @@ export class HttpService {
     ) : Promise<ReadonlyJsonAny | undefined> {
 
         if (this._requestCount >= this._requestLimit) {
-            throw new TypeError(`getJson: Too many request: ${this._requestCount}`);
+            throw new TypeError(`postJson: Too many request: ${this._requestCount}`);
         }
 
         try {
@@ -153,6 +153,68 @@ export class HttpService {
             const response : JsonAny | undefined = await RequestClient.postJson(url, data as JsonAny, headers);
 
             return response as ReadonlyJsonAny | undefined;
+
+        } finally {
+            this._requestCount -= 1;
+            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.POST);
+            LOG.debug(`Stopped POST request to "${url}" (${this._requestCount} requests)`);
+        }
+    }
+
+
+    public static async getText (
+        url : string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string | undefined> {
+
+        if (this._requestCount >= this._requestLimit) {
+            throw new TypeError(`getText: Too many request: ${this._requestCount}`);
+        }
+
+        try {
+
+            if (this._baseApiUrl && url.startsWith('/api')) {
+                url = `${this._baseApiUrl}${url.substring('/api'.length)}`;
+            }
+
+            this._requestCount += 1;
+            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.GET);
+            LOG.debug(`Started GET request to "${url} "(${this._requestCount} requests)`);
+
+            const response : string | undefined = await RequestClient.getText(url, headers);
+
+            return response as string | undefined;
+
+        } finally {
+            this._requestCount -= 1;
+            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.GET);
+            LOG.debug(`Stopped GET request to "${url}" (${this._requestCount} requests)`);
+        }
+    }
+
+    public static async postText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string | undefined> {
+
+        if (this._requestCount >= this._requestLimit) {
+            throw new TypeError(`postText: Too many request: ${this._requestCount}`);
+        }
+
+        try {
+
+            if (this._baseApiUrl && url.startsWith('/api')) {
+                url = `${this._baseApiUrl}${url.substring('/api'.length)}`;
+            }
+
+            this._requestCount += 1;
+            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.POST);
+            LOG.debug(`Started POST request to "${url}" (${this._requestCount} requests)`);
+
+            const response : string | undefined = await RequestClient.postText(url, data, headers);
+
+            return response as string | undefined;
 
         } finally {
             this._requestCount -= 1;

@@ -25,6 +25,60 @@ export class RequestClient {
 
     private static _client : RequestClientInterface = RequestClient._initClient();
 
+    public static async textRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string| undefined> {
+        return await this._client.textRequest(method, url, headers, data);
+    }
+
+    public static async getText (
+        url      : string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        // LOG.debug('.getJson: ', url, headers);
+        return await this._client.textRequest(RequestMethod.GET, url, headers);
+    }
+
+    public static async postText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        LOG.debug('.postJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.POST, url, headers, data);
+    }
+
+    public static async patchText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        LOG.debug('.patchJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.PATCH, url, headers, data);
+    }
+
+    public static async putText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        LOG.debug('.putJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.PUT, url, headers, data);
+    }
+
+    public static async deleteText (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string| undefined> {
+        LOG.debug('.deleteJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.DELETE, url, headers, data);
+    }
+
+
     public static async jsonRequest (
         method   : RequestMethod,
         url      : string,

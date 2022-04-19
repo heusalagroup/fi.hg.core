@@ -5,13 +5,13 @@ import { RequestMethod, stringifyRequestMethod } from "../../request/types/Reque
 import { JsonAny } from "../../Json";
 import { RequestClientInterface } from "../RequestClientInterface";
 import { RequestError } from "../../request/types/RequestError";
+import { ContentType } from "../../request/ContentType";
 
 export interface FetchInterface {
     (input: string, init?: RequestInit): Promise<Response>;
 }
 
 export class FetchRequestClient implements RequestClientInterface {
-
 
     private _fetch : FetchInterface;
 
@@ -34,6 +34,21 @@ export class FetchRequestClient implements RequestClientInterface {
         }
     }
 
+    public textRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string|undefined> {
+        switch (method) {
+            case RequestMethod.GET:    return this._getText(url, headers, data);
+            case RequestMethod.POST:   return this._postText(url, headers, data);
+            case RequestMethod.PUT:    return this._putText(url, headers, data);
+            case RequestMethod.DELETE: return this._deleteText(url, headers, data);
+            default:                   throw new TypeError(`[Fetch]RequestClient: Unsupported method: ${method}`);
+        }
+    }
+
     private _getJson (
         url      : string,
         headers ?: {[key: string]: string},
@@ -45,7 +60,7 @@ export class FetchRequestClient implements RequestClientInterface {
             mode: 'cors',
             cache: 'no-cache',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             },
             credentials: 'same-origin'
         };
@@ -61,7 +76,7 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.GET));
+        return this._fetch(url, options).then(response => FetchRequestClient._successJsonResponse(response, RequestMethod.GET));
 
     }
 
@@ -76,7 +91,7 @@ export class FetchRequestClient implements RequestClientInterface {
             mode: 'cors',
             cache: 'no-cache',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             },
             credentials: 'same-origin'
         };
@@ -92,7 +107,7 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.PUT));
+        return this._fetch(url, options).then(response => FetchRequestClient._successJsonResponse(response, RequestMethod.PUT));
 
     }
 
@@ -107,7 +122,7 @@ export class FetchRequestClient implements RequestClientInterface {
             mode: 'cors',
             cache: 'no-cache',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             },
             credentials: 'same-origin'
         };
@@ -123,7 +138,7 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.POST));
+        return this._fetch(url, options).then(response => FetchRequestClient._successJsonResponse(response, RequestMethod.POST));
 
     }
 
@@ -138,7 +153,7 @@ export class FetchRequestClient implements RequestClientInterface {
             mode: 'cors',
             cache: 'no-cache',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': ContentType.JSON,
             },
             credentials: 'same-origin'
         };
@@ -154,11 +169,11 @@ export class FetchRequestClient implements RequestClientInterface {
             options.body = JSON.stringify(data);
         }
 
-        return this._fetch(url, options).then(response => FetchRequestClient._successResponse(response, RequestMethod.DELETE));
+        return this._fetch(url, options).then(response => FetchRequestClient._successJsonResponse(response, RequestMethod.DELETE));
 
     }
 
-    private static _successResponse (response: Response, method: RequestMethod) : Promise<JsonAny> {
+    private static _successJsonResponse (response: Response, method: RequestMethod) : Promise<JsonAny> {
 
         const statusCode = response.status;
 
@@ -179,6 +194,149 @@ export class FetchRequestClient implements RequestClientInterface {
 
         return response.json();
 
+    }
+
+
+    private _getText (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string|undefined> {
+
+        const options : RequestInit = {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            },
+            credentials: 'same-origin'
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        if (data) {
+            options.body = data;
+        }
+
+        return this._fetch(url, options).then(response => FetchRequestClient._successTextResponse(response, RequestMethod.GET));
+
+    }
+
+    private _putText (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string|undefined> {
+
+        const options : RequestInit = {
+            method: 'PUT',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            },
+            credentials: 'same-origin'
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        if (data) {
+            options.body = data;
+        }
+
+        return this._fetch(url, options).then(response => FetchRequestClient._successTextResponse(response, RequestMethod.PUT));
+
+    }
+
+    private _postText (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string|undefined> {
+
+        const options : RequestInit = {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            },
+            credentials: 'same-origin'
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        if (data) {
+            options.body = data;
+        }
+
+        return this._fetch(url, options).then(response => FetchRequestClient._successTextResponse(response, RequestMethod.POST));
+
+    }
+
+    private _deleteText (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string|undefined> {
+
+        const options : RequestInit = {
+            method: 'DELETE',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': ContentType.TEXT,
+            },
+            credentials: 'same-origin'
+        };
+
+        if (headers) {
+            options.headers = {
+                ...options.headers,
+                ...headers
+            };
+        }
+
+        if (data) {
+            options.body = data;
+        }
+
+        return this._fetch(url, options).then(response => FetchRequestClient._successTextResponse(response, RequestMethod.DELETE));
+
+    }
+
+    private static _successTextResponse (response: Response, method: RequestMethod) : Promise<string> {
+        const statusCode = response.status;
+        if ( !response.ok || (statusCode < 200 || statusCode >= 400) ) {
+            const url     = response.url;
+            const message = `${statusCode} ${response.statusText} for ${stringifyRequestMethod(method)} ${url}`;
+            return response.text().then(body => {
+                throw new RequestError(
+                    statusCode,
+                    message,
+                    method,
+                    url,
+                    body
+                );
+            });
+        }
+        return response.text();
     }
 
 }
