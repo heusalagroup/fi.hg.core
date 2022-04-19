@@ -3,10 +3,16 @@
 import { CalendarDTO, createCalendarDTO } from "./types/CalendarDTO";
 import { map, reduce, split } from "./modules/lodash";
 import { LogService } from "./LogService";
-import { createInternetCalendarLine, InternetCalendarLine } from "./types/InternetCalendarLine";
+import { createInternetCalendarLine, InternetCalendarLine, isInternetCalendarLine } from "./types/InternetCalendarLine";
 import { createInternetCalendarParam, InternetCalendarParam } from "./types/InternetCalendarParam";
 
 const LOG = LogService.createLogger('CalendarUtils');
+
+export type ReadonlyInternetCalendarLineList = readonly InternetCalendarLine[];
+export type ReadonlyInternetCalendarLineBlockList = readonly (InternetCalendarLine | ReadonlyInternetCalendarLineList)[];
+
+export type InternetCalendarLineList = InternetCalendarLine[];
+export type InternetCalendarLineBlockList = (InternetCalendarLine | InternetCalendarLineList)[];
 
 export class CalendarUtils {
 
@@ -95,15 +101,85 @@ export class CalendarUtils {
 
     }
 
+    public static groupInternetCalendarLines (value : ReadonlyInternetCalendarLineList) : ReadonlyInternetCalendarLineBlockList {
+
+        const stack : InternetCalendarLineBlockList[] = [];
+
+        return reduce(
+            value,
+            (list: InternetCalendarLineBlockList, item: InternetCalendarLine) : InternetCalendarLineBlockList => {
+
+                const itemName = item.name;
+
+                if (itemName === 'BEGIN') {
+
+                    const block = [
+                        item
+                    ];
+                    stack.push(block);
+                    list.push(block);
+
+                    LOG.debug(`Started block "${item.value}"`);
+                    return list;
+                }
+
+                if (itemName === 'END') {
+
+                    const blockName = item.value;
+
+                    if (stack.length === 0) {
+
+                        const block = [
+                            item
+                        ];
+                        list.push(block);
+
+                        LOG.warn(`Warning! Ended block "${blockName}" without previous START`);
+                        return list;
+
+                    }
+
+                    const lastBlock : InternetCalendarLineBlockList = stack[stack.length - 1];
+                    const lastBegin : InternetCalendarLine | InternetCalendarLineList | undefined = lastBlock.length ? lastBlock[0] : undefined;
+                    if (!isInternetCalendarLine(lastBegin)) {
+                        throw new TypeError(`CalendarUtils.groupInternetCalendarLines: Could not detect BEGIN for END (${blockName})`);
+                    }
+                    if (lastBegin.value !== blockName) {
+                        throw new TypeError(`CalendarUtils.groupInternetCalendarLines: Found wrong block for END (${blockName})`);
+                    }
+
+                    lastBlock.push(item);
+                    stack.pop();
+
+                    LOG.debug(`Ended block "${blockName}"`);
+                    return list;
+
+                }
+
+                if (stack.length >= 1) {
+                    stack[stack.length - 1].push(item);
+                    return list;
+                }
+
+                list.push(item);
+                return list;
+
+            },
+            []
+        ) as ReadonlyInternetCalendarLineBlockList;
+    }
+
     public static parseCalendarDTOFromInternetCalendar (value : string) : CalendarDTO {
 
         const foldRows = split(value, /\r?\n/);
 
         const unfoldRows = CalendarUtils.unfoldInternetCalendarLines(foldRows);
 
-        const parsedRows = map(unfoldRows, (item : string) : InternetCalendarLine => CalendarUtils.parseInternetCalendarLine(item))
+        const parsedRows : InternetCalendarLine[] = map(unfoldRows, (item : string) : InternetCalendarLine => CalendarUtils.parseInternetCalendarLine(item))
 
-        LOG.debug(`parsedRows = `, parsedRows);
+        const grouped = CalendarUtils.groupInternetCalendarLines(parsedRows);
+
+        LOG.debug(`grouped = `, grouped);
 
         return createCalendarDTO([]);
 
