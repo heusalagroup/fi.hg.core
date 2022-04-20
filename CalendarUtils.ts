@@ -1,10 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { CalendarDTO, createCalendarDTO } from "./types/CalendarDTO";
-import { map, reduce, split } from "./modules/lodash";
+import { filter, find, isArray, map, reduce, split } from "./modules/lodash";
 import { LogService } from "./LogService";
 import { createInternetCalendarLine, InternetCalendarLine, isInternetCalendarLine } from "./types/InternetCalendarLine";
 import { createInternetCalendarParam, InternetCalendarParam } from "./types/InternetCalendarParam";
+import { CalendarEvent, createCalendarEvent } from "./types/CalendarEvent";
 
 const LOG = LogService.createLogger('CalendarUtils');
 
@@ -177,12 +178,71 @@ export class CalendarUtils {
 
         const parsedRows : InternetCalendarLine[] = map(unfoldRows, (item : string) : InternetCalendarLine => CalendarUtils.parseInternetCalendarLine(item))
 
-        const grouped = CalendarUtils.groupInternetCalendarLines(parsedRows);
+        const grouped : ReadonlyInternetCalendarLineBlockList = CalendarUtils.groupInternetCalendarLines(parsedRows);
 
-        LOG.debug(`grouped = `, grouped);
+        // LOG.debug(`grouped = `, grouped);
 
-        return createCalendarDTO([]);
+        const eventBlocks : ReadonlyInternetCalendarLineList[] = filter(grouped, (item : InternetCalendarLine | ReadonlyInternetCalendarLineList) : boolean => {
+            if (isArray(item) && item.length) {
+                const itemType = item[0].value;
+                return itemType === 'VEVENT';
+            } else {
+                return false;
+            }
+        }) as ReadonlyInternetCalendarLineList[];
 
+        const events : CalendarEvent[] = map(
+            eventBlocks,
+            (item: ReadonlyInternetCalendarLineList) : CalendarEvent => {
+                return CalendarUtils.parseCalendarEventFromInternetCalendarLines(item);
+            }
+        );
+
+        return createCalendarDTO(events);
+
+    }
+
+    public static parseCalendarEventFromInternetCalendarLines (list : ReadonlyInternetCalendarLineList) : CalendarEvent {
+
+        LOG.debug(`parseCalendarEventFromInternetCalendarLines: `, list);
+
+        const start        : string = CalendarUtils._findCalendarLine('DTSTART'       , list)?.value ?? '';
+        const end          : string = CalendarUtils._findCalendarLine('DTEND'         , list)?.value ?? '';
+        const repeatRule   : string = CalendarUtils._findCalendarLine('RRULE'         , list)?.value ?? '';
+        const stamp        : string = CalendarUtils._findCalendarLine('DTSTAMP'       , list)?.value ?? '';
+        const uid          : string = CalendarUtils._findCalendarLine('UID'           , list)?.value ?? '';
+        const created      : string = CalendarUtils._findCalendarLine('CREATED'       , list)?.value ?? '';
+        const description  : string = CalendarUtils._findCalendarLine('DESCRIPTION'   , list)?.value ?? '';
+        const lastModified : string = CalendarUtils._findCalendarLine('LAST-MODIFIED' , list)?.value ?? '';
+        const location     : string = CalendarUtils._findCalendarLine('LOCATION'      , list)?.value ?? '';
+        const sequence     : string = CalendarUtils._findCalendarLine('SEQUENCE'      , list)?.value ?? '';
+        const status       : string = CalendarUtils._findCalendarLine('STATUS'        , list)?.value ?? '';
+        const summary      : string = CalendarUtils._findCalendarLine('SUMMARY'       , list)?.value ?? '';
+        const transparency : string = CalendarUtils._findCalendarLine('TRANSP'        , list)?.value ?? '';
+
+        return createCalendarEvent(
+            start,
+            end,
+            repeatRule,
+            stamp,
+            uid,
+            created,
+            description,
+            lastModified,
+            location,
+            sequence,
+            status,
+            summary,
+            transparency
+        );
+
+    }
+
+    private static _findCalendarLine (name: string, list : ReadonlyInternetCalendarLineList) : InternetCalendarLine | undefined {
+        return find(
+            list,
+            (item : InternetCalendarLine) : boolean => item.name === name
+        );
     }
 
 }
