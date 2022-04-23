@@ -1,0 +1,19 @@
+{
+  "common.siteName"           : "example.com",
+  "common.companyName"        : "Example Inc",
+  "m.common.siteName"         : "$t(common.siteName)",
+  "m.common.companyName"      : "$t(common.companyName)",
+  "m.common.headerText"       : "Hi,\n",
+  "m.common.headerHtml"       : "<p>Hi,</p>\n",
+  "m.common.footerText"       : "-- \n$t(m.common.siteName)\n$t(m.common.companyName)\n",
+  "m.common.footerHtml"       : "<hr>\n$t(m.common.siteName)<br>\n$t(m.common.companyName)<br>\n",
+  "m.common.authCodeIs"       : "Auth code is: ",
+  "m.common.authDisclaimer"   : "If you didn't log in to our website, somebody might be trying to login as you.\nIn that case, do nothing.",
+  "m.authCode.subject"        : "Verify your email address to our service:",
+  "m.authCode.headerText"     : "$t(m.common.headerText)",
+  "m.authCode.bodyText"       : "$t(m.common.authCodeIs) {{CODE}}\n\n$t(m.common.authDisclaimer)",
+  "m.authCode.footerText"     : "$t(m.common.footerText)",
+  "m.authCode.headerHtml"     : "$t(m.common.headerHtml)",
+  "m.authCode.bodyHtml"       : "<p>$t(m.common.authCodeIs) <strong>{{CODE}}</strong></p>\n\n<p>$t(m.common.authDisclaimer)</p>",
+  "m.authCode.footerHtml"     : "$t(m.common.footerHtml)"
+}
