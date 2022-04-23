@@ -52,6 +52,12 @@ npm install --save-dev lodash @types/lodash
 npm install --save-dev reflect-metadata
 ```
 
+We also use the moment library for time:
+
+```shell
+npm i 'moment-timezone' '@types/moment-timezone'
+```
+
 If you're going to develop NodeJS app, you might want to install also types for NodeJS (this should be obvious though):
 
 ```shell
