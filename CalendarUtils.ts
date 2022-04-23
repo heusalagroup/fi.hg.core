@@ -6,7 +6,7 @@ import { LogService } from "./LogService";
 import { createInternetCalendarLine, InternetCalendarLine, isInternetCalendarLine } from "./types/InternetCalendarLine";
 import { createInternetCalendarParam, InternetCalendarParam } from "./types/InternetCalendarParam";
 import { CalendarEvent, createCalendarEvent } from "./types/CalendarEvent";
-import { tz as momentTz, ISO_8601, utc as parseUtc } from 'moment-timezone';
+import { tz as momentTz, utc as parseUtc } from 'moment-timezone';
 
 const LOG = LogService.createLogger('CalendarUtils');
 
@@ -40,15 +40,15 @@ export class CalendarUtils {
                 value
             );
         } else {
-            const parts = split(nameParams, ';');
-            const name = parts.shift();
+            const parts : string[] = split(nameParams, ';');
+            const name : string = parts.shift() ?? '';
             return createInternetCalendarLine(
                 name,
                 value,
                 map(parts, (item : string) : InternetCalendarParam => {
                     const itemParts = split(item, '=');
-                    const paramName = itemParts.shift();
-                    const paramValue = itemParts.join('=');
+                    const paramName : string = itemParts.shift() ?? '';
+                    const paramValue : string = itemParts.join('=');
                     return createInternetCalendarParam(paramName, paramValue);
                 })
             );
