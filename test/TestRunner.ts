@@ -155,34 +155,29 @@ export class TestRunner {
         });
 
         if (promises.length) {
-
-            // @ts-ignore
             Promise.allSettled(promises).then(TestRunner.printResults).catch(err => {
                 console.error('ERROR: ', err);
+                process.exit(1);
             });
-
-        } else {
-
-            if (testCount === 0) {
-
-                console.error(`ERROR: No tests found.`);
-                process.exit(1);
-
-            } else if (failedCount >= 1) {
-
-                console.error(`ERROR: ${failedCount} (of ${testCount}) tests failed:\n`);
-
-                forEach(errorResults, (testResult : TestResult) => {
-                    console.error(`[${testResult.file}] ${testResult.className}.${testResult.methodName} failed: `, testResult.result, '\n');
-                });
-
-                process.exit(1);
-
-            } else {
-                console.log(`All ${testCount} tests successfully executed.`);
-            }
-
+            return;
         }
+
+        if (testCount === 0) {
+            console.error(`ERROR: No tests found.`);
+            process.exit(1);
+            return;
+        }
+
+        if (failedCount >= 1) {
+            console.error(`ERROR: ${failedCount} (of ${testCount}) tests failed:\n`);
+            forEach(errorResults, (testResult : TestResult) => {
+                console.error(`[${testResult.file}] ${testResult.className}.${testResult.methodName} failed: `, testResult.result, '\n');
+            });
+            process.exit(1);
+            return;
+        }
+
+        console.log(`All ${testCount} tests successfully executed.`);
 
     }
 
