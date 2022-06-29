@@ -142,7 +142,11 @@ export class TestRunner {
             switch(result.state) {
                 case TestResultState.RUNNING:
                     runningCount += 1;
-                    promises.push(result.promise);
+                    if (result.promise) {
+                        promises.push(result.promise);
+                    } else {
+                        console.warn('Warning! Result did not have promise');
+                    }
                     return;
                 case TestResultState.SUCCESS:
                     successCount += 1;
