@@ -10,22 +10,24 @@ import {
     join as pathJoin,
     resolve as pathResolve
 } from 'path';
-import { forEach, isPromise, map } from "../modules/lodash";
+import { endsWith, forEach, isPromise, map, startsWith } from "../modules/lodash";
 import { TestResultState } from "./types/TestResultState";
 import { TestResult } from "./types/TestResult";
+import { requireTypeScript } from "./requireTypeScript";
 
 export class TestRunner {
 
     private static _testId : number = 0;
-    private static _excludeDirectories : string[] = ['node_modules'];
-    private static _testFileEnding : string = 'Test.js';
+    private static _excludeDirectories : string[] = ['node_modules', '.git', '.svn'];
+    private static _testFileEndingForJavaScript : string = 'Test.js';
+    private static _testFileEndingForTypeScript : string = 'Test.ts';
     private static _testMethodEnding : string = 'Test';
 
     protected static _results : readonly TestResult[] = [];
 
     public static testFileInDir (dir: string, file: string) {
 
-        if (file.startsWith('.')) return;
+        if (startsWith(file, '.')) return;
         if (TestRunner._excludeDirectories.includes(file)) return;
 
         const stat = lstatSync(pathJoin(dir, file));
@@ -35,24 +37,21 @@ export class TestRunner {
             return TestRunner.testDirectory(pathJoin(dir, file));
         }
 
-        if (file.endsWith(TestRunner._testFileEnding)) {
+        const isJavaScriptFile = endsWith(file, TestRunner._testFileEndingForJavaScript);
+        const isTypeScriptFile = endsWith(file, TestRunner._testFileEndingForTypeScript);
 
-            const test = require(pathResolve(dir, file));
-
-            const testNames : string[] = Object.keys(test).filter(file => file.endsWith(TestRunner._testMethodEnding));
-
+        if ( isJavaScriptFile || isTypeScriptFile ) {
+            const resolvedPath = pathResolve(dir, file);
+            const test = isJavaScriptFile ? require(resolvedPath) : requireTypeScript(resolvedPath);
+            const testNames : string[] = Object.keys(test).filter(file => endsWith(file, TestRunner._testMethodEnding));
             forEach(testNames, (testName : string) => {
-
                 const testClassName   = testName;
                 const testClass       = test[testClassName];
                 const testMethodNames : string[] = Object.keys(testClass);
-
                 forEach(testMethodNames, (methodName: string) => {
 
                     TestRunner._testId += 1;
-
                     const id = `${TestRunner._testId}`;
-
                     const resolvedFile = pathResolve(dir, file);
 
                     let testResult : TestResult = {
@@ -112,9 +111,7 @@ export class TestRunner {
                     }
 
                 });
-
             });
-
         }
 
     }
@@ -182,3 +179,4 @@ export class TestRunner {
     }
 
 }
+
