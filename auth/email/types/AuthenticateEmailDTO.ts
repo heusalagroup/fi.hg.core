@@ -11,6 +11,10 @@ export interface AuthenticateEmailDTO {
     readonly email : string;
 }
 
+export function createAuthenticateEmailDTO (email: string) : AuthenticateEmailDTO {
+    return {email};
+}
+
 export function isAuthenticateEmailDTO (value: any): value is AuthenticateEmailDTO {
     return (
         isRegularObject(value)
