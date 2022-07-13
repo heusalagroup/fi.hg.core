@@ -16,6 +16,16 @@ export interface VerifyEmailCodeDTO {
     readonly code  : string;
 }
 
+export function createVerifyEmailCodeDTO (
+    token : EmailTokenDTO,
+    code  : string
+) {
+    return {
+        token,
+        code
+    };
+}
+
 export function isVerifyEmailCodeDTO (value: any): value is VerifyEmailCodeDTO {
     return (
         isRegularObject(value)
