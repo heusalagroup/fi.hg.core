@@ -4,6 +4,7 @@ import { JsonAny,  ReadonlyJsonAny } from "./Json";
 import { RequestClient } from "./RequestClient";
 import { Observer,  ObserverCallback, ObserverDestructor } from "./Observer";
 import { LogService } from "./LogService";
+import { LogLevel } from "./types/LogLevel";
 
 const LOG = LogService.createLogger('HttpService');
 
@@ -28,6 +29,11 @@ export class HttpService {
     private static _observer: Observer<HttpServiceEvent> = new Observer<HttpServiceEvent>("HttpService");
 
     public static Event = HttpServiceEvent;
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+        RequestClient.setLogLevel(level);
+    }
 
     public static setRequestLimit (value : number ) {
         this._requestLimit = value;
@@ -116,7 +122,9 @@ export class HttpService {
             }
 
             this._requestCount += 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.GET);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.GET);
+            }
             LOG.debug(`Started GET request to "${url} "(${this._requestCount} requests)`);
 
             const response : JsonAny | undefined = await RequestClient.getJson(url, headers);
@@ -125,7 +133,9 @@ export class HttpService {
 
         } finally {
             this._requestCount -= 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.GET);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.GET);
+            }
             LOG.debug(`Stopped GET request to "${url}" (${this._requestCount} requests)`);
         }
     }
@@ -147,7 +157,9 @@ export class HttpService {
             }
 
             this._requestCount += 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.POST);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.POST);
+            }
             LOG.debug(`Started POST request to "${url}" (${this._requestCount} requests)`);
 
             const response : JsonAny | undefined = await RequestClient.postJson(url, data as JsonAny, headers);
@@ -156,7 +168,9 @@ export class HttpService {
 
         } finally {
             this._requestCount -= 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.POST);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.POST);
+            }
             LOG.debug(`Stopped POST request to "${url}" (${this._requestCount} requests)`);
         }
     }
@@ -178,7 +192,9 @@ export class HttpService {
             }
 
             this._requestCount += 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.GET);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.GET);
+            }
             LOG.debug(`Started GET request to "${url} "(${this._requestCount} requests)`);
 
             const response : string | undefined = await RequestClient.getText(url, headers);
@@ -187,7 +203,9 @@ export class HttpService {
 
         } finally {
             this._requestCount -= 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.GET);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.GET);
+            }
             LOG.debug(`Stopped GET request to "${url}" (${this._requestCount} requests)`);
         }
     }
@@ -209,7 +227,9 @@ export class HttpService {
             }
 
             this._requestCount += 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.POST);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.POST);
+            }
             LOG.debug(`Started POST request to "${url}" (${this._requestCount} requests)`);
 
             const response : string | undefined = await RequestClient.postText(url, data, headers);
@@ -218,7 +238,9 @@ export class HttpService {
 
         } finally {
             this._requestCount -= 1;
-            this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.POST);
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.POST);
+            }
             LOG.debug(`Stopped POST request to "${url}" (${this._requestCount} requests)`);
         }
     }
