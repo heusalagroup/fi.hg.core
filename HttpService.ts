@@ -10,7 +10,8 @@ const LOG = LogService.createLogger('HttpService');
 
 export enum Method {
     GET = "GET",
-    POST = "POST"
+    POST = "POST",
+    DELETE = "DELETE"
 }
 
 export enum HttpServiceEvent {
@@ -175,6 +176,40 @@ export class HttpService {
         }
     }
 
+    public static async deleteJson (
+        url      : string,
+        headers ?: {[key: string]: string}
+    ) : Promise<ReadonlyJsonAny | undefined> {
+
+        if (this._requestCount >= this._requestLimit) {
+            throw new TypeError(`postJson: Too many request: ${this._requestCount}`);
+        }
+
+        try {
+
+            if (this._baseApiUrl && url.startsWith('/api')) {
+                url = `${this._baseApiUrl}${url.substring('/api'.length)}`;
+            }
+
+            this._requestCount += 1;
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.DELETE);
+            }
+            LOG.debug(`Started DELETE request to "${url}" (${this._requestCount} requests)`);
+
+            const response : JsonAny | undefined = await RequestClient.deleteJson(url, headers);
+
+            return response as ReadonlyJsonAny | undefined;
+
+        } finally {
+            this._requestCount -= 1;
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.DELETE);
+            }
+            LOG.debug(`Stopped DELETE request to "${url}" (${this._requestCount} requests)`);
+        }
+    }
+
 
     public static async getText (
         url : string,
@@ -242,6 +277,41 @@ export class HttpService {
                 this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.POST);
             }
             LOG.debug(`Stopped POST request to "${url}" (${this._requestCount} requests)`);
+        }
+    }
+
+    public static async deleteText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string | undefined> {
+
+        if (this._requestCount >= this._requestLimit) {
+            throw new TypeError(`postText: Too many request: ${this._requestCount}`);
+        }
+
+        try {
+
+            if (this._baseApiUrl && url.startsWith('/api')) {
+                url = `${this._baseApiUrl}${url.substring('/api'.length)}`;
+            }
+
+            this._requestCount += 1;
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, Method.DELETE);
+            }
+            LOG.debug(`Started DELETE request to "${url}" (${this._requestCount} requests)`);
+
+            const response : string | undefined = await RequestClient.deleteText(url, headers);
+
+            return response as string | undefined;
+
+        } finally {
+            this._requestCount -= 1;
+            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, Method.DELETE);
+            }
+            LOG.debug(`Stopped DELETE request to "${url}" (${this._requestCount} requests)`);
         }
     }
 
