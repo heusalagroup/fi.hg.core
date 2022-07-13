@@ -116,7 +116,7 @@ export class Observer<EventName extends keyof any> {
     public triggerEvent (eventName : EventName, ...args : Array<any>) {
 
         if (!this.hasCallbacks(eventName)) {
-            console.warn(`Warning! The observer for "${this._name}" did not have anything listening "${eventName}"`);
+            console.warn(`Warning! The observer for "${this._name}" did not have anything listening "${eventName.toString()}"`);
             return;
         }
 
@@ -126,7 +126,7 @@ export class Observer<EventName extends keyof any> {
             try {
                 callback(eventName, ...args);
             } catch( e ) {
-                console.error(`Observer "${this._name}" and the event handler for "${eventName}" returned an exception: `, e);
+                console.error(`Observer "${this._name}" and the event handler for "${eventName.toString()}" returned an exception: `, e);
             }
         });
 
@@ -161,7 +161,7 @@ export class Observer<EventName extends keyof any> {
     public removeListener (eventName : EventName, callback: ObserverCallback<EventName>) : void {
 
         if (!this.hasCallbacks(eventName)) {
-            console.warn(`Warning! Could not remove callback since the observer for "${this._name}" did not have anything listening "${eventName}"`);
+            console.warn(`Warning! Could not remove callback since the observer for "${this._name}" did not have anything listening "${eventName.toString()}"`);
             return;
         }
 
