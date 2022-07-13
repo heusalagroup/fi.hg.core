@@ -1,7 +1,13 @@
+// Copyright (c) 2022. Heusala Group <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 export enum AuthEmailQueryParam {
+
+    /**
+     * Query key: `l`
+     */
     LANGUAGE      = "l"
+
 }
 
 export function isAuthEmailQueryParam (value: any): value is AuthEmailQueryParam {
