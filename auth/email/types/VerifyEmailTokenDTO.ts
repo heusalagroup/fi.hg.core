@@ -1,5 +1,4 @@
 // Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
-//
 
 import {
     hasNoOtherKeys,
