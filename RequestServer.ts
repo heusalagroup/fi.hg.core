@@ -113,8 +113,10 @@ export class RequestServer {
 
         try {
 
+            const method = parseRequestMethod(req.method);
+
             const responseData : ResponseEntity<any> = await this._router.handleRequest(
-                parseRequestMethod(req.method),
+                method,
                 req.url,
                 (headers: Headers) => RequestServer._requestBodyParser(req, headers),
                 this._parseRequestHeaders(req.headers)

@@ -5,6 +5,9 @@ import {BaseRoutes, GetRouteResultType} from "./BaseRoutes";
 import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
 import {keys, map} from "../../modules/lodash";
 import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
+import { LogService } from "../../LogService";
+
+const LOG = LogService.createLogger('StaticRoutes');
 
 type MappingPropertyKeyValuePair = readonly [string, RequestRouterMappingPropertyObject[]];
 
@@ -29,6 +32,7 @@ export class StaticRoutes implements BaseRoutes {
     }
 
     public hasRoute (pathName: string): boolean {
+        LOG.debug(`Looking up "${pathName}" from `, this._routes);
         return this._routes.has(pathName.toLowerCase());
     }
 

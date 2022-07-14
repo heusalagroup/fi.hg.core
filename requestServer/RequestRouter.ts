@@ -201,9 +201,9 @@ export class RequestRouter {
                 pathName,
                 queryParams
             } : RequestContext = RequestRouter._parseRequestPath(urlString);
+            LOG.debug(`handleRequest: method="${method}", pathName="${pathName}", queryParams=`, queryParams);
 
             const requestPathName : string | undefined = pathName;
-            // LOG.debug('requestPathName: ', requestPathName);
 
             const requestQueryParams : URLSearchParams | undefined = queryParams;
             // LOG.debug('requestQueryParams: ', requestQueryParams);
@@ -233,36 +233,32 @@ export class RequestRouter {
             } : RequestContext = this._getRequestRoutesContext(method, requestPathName);
 
             if ( !parseRequestBody && bodyRequired ) {
-
                 LOG.error('handleRequest: parseRequestBody was not provided and body is required');
-
                 return ResponseEntity.internalServerError().body({
                     error: 'Internal Server Error'
                 });
-
             }
 
-            // LOG.debug('routes: ', routes);
-
             if (routes === undefined) {
+                LOG.debug('handleRequest: No routes defined');
                 return ResponseEntity.methodNotAllowed().body({
                     error: 'Method Not Allowed'
                 });
             }
 
             if (routes.length === 0) {
+                LOG.debug('handleRequest: No routes found');
                 return ResponseEntity.notFound().body({
                     error: 'Not Found'
                 });
             }
 
+            LOG.debug('routes: ', routes);
+
             let responseEntity : ResponseEntity<any> | undefined = undefined;
 
-            // LOG.debug('handleRequest: requestBodyRequired: ', requestBodyRequired);
-
             const requestBody = parseRequestBody && bodyRequired ? await parseRequestBody(requestHeaders) : undefined;
-
-            // LOG.debug('handleRequest: requestBody: ', requestBody);
+            LOG.debug('handleRequest: requestBody: ', requestBody);
 
             const requestModelAttributes = new Map<RequestController, Map<string, any>>();
 
@@ -320,10 +316,7 @@ export class RequestRouter {
                 }
 
                 const stepParams = RequestRouter._bindRequestActionParams(requestQueryParams, requestBody, routePropertyParams, requestHeaders, pathVariables, requestModelAttributes.get(routeController) ?? new Map<string, any>() );
-
-                // LOG.debug('handleRequest: stepParams 1: ', stepParams);
-
-                // LOG.debug('handleRequest: stepParams 2: ', stepParams);
+                LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
                 if (!has(routeController, routePropertyName)) {
                     LOG.warn(`Warning! No property by name "${routePropertyName}" found in the controller`);
@@ -490,6 +483,11 @@ export class RequestRouter {
     ) : RequestContext {
 
         if ( !this._routes || !this._routes.hasRoute(requestPathName) ) {
+            if (!this._routes) {
+                LOG.debug(`_getRequestRoutesContext: No routes defined`);
+            } else {
+                LOG.debug(`_getRequestRoutesContext: Routes did not match: `, requestPathName);
+            }
             return {
                 routes: [],
                 bodyRequired: false
@@ -511,17 +509,16 @@ export class RequestRouter {
         // LOG.debug('_getRequestRoutesContext: routes: ', routes);
 
         if (!routes.length) {
-
             // There were matching routes, but not for this method; Method not allowed.
+            LOG.debug(`_getRequestRoutesContext: There were matching routes, but not for this method; Method not allowed.`);
             return {
                 routes: undefined,
                 bodyRequired: false
             };
-
         }
 
         const requestBodyRequired = some(routes, item => item?.requestBodyRequired === true);
-
+        LOG.debug(`_getRequestRoutesContext: requestBodyRequired=`, requestBodyRequired);
         return {
             routes,
             pathVariables,

@@ -5,6 +5,9 @@ import {BaseRoutes, GetRouteResultType, RouteParamValuesObject} from "./BaseRout
 import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
 import {every, find, isString, keys, map, some, trim} from "../../modules/lodash";
 import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
+import { LogService } from "../../LogService";
+
+const LOG = LogService.createLogger('ParamRoutes');
 
 interface CompiledRequestPathCallback {
     (path: string) : GetRouteResultType;
@@ -31,12 +34,11 @@ export class ParamRoutes implements BaseRoutes {
     }
 
     public hasRoute (pathName: string): boolean {
-
+        LOG.debug(`Looking up "${pathName}" from `, this._routes);
         return some(this._routes, (f : CompiledRequestPathCallback) => {
             const [r] = f(pathName);
             return r !== undefined && r?.length >= 1;
         });
-
     }
 
     public getRoute (pathName: string): GetRouteResultType {
