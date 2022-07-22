@@ -18,6 +18,8 @@ import filter from 'lodash/filter.js';
 import forEach from 'lodash/forEach.js';
 import split from 'lodash/split.js';
 import trim from 'lodash/trim.js';
+import toLower from 'lodash/toLower.js';
+import toUpper from 'lodash/toUpper.js';
 import has from 'lodash/has.js';
 import isBoolean from 'lodash/isBoolean.js';
 import padStart from "lodash/padStart";
@@ -38,6 +40,7 @@ import values from 'lodash/values.js';
 import join from 'lodash/join.js';
 import isEqual from 'lodash/isEqual.js';
 import first from 'lodash/first.js';
+import last from 'lodash/last.js';
 import camelCase from 'lodash/camelCase.js';
 
 import { IS_DEVELOPMENT }from "../constants/environment";
@@ -1025,6 +1028,9 @@ export {
     values,
     uniq,
     first,
+    last,
+    toLower,
+    toUpper,
     join,
     isEqual,
     camelCase,
