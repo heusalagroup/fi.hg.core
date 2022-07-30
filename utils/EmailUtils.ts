@@ -13,7 +13,7 @@ export class EmailUtils {
     public static getEmailDomain (value: string) : string | undefined {
         if (!EmailUtils.isEmailValid(value)) return undefined;
         const atIndex = value.lastIndexOf('@');
-        return atIndex >= 0 ? trim(value.substring(atIndex)) : undefined;
+        return atIndex >= 0 ? trim(value.substring(atIndex+1)) : undefined;
     }
 
 }
