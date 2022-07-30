@@ -840,7 +840,7 @@ export function parseFunctionSignature (f: any) : string | undefined {
  * @__PURE__
  * @nosideeffects
  */
-export function getOtherKeys (obj: any, acceptedKeys: string[]) : string[] {
+export function getOtherKeys (obj: any, acceptedKeys: readonly string[]) : readonly string[] {
     return filter(keys(obj), (key : string) : boolean => !acceptedKeys.includes(key));
 }
 
@@ -851,7 +851,7 @@ export function getOtherKeys (obj: any, acceptedKeys: string[]) : string[] {
  * @__PURE__
  * @nosideeffects
  */
-export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
+export function hasNoOtherKeys (obj: any, acceptedKeys: readonly string[]) : boolean {
     return isObject(obj) && getOtherKeys(obj, acceptedKeys).length === 0;
 }
 
@@ -862,7 +862,7 @@ export function hasNoOtherKeys (obj: any, acceptedKeys: string[]) : boolean {
  * @__PURE__
  * @nosideeffects
  */
-export function hasNoOtherKeysInDevelopment (value: any, array : Array<string> ){
+export function hasNoOtherKeysInDevelopment (value: any, array : readonly string[] ){
     return (
         IS_DEVELOPMENT ? hasNoOtherKeys(value, array) : true
     )

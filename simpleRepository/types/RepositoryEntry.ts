@@ -21,7 +21,7 @@ export interface RepositoryEntry<T> {
     /**
      * Users who have active access to the resource (eg. joined in the Matrix room)
      */
-    readonly members ?: RepositoryMember[];
+    readonly members ?: readonly RepositoryMember[];
 
 }
 

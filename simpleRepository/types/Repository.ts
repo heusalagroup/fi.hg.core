@@ -16,28 +16,28 @@ export interface Repository<T> extends PublicRepository<T> {
         timeout        ?: number
     ): Promise<RepositoryEntry<T> | undefined>;
 
-    getAll (): Promise<RepositoryEntry<T>[]>;
+    getAll (): Promise<readonly RepositoryEntry<T>[]>;
 
     getAllByProperty (
         propertyName  : string,
         propertyValue : any
-    ): Promise<RepositoryEntry<T>[]>;
+    ): Promise<readonly RepositoryEntry<T>[]>;
 
     createItem (
         data    : T,
-        members ?: string[]
+        members ?: readonly string[]
     ): Promise<RepositoryEntry<T>>;
 
     update (id: string, data: T): Promise<RepositoryEntry<T>>;
 
     deleteById (id: string): Promise<RepositoryEntry<T>>;
 
-    inviteToItem (id: string, members : string[]): Promise<void>;
+    inviteToItem (id: string, members : readonly string[]): Promise<void>;
 
     subscribeToItem (id: string): Promise<void>;
 
 }
 
 export interface RepositoryFactory<T> {
-    (rooms: string[]) : Repository<T>;
+    (rooms: readonly string[]) : Repository<T>;
 }
