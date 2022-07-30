@@ -35,9 +35,11 @@ export class LanguageService {
         if (this._defaultLanguage !== lang) {
 
             this._defaultLanguage = lang;
-            this._observer.triggerEvent(LanguageServiceEvent.DEFAULT_LANGUAGE_CHANGED);
+            if (this._observer.hasCallbacks(LanguageServiceEvent.DEFAULT_LANGUAGE_CHANGED)) {
+                this._observer.triggerEvent(LanguageServiceEvent.DEFAULT_LANGUAGE_CHANGED);
+            }
 
-            if (!this._language) {
+            if ( !this._language && this._observer.hasCallbacks(LanguageServiceEvent.CURRENT_LANGUAGE_CHANGED) ) {
                 this._observer.triggerEvent(LanguageServiceEvent.CURRENT_LANGUAGE_CHANGED);
             }
 
@@ -55,7 +57,9 @@ export class LanguageService {
     public static setCurrentLanguage (lang : Language) {
         if (this._language !== lang) {
             this._language = lang;
-            this._observer.triggerEvent(LanguageServiceEvent.CURRENT_LANGUAGE_CHANGED);
+            if (this._observer.hasCallbacks(LanguageServiceEvent.CURRENT_LANGUAGE_CHANGED)) {
+                this._observer.triggerEvent(LanguageServiceEvent.CURRENT_LANGUAGE_CHANGED);
+            }
         }
     }
 
