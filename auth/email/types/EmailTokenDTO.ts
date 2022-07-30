@@ -9,11 +9,9 @@ import {
 } from "../../../modules/lodash";
 
 export interface EmailTokenDTO {
-
     readonly token     : string;
     readonly email     : string;
     readonly verified ?: boolean;
-
 }
 
 export function isEmailTokenDTO (value: any): value is EmailTokenDTO {
