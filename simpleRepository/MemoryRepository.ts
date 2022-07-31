@@ -265,7 +265,7 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
         const allList : readonly RepositoryEntry<T>[] = await this.getAll();
         const list = filter(
             allList,
-            (item : RepositoryEntry<T>) : boolean => item?.id && idList.includes(item?.id)
+            (item : RepositoryEntry<T>) : boolean => !!item?.id && idList.includes(item?.id)
         );
         if (!this.isRepositoryEntryList(list)) {
             throw new TypeError(`MemoryRepository.getSome: Illegal data from database`);
