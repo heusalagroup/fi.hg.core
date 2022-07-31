@@ -30,8 +30,8 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
      * @param isT Test function for T type
      */
     public constructor (
-        members : readonly string[] = [],
-        isT     : StoredRepositoryItemTestCallback
+        isT     : StoredRepositoryItemTestCallback,
+        members : readonly string[] = []
     ) {
         this._members = members;
         this._items   = [];
@@ -214,11 +214,11 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
         const itemIndex = findIndex(this._items, item => item.id === id);
         if (itemIndex < 0) throw new TypeError(`No item found: ${id}`);
 
-        const prevItem    = this._items[itemIndex];
+        const prevItem    : MemoryItem<T> = this._items[itemIndex];
         const prevMembers = prevItem?.members ?? [];
         const prevInvited = prevItem?.invited ?? [];
 
-        const nextItem = {
+        const nextItem : MemoryItem<T> = {
             ...prevItem,
             members: concat(prevMembers, prevInvited),
             invited: []

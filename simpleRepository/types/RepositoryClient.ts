@@ -3,10 +3,3 @@
 export interface RepositoryClient {
 
 }
-
-// export function isRepositoryClient (value: any): value is RepositoryClient {
-//     return (
-//         isRegularObject(value)
-//         //&& isString(value?.foo)
-//     );
-// }

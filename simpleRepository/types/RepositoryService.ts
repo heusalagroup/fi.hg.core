@@ -3,5 +3,5 @@
 import { StoredRepositoryItem } from "./StoredRepositoryItem";
 
 export interface RepositoryService<T extends StoredRepositoryItem> {
-
+    initialize () : Promise<void>;
 }
