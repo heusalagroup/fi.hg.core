@@ -34,3 +34,7 @@ export function parseStoredRepositoryItem (value: any): StoredRepositoryItem | u
     if ( isStoredRepositoryItem(value) ) return value;
     return undefined;
 }
+
+export interface StoredRepositoryItemTestCallback {
+    (value: StoredRepositoryItem) : boolean;
+}
