@@ -13,6 +13,11 @@ export interface Repository<T extends StoredRepositoryItem> {
         includeMembers ?: boolean
     ): Promise<RepositoryEntry<T> | undefined>;
 
+    findByProperty (
+        propertyName  : string,
+        propertyValue : any
+    ): Promise<RepositoryEntry<T> | undefined>;
+
     findByIdAndUpdate (
         id: string,
         item: T
