@@ -1,6 +1,8 @@
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { Language } from "../../types/Language";
 
-export const DEFAULT_LANGUAGE : Language = Language.FINNISH;
+export const DEFAULT_LANGUAGE : Language = Language.ENGLISH;
 
 // Email message translation codes (used at backend code)
 
