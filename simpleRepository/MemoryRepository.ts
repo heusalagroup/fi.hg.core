@@ -82,7 +82,7 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
 
         const existingItem = find(this._items, item => item.id === id);
 
-        if (existingItem) throw new Error(`ID "${id}" was not unique`);
+        if (existingItem) throw new Error(`MemoryRepository: ID "${id}" was not unique`);
 
         const item : MemoryItem<T> = {
             id      : MemoryRepository._createId(),
