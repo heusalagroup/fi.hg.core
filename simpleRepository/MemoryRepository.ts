@@ -82,7 +82,7 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
 
         const existingItem = find(this._items, item => item.id === id);
 
-        if (existingItem) throw new Error(`ID "${id}" was not unique`);
+        if (existingItem) throw new Error(`MemoryRepository: ID "${id}" was not unique`);
 
         const item : MemoryItem<T> = {
             id      : MemoryRepository._createId(),
@@ -117,6 +117,23 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
             deleted : item.deleted,
             members : includeMembers && item.members?.length ? map(item.members, id => ({id})) : undefined
         };
+    }
+
+    public async findByProperty (
+        propertyName  : string,
+        propertyValue : any
+    ) : Promise<RepositoryEntry<T> | undefined> {
+        const result = await this.getAllByProperty(propertyName, propertyValue);
+        const resultCount : number = result?.length ?? 0;
+        if (resultCount === 0) return undefined;
+        if (resultCount >= 2) throw new TypeError(`MemoryRepository.findByProperty: Multiple items found by property "${propertyName}" as: ${propertyValue}`);
+        return result[0];
+    }
+
+    public async findByIdAndUpdate (id: string, item: T): Promise<RepositoryEntry<T>> {
+        const rItem : RepositoryEntry<T> | undefined = await this.findById(id);
+        if (rItem === undefined) throw new TypeError(`MemoryRepository.findByIdAndUpdate: Could not find item for "${id}"`);
+        return await this.update(rItem.id, item);
     }
 
     public async waitById (
@@ -253,12 +270,6 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
 
     public async deleteByList (list: RepositoryEntry<T>[]): Promise<RepositoryEntry<T>[]> {
         return this.deleteByIdList( map(list, item => item.id) );
-    }
-
-    public async findByIdAndUpdate (id: string, item: T): Promise<RepositoryEntry<T>> {
-        const rItem : RepositoryEntry<T> | undefined = await this.findById(id);
-        if (rItem === undefined) throw new TypeError(`MemoryRepository.findByIdAndUpdate: Could not find item for "${id}"`);
-        return await this.update(rItem.id, item);
     }
 
     public async getSome (idList: readonly string[]): Promise<RepositoryEntry<T>[]> {
