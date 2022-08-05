@@ -862,10 +862,23 @@ export function hasNoOtherKeys (obj: any, acceptedKeys: readonly string[]) : boo
  * @__PURE__
  * @nosideeffects
  */
-export function hasNoOtherKeysInDevelopment (value: any, array : readonly string[] ){
+export function hasNoOtherKeysInDevelopment (value: any, array : readonly string[] ) : boolean {
     return (
         IS_DEVELOPMENT ? hasNoOtherKeys(value, array) : true
     )
+}
+
+export function explainNoOtherKeys (value: any, array : readonly string[] ) : string {
+    if (!hasNoOtherKeys(value, array) ) {
+        return `Value had extra properties: ${
+            filter(
+                keys(value),
+                (item:string): boolean => !array.includes(item)
+            )
+        }`;
+    } else {
+        return `Value is OK`;
+    }
 }
 
 
