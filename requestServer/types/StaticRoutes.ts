@@ -6,12 +6,17 @@ import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
 import {keys, map} from "../../modules/lodash";
 import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
 import { LogService } from "../../LogService";
+import { LogLevel } from "../../types/LogLevel";
 
 const LOG = LogService.createLogger('StaticRoutes');
 
 type MappingPropertyKeyValuePair = readonly [string, RequestRouterMappingPropertyObject[]];
 
 export class StaticRoutes implements BaseRoutes {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     private readonly _routes: Map<string, RequestRouterMappingPropertyObject[]>;
 
