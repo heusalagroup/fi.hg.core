@@ -5,7 +5,7 @@ import { LogService } from "../LogService";
 import { ServerService } from "./types/ServerService";
 import { RequestHandler } from "./types/RequestHandler";
 
-const LOG = LogService.createLogger('HttpService');
+const LOG = LogService.createLogger('HttpServerService');
 
 const DEFAULT_HOSTNAME : string | undefined = undefined;
 const DEFAULT_PORT = 3000;
@@ -49,89 +49,61 @@ export class HttpServerService implements ServerService<IncomingMessage, ServerR
     }
 
     public start () {
-
-        LOG.debug(`Starting server at ${this._getConnectionString()}`);
-
+        LOG.debug(`Going to start server at ${this._getConnectionString()}`);
         if (this._hostname === undefined) {
-
             this._server.listen(this._port, this._listenCallback);
-
         } else {
-
             this._server.listen(this._port, this._hostname, this._listenCallback);
-
         }
-
     }
 
     public stop () {
-
-        LOG.debug(`Closing server at ${this._getConnectionString()}`)
-
+        LOG.debug(`Going to stop server at ${this._getConnectionString()}`)
         this._server.close(this._closeCallback);
-
     }
 
     public setHandler (newHandler : RequestHandler<IncomingMessage, ServerResponse> | undefined) {
-
-        LOG.debug(this._hostname, this._port, ': Changing handler as: ', newHandler, ' was ', this._handler);
-
+        LOG.debug(`Setting handler at ${this._getConnectionString()} as "${newHandler}", was "${this._handler}"`);
         this._handler = newHandler;
-
     }
 
     private _getConnectionString () : string {
-
         if (this._hostname === undefined) {
-
             return `http://${this._port}`;
-
         } else {
-
-            return`http://${this._hostname}:${this._port}`;
-
+            return `http://${this._hostname}:${this._port}`;
         }
-
     }
 
     private async _callRequestHandler (req: IncomingMessage, res: ServerResponse) : Promise<void> {
-
         if ( this._handler !== undefined ) {
-
             try {
                 await this._handler(req, res);
             } catch (e) {
                 LOG.error(`"${req.method} ${req.url}": Response handler had an error: `, e);
             }
-
             if (!res.writableEnded) {
                 LOG.warn(`"${req.method} ${req.url}": Warning! Request handler did not close the response.`);
                 res.end();
             }
-
         } else {
             LOG.error(`"${req.method} ${req.url}": No handler configured"`);
             res.end('Error');
         }
-
     }
 
     private _onRequest (req: IncomingMessage, res: ServerResponse) {
-        this._callRequestHandler(req, res).catch(err => {
-            LOG.error('Request has an error: ', err);
+        this._callRequestHandler(req, res).catch((err : any) => {
+            LOG.error(`${req.method} ${req.url}: Error: `, err);
         });
     }
 
     private _onListen () {
-
-        LOG.info(`Server started at ${this._getConnectionString()}`);
-
+        LOG.info(`Started at ${this._getConnectionString()}`);
     }
 
     private _onClose () {
-
-        LOG.debug(`Closed server at ${this._getConnectionString()}`);
-
+        LOG.debug(`Closed at ${this._getConnectionString()}`);
     }
 
 }

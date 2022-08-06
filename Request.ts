@@ -57,33 +57,22 @@ export class Request {
     public static mapping (
         ...config : RequestMappingArray
     ) : MethodDecoratorFunction {
-
-        // LOG.debug('mapping: init: ', config);
-
         return (
             target       : any | Function,
             propertyKey ?: string,
             descriptor  ?: PropertyDescriptor
         ) => {
-
             const requestController = RequestControllerUtils.findController(target);
-
             if (requestController !== undefined) {
-
                 if (propertyKey === undefined) {
                     RequestControllerUtils.attachControllerMapping(requestController, config);
                 } else {
                     RequestControllerUtils.attachControllerMethodMapping(requestController, config, propertyKey);
                 }
-
             } else {
-
-                LOG.debug(".mapping for other: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=',descriptor);
-
+                LOG.debug("mapping: for other: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=',descriptor);
             }
-
         };
-
     }
 
     /**
@@ -122,12 +111,9 @@ export class Request {
         arg2 ?: string | RequestParamValueType | undefined,
         arg3 ?: number
     ) : ParameterDecoratorFunction | void {
-
         if ( isString(arg1) && (arg3 === undefined) && isRequestParamValueTypeOrUndefined(arg2) ) {
-
             const queryParam = arg1;
             const paramType  : RequestParamValueType = arg2 ?? RequestParamValueType.STRING;
-
             return (
                 target       : any | Function,
                 propertyKey ?: string,
@@ -135,21 +121,15 @@ export class Request {
             ) => {
                 Request._param(target, propertyKey, paramIndex, queryParam, paramType);
             };
-
         } else {
-
             const target      = arg1;
             const propertyKey = arg2;
             const paramIndex  = arg3;
             const paramType   = RequestParamValueType.STRING;
-
             // FIXME: We cannot get the name of the query parameter yet, so this will break later!
             const queryParam = `${paramIndex}`;
-
             Request._param(target, propertyKey, paramIndex, queryParam, paramType);
-
         }
-
     }
 
     /**
@@ -169,25 +149,17 @@ export class Request {
         queryParam  : string,
         paramType   : RequestParamValueType
     ) {
-
         const requestController = Request._getRequestController(target, propertyKey, paramIndex);
-
         if ( requestController !== undefined ) {
-
             RequestControllerUtils.setControllerMethodQueryParam(requestController, propertyKey, paramIndex, queryParam, paramType);
-
         } else {
-
             LOG.warn(
-                '.Param: Unrecognized configuration: ',
+                '_param: Unrecognized configuration: ',
                 "; target=", target,
                 "; propertyKey=", propertyKey,
                 "; paramIndex=", paramIndex
             );
-
         }
-
-
     }
 
     private static _getRequestController (
@@ -195,13 +167,11 @@ export class Request {
         propertyKey : any,
         paramIndex  : any
     ) : RequestController | undefined {
-
         if ( isString(propertyKey) && isNumber(paramIndex) ) {
             return RequestControllerUtils.findController(target);
         } else {
             return undefined;
         }
-
     }
 
     /**
@@ -242,99 +212,66 @@ export class Request {
         arg2 ?: string | RequestHeaderOptions | boolean | undefined,
         arg3 ?: number
     ) : void | ParameterDecoratorFunction {
-
-        LOG.debug('Request.Header: ', arg1, arg2, arg3);
-
+        LOG.debug('header: ', arg1, arg2, arg3);
         if ( isString(arg2) && isNumber(arg3) ) {
             Request._setMethodHeaderMap(arg1, arg2, arg3, undefined);
             return;
         }
-
         if ( isString(arg1) ) {
-
             const headerName : string = arg1;
-
             if (!isRequestHeaderOptionsOrUndefined(arg2)) {
-                throw new TypeError(`RequestHeader: Argument 2 is not type of RequestHeaderOptions: ${arg2}`);
+                throw new TypeError(`Request.header: Argument 2 is not type of RequestHeaderOptions: ${arg2}`);
             }
-
             const headerNameOpts : RequestHeaderOptions | undefined = arg2;
-
             let isRequired   : boolean | undefined = undefined;
             let defaultValue : string  | undefined = undefined;
-
             if (headerNameOpts === undefined) {
-
             } else if (isBoolean(headerNameOpts)) {
-
                 isRequired = headerNameOpts;
-
             } else if ( isObject(headerNameOpts)) {
-
                 isRequired   = headerNameOpts?.required     ?? undefined;
                 defaultValue = headerNameOpts?.defaultValue ?? undefined;
-
             } else {
-                throw new TypeError('RequestHeader: Invalid type of options');
+                throw new TypeError('Request.header: Invalid type of options');
             }
-
-            LOG.debug('.Header: init: ', headerName);
-
+            LOG.debug('header: init: ', headerName);
             return (
                 target       : any | Function,
                 propertyKey ?: string,
                 paramIndex  ?: number
             ) => {
-
                 if ( isString(propertyKey) && isNumber(paramIndex) ) {
-
                     const requestController : RequestController | undefined = RequestControllerUtils.findController(target);
-
                     if ( requestController !== undefined ) {
                         RequestControllerUtils.setControllerMethodHeader(requestController, propertyKey, paramIndex, headerName, RequestParamValueType.STRING, isRequired, defaultValue);
                         return;
                     }
-
                 }
-
-                LOG.warn('.Header: Unrecognized configuration: ',
+                LOG.warn('header: Unrecognized configuration: ',
                     "; target=", target,
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
-
             };
-
         }
-
         let opts : RequestHeaderListOptions | undefined = arg1;
-
         if (!(opts === undefined || isRequestHeaderListOptions(opts))) {
-            throw new TypeError('RequestHeader: Invalid type of options');
+            throw new TypeError('Request.header: Invalid type of options');
         }
-
         const defaultValues: DefaultHeaderMapValuesType | undefined = opts?.defaultValues;
-
         return (
             target: any | Function,
             propertyKey ?: string,
             paramIndex  ?: number
         ) => {
-
             if (isString(propertyKey) && isNumber(paramIndex)) {
-
                 Request._setMethodHeaderMap(target, propertyKey, paramIndex, defaultValues);
-
             } else {
-
-                LOG.warn('.Header: Unrecognized configuration: ',
+                LOG.warn('header: Unrecognized configuration: ',
                     "; target=", target,
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
-
             }
-
         };
-
     }
 
     /**
@@ -352,22 +289,15 @@ export class Request {
         paramIndex    : number,
         defaultValues : DefaultHeaderMapValuesType | undefined
     ) {
-
         const requestController : RequestController | undefined = RequestControllerUtils.findController(target);
-
         if (requestController !== undefined) {
-
             RequestControllerUtils.setControllerMethodHeaderMap(requestController, propertyKey, paramIndex, defaultValues);
-
         } else {
-
-            LOG.warn('.Header: Unrecognized configuration: ',
+            LOG.warn('_setMethodHeaderMap: Unrecognized configuration: ',
                 "; target=", target,
                 "; propertyKey=", propertyKey,
                 "; paramIndex=", paramIndex);
-
         }
-
     }
 
     /**
@@ -416,110 +346,72 @@ export class Request {
         arg2 ?: string | RequestPathVariableOptions | boolean | undefined,
         arg3 ?: number
     ) : void | ParameterDecoratorFunction {
-
-        LOG.debug('Request.PathVariable: ', arg1, arg2, arg3);
-
+        LOG.debug('pathVariable: ', arg1, arg2, arg3);
         if ( isString(arg2) && isNumber(arg3) ) {
-
             const target      : any | Function = arg1;
             const propertyKey : string         = arg2;
             const paramIndex  : number         = arg3;
-
             Request._setPathVariableMap(target, propertyKey, paramIndex, undefined);
-
             return;
-
         }
-
         const variableName     : string | RequestPathVariableListOptions | undefined = arg1;
-
         if (isString(variableName)) {
-
             if (!isRequestPathVariableOptionsOrUndefined(arg2)) {
-                throw new TypeError(`RequestPathVariable: Argument 2 is not type of RequestPathVariableOptions: ${arg2}`);
+                throw new TypeError(`Request.pathVariable: Argument 2 is not type of RequestPathVariableOptions: ${arg2}`);
             }
-
             const headerNameOpts : RequestPathVariableOptions | undefined = arg2;
-
             let isRequired   : boolean | undefined = undefined;
             let defaultValue : string  | undefined = undefined;
             let decodeValue  : boolean             = true;
-
             if (headerNameOpts === undefined) {
-
             } else if (isBoolean(headerNameOpts)) {
-
                 isRequired = headerNameOpts;
-
             } else if ( isObject(headerNameOpts)) {
-
                 isRequired   = headerNameOpts?.required     ?? undefined;
                 defaultValue = headerNameOpts?.defaultValue ?? undefined;
                 decodeValue  = headerNameOpts?.decodeValue  ?? true;
-
             } else {
-                throw new TypeError('RequestPathVariable: Invalid type of options');
+                throw new TypeError('Request.pathVariable: Invalid type of options');
             }
-
-            LOG.debug('.PathVariable: init: ', variableName);
-
+            LOG.debug('pathVariable: init: ', variableName);
             return (
                 target       : any | Function,
                 propertyKey ?: string,
                 paramIndex  ?: number
             ) => {
-
                 if ( isString(propertyKey) && isNumber(paramIndex) ) {
-
                     const requestController : RequestController | undefined = RequestControllerUtils.findController(target);
-
                     if (requestController !== undefined) {
                         RequestControllerUtils.setControllerMethodPathVariable(requestController, propertyKey, paramIndex, variableName, RequestParamValueType.STRING, isRequired, decodeValue, defaultValue);
                         return;
                     }
-
                 }
-
-                LOG.warn('.PathVariable: Unrecognized configuration: ',
+                LOG.warn('pathVariable: Unrecognized configuration: ',
                     "; target=", target,
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
-
             };
-
         }
-
         let opts : RequestPathVariableListOptions | undefined = variableName;
-
         if ( opts === undefined || isObject(opts?.defaultValues) ) {
-
         } else {
-            throw new TypeError('RequestPathVariable: Invalid type of options');
+            throw new TypeError('Request.pathVariable: Invalid type of options');
         }
-
         const defaultValues : DefaultPathVariableMapValuesType | undefined = opts ? opts?.defaultValues ?? undefined : undefined;
-
         return (
             target       : any | Function,
             propertyKey ?: string,
             paramIndex  ?: number
         ) => {
-
             if ( isString(propertyKey) && isNumber(paramIndex) ) {
-
                 Request._setPathVariableMap(target, propertyKey, paramIndex, defaultValues);
-
             } else {
-
-                LOG.warn('.PathVariable: Unrecognized configuration: ',
+                LOG.warn('pathVariable: Unrecognized configuration: ',
                     "; target=", target,
                     "; propertyKey=", propertyKey,
                     "; paramIndex=", paramIndex);
-
             }
-
         };
-
     }
 
     private static _setPathVariableMap (
@@ -528,19 +420,15 @@ export class Request {
         paramIndex    : number,
         defaultValues : DefaultPathVariableMapValuesType | undefined
     ) {
-
         const requestController : RequestController | undefined = RequestControllerUtils.findController(target);
-
         if (requestController !== undefined) {
             RequestControllerUtils.setControllerMethodPathVariableMap(requestController, propertyKey, paramIndex, defaultValues);
             return;
         }
-
-        LOG.warn('.PathVariable: Unrecognized configuration: ',
+        LOG.warn('_setPathVariableMap: Unrecognized configuration: ',
             "; target=", target,
             "; propertyKey=", propertyKey,
             "; paramIndex=", paramIndex);
-
     }
 
     /**
@@ -559,7 +447,6 @@ export class Request {
         return Request.pathVariable(arg1, arg2, arg3);
     }
 
-
     // @ModelAttribute
 
     /**
@@ -570,13 +457,10 @@ export class Request {
     public static modelAttribute (
         attributeName : string
     ) : ParameterOrMethodDecoratorFunction {
-
-        LOG.debug('Request.modelAttribute: ', attributeName);
-
+        LOG.debug('modelAttribute: ', attributeName);
         if (!isString(attributeName)) {
             throw new TypeError(`Request.modelAttribute: Argument 1 is not string: ${attributeName}`);
         }
-
         // Return types:
         // - ParameterDecoratorFunction  = any | Function, string, PropertyDescriptor
         // - MethodDecoratorFunction     = any | Function, string, number
@@ -585,37 +469,24 @@ export class Request {
             propertyKey ?: string,
             paramIndex  ?: number | PropertyDescriptor
         ) => {
-
             if ( isString(propertyKey) ) {
-
                 const requestController: RequestController | undefined = RequestControllerUtils.findController(target);
-
                 if (requestController !== undefined) {
-
                     if (isNumber(paramIndex)) {
-
                         RequestControllerUtils.setControllerMethodModelAttributeParam(requestController, propertyKey, paramIndex, attributeName, RequestParamValueType.JSON);
                         return;
-
                     } else if (paramIndex !== undefined) {
-
                         RequestControllerUtils.attachControllerMethodModelAttributeBuilder(requestController, propertyKey, paramIndex, attributeName);
                         return;
-
                     }
-
                 }
             }
-
-            LOG.warn('.modelAttribute: Unrecognized configuration: ',
+            LOG.warn('modelAttribute: Unrecognized configuration: ',
                 "; target=", target,
                 "; propertyKey=", propertyKey,
                 "; paramIndex=", paramIndex);
-
         };
-
     }
-
 
     // @RequestBody
 
@@ -624,22 +495,15 @@ export class Request {
         propertyKey ?: string,
         paramIndex  ?: number
     ) : void {
-
         const requestController : RequestController | undefined = RequestControllerUtils.findController(target);
-
         if ( requestController !== undefined && isString(propertyKey) && isNumber(paramIndex) ) {
-
             RequestControllerUtils.setControllerMethodBodyParam(requestController, propertyKey, paramIndex, RequestParamValueType.JSON);
-
         } else {
-
-            LOG.warn('.body: Unrecognized configuration: ',
+            LOG.warn('body: Unrecognized configuration: ',
                 "; target=", target,
                 "; propertyKey=", propertyKey,
                 "; paramIndex=", paramIndex);
-
         }
-
     }
 
     /**
@@ -847,12 +711,9 @@ export function RequestHeader (
     arg2 ?: string | RequestHeaderOptions | boolean | undefined,
     arg3 ?: number
 ) : ParameterDecoratorFunction | void {
-
     LOG.debug('RequestHeader: ', arg1, arg2, arg3);
-
     // @ts-ignore
     return Request.header(arg1, arg2, arg3);
-
 }
 
 
@@ -883,7 +744,6 @@ export function PathVariable (
     // @ts-ignore
     return Request.pathVariable(arg1, arg2, arg3);
 }
-
 
 // noinspection JSUnusedGlobalSymbols
 export function ModelAttribute (

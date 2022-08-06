@@ -1,7 +1,6 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import URL from "url";
-
 import { HttpServerService } from "./requestServer/HttpServerService";
 import { IncomingHttpHeaders, IncomingMessage, ServerResponse} from "http";
 import { RequestRouter } from "./requestServer/RequestRouter";
@@ -25,11 +24,9 @@ const LOG = LogService.createLogger('RequestServer');
 export const DEFAULT_REQUEST_SERVER_CONFIG_STRING = 'http://localhost:3000';
 
 export enum RequestServerEvent {
-
     CONTROLLER_ATTACHED = "RequestServer:controllerAttached",
     STARTED = "RequestServer:started",
     STOPPED = "RequestServer:stopped"
-
 }
 
 export type RequestServerDestructor = ObserverDestructor;
@@ -59,15 +56,11 @@ export class RequestServer {
     public constructor(
         config: string = DEFAULT_REQUEST_SERVER_CONFIG_STRING
     ) {
-
         this._observer = new Observer<RequestServerEvent>("RequestServer");
         this._server = RequestServer.createServerService(config);
         this._router = new RequestRouter();
-
         this._handleRequestCallback = this._handleRequest.bind(this);
-
         this._server.setHandler(this._handleRequestCallback);
-
     }
 
     public destroy (): void {
@@ -83,106 +76,86 @@ export class RequestServer {
     public attachController (
         controller : any
     ) {
-
         if (isRequestController(controller)) {
             this._router.attachController(controller);
         } else {
-            throw new TypeError(`The provided controller was not supported type`);
+            throw new TypeError(`RequestServer: The provided controller was not RequestController`);
         }
-
-        this._observer.triggerEvent(RequestServerEvent.CONTROLLER_ATTACHED);
-
+        if (this._observer.hasCallbacks(RequestServerEvent.CONTROLLER_ATTACHED)) {
+            this._observer.triggerEvent(RequestServerEvent.CONTROLLER_ATTACHED);
+        }
     }
 
     public start () {
         LOG.debug(`Starting server`);
         this._server.start();
-        this._observer.triggerEvent(RequestServerEvent.STARTED);
+        if (this._observer.hasCallbacks(RequestServerEvent.STARTED)) {
+            this._observer.triggerEvent(RequestServerEvent.STARTED);
+        }
     }
 
     public stop () {
         LOG.debug(`Stopping server`);
         this._server.stop();
-        this._observer.triggerEvent(RequestServerEvent.STOPPED);
+        if (this._observer.hasCallbacks(RequestServerEvent.STOPPED)) {
+            this._observer.triggerEvent(RequestServerEvent.STOPPED);
+        }
     }
 
     private async _handleRequest(
         req: IncomingMessage,
         res: ServerResponse
     ) : Promise<void> {
-
+        const reqMethod = req.method;
+        const reqUrl = req.url;
         try {
-
-            const method = parseRequestMethod(req.method);
-
+            const method = parseRequestMethod(reqMethod);
             const responseData : ResponseEntity<any> = await this._router.handleRequest(
                 method,
-                req.url,
+                reqUrl,
                 (headers: Headers) => RequestServer._requestBodyParser(req, headers),
                 this._parseRequestHeaders(req.headers)
             );
-
-            LOG.debug(`"${req.method} ${req.url}": Processing responseEntity`);
-
+            LOG.debug(`"${reqMethod} ${reqUrl}": Processing responseEntity`);
             this._handleResponse(responseData, res);
-
         } catch (err) {
-
-            LOG.debug('Error at _handleRequest, passing it on: ', err);
-
+            LOG.debug(`"${reqMethod} ${reqUrl}": Error, passing it on: `, err);
             this._handleErrorResponse(err, res);
-
         }
-
     }
 
     private static async _requestBodyParser (
         req: IncomingMessage,
         headers : Headers
     ) : Promise<JsonAny | undefined> {
-
         const contentType : string = headers.getFirst('content-type')?.toLowerCase() ?? 'application/json';
-
         switch (contentType) {
-
             case 'application/x-www-form-urlencoded':
                 return NodeHttpUtils.getRequestDataAsFormUrlEncoded(req);
-
             default:
                 return NodeHttpUtils.getRequestDataAsJson(req);
-
         }
-
     }
 
     private _handleResponse(
         responseEntity : ResponseEntity<any>,
         res            : ServerResponse
     ): void {
-
         const statusCode : RequestStatus | number = responseEntity.getStatusCode();
-
         res.statusCode    = statusCode;
         res.statusMessage = stringifyRequestStatus(statusCode);
-
         const headers : Headers = responseEntity.getHeaders();
-
         if (!headers.isEmpty()) {
             headers.keySet().forEach((headerKey : string) => {
-
                 const headerValue = headers.getValue(headerKey) ?? '';
-
                 LOG.debug(`_handleResponse: Setting response header as "${headerKey}": "${headerValue}"`);
-
                 if (isArray(headerValue)) {
                     res.setHeader(headerKey, [...headerValue] as string[]);
                 } else {
                     res.setHeader(headerKey, headerValue);
                 }
-
             });
         }
-
         if (responseEntity.hasBody()) {
             const body = responseEntity.getBody();
             if (isString(body)) {
@@ -196,46 +169,32 @@ export class RequestServer {
             LOG.debug('_handleResponse: Ending without body ', statusCode);
             res.end();
         }
-
     }
 
     private _handleErrorResponse(
         error: any,
         res: ServerResponse
     ): void {
-
         let responseEntity : ResponseEntity<RequestError> | undefined;
-
         if (isRequestStatus(error)) {
-
             responseEntity = new ResponseEntity(error);
-
         } else if (isRequestError(error)) {
-
             responseEntity = new ResponseEntity(error, error.getStatusCode());
-
         } else {
-
-            LOG.error('Exception: ', error);
+            LOG.error('_handleErrorResponse_ Exception: ', error);
 
             // FIXME: We should have an public API for testing production mode
             if ( process?.env?.NODE_ENV === 'production' ) {
-
                 responseEntity = ResponseEntity.internalServerError();
-
             } else {
-
                 responseEntity = new ResponseEntity<RequestError>(
                     createRequestError(RequestStatus.InternalServerError, `Internal Server Error: ${error}`),
                     RequestStatus.InternalServerError
                 );
-
             }
 
         }
-
         this._handleResponse(responseEntity, res);
-
     }
 
     /**
@@ -250,18 +209,13 @@ export class RequestServer {
     static createServerService(
         config: string
     ): ServerService<IncomingMessage, ServerResponse> {
-
         const url = new URL.URL(config);
-
         if (url.protocol === 'http:') {
-
             const port = url.port ? parseInt(url.port, 10) : 80;
             return new HttpServerService(port, url.hostname);
-
         } else {
             throw new TypeError(`RequestServer: Protocol "${url.protocol}" not yet supported`);
         }
-
     }
 
 }
