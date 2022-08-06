@@ -45,6 +45,11 @@ import camelCase from 'lodash/camelCase.js';
 
 import { IS_DEVELOPMENT }from "../constants/environment";
 
+/**
+ * Returned from explain functions when the value is OK.
+ */
+export const EXPLAIN_OK = 'OK';
+
 export interface StringifyCallback<T = any> {
     (value: T) : string;
 }
@@ -110,8 +115,28 @@ export function isUndefined (value: any) : value is undefined {
  * @__PURE__
  * @nosideeffects
  */
+export function explainUndefined (value : any) : string {
+    return isUndefined(value) ? explainOk() : 'not undefined';
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isArray (value : any) : value is any[] | readonly any[] {
     return _isArray(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainArray (value : any) : string {
+    return isArray(value) ? explainOk() : 'not array';
 }
 
 /**
@@ -172,6 +197,52 @@ export function isArrayOfOrUndefined<T = any> (
 /**
  *
  * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @param itemTypeName
+ * @param itemExplain
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainArrayOfOrUndefined<T = any> (
+    itemTypeName : string,
+    itemExplain : ExplainCallback,
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : string {
+    if ( isArrayOfOrUndefined<T>(value, isItem, minLength, maxLength) ) return explainOk();
+    if ( !isArray(value) ) return explainNot(itemTypeName);
+    if ( value?.length < 1 ) return explainNot(itemTypeName);
+    return `${explainNot(itemTypeName)}: ${
+        explain(
+            map(
+                value, 
+                (item : any) : string => {
+                    return itemExplain(item);
+                }
+            )
+        )
+    }`;
+}
+
+export function explainOk () : string {
+    return EXPLAIN_OK;
+}
+
+export function explainNot (value: string) : string {
+    return `not ${value}`;
+}
+
+export function explainOr (value: string[]) : string {
+    return value.join(' or ');
+}
+
+/**
+ *
+ * @param value
  * @__PURE__
  * @nosideeffects
  */
@@ -181,6 +252,16 @@ export function isArrayOrUndefined (value : any) : value is (any[] | readonly an
 
     return isArray(value);
 
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainArrayOrUndefined (value : any) : string {
+    return isArrayOrUndefined(value) ? explainOk() : 'not array or undefined';
 }
 
 /**
@@ -221,8 +302,8 @@ export function isBooleanOrUndefined (value : any) : value is boolean | undefine
  * @__PURE__
  * @nosideeffects
  */
-export function isNumberOrUndefined (value : any) : value is number | undefined {
-    return isUndefined(value) || isNumber(value);
+export function explainBooleanOrUndefined (value : any) : string {
+    return isBooleanOrUndefined(value) ? explainOk() : 'not boolean or undefined';
 }
 
 /**
@@ -241,8 +322,48 @@ export function isString (value : any) : value is string {
  * @__PURE__
  * @nosideeffects
  */
+export function explainString (value : any) : string {
+    return isString(value) ? explainOk() : explainNot('string');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isNumber (value : any) : value is number {
     return _isNumber(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNumber (value : any) : string {
+    return isNumber(value) ? explainOk() : explainNot('number');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isNumberOrUndefined (value : any) : value is number | undefined {
+    return isUndefined(value) || isNumber(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNumberOrUndefined (value : any) : string {
+    return isNumberOrUndefined(value) ? explainOk() : explainNot( explainOr(['number', 'undefined']) );
 }
 
 /**
@@ -283,6 +404,16 @@ export function isStringOf (
  */
 export function isStringOrUndefined (value : any) : value is string | undefined {
     return isUndefined(value) || isString(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringOrUndefined (value : any) : string {
+    return isStringOrUndefined(value) ? explainOk() : explainNot(explainOr(['string', 'undefined']));
 }
 
 /**
@@ -396,8 +527,28 @@ export function isInteger (value : any) : value is number {
  * @__PURE__
  * @nosideeffects
  */
+export function explainInteger (value : any) : string {
+    return isInteger(value) ? explainOk() : explainNot('integer');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isIntegerOrUndefined (value : any) : value is number | undefined {
     return isUndefined(value) || _isInteger(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainIntegerOrUndefined (value : any) : string {
+    return isInteger(value) ? explainOk() : explainNot(explainOr(['integer', 'undefined']));
 }
 
 /**
@@ -614,6 +765,10 @@ export function isRegularObject (
 
 }
 
+export function explainRegularObject (value: any) {
+    return isRegularObject(value) ? explainOk() : 'not regular object';
+}
+
 /**
  *
  * @param value
@@ -702,7 +857,7 @@ export function explainRegularObjectOf<
 ) {
     try {
         assertRegularObjectOf<K, T>(value, isKey, isItem, explainKey, explainValue);
-        return 'No errors detected';
+        return explainOk();
     } catch (err : any) {
         return err?.message ?? `${err}`;
     }
@@ -877,7 +1032,7 @@ export function explainNoOtherKeys (value: any, array : readonly string[] ) : st
             )
         }`;
     } else {
-        return `Value is OK`;
+        return '';
     }
 }
 
@@ -1012,6 +1167,25 @@ export function keys<
 
     return [] as T[];
 
+}
+
+export function explain (
+    values: readonly string[] | string
+) : string {
+    if (isString(values)) return values;
+    return filter(values, (item: string): boolean => !isExplainOk(item) && !!item).join(', ');
+}
+
+export function isExplainOk (value : any) : boolean {
+    return value === EXPLAIN_OK;
+}
+
+export function explainProperty (
+    name: string,
+    values: readonly string[] | string
+) : string {
+    const e = explain(values);
+    return isExplainOk(e) ? explainOk() : `Property "${name}" ${e}`;
 }
 
 export {

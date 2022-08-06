@@ -33,7 +33,7 @@ import {
     isArrayOf,
     map,
     reduce,
-    keys
+    keys, explainOk, explainNot, explainOr
 } from "./modules/lodash";
 
 
@@ -99,6 +99,10 @@ export function isJsonObject (value : any) : value is JsonObject | ReadonlyJsonO
     return isRegularObject(value) && everyProperty<string, JsonAny>(value, isString, createOr(isJsonAny, isUndefined));
 }
 
+export function explainJsonObject (value: any) : string {
+    return isJsonObject(value) ? explainOk() : explainNot('JsonObject');
+}
+
 /**
  * Will accept objects with undefined values, which usually disappear from the JSON when stringified.
  *
@@ -106,6 +110,10 @@ export function isJsonObject (value : any) : value is JsonObject | ReadonlyJsonO
  */
 export function isJsonObjectOrUndefined (value : any) : value is JsonObject | ReadonlyJsonObject | undefined {
     return isUndefined(value) || isJsonObject(value);
+}
+
+export function explainJsonObjectOrUndefined (value: any) : string {
+    return isJsonObjectOrUndefined(value) ? explainOk() : explainNot(explainOr(['JsonObject', 'undefined']));
 }
 
 /**
