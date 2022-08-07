@@ -44,6 +44,7 @@ import last from 'lodash/last.js';
 import camelCase from 'lodash/camelCase.js';
 
 import { IS_DEVELOPMENT }from "../constants/environment";
+import { max } from "lodash";
 
 /**
  * Returned from explain functions when the value is OK.
@@ -184,6 +185,24 @@ export function isArrayOf<T = any> (
  * @__PURE__
  * @nosideeffects
  */
+export function isReadonlyArrayOf<T = any> (
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : value is readonly T[] {
+    return isArrayOf(value, isItem, minLength, maxLength);
+}
+
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isArrayOfOrUndefined<T = any> (
     value     : any,
     isItem    : TestCallback | undefined = undefined,
@@ -226,6 +245,54 @@ export function explainArrayOfOrUndefined<T = any> (
             )
         )
     }`;
+}
+
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isReadonlyArrayOfOrUndefined<T = any> (
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : value is readonly T[] | undefined {
+    if (value === undefined) return true;
+    return isReadonlyArrayOf(value, isItem, minLength, maxLength);
+}
+
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @param itemTypeName
+ * @param itemExplain
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainReadonlyArrayOfOrUndefined<T = any> (
+    itemTypeName : string,
+    itemExplain : ExplainCallback,
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : string {
+    return explainArrayOfOrUndefined<T>(
+        itemTypeName,
+        itemExplain,
+        value,
+        isItem,
+        minLength,
+        maxLength
+    );
 }
 
 export function explainOk () : string {
@@ -1185,7 +1252,7 @@ export function explainProperty (
     values: readonly string[] | string
 ) : string {
     const e = explain(values);
-    return isExplainOk(e) ? explainOk() : `Property "${name}" ${e}`;
+    return isExplainOk(e) ? explainOk() : `property "${name}" ${e}`;
 }
 
 export {
