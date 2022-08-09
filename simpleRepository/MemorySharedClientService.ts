@@ -19,7 +19,7 @@ export class MemorySharedClientService implements SharedClientService {
         this._observer.destroy();
     }
 
-    public getClient (): MemoryRepositoryClient | undefined {
+    public getClient (): MemoryRepositoryClient {
         return this._client;
     }
 
