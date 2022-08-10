@@ -42,9 +42,9 @@ import isEqual from 'lodash/isEqual.js';
 import first from 'lodash/first.js';
 import last from 'lodash/last.js';
 import camelCase from 'lodash/camelCase.js';
+import max from "lodash/max.js";
 
 import { IS_DEVELOPMENT }from "../constants/environment";
-import { max } from "lodash";
 
 /**
  * Returned from explain functions when the value is OK.
@@ -1286,6 +1286,7 @@ export {
     toLower,
     toUpper,
     join,
+    max,
     isEqual,
     camelCase,
     padStart,
