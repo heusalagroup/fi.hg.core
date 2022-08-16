@@ -136,7 +136,7 @@ export function refNumStrip (refnum : string | number ) : string | undefined {
 /** Check referer number */
 export function refNumCheck(refNum : string | number) : boolean {
     const refNumStripped = refNumStrip(refNum);
-    const refNumCreated = refNumCreate(refNumStripped);
+    const refNumCreated = refNumStripped !== undefined ? refNumCreate(refNumStripped) : undefined;
     return refNumCreated !== undefined && refNumCreated === refNum;
 }
 
