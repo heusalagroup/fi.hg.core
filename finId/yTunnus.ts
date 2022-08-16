@@ -25,6 +25,10 @@
  * SOFTWARE.
  */
 
+import { LogService } from "../LogService";
+
+const LOG = LogService.createLogger('yTunnus');
+
 /** Parse integers in base 10
  * @returns {number} value of `parseInt(n, 10)`
  */
@@ -96,14 +100,14 @@ export function yTunnusParse (id: string): string {
 
 /** Non-throwing version of _parse()
  * @param id {string} The ID to parse
- * @param defaultValue {string} Optional value to use if errors, defaults to `undefined`.
- * @returns {string} ID with checksum otherwise `defaultValue`
+ * @returns {string} ID with checksum otherwise undefined
  */
-function yTunnusParseNoThrow (id: string, defaultValue ?: string): string {
+function yTunnusParseNoThrow (id: string): string | undefined {
     try {
         return yTunnusParse(id);
     } catch (err) {
-        return defaultValue;
+        LOG.error(`Failed to parse "${id}": `, err);
+        return undefined;
     }
 }
 
