@@ -34,11 +34,17 @@ export class ParamRoutes implements BaseRoutes {
     }
 
     public hasRoute (pathName: string): boolean {
-        LOG.debug(`Looking up "${pathName}" from `, this._routes);
-        return some(this._routes, (f : CompiledRequestPathCallback) => {
+        // LOG.debug(`hasRoute: Looking up "${pathName}" from `, this._routes);
+        const found = some(this._routes, (f : CompiledRequestPathCallback) => {
             const [r] = f(pathName);
             return r !== undefined && r?.length >= 1;
         });
+        if (found) {
+            LOG.debug(`hasRoute: Looking up "${pathName}": Found`);
+        } else {
+            LOG.debug(`hasRoute: Looking up "${pathName}": Not Found`);
+        }
+        return found;
     }
 
     public getRoute (pathName: string): GetRouteResultType {

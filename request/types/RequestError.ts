@@ -14,7 +14,7 @@ export class RequestError extends Error {
 
     private readonly __proto__: any;
 
-    constructor(
+    public constructor (
         status  : number,
         message : string        | undefined = undefined,
         method  : RequestMethod | undefined = undefined,
