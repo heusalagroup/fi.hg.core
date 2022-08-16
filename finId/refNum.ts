@@ -149,7 +149,7 @@ export function refNumParse(refnum : string | number ) : string | undefined {
  * @returns {boolean} True if a equals to b
  */
 export function refNumCmp (a : string | number, b : string | number) : boolean {
-    a = refNumParse(a);
-    b = refNumParse(b);
-    return a && b && (a === b);
+    const a2 = refNumParse(a);
+    const b2 = refNumParse(b);
+    return !!a2 && !!b2 && (a2 === b2);
 }

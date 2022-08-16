@@ -33,7 +33,7 @@ export interface PankkiViivakoodi {
     readonly iban: string;
     readonly euros: number;
     readonly cents: number;
-    readonly refNum: string;
+    readonly refNum: string | undefined;
     readonly dueDate: string;
 }
 
@@ -160,11 +160,13 @@ export function viivakoodiParse4(code : string) : PankkiViivakoodi {
     let duedate = code.substring(1+16+6+2+3+20, 6);
     //debug.log('duedate = ', duedate);
 
+    const refNum = refNumParse( code.substring(1+16+6+2+3, 20) );
+
     let parsed : PankkiViivakoodi = {
         iban : 'FI' + code.substring(1, 16),
         euros : parseInt( code.substring(1+16, 6).replace(/^0+([0-9])/, "$1") , 10),
         cents : parseInt( code.substring(1+16+6, 2).replace(/^0+([0-9])/, "$1") , 10),
-        refNum : refNumParse( code.substring(1+16+6+2+3, 20) ),
+        refNum : refNum,
         dueDate : moment( '20' + code.substring(1+16+6+2+3+20, 6), "YYYYMMDD" ).toISOString()
     };
 
