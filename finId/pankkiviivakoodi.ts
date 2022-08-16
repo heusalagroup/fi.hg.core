@@ -126,12 +126,12 @@ export function viivakoodiCreate (
     dueDate: string
 ) : string | undefined {
     // debug.assert(opts).is('object');
-    iban = parseFiIBAN(iban);
-    if (!iban) return undefined;
+    const ibanOrUndefined = parseFiIBAN(iban);
+    if (!ibanOrUndefined) return undefined;
     cents = parseCents(euros, cents);
     refNum = parseRefNum(refNum);
     dueDate = parseDueDate(dueDate);
-    let viite = '4' + iban + cents + "000" + refNum + dueDate;
+    let viite = '4' + ibanOrUndefined + cents + "000" + refNum + dueDate;
     // debug.assert(viite).is('string').length(54).is('integer');
     return viite;
 }
