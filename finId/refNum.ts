@@ -98,9 +98,13 @@ export function refNumCalculateDigit (num : string | number) : string | undefine
  * create referer number by adding check-digit to num
  * `num = string of digits ('0'..'9')`
  */
-export function refNumCreate (num : string | number) : string {
-    num = refNumLeaveOnlyDigits(num);
-    return num+refNumCalculateDigit(num);
+export function refNumCreate (num : string | number) : string | undefined {
+    const numString = refNumLeaveOnlyDigits(num);
+    const digit = refNumCalculateDigit(numString);
+    if (digit === undefined) {
+        return undefined;
+    }
+    return numString + digit;
 }
 
 /** Remove check num from reference number
@@ -130,9 +134,10 @@ export function refNumStrip (refnum : string | number ) : string | undefined {
 }
 
 /** Check referer number */
-export function refNumCheck(refnum : string | number) : boolean {
-    let plain = refNumStrip(refnum);
-    return refNumCreate(plain) === refnum;
+export function refNumCheck(refNum : string | number) : boolean {
+    const refNumStripped = refNumStrip(refNum);
+    const refNumCreated = refNumCreate(refNumStripped);
+    return refNumCreated !== undefined && refNumCreated === refNum;
 }
 
 /** Parse reference number
