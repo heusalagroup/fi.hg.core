@@ -1,6 +1,7 @@
 /*
  * Finnish Identity Number Library
  *
+ * Copyright (C) 2022 by Heusala Group <info@hg.fi> (http://www.hg.fi),
  * Copyright (C) 2014 by Sendanor <info@sendanor.fi> (http://www.sendanor.fi),
  * Copyright (C) 2011-2014 by Jaakko-Heikki Heusala <jheusala@iki.fi> (http://www.jhh.me),
  * Copyright (C) 2009 by Mux F-Production <contact@mux.fi> (http://mux.fi/)

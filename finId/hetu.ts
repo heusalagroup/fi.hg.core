@@ -3,8 +3,8 @@
  *
  * Copyright (C) 2022 by Heusala Group <info@hg.fi> (http://www.hg.fi),
  * Copyright (C) 2014 by Sendanor <info@sendanor.fi> (http://www.sendanor.fi),
- *               2011-2014 by Jaakko-Heikki Heusala <jheusala@iki.fi> (http://www.jhh.me),
- *               2009 by Mux F-Production <contact@mux.fi> (http://mux.fi/)
+ * Copyright (C) 2011-2014 by Jaakko-Heikki Heusala <jheusala@iki.fi> (http://www.jhh.me),
+ * Copyright (C) 2009 by Mux F-Production <contact@mux.fi> (http://mux.fi/)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
