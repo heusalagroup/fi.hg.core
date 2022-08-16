@@ -124,9 +124,10 @@ export function viivakoodiCreate (
     cents: string,
     refNum: string,
     dueDate: string
-) : string {
+) : string | undefined {
     // debug.assert(opts).is('object');
     iban = parseFiIBAN(iban);
+    if (!iban) return undefined;
     cents = parseCents(euros, cents);
     refNum = parseRefNum(refNum);
     dueDate = parseDueDate(dueDate);
