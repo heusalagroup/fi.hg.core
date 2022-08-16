@@ -115,9 +115,12 @@ export function checkParsedHetu (id: Hetu) : boolean {
 }
 
 /** Parse date from hetu object */
-export function parseHetuDate (id : Hetu) : Date {
+export function parseHetuDate (id : Hetu) : Date | undefined {
     let century = hetuParseCentury(id.x);
-    if(century && id.mm && id.dd) { return new Date(century+id.yy, id.mm-1, id.dd, 12); }
+    if(century && id.mm && id.dd) {
+        return new Date(century+id.yy, id.mm-1, id.dd, 12);
+    }
+    return undefined;
 }
 
 /** Parse sex */
