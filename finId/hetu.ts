@@ -155,12 +155,12 @@ export class HetuObject {
         return this._value ? checkParsedHetu(this._value) : false;
     }
 
-    public getDate () : Date {
-        return parseHetuDate(this._value);
+    public getDate () : Date | undefined {
+        return this._value ? parseHetuDate(this._value) : undefined;
     }
 
     public getSex () : HetuSex | undefined {
-        return parseSex(this._value);
+        return this._value ? parseSex(this._value) : undefined;
     }
 
 }
