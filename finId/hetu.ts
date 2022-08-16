@@ -152,7 +152,7 @@ export class HetuObject {
     }
 
     public check () : boolean {
-        return checkParsedHetu(this._value);
+        return this._value ? checkParsedHetu(this._value) : false;
     }
 
     public getDate () : Date {
