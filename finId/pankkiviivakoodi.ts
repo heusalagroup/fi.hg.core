@@ -26,10 +26,10 @@
  */
 
 import moment from 'moment';
-import { refNumParse } from './refnum';
+import { refNumParse } from './refNum';
 import { isString } from "../modules/lodash";
 
-export interface Viivakoodi {
+export interface PankkiViivakoodi {
     readonly iban: string;
     readonly euros: number;
     readonly cents: number;
@@ -146,7 +146,7 @@ export function viivakoodiCheck(code : string) : boolean {
 }
 
 /** */
-export function viivakoodiParse4(code : string) : Viivakoodi {
+export function viivakoodiParse4(code : string) : PankkiViivakoodi {
     // debug.assert(code).is('string');
 
     if(!viivakoodiCheck(code)) {
@@ -159,7 +159,7 @@ export function viivakoodiParse4(code : string) : Viivakoodi {
     let duedate = code.substring(1+16+6+2+3+20, 6);
     //debug.log('duedate = ', duedate);
 
-    let parsed : Viivakoodi = {
+    let parsed : PankkiViivakoodi = {
         iban : 'FI' + code.substring(1, 16),
         euros : parseInt( code.substring(1+16, 6).replace(/^0+([0-9])/, "$1") , 10),
         cents : parseInt( code.substring(1+16+6, 2).replace(/^0+([0-9])/, "$1") , 10),
@@ -181,7 +181,7 @@ export function parseRfRefNum(code: string) : string | undefined {
 }
 
 /** */
-export function viivakoodiParse5(code: string) : Viivakoodi {
+export function viivakoodiParse5(code: string) : PankkiViivakoodi {
     // debug.assert(code).is('string');
     if(!viivakoodiCheck(code)) {
         throw new TypeError("code is invalid: "+ code);
@@ -201,7 +201,7 @@ export function viivakoodiParse5(code: string) : Viivakoodi {
 }
 
 /** */
-export function viivakoodiParse(code: string) : Viivakoodi {
+export function viivakoodiParse(code: string) : PankkiViivakoodi {
     // debug.assert(code).is('string');
     let version = code[0];
     if(version === '5') {
