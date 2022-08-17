@@ -15,6 +15,14 @@ export class CurrencyUtils {
         return amount * price;
     }
 
+    public static getSumWithVat (
+        price      : number,
+        amount     : number,
+        vatPercent : number
+    ): number {
+        return amount * price * (1+vatPercent);
+    }
+
     public static getVatlessSum (
         sum: number,
         vatPercent: number
