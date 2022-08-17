@@ -8,7 +8,7 @@
 import { isStoredRepositoryItem, StoredRepositoryItem, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { MemoryRepository } from "./MemoryRepository";
 import { RepositoryEntry } from "./types/RepositoryEntry";
-import { isArrayOf } from "../../core/modules/lodash";
+import { isArrayOf } from "../modules/lodash";
 
 
 const test = {
@@ -46,7 +46,7 @@ describe('system', () => {
 
         describe('#getAll', () => {
 
-            const memoryReposity: MemoryRepository<StoredTestRepositoryItem> = new MemoryRepository<StoredTestRepositoryItem>(isStoredRepositoryItem);
+            const memoryRepository: MemoryRepository<StoredTestRepositoryItem> = new MemoryRepository<StoredTestRepositoryItem>(isStoredRepositoryItem);
 
             beforeAll(() => {
                 // expect(client.getState()).toBe(HttpRepositoryClientState.UNAUTHENTICATED);
@@ -55,7 +55,7 @@ describe('system', () => {
 
             it('can createItem', async () => {
 
-                const item: RepositoryEntry<any> = await memoryReposity.createItem(test);
+                const item: RepositoryEntry<any> = await memoryRepository.createItem(test);
 
                 expect(item?.id).toBeDefined();
                 expect(item?.id).not.toBe('');
@@ -65,7 +65,7 @@ describe('system', () => {
                 expect(item?.data.id).toBe("1");
                 expect(item?.data.target).toBe("test");
 
-                const list = await memoryReposity.getAll();
+                const list = await memoryRepository.getAll();
                 //console.log("list", JSON.stringify(list))
 
                 expect(isArrayOf(list)).toBe(true);
@@ -75,13 +75,13 @@ describe('system', () => {
                 expect(list[0]?.data.id).toBe(item?.data.id);
                 expect(list[0]?.data.target).toBe(item?.data.target)
 
-                const item2: RepositoryEntry<any> = await memoryReposity.createItem(test2);
+                const item2: RepositoryEntry<any> = await memoryRepository.createItem(test2);
 
             })
 
             it('can find items: getAll with getSome and findById', async () => {
 
-                const list = await memoryReposity.getAll();
+                const list = await memoryRepository.getAll();
 
                 expect(isArrayOf(list)).toBe(true);
                 expect(list?.length).toBe(2);
@@ -91,7 +91,7 @@ describe('system', () => {
 
                 //get some
 
-                const list1 = await memoryReposity.getSome([list[0]?.id]);
+                const list1 = await memoryRepository.getSome([list[0]?.id]);
 
                 expect(isArrayOf(list1)).toBe(true);
                 expect(list1[0]?.id).not.toBe('');
@@ -100,7 +100,7 @@ describe('system', () => {
 
                 //findById
 
-                const item = await memoryReposity.findById(list[1]?.id);
+                const item = await memoryRepository.findById(list[1]?.id);
 
                 expect(isArrayOf(list1)).toBe(true);
                 expect(item?.id).not.toBe('');
