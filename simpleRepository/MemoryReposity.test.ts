@@ -1,8 +1,7 @@
 /**
- * System test for HttpRepositoryClient and hgrs.
+ * Unit test for MemoryRepository and hgrs.
  *
- * E.g. this test is meant to connect to the repository server and test real
- * functionality.
+ * 
  */
 
 
