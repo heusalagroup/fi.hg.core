@@ -1,7 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isInventoryItemDTO } from "./InventoryItemDTO";
-import { explainEnum, explainOk } from "../../../modules/lodash";
+import { explainEnum } from "../../../modules/lodash";
 
 export enum InventoryState {
 

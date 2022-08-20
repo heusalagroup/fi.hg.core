@@ -45,7 +45,6 @@ import camelCase from 'lodash/camelCase.js';
 import max from "lodash/max.js";
 
 import { IS_DEVELOPMENT }from "../constants/environment";
-import { isInventoryState } from "../store/types/inventory/InventoryState";
 
 /**
  * Returned from explain functions when the value is OK.
