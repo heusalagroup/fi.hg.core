@@ -1,5 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { explainEnum } from "../../../modules/lodash";
+
 export enum ProductPriceType {
     YEARLY   = "YEARLY",
     YEARS_3  = "YEARS_3",
@@ -15,6 +17,10 @@ export function isProductPriceType (value: any): value is ProductPriceType {
         case ProductPriceType.YEARS_10 : return true;
         default: return false;
     }
+}
+
+export function explainProductPriceType (value : any) : string {
+    return explainEnum("ProductPriceType", ProductPriceType, isProductPriceType, value);
 }
 
 export function stringifyProductPriceType (value: ProductPriceType): string {

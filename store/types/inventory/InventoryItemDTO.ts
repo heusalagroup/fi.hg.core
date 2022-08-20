@@ -1,16 +1,17 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
+    explain, explainBoolean, explainNoOtherKeys, explainNumber, explainProperty, explainRegularObject, explainString,
     hasNoOtherKeys,
     isBoolean,
     isNumber,
     isRegularObject,
     isString
 } from "../../../modules/lodash";
-import { isProductType, ProductType } from "../product/ProductType";
-import { isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
-import { isInventoryState, InventoryState } from "./InventoryState";
-import { isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
+import { explainProductType, isProductType, ProductType } from "../product/ProductType";
+import { explainProductPriceType, isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
+import { isInventoryState, InventoryState, explainInventoryState } from "./InventoryState";
+import { explainReadonlyJsonObject, isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
 
 export interface InventoryItemDTO {
     readonly inventoryItemId    : string;
@@ -40,7 +41,7 @@ export function createInventoryItemDTO (
     created          : string,
     date             : string,
     endDate          : string,
-    state            : InventoryState,
+    state            : InventoryState | undefined,
     title            : string,
     summary          : string,
     productId        : string,
@@ -60,7 +61,7 @@ export function createInventoryItemDTO (
         created,
         date,
         endDate,
-        state,
+        state: state ?? InventoryState.UNINITIALIZED,
         title,
         summary,
         productId,
@@ -116,6 +117,52 @@ export function isInventoryItemDTO (value: any): value is InventoryItemDTO {
         && isBoolean(value?.isTerminated)
         && isBoolean(value?.onHold)
         && isReadonlyJsonObject(value?.data)
+    );
+}
+
+export function explainInventoryItemDTO (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeys(value, [
+                'inventoryItemId',
+                'clientId',
+                'updated',
+                'created',
+                'date',
+                'endDate',
+                'state',
+                'title',
+                'summary',
+                'productId',
+                'productType',
+                'priceSum',
+                'priceVatPercent',
+                'priceType',
+                'internalNote',
+                'isTerminated',
+                'onHold',
+                'data'
+            ]),
+            explainProperty("inventoryItemId", explainString(value?.inventoryItemId)),
+            explainProperty("clientId", explainString(value?.clientId)),
+            explainProperty("updated", explainString(value?.updated)),
+            explainProperty("created", explainString(value?.created)),
+            explainProperty("date", explainString(value?.date)),
+            explainProperty("endDate", explainString(value?.endDate)),
+            explainProperty("state", explainInventoryState(value?.state)),
+            explainProperty("title", explainString(value?.title)),
+            explainProperty("summary", explainString(value?.summary)),
+            explainProperty("productId", explainString(value?.productId)),
+            explainProperty("productType", explainProductType(value?.productType)),
+            explainProperty("priceSum", explainNumber(value?.priceSum)),
+            explainProperty("priceVatPercent", explainNumber(value?.priceVatPercent)),
+            explainProperty("priceType", explainProductPriceType(value?.priceType)),
+            explainProperty("internalNote", explainString(value?.internalNote)),
+            explainProperty("isTerminated", explainBoolean(value?.isTerminated)),
+            explainProperty("onHold", explainBoolean(value?.onHold)),
+            explainProperty("data", explainReadonlyJsonObject(value?.data))
+        ]
     );
 }
 

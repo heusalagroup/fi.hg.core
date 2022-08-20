@@ -1,5 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { isInventoryItemDTO } from "./InventoryItemDTO";
+import { explainEnum, explainOk } from "../../../modules/lodash";
+
 export enum InventoryState {
 
     /**
@@ -47,6 +50,10 @@ export function isInventoryState (value: any): value is InventoryState {
         default:
             return false;
     }
+}
+
+export function explainInventoryState (value : any) : string {
+    return explainEnum("InventoryState", InventoryState, isInventoryState, value);
 }
 
 export function stringifyInventoryState (value: InventoryState): string {

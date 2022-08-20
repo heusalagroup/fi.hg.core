@@ -45,11 +45,16 @@ import camelCase from 'lodash/camelCase.js';
 import max from "lodash/max.js";
 
 import { IS_DEVELOPMENT }from "../constants/environment";
+import { isInventoryState } from "../store/types/inventory/InventoryState";
 
 /**
  * Returned from explain functions when the value is OK.
  */
 export const EXPLAIN_OK = 'OK';
+
+export interface EnumType<T extends number|string> {
+    [key: string]: T;
+}
 
 export interface StringifyCallback<T = any> {
     (value: T) : string;
@@ -299,6 +304,20 @@ export function explainOk () : string {
     return EXPLAIN_OK;
 }
 
+export function explainEnum (
+    name: string,
+    type: EnumType<string>,
+    isType: TestCallbackNonStandard,
+    value: any
+) : string {
+    if (!isType(value)) {
+        const enumValues = map(keys(type), (k: string) : string => type[k]);
+        return `incorrect enum value "${value}" for ${name}: Accepted values ${join(enumValues, ', ')}`;
+    } else {
+        return EXPLAIN_OK;
+    }
+}
+
 export function explainNot (value: string) : string {
     return `not ${value}`;
 }
@@ -361,6 +380,16 @@ export function isArrayOrUndefinedOf<T = any> (
  */
 export function isBooleanOrUndefined (value : any) : value is boolean | undefined {
     return isUndefined(value) || isBoolean(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainBoolean (value : any) : string {
+    return isBoolean(value) ? explainOk() : 'not boolean';
 }
 
 /**

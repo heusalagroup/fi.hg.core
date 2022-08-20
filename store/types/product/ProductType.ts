@@ -1,5 +1,7 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { explainEnum } from "../../../modules/lodash";
+
 export enum ProductType {
     VIRTUAL_SERVER   = "VIRTUAL_SERVER",
     WEB_HOTEL        = "WEB_HOTEL",
@@ -17,6 +19,10 @@ export function isProductType (value: any): value is ProductType {
         case ProductType.SHELL: return true;
         default: return false;
     }
+}
+
+export function explainProductType (value : any) : string {
+    return explainEnum("ProductType", ProductType, isProductType, value);
 }
 
 export function stringifyProductType (value: ProductType): string {
