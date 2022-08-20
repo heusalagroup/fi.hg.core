@@ -3,14 +3,14 @@
 import {
     explain,
     explainNoOtherKeys,
-    explainNumber,
+    explainNumber, explainNumberOrUndefined,
     explainProperty,
     explainRegularObject,
-    explainString,
+    explainString, explainStringOrUndefined,
     hasNoOtherKeys,
-    isNumber,
+    isNumber, isNumberOrUndefined,
     isRegularObject,
-    isString
+    isString, isStringOrUndefined
 } from "../../../../modules/lodash";
 import { InventoryData } from "./InventoryData";
 
@@ -76,6 +76,40 @@ export function explainShellInventoryData (value: any): string {
             && explainProperty("port", explainNumber(value?.port))
             && explainProperty("username", explainString(value?.username))
             && explainProperty("realName", explainString(value?.realName))
+        ]
+    );
+}
+
+export function isPartialShellInventoryData (value: any): value is Partial<ShellInventoryData> {
+    return (
+        isRegularObject(value)
+        && hasNoOtherKeys(value, [
+            'hostname',
+            'port',
+            'username',
+            'realName'
+        ])
+        && isStringOrUndefined(value?.hostname)
+        && isStringOrUndefined(value?.username)
+        && isStringOrUndefined(value?.realName)
+        && isNumberOrUndefined(value?.port)
+    );
+}
+
+export function explainPartialShellInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'hostname',
+                'port',
+                'username',
+                'realName'
+            ])
+            && explainProperty("hostname", explainStringOrUndefined(value?.hostname))
+            && explainProperty("port", explainNumberOrUndefined(value?.port))
+            && explainProperty("username", explainStringOrUndefined(value?.username))
+            && explainProperty("realName", explainStringOrUndefined(value?.realName))
         ]
     );
 }

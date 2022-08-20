@@ -16,4 +16,10 @@ export class TimeService {
         return moment(time).add(months, "months").toISOString();
     }
 
+    public static parseISOString (
+        time: string
+    ) : string {
+        return moment(time).toISOString();
+    }
+
 }
