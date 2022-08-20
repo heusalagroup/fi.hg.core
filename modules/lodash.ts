@@ -771,6 +771,20 @@ export function everyValue<T = any> (
 /**
  *
  * @param value
+ * @param isItem
+ * @__PURE__
+ * @nosideeffects
+ */
+export function someValue<T = any> (
+    value  : any,
+    isItem : TestCallback
+) : value is {[key: string] : T | undefined} {
+    return _isObject(value) && some(values(value), isItem);
+}
+
+/**
+ *
+ * @param value
  * @param isKey
  * @param isItem
  * @__PURE__

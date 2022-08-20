@@ -1,9 +1,16 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { every } from "./modules/lodash";
+import {
+    everyValue,
+    filter,
+    keys,
+    reduce,
+    values
+} from "./modules/lodash";
 
 export type PermissionString = string;
 export type PermissionList = readonly PermissionString[];
+export type PermissionObject = {readonly [key: string]: boolean};
 
 export class PermissionUtils {
 
@@ -14,7 +21,7 @@ export class PermissionUtils {
      * @param acceptedPermissionList List of permissions that are accepted
      * @return `true` if `permission` is included in the `permissionList`
      */
-    public static hasPermission (
+    public static checkPermission (
         permission: PermissionString,
         acceptedPermissionList: PermissionList
     ) : boolean {
@@ -22,19 +29,63 @@ export class PermissionUtils {
     }
 
     /**
-     * Validate a list of permissions
+     * Checks against multiple permissions
      *
-     * @param permissionList List of permissions to check for
-     * @param acceptedPermissionList List of permissions that are accepted
+     * @param targetPermissions List of permissions the subject has
+     * @param checkPermissions List of permissions that must be checked for
      */
-    public static hasEveryPermission (
-        permissionList: PermissionList,
-        acceptedPermissionList: PermissionList
-    ) : boolean {
-        return every(
-            permissionList,
-            (permission: PermissionString) : boolean => PermissionUtils.hasPermission(permission, acceptedPermissionList)
+    public static checkPermissionList (
+        targetPermissions: PermissionList,
+        checkPermissions: PermissionList
+    ) : PermissionObject {
+        return reduce(
+            checkPermissions,
+            (result: PermissionObject, permission: PermissionString) : PermissionObject => {
+                return {
+                    ...result,
+                    [permission]: PermissionUtils.checkPermission(
+                        permission,
+                        targetPermissions
+                    )
+                };
+            },
+            {}
         );
+    }
+
+    /**
+     * Verify permission object has all permissions enabled
+     *
+     * @param permissions
+     * @returns boolean `true` if every permission in the `permissions` object matches
+     */
+    public static everyPermissionAccepted (permissions: PermissionObject) : boolean {
+        const permissionCount = values(permissions).length;
+        if (permissionCount === 0) return false;
+        return everyValue<boolean>(permissions, (item: boolean) : boolean => item);
+    }
+
+    /**
+     *
+     * @param permissions
+     * @returns List of permissions that were enabled
+     */
+    public static getAcceptedPermissionList (permissions: PermissionObject) : PermissionList {
+        return filter(
+            keys(permissions),
+            (key: string) : boolean => permissions[key]
+        )
+    }
+
+    /**
+     * Verify permission object has some permissions enabled
+     *
+     * @param permissions
+     * @returns boolean `true` if some permissions in the `permissions` object matches
+     */
+    public static somePermissionAccepted (permissions: PermissionObject) : boolean {
+        const acceptedPermissions = this.getAcceptedPermissionList(permissions);
+        return acceptedPermissions.length !== 0;
     }
 
 }
