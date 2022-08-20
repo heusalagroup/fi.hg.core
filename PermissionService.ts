@@ -3,7 +3,6 @@
 import { PermissionManager } from "./types/PermissionManager";
 import { LogService } from "./LogService";
 import { PermissionList, PermissionObject, PermissionUtils } from "./PermissionUtils";
-import { keys } from "./modules/lodash";
 
 const LOG = LogService.createLogger('PermissionService');
 
