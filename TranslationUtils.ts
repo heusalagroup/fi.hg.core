@@ -1,12 +1,12 @@
 // Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { keys, reduce } from "../modules/lodash";
-import { ReadonlyJsonObject } from "../Json";
-import { Language } from "../types/Language";
-import { TranslationResourceObject } from "../types/TranslationResourceObject";
-import { TranslatedObject } from "../types/TranslatedObject";
-import { TranslationFunction } from "../types/TranslationFunction";
-import { I18NextResource } from "../types/I18NextResource";
+import { keys, reduce } from "./modules/lodash";
+import { ReadonlyJsonObject } from "./Json";
+import { Language } from "./types/Language";
+import { TranslationResourceObject } from "./types/TranslationResourceObject";
+import { TranslatedObject } from "./types/TranslatedObject";
+import { TranslationFunction } from "./types/TranslationFunction";
+import { I18NextResource } from "./types/I18NextResource";
 
 export class TranslationUtils {
 

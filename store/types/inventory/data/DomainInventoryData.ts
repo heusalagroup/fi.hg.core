@@ -1,8 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { hasNoOtherKeys, isRegularObject, isString } from "../../../../modules/lodash";
+import { InventoryData } from "./InventoryData";
 
-export interface DomainInventoryData {
+export interface DomainInventoryData extends InventoryData {
 
     /**
      * Domain name, e.g. `example.fi`

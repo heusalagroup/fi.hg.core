@@ -1,7 +1,13 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
-    explain, explainBoolean, explainNoOtherKeys, explainNumber, explainProperty, explainRegularObject, explainString,
+    explain,
+    explainBoolean,
+    explainNoOtherKeys,
+    explainNumber,
+    explainProperty,
+    explainRegularObject,
+    explainString,
     hasNoOtherKeys,
     isBoolean,
     isNumber,
@@ -11,9 +17,10 @@ import {
 import { explainProductType, isProductType, ProductType } from "../product/ProductType";
 import { explainProductPriceType, isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
 import { isInventoryState, InventoryState, explainInventoryState } from "./InventoryState";
-import { explainReadonlyJsonObject, isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
+import { explainInventoryData, InventoryData, isInventoryData } from "./data/InventoryData";
+import { ReadonlyJsonObject } from "../../../Json";
 
-export interface InventoryItemDTO {
+export interface InventoryItemDTO extends ReadonlyJsonObject {
     readonly inventoryItemId    : string;
     readonly clientId           : string;
     readonly updated            : string;
@@ -31,7 +38,7 @@ export interface InventoryItemDTO {
     readonly internalNote       : string;
     readonly onHold             : boolean;
     readonly isTerminated       : boolean;
-    readonly data               : ReadonlyJsonObject;
+    readonly data               : InventoryData;
 }
 
 export function createInventoryItemDTO (
@@ -52,7 +59,7 @@ export function createInventoryItemDTO (
     internalNote     : string,
     onHold           : boolean,
     isTerminated     : boolean,
-    data             : ReadonlyJsonObject = {}
+    data             : InventoryData = {}
 ): InventoryItemDTO {
     return {
         inventoryItemId,
@@ -116,7 +123,7 @@ export function isInventoryItemDTO (value: any): value is InventoryItemDTO {
         && isString(value?.internalNote)
         && isBoolean(value?.isTerminated)
         && isBoolean(value?.onHold)
-        && isReadonlyJsonObject(value?.data)
+        && isInventoryData(value?.data)
     );
 }
 
@@ -161,7 +168,7 @@ export function explainInventoryItemDTO (value: any) : string {
             explainProperty("internalNote", explainString(value?.internalNote)),
             explainProperty("isTerminated", explainBoolean(value?.isTerminated)),
             explainProperty("onHold", explainBoolean(value?.onHold)),
-            explainProperty("data", explainReadonlyJsonObject(value?.data))
+            explainProperty("data", explainInventoryData(value?.data))
         ]
     );
 }

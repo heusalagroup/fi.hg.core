@@ -1,8 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { trim } from "lodash";
-import { LogService } from "../LogService";
-import { isString } from "../modules/lodash";
+import { LogService } from "./LogService";
+import { isString } from "./modules/lodash";
 
 const LOG = LogService.createLogger('NumberUtils');
 

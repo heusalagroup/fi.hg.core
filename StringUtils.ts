@@ -261,5 +261,68 @@ export class StringUtils {
         return x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator).replace(/\./, digitSeparator);
     }
 
+    /**
+     *
+     * @param value The value to test
+     * @param acceptedChars The first character must match one of these
+     */
+    public static endsWithCharacters (
+        value : string,
+        acceptedChars: string
+    ) : boolean {
+        const len = value.length;
+        return len >= 1 ? acceptedChars.includes(value[len-1]) : true;
+    }
+
+    /**
+     *
+     * @param value The value to test
+     * @param acceptedChars The first character must match one of these
+     */
+    public static startsWithCharacters (
+        value : string,
+        acceptedChars: string
+    ) : boolean {
+        return value.length >= 1 ? acceptedChars.includes(value[0]) : true;
+    }
+
+    /**
+     *
+     * @param value The value to test
+     * @param acceptedChars Every character must match one of these
+     */
+    public static hasOnlyCharacters (
+        value : string,
+        acceptedChars: string
+    ) : boolean {
+        return value.length === 0 ? true : every(value, (char: string) :boolean => acceptedChars.includes(char));
+    }
+
+    /**
+     *
+     * @param value The value to test
+     * @param acceptedStartChars If defined, the first character must match one of these.
+     * @param acceptedMiddleChars If defined, every character must match this. Defaults to `acceptedStartChars`.
+     * @param acceptedEndChars If defined, every character must match this. Defaults to `acceptedMiddleChars`.
+     * @param minLength The minimum length of the string. Defaults to 0.
+     * @param maxLength The maximum length of the string. Defaults to no limit.
+     */
+    public static validateStringCharacters (
+        value : string,
+        acceptedStartChars: string | undefined = undefined,
+        acceptedMiddleChars: string | undefined = acceptedStartChars,
+        acceptedEndChars: string | undefined = acceptedMiddleChars,
+        minLength: number = 0,
+        maxLength: number | undefined = undefined
+    ) : boolean {
+        const len = value?.length ?? 0;
+        return (
+            ( acceptedStartChars !== undefined ? StringUtils.startsWithCharacters(value, acceptedStartChars) : true)
+            && ( acceptedMiddleChars !== undefined ? StringUtils.hasOnlyCharacters(value.substring(1, len-1), acceptedMiddleChars) : true)
+            && ( acceptedEndChars !== undefined ? StringUtils.endsWithCharacters(value, acceptedEndChars) : true)
+            && ( len >= minLength )
+            && ( maxLength === undefined ? true : len <= maxLength )
+        );
+    }
 
 }

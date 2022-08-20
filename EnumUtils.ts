@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { filter, keys, map } from "../modules/lodash";
+import { filter, keys, map } from "./modules/lodash";
 
 export interface EnumObject<T> {
     readonly [key: string]: T;

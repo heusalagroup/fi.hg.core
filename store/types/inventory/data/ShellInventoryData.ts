@@ -1,11 +1,28 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { ReadonlyJsonObject } from "../../../../Json";
-import { hasNoOtherKeys, isRegularObject, isString } from "../../../../modules/lodash";
+import {
+    explain,
+    explainNoOtherKeys,
+    explainNumber,
+    explainProperty,
+    explainRegularObject,
+    explainString,
+    hasNoOtherKeys,
+    isNumber,
+    isRegularObject,
+    isString
+} from "../../../../modules/lodash";
+import { InventoryData } from "./InventoryData";
 
-export interface ShellInventoryData extends ReadonlyJsonObject {
+export interface ShellInventoryData extends InventoryData {
 
     readonly hostname  : string;
+
+    /**
+     * SSH Port, defaults to 22.
+     */
+    readonly port      : number;
+
     readonly username  : string;
 
     /**
@@ -18,12 +35,14 @@ export interface ShellInventoryData extends ReadonlyJsonObject {
 export function createShellInventoryData (
     hostname: string,
     username: string,
-    realName: string
+    realName: string,
+    port ?: number
 ): ShellInventoryData {
     return {
         hostname,
         username,
-        realName
+        realName,
+        port: port ?? 22
     };
 }
 
@@ -32,12 +51,32 @@ export function isShellInventoryData (value: any): value is ShellInventoryData {
         isRegularObject(value)
         && hasNoOtherKeys(value, [
             'hostname',
+            'port',
             'username',
             'realName'
         ])
         && isString(value?.hostname)
         && isString(value?.username)
         && isString(value?.realName)
+        && isNumber(value?.port)
+    );
+}
+
+export function explainShellInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'hostname',
+                'port',
+                'username',
+                'realName'
+            ])
+            && explainProperty("hostname", explainString(value?.hostname))
+            && explainProperty("port", explainNumber(value?.port))
+            && explainProperty("username", explainString(value?.username))
+            && explainProperty("realName", explainString(value?.realName))
+        ]
     );
 }
 
