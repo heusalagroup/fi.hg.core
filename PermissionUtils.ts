@@ -5,8 +5,8 @@ import {
     explainArrayOf,
     ExplainCallback,
     filter,
-    isArrayOf, 
-    isString,
+    isArrayOf,
+    isString, keys,
     reduce,
     TestCallback,
     TestCallbackNonStandard,
@@ -108,16 +108,16 @@ export class PermissionUtils {
     /**
      *
      * @param permissions
-     * @param isPermission
+     * @param isPermissionKey
      * @returns List of permissions that were enabled
      */
     public static getAcceptedPermissionList<T extends string = string> (
         permissions: PermissionObject,
-        isPermission: TestCallbackNonStandard = isString
+        isPermissionKey: TestCallbackNonStandard = isString
     ) : PermissionList<T> {
         return filter(
-            values(permissions),
-            (permission: string) : boolean => isPermission(permission)
+            keys(permissions),
+            (key: string) : boolean => isPermissionKey(key) && permissions[key]
         ) as unknown as PermissionList<T>;
     }
 
