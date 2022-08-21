@@ -33,7 +33,22 @@ export enum InventoryState {
     /**
      * Inventory item was not successfully updated to the background services
      */
-    ERROR     = "ERROR"
+    ERROR     = "ERROR",
+
+    /**
+     * Inventory item was locked
+     */
+    LOCKED     = "LOCKED",
+
+    /**
+     * Inventory item was cancelled
+     */
+    CANCELLED     = "CANCELLED",
+
+    /**
+     * Inventory item was removed
+     */
+    DELETED     = "DELETED"
 
 }
 
