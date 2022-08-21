@@ -75,6 +75,10 @@ export interface TestCallback {
     (value: any, index: number, arr: any[]) : boolean;
 }
 
+export interface TestCallbackOf<T> {
+    (value: any, index: number, arr: any[]) : value is T;
+}
+
 export interface AssertCallback {
     (value: any) : void;
 }
@@ -783,7 +787,7 @@ export function every<T = any> (
  */
 export function explainEvery<T = any> (
     value   : any,
-    isValue : TestCallback,
+    isValue : TestCallbackOf<T> | TestCallbackOf<string>,
     valueName : string
 ) : string {
     return every(value, isValue) ? explainOk() : `some values were not ${valueName}`;
@@ -813,7 +817,7 @@ export function everyKey<T extends keyof any = string> (
  */
 export function explainEveryKey<T extends keyof any = string> (
     value : any,
-    isKey : TestCallback,
+    isKey : TestCallbackOf<T> | TestCallbackOf<string>,
     keyTypeName: string
 ) : string {
     return explain(
@@ -884,8 +888,8 @@ export function everyProperty<K extends keyof any = string, T = any> (
  */
 export function explainEveryProperty<K extends keyof any = string, T = any> (
     value  : any,
-    isKey  : TestCallback | undefined = isString,
-    isItem : TestCallback | undefined = undefined
+    isKey  : TestCallbackOf<K> | TestCallbackOf<string> | undefined = isString,
+    isItem : TestCallbackOf<T> | undefined = undefined
 ) : string {
     if ( isItem !== undefined && !everyValue<T>(value, isItem) ) {
         return 'values were not correct';
@@ -1183,8 +1187,8 @@ export function isObjectOf<K extends string = string, T = any> (
  */
 export function explainObjectOf<K extends string = string, T = any> (
     value: any,
-    isKey  : TestCallback | undefined = undefined,
-    isItem : TestCallback | undefined = undefined,
+    isKey  : TestCallbackOf<K> | undefined = undefined,
+    isItem : TestCallbackOf<T> | undefined = undefined,
     keyTypeName : string,
     itemTypeName : string
 ) : string {

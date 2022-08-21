@@ -4,11 +4,11 @@ import { explainPermissionList, isPermissionList, PermissionList } from "../Perm
 import {
     explain,
     ExplainCallback,
-    explainNoOtherKeys, explainObjectOf,
+    explainNoOtherKeys,
     explainProperty,
     explainRegularObject,
-    hasNoOtherKeys, isObjectOf,
-    isRegularObject, isString,
+    hasNoOtherKeys,
+    isRegularObject,
     TestCallback
 } from "../modules/lodash";
 
