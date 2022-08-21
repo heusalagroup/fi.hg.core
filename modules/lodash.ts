@@ -180,6 +180,39 @@ export function isArrayOf<T = any> (
 
 }
 
+
+/**
+ *
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @param itemTypeName
+ * @param itemExplain
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainArrayOf<T = any> (
+    itemTypeName : string,
+    itemExplain : ExplainCallback,
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined       = undefined,
+    maxLength : number | undefined       = undefined
+) : string {
+    if ( isArrayOf<T>(value, isItem, minLength, maxLength) ) return explainOk();
+    if ( !isArray(value) ) return explainNot(itemTypeName);
+    if ( value?.length < 1 ) return explainNot(itemTypeName);
+    return `${explainNot(itemTypeName)}: ${
+        explain(
+            map(
+                value,
+                (item : any) : string => itemExplain(item)
+            )
+        )
+    }`;
+}
+
 /**
  *
  * @param value
@@ -743,6 +776,22 @@ export function every<T = any> (
 /**
  *
  * @param value
+ * @param isValue
+ * @param valueName
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainEvery<T = any> (
+    value   : any,
+    isValue : TestCallback,
+    valueName : string
+) : string {
+    return every(value, isValue) ? explainOk() : `some values were not ${valueName}`;
+}
+
+/**
+ *
+ * @param value
  * @param isKey
  * @__PURE__
  * @nosideeffects
@@ -752,6 +801,27 @@ export function everyKey<T extends keyof any = string> (
     isKey : TestCallback
 ) : value is {[P in T]: any} {
     return _isObject(value) && every(keys(value), isKey);
+}
+
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param keyTypeName
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainEveryKey<T extends keyof any = string> (
+    value : any,
+    isKey : TestCallback,
+    keyTypeName: string
+) : string {
+    return explain(
+        [
+            explainObject(value),
+            explainEvery(keys(value), isKey, keyTypeName)
+        ]
+    );
 }
 
 /**
@@ -795,17 +865,35 @@ export function everyProperty<K extends keyof any = string, T = any> (
     isKey  : TestCallback | undefined = isString,
     isItem : TestCallback | undefined = undefined
 ) : value is {[P in K]: T} {
-
     if ( isItem !== undefined && !everyValue<T>(value, isItem) ) {
         return false;
     }
-
     if ( isKey !== undefined ) {
         return everyKey<K>(value, isKey);
     }
-
     return everyKey<K>(value, isString);
+}
 
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainEveryProperty<K extends keyof any = string, T = any> (
+    value  : any,
+    isKey  : TestCallback | undefined = isString,
+    isItem : TestCallback | undefined = undefined
+) : string {
+    if ( isItem !== undefined && !everyValue<T>(value, isItem) ) {
+        return 'values were not correct';
+    }
+    if ( isKey !== undefined ) {
+        return explainEveryKey<K>(value, isKey, "T");
+    }
+    return explainEveryKey<K>(value, isString, "string");
 }
 
 /**
@@ -1050,6 +1138,16 @@ export function isObject (value: any) : value is {[P in string]: any} {
 /**
  *
  * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainObject (value: any) : string {
+    return isObject(value) ? explainOk() : 'not object';
+}
+
+/**
+ *
+ * @param value
  * @param isKey
  * @param isItem
  * @__PURE__
@@ -1071,6 +1169,32 @@ export function isObjectOf<K extends string = string, T = any> (
 
     return everyProperty<K, T>(value, isKey, isItem);
 
+}
+
+/**
+ *
+ * @param value
+ * @param isKey
+ * @param isItem
+ * @param keyTypeName
+ * @param itemTypeName
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainObjectOf<K extends string = string, T = any> (
+    value: any,
+    isKey  : TestCallback | undefined = undefined,
+    isItem : TestCallback | undefined = undefined,
+    keyTypeName : string,
+    itemTypeName : string
+) : string {
+    if (isKey === undefined) {
+        return explainObject(value);
+    }
+    if (isItem === undefined) {
+        return explainEveryKey<K>(value, isKey, keyTypeName);
+    }
+    return explainEveryProperty<K, T>(value, isKey, isItem);
 }
 
 /**

@@ -2,14 +2,53 @@
 
 import {
     everyValue,
+    explainArrayOf,
+    ExplainCallback,
     filter,
-    keys,
+    isArrayOf, 
+    isString,
     reduce,
+    TestCallback,
+    TestCallbackNonStandard,
     values
 } from "./modules/lodash";
 
 export type PermissionString<T extends string> = T;
+
 export type PermissionList<T extends string> = readonly PermissionString<T>[];
+
+export function isPermissionList<T extends string> (
+    value        : any,
+    isItem       : TestCallback | undefined = undefined,
+    minLength    : number | undefined       = undefined,
+    maxLength    : number | undefined       = undefined
+) : boolean {
+    return isArrayOf<T>(
+        value,
+        isItem,
+        minLength,
+        maxLength
+    );
+}
+
+export function explainPermissionList<T extends string> (
+    itemTypeName : string,
+    itemExplain  : ExplainCallback,
+    value        : any,
+    isItem       : TestCallback | undefined = undefined,
+    minLength    : number | undefined       = undefined,
+    maxLength    : number | undefined       = undefined
+) : string {
+    return explainArrayOf<T>(
+        itemTypeName,
+        itemExplain,
+        value,
+        isItem,
+        minLength,
+        maxLength
+    );
+}
+
 export type PermissionObject = {readonly [key: string]: boolean};
 
 export class PermissionUtils {
@@ -69,15 +108,17 @@ export class PermissionUtils {
     /**
      *
      * @param permissions
+     * @param isPermission
      * @returns List of permissions that were enabled
      */
-    public static getAcceptedPermissionList (
-        permissions: PermissionObject
-    ) : PermissionList<string> {
+    public static getAcceptedPermissionList<T extends string = string> (
+        permissions: PermissionObject,
+        isPermission: TestCallbackNonStandard = isString
+    ) : PermissionList<T> {
         return filter(
-            keys(permissions),
-            (key: string) : boolean => permissions[key]
-        );
+            values(permissions),
+            (permission: string) : boolean => isPermission(permission)
+        ) as unknown as PermissionList<T>;
     }
 
     /**
