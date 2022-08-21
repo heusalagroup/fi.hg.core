@@ -25,7 +25,7 @@ export interface OrderDTO {
     readonly meta           : ReadonlyJsonAny;
     readonly cart           : ShoppingCart;
     readonly invoice       ?: InvoiceDTO;
-    readonly inventoryItems ?: InventoryItemDTO[];
+    readonly inventoryItems ?: readonly InventoryItemDTO[];
 }
 
 export function createOrderDTO (
@@ -47,7 +47,7 @@ export function createOrderDTO (
     isTerminated  : boolean,
     meta          : ReadonlyJsonAny | string,
     invoice        ?: InvoiceDTO,
-    inventoryItems ?: InventoryItemDTO[]
+    inventoryItems ?: readonly InventoryItemDTO[]
 ): OrderDTO {
     return {
         orderId,

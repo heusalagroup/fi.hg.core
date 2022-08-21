@@ -10,7 +10,7 @@ export interface InvoiceRowListDTO {
     readonly payload: readonly InvoiceRowDTO[];
 }
 
-export function createInvoiceRowListDTO (items: InvoiceRowDTO[]): InvoiceRowListDTO {
+export function createInvoiceRowListDTO (items: readonly InvoiceRowDTO[]): InvoiceRowListDTO {
     return {
         payload: map(items, (item: InvoiceRowDTO): InvoiceRowDTO => item)
     } as InvoiceRowListDTO;

@@ -35,7 +35,7 @@ export interface InvoiceDTO {
     readonly buildDocuments    : boolean;
     readonly sendDocuments     : boolean;
     readonly dueDays           : number;
-    readonly rows             ?: InvoiceRowDTO[];
+    readonly rows             ?: readonly InvoiceRowDTO[];
     readonly isPaid           ?: boolean | undefined;
 }
 
@@ -64,7 +64,7 @@ export function createInvoiceDTO (
     buildDocuments   : boolean,
     sendDocuments    : boolean,
     dueDays          : number,
-    rows            ?: InvoiceRowDTO[],
+    rows            ?: readonly InvoiceRowDTO[],
     isPaid          ?: boolean
 ): InvoiceDTO {
     return {

@@ -10,7 +10,7 @@ export interface InventoryItemListDTO {
     readonly payload: readonly InventoryItemDTO[];
 }
 
-export function createInventoryItemListDTO (items: InventoryItemDTO[]): InventoryItemListDTO {
+export function createInventoryItemListDTO (items: readonly InventoryItemDTO[]): InventoryItemListDTO {
     return {
         payload: map(items, (item: InventoryItemDTO): InventoryItemDTO => item)
     } as InventoryItemListDTO;
