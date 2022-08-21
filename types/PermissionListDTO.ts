@@ -12,22 +12,15 @@ import {
     TestCallback
 } from "../modules/lodash";
 
-export interface TargetPermissionObject<T extends string> {
-    readonly [key: string]: PermissionList<T>;
-}
-
 export interface PermissionListDTO<T extends string> {
     readonly permissions : PermissionList<T>;
-    readonly targetPermissions : TargetPermissionObject<T>;
 }
 
 export function createPermissionListDTO<T extends string> (
-    permissions : PermissionList<T>,
-    targetPermissions: TargetPermissionObject<T>
+    permissions : PermissionList<T>
 ) : PermissionListDTO<T> {
     return {
-        permissions,
-        targetPermissions
+        permissions
     };
 }
 
@@ -38,11 +31,9 @@ export function isPermissionListDTO<T extends string> (
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
-            'permissions',
-            'targetPermissions'
+            'permissions'
         ])
         && isPermissionList<T>(value?.permissions, isT)
-        && isObjectOf<string, T>(value?.targetPermissions, isString, isT)
     );
 }
 
@@ -65,16 +56,6 @@ export function explainPermissionListDTO<T extends string> (
                     permissionExplain,
                     value?.permissions,
                     isPermission
-                )
-            ),
-            explainProperty(
-                "permissions",
-                explainObjectOf<string, T>(
-                    value?.targetPermissions,
-                    isString,
-                    isPermission,
-                    "string",
-                    "T"
                 )
             )
         ]
