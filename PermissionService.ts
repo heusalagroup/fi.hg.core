@@ -10,20 +10,20 @@ const LOG = LogService.createLogger('PermissionService');
 /**
  * Service which handles permissions
  */
-export class PermissionService {
+export class PermissionService<T extends string = string> {
 
     public static setLogLevel (value : LogLevel) {
         LOG.setLogLevel(value);
     }
 
-    private readonly _manager : PermissionManager;
+    private readonly _manager : PermissionManager<T>;
 
     /**
      *
      * @param manager
      */
     public constructor (
-        manager: PermissionManager
+        manager: PermissionManager<T>
     ) {
         this._manager = manager;
     }
@@ -38,7 +38,7 @@ export class PermissionService {
     public async getEntityPermissionList (
         entityId    : string,
         targetId   ?: string
-    ) : Promise<PermissionList> {
+    ) : Promise<PermissionList<T>> {
         return await this._manager.getEntityPermissionList(entityId, targetId);
     }
 
@@ -50,7 +50,7 @@ export class PermissionService {
      * @param targetId The entity which is the target of the action
      */
     public async checkEntityPermission (
-        checkPermissions: PermissionList,
+        checkPermissions: PermissionList<T>,
         entityId: string,
         targetId   ?: string
     ) : Promise<PermissionObject> {

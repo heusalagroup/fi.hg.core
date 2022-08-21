@@ -8,8 +8,8 @@ import {
     values
 } from "./modules/lodash";
 
-export type PermissionString = string;
-export type PermissionList = readonly PermissionString[];
+export type PermissionString<T extends string> = T;
+export type PermissionList<T extends string> = readonly PermissionString<T>[];
 export type PermissionObject = {readonly [key: string]: boolean};
 
 export class PermissionUtils {
@@ -21,9 +21,9 @@ export class PermissionUtils {
      * @param acceptedPermissionList List of permissions that are accepted
      * @return `true` if `permission` is included in the `permissionList`
      */
-    public static checkPermission (
-        permission: PermissionString,
-        acceptedPermissionList: PermissionList
+    public static checkPermission<T extends string> (
+        permission: PermissionString<T>,
+        acceptedPermissionList: PermissionList<T>
     ) : boolean {
         return acceptedPermissionList.includes(permission);
     }
@@ -35,13 +35,13 @@ export class PermissionUtils {
      * @param targetPermissions List of permissions the target has
      * @returns PermissionObject State of each permission from `checkPermissions`
      */
-    public static checkPermissionList (
-        checkPermissions: PermissionList,
-        targetPermissions: PermissionList
+    public static checkPermissionList<T extends string> (
+        checkPermissions: PermissionList<T>,
+        targetPermissions: PermissionList<T>
     ) : PermissionObject {
         return reduce(
             checkPermissions,
-            (result: PermissionObject, permission: PermissionString) : PermissionObject => {
+            (result: PermissionObject, permission: PermissionString<T>) : PermissionObject => {
                 return {
                     ...result,
                     [permission]: PermissionUtils.checkPermission(
@@ -71,11 +71,13 @@ export class PermissionUtils {
      * @param permissions
      * @returns List of permissions that were enabled
      */
-    public static getAcceptedPermissionList (permissions: PermissionObject) : PermissionList {
+    public static getAcceptedPermissionList (
+        permissions: PermissionObject
+    ) : PermissionList<string> {
         return filter(
             keys(permissions),
             (key: string) : boolean => permissions[key]
-        )
+        );
     }
 
     /**

@@ -6,16 +6,16 @@ import { PermissionList, PermissionObject, PermissionUtils } from "../Permission
 /**
  * Permission manager intended to be used in tests
  */
-export class MockPermissionManager implements PermissionManager {
+export class MockPermissionManager<T extends string = string> implements PermissionManager<T> {
 
     private _entityId: string;
     private _targetId: string | undefined;
-    private _entityPermissions: PermissionList;
+    private _entityPermissions: PermissionList<T>;
 
     public constructor (
         entityId: string,
         targetId: string | undefined,
-        entityPermissions: PermissionList
+        entityPermissions: PermissionList<T>
     ) {
         this._entityId = entityId;
         this._targetId = targetId;
@@ -25,7 +25,7 @@ export class MockPermissionManager implements PermissionManager {
     public setState (
         id: string,
         targetId: string | undefined,
-        entityPermissions: PermissionList
+        entityPermissions: PermissionList<T>
     ) {
         this._entityId = id;
         this._targetId = targetId;
@@ -35,12 +35,12 @@ export class MockPermissionManager implements PermissionManager {
     public async getEntityPermissionList (
         entityId: string,
         targetId ?: string
-    ): Promise<PermissionList> {
+    ): Promise<PermissionList<T>> {
         return this._entityId === entityId && this._targetId === targetId ? this._entityPermissions : [];
     }
 
     public async checkEntityPermission (
-        checkPermissions: PermissionList,
+        checkPermissions: PermissionList<T>,
         entityId: string,
         targetId ?: string
     ): Promise<PermissionObject> {

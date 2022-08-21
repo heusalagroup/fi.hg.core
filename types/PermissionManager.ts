@@ -2,7 +2,7 @@
 
 import { PermissionList, PermissionObject } from "../PermissionUtils";
 
-export interface PermissionManager {
+export interface PermissionManager<T extends string = string> {
 
     /**
      * Fetch permissions against a target entity
@@ -14,7 +14,7 @@ export interface PermissionManager {
     getEntityPermissionList (
         entityId    : string,
         targetId   ?: string
-    ) : Promise<PermissionList>;
+    ) : Promise<PermissionList<T>>;
 
     /**
      * Check a list of permissions
@@ -25,7 +25,7 @@ export interface PermissionManager {
      * @returns PermissionObject Object which contains boolean test results for each permission
      */
     checkEntityPermission (
-        checkPermissions: PermissionList,
+        checkPermissions: PermissionList<T>,
         entityId    : string,
         targetId   ?: string
     ) : Promise<PermissionObject>;
