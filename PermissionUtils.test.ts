@@ -34,7 +34,7 @@ describe('PermissionUtils', () => {
     describe('#checkPermissionList', () => {
 
         test('can test invalid permission list when no permissions are accepted', () => {
-            expect( PermissionUtils.checkPermissionList(['FOO'], []) ).toStrictEqual({});
+            expect( PermissionUtils.checkPermissionList([], ['FOO']) ).toStrictEqual({});
         });
 
         test('can test empty invalid permission list when no permissions are accepted', () => {
@@ -44,17 +44,17 @@ describe('PermissionUtils', () => {
 
         test('can test empty invalid permission list when one permission is accepted', () => {
             expect( PermissionUtils.checkPermissionList(
-                [], ['BAR']) ).toStrictEqual({BAR: false});
+                ['BAR'], []) ).toStrictEqual({BAR: false});
         });
 
         test('can test empty invalid permission list when some permissions are accepted', () => {
             expect( PermissionUtils.checkPermissionList(
-                [], ['BAR', 'FOO']) ).toStrictEqual({BAR: false, FOO: false});
+                ['BAR', 'FOO'], []) ).toStrictEqual({BAR: false, FOO: false});
         });
 
         test('can test valid permission list with single permission', () => {
             expect( PermissionUtils.checkPermissionList(
-                ['FOO'], ['FOO', 'BAR']) ).toStrictEqual({FOO: true, BAR: false});
+                ['FOO', 'BAR'], ['FOO']) ).toStrictEqual({FOO: true, BAR: false});
         });
 
         test('can test valid permission list with two permissions', () => {
@@ -64,7 +64,7 @@ describe('PermissionUtils', () => {
 
         test('can test valid permission list with two permissions against single accepted permission', () => {
             expect( PermissionUtils.checkPermissionList(
-                ['FOO', 'BAR'], ['FOO']) ).toStrictEqual({FOO:true});
+                ['FOO'], ['FOO', 'BAR']) ).toStrictEqual({FOO:true});
         });
 
         test('can test valid permission list with multiple permissions', () => {
@@ -74,17 +74,17 @@ describe('PermissionUtils', () => {
 
         test('can test invalid permission list with single permission', () => {
             expect( PermissionUtils.checkPermissionList(
-                ['FOO'], ['HELLO', 'WORLD']) ).toStrictEqual({HELLO: false, WORLD: false});
+                ['HELLO', 'WORLD'], ['FOO']) ).toStrictEqual({HELLO: false, WORLD: false});
         });
 
         test('can test invalid permission list with two permissions', () => {
             expect( PermissionUtils.checkPermissionList(
-                ['FOO', 'BAR'], ['HELLO', 'WORLD']) ).toStrictEqual({HELLO: false, WORLD: false});
+                ['HELLO', 'WORLD'], ['FOO', 'BAR']) ).toStrictEqual({HELLO: false, WORLD: false});
         });
 
         test('can test invalid permission list with multiple permissions when only some match', () => {
             expect( PermissionUtils.checkPermissionList(
-                ['FOO', 'BAR', 'HELLO'], ['HELLO', 'WORLD', 'XXX']) ).toStrictEqual({HELLO: true, WORLD: false, XXX: false});
+                ['HELLO', 'WORLD', 'XXX'], ['FOO', 'BAR', 'HELLO']) ).toStrictEqual({HELLO: true, WORLD: false, XXX: false});
         });
 
     });

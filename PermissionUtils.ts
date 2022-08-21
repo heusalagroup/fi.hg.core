@@ -31,12 +31,13 @@ export class PermissionUtils {
     /**
      * Checks against multiple permissions
      *
-     * @param targetPermissions List of permissions the subject has
-     * @param checkPermissions List of permissions that must be checked for
+     * @param checkPermissions List of permissions that will be included in the return object
+     * @param targetPermissions List of permissions the target has
+     * @returns PermissionObject State of each permission from `checkPermissions`
      */
     public static checkPermissionList (
-        targetPermissions: PermissionList,
-        checkPermissions: PermissionList
+        checkPermissions: PermissionList,
+        targetPermissions: PermissionList
     ) : PermissionObject {
         return reduce(
             checkPermissions,

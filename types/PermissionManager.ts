@@ -5,23 +5,29 @@ import { PermissionList, PermissionObject } from "../PermissionUtils";
 export interface PermissionManager {
 
     /**
-     * Fetch entity permissions
+     * Fetch permissions against a target entity
      *
-     * @param entityId The entity ID
+     * @param entityId The entity who is performing the action
+     * @param targetId The entity which is the target of the action
      * @returns Promise<PermissionList> Promise of permissions this entity has
      */
-    getEntityPermissionList (entityId: string) : Promise<PermissionList>;
+    getEntityPermissionList (
+        entityId    : string,
+        targetId   ?: string
+    ) : Promise<PermissionList>;
 
     /**
      * Check a list of permissions
      *
-     * @param entityId The entity ID
-     * @param acceptedPermissions List of permissions which the entity must have
+     * @param checkPermissions List of permissions which the entity must have
+     * @param entityId The entity who is performing the action
+     * @param targetId The entity which is the target of the action
      * @returns PermissionObject Object which contains boolean test results for each permission
      */
     checkEntityPermission (
-        entityId: string,
-        acceptedPermissions: PermissionList
+        checkPermissions: PermissionList,
+        entityId    : string,
+        targetId   ?: string
     ) : Promise<PermissionObject>;
 
 }

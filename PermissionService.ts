@@ -3,6 +3,7 @@
 import { PermissionManager } from "./types/PermissionManager";
 import { LogService } from "./LogService";
 import { PermissionList, PermissionObject, PermissionUtils } from "./PermissionUtils";
+import { LogLevel } from "./types/LogLevel";
 
 const LOG = LogService.createLogger('PermissionService');
 
@@ -10,6 +11,10 @@ const LOG = LogService.createLogger('PermissionService');
  * Service which handles permissions
  */
 export class PermissionService {
+
+    public static setLogLevel (value : LogLevel) {
+        LOG.setLogLevel(value);
+    }
 
     private readonly _manager : PermissionManager;
 
@@ -26,29 +31,35 @@ export class PermissionService {
     /**
      * Fetch entity permissions
      *
-     * @param entityId
-     * @returns Promise<PermissionList> Promise of a list of permissions this entity has
+     * @param entityId The entity who is performing the action
+     * @param targetId The entity which is the target of the action
+     * @returns Promise<PermissionList> Promise of a list of permissions this entity has against `targetId`
      */
-    public async getEntityPermissionList ( entityId: string ) : Promise<PermissionList> {
-        return await this._manager.getEntityPermissionList(entityId);
+    public async getEntityPermissionList (
+        entityId    : string,
+        targetId   ?: string
+    ) : Promise<PermissionList> {
+        return await this._manager.getEntityPermissionList(entityId, targetId);
     }
 
     /**
-     * Returns `true` if `entityId` has every permission in the list
+     * Check permissions in the list
      *
-     * @param entityId Target entity
-     * @param checkPermissions List of permissions which are accepted
+     * @param checkPermissions List of permissions which are checked
+     * @param entityId Entity who is performing the action
+     * @param targetId The entity which is the target of the action
      */
     public async checkEntityPermission (
+        checkPermissions: PermissionList,
         entityId: string,
-        checkPermissions: PermissionList
+        targetId   ?: string
     ) : Promise<PermissionObject> {
         LOG.debug(`checkEntityPermission: Checking entity "${entityId}" against permissions "${checkPermissions.join('|')}"`);
-        const entityPermissions = await this.getEntityPermissionList(entityId);
+        const entityPermissions = await this.getEntityPermissionList(entityId, targetId);
         LOG.debug(`checkEntityPermission: Checking entity "${entityId}" [${entityPermissions.join('|')}] against permissions [${checkPermissions.join('|')}]`);
         const result = PermissionUtils.checkPermissionList(
-            entityPermissions,
-            checkPermissions
+            checkPermissions,
+            entityPermissions
         );
         LOG.info(`checkEntityPermission: Checking entity "${entityId}" [${entityPermissions.join('|')}] against result [${checkPermissions.join('|')}]: `, result);
         return result;
