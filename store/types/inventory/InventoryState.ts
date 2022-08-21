@@ -21,7 +21,7 @@ export enum InventoryState {
     WAITING_APPROVAL  = "WAITING_APPROVAL",
 
     /**
-     * Inventory item is queued to be modified to the background services
+     * Inventory item is was approved and is queued to be modified to the background services
      */
     CHANGING  = "CHANGING",
 
