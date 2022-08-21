@@ -12,6 +12,9 @@ import {
     TestCallbackNonStandard,
     values
 } from "./modules/lodash";
+import { LogService } from "./LogService";
+
+const LOG = LogService.createLogger('PermissionUtils');
 
 export type PermissionString<T extends string> = T;
 
@@ -64,6 +67,10 @@ export class PermissionUtils {
         permission: PermissionString<T>,
         acceptedPermissionList: PermissionList<T>
     ) : boolean {
+        if (!isArrayOf<string>(acceptedPermissionList)) {
+            LOG.warn(`Provided argument was not an array of strings: `, acceptedPermissionList);
+            return false;
+        }
         return acceptedPermissionList.includes(permission);
     }
 
