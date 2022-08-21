@@ -1,6 +1,17 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isString } from "../../../../modules/lodash";
+import {
+    explain,
+    explainNoOtherKeys,
+    explainProperty,
+    explainRegularObject,
+    explainString,
+    explainStringOrUndefined,
+    hasNoOtherKeys,
+    isRegularObject,
+    isString,
+    isStringOrUndefined
+} from "../../../../modules/lodash";
 import { InventoryData } from "./InventoryData";
 
 export interface VirtualServerInventoryData extends InventoryData {
@@ -36,6 +47,46 @@ export function isVirtualServerInventoryData (value: any): value is VirtualServe
         ])
         && isString(value?.system)
         && isString(value?.name)
+    );
+}
+
+export function explainVirtualServerInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'system',
+                'name'
+            ])
+            && explainProperty("system", explainString(value?.system))
+            && explainProperty("name", explainString(value?.name))
+        ]
+    );
+}
+
+export function isPartialVirtualServerInventoryData (value: any): value is Partial<VirtualServerInventoryData> {
+    return (
+        isRegularObject(value)
+        && hasNoOtherKeys(value, [
+            'system',
+            'name'
+        ])
+        && isStringOrUndefined(value?.system)
+        && isStringOrUndefined(value?.name)
+    );
+}
+
+export function explainPartialVirtualServerInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'system',
+                'name'
+            ])
+            && explainProperty("system", explainStringOrUndefined(value?.system))
+            && explainProperty("name", explainStringOrUndefined(value?.name))
+        ]
     );
 }
 

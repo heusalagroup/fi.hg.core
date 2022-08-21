@@ -1,6 +1,17 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isString } from "../../../../modules/lodash";
+import {
+    explain,
+    explainNoOtherKeys,
+    explainProperty,
+    explainRegularObject,
+    explainString,
+    explainStringOrUndefined,
+    hasNoOtherKeys,
+    isRegularObject,
+    isString,
+    isStringOrUndefined
+} from "../../../../modules/lodash";
 import { InventoryData } from "./InventoryData";
 
 export interface WebHotelInventoryData extends InventoryData {
@@ -11,7 +22,7 @@ export interface WebHotelInventoryData extends InventoryData {
     readonly system : string;
 
     /**
-     * The virtual server name, e.g. `"examplefi-1"`
+     * The virtual server name, e.g. `"example-1"`
      */
     readonly name : string;
 
@@ -36,6 +47,46 @@ export function isWebHotelInventoryData (value: any): value is WebHotelInventory
         ])
         && isString(value?.system)
         && isString(value?.name)
+    );
+}
+
+export function explainWebHotelInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'system',
+                'name'
+            ])
+            && explainProperty("system", explainString(value?.system))
+            && explainProperty("name", explainString(value?.name))
+        ]
+    );
+}
+
+export function isPartialWebHotelInventoryData (value: any): value is Partial<WebHotelInventoryData> {
+    return (
+        isRegularObject(value)
+        && hasNoOtherKeys(value, [
+            'system',
+            'name'
+        ])
+        && isStringOrUndefined(value?.system)
+        && isStringOrUndefined(value?.name)
+    );
+}
+
+export function explainPartialWebHotelInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'system',
+                'name'
+            ])
+            && explainProperty("system", explainStringOrUndefined(value?.system))
+            && explainProperty("name", explainStringOrUndefined(value?.name))
+        ]
     );
 }
 

@@ -1,6 +1,17 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isString } from "../../../../modules/lodash";
+import {
+    explain,
+    explainNoOtherKeys,
+    explainProperty,
+    explainRegularObject,
+    explainString,
+    explainStringOrUndefined,
+    hasNoOtherKeys,
+    isRegularObject,
+    isString,
+    isStringOrUndefined
+} from "../../../../modules/lodash";
 import { InventoryData } from "./InventoryData";
 
 export interface EmailInventoryData extends InventoryData {
@@ -27,6 +38,46 @@ export function isEmailInventoryData (value: any): value is EmailInventoryData {
         ])
         && isString(value?.hostname)
         && isString(value?.username)
+    );
+}
+
+export function explainEmailInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'hostname',
+                'username'
+            ])
+            && explainProperty("hostname", explainString(value?.hostname))
+            && explainProperty("username", explainString(value?.username))
+        ]
+    );
+}
+
+export function isPartialEmailInventoryData (value: any): value is Partial<EmailInventoryData> {
+    return (
+        isRegularObject(value)
+        && hasNoOtherKeys(value, [
+            'hostname',
+            'username'
+        ])
+        && isStringOrUndefined(value?.hostname)
+        && isStringOrUndefined(value?.username)
+    );
+}
+
+export function explainPartialEmailInventoryData (value: any): string {
+    return explain(
+        [
+            explainRegularObject(value)
+            && explainNoOtherKeys(value, [
+                'hostname',
+                'username',
+            ])
+            && explainProperty("hostname", explainStringOrUndefined(value?.hostname))
+            && explainProperty("username", explainStringOrUndefined(value?.username))
+        ]
     );
 }
 
