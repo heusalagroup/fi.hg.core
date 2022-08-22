@@ -20,6 +20,8 @@ export type StoreProductServiceDestructor = ObserverDestructor;
 
 const LOG = LogService.createLogger(SERVICE_NAME);
 
+const MY_PRODUCT_LIST_FETCH_RETRY_TIMEOUT_ON_ERROR = 3000;
+
 /**
  * @FIXME: Remove static, convert as a normal class, so that can be used on the
  *         server side also. Maybe create a StaticStoreProductService for
@@ -27,6 +29,7 @@ const LOG = LogService.createLogger(SERVICE_NAME);
  */
 export class StoreProductService {
 
+    private static _updateTimeout : any = undefined;
     private static _apiUrl      : string = DEFAULT_STORE_API_URL;
     private static _initialized : boolean = false;
     private static _loading     : boolean = false;
@@ -59,6 +62,10 @@ export class StoreProductService {
         return this._loading;
     }
 
+    public static hasErrors () : boolean {
+        return this._updateTimeout !== undefined;
+    }
+
     public static refreshProducts () {
         this._updateProducts().catch(err => {
             LOG.error(`Could not load products: `, err);
@@ -82,16 +89,50 @@ export class StoreProductService {
     private static async _updateProducts () : Promise<void> {
         this._loading = true;
         try {
-            const response : ReadonlyJsonAny | undefined = await HttpService.getJson(`${this._apiUrl}`);
+            const response: ReadonlyJsonAny | undefined = await HttpService.getJson(`${this._apiUrl}`);
             if ( isStoreIndexDTO(response) ) {
                 this._allProducts = response?.products?.items ?? [];
                 this._initialized = true;
                 this._observer.triggerEvent(StoreProductServiceEvent.UPDATED);
             } else {
-                LOG.error(`The response was not SendanorIndexDTO: `, response);
+                LOG.error(`The response was not StoreIndexDTO: `, response);
+                this._triggerUpdateLaterAfterError();
             }
+        } catch (err) {
+            LOG.error(`Error: `, err);
+            this._triggerUpdateLaterAfterError();
         } finally {
             this._loading = false;
+        }
+    }
+
+    /**
+     * Schedules an update later when errors happen
+     *
+     * @private
+     */
+    private static _triggerUpdateLaterAfterError () {
+        if (this._updateTimeout) {
+            clearTimeout(this._updateTimeout);
+            this._updateTimeout = undefined;
+        }
+        this._updateTimeout = setTimeout(
+            () => this._onUpdateErrorTimeout(),
+            MY_PRODUCT_LIST_FETCH_RETRY_TIMEOUT_ON_ERROR
+        );
+    }
+
+    /**
+     * Called after an error happens to try again
+     *
+     * @private
+     */
+    private static _onUpdateErrorTimeout () {
+        this._updateTimeout = undefined;
+        if (!this.isLoading()) {
+            this.refreshProducts();
+        } else {
+            LOG.debug(`We were already loading again`);
         }
     }
 
