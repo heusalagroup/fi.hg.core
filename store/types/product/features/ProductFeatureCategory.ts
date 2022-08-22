@@ -2,7 +2,7 @@
 
 export enum ProductFeatureCategory {
     DISK    = "DISK",
-    DISK_2    = "DISK_2",
+    DISK_2  = "DISK_2",
     MEMORY  = "MEMORY",
     CPU     = "CPU",
     NETWORK = "NETWORK",

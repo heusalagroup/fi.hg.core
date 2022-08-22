@@ -7,6 +7,10 @@ export enum ProductFeatureId {
     DISK_SIZE       = "DISK_SIZE",
     DISK_RAID       = "DISK_RAID",
     DISK_BACKUP     = "DISK_BACKUP",
+    DISK_2_TYPE       = "DISK_2_TYPE",
+    DISK_2_SIZE       = "DISK_2_SIZE",
+    DISK_2_RAID       = "DISK_2_RAID",
+    DISK_2_BACKUP     = "DISK_2_BACKUP",
     MEMORY_SIZE     = "MEMORY_SIZE",
     NETWORK_TYPE    = "NETWORK_TYPE",
     NETWORK_TRAFFIC = "NETWORK_TRAFFIC",
@@ -23,6 +27,10 @@ export function isProductFeatureId (value: any): value is ProductFeatureId {
         case ProductFeatureId.DISK_SIZE: return true;
         case ProductFeatureId.DISK_RAID: return true;
         case ProductFeatureId.DISK_BACKUP: return true;
+        case ProductFeatureId.DISK_2_TYPE: return true;
+        case ProductFeatureId.DISK_2_SIZE: return true;
+        case ProductFeatureId.DISK_2_RAID: return true;
+        case ProductFeatureId.DISK_2_BACKUP: return true;
         case ProductFeatureId.MEMORY_SIZE: return true;
         case ProductFeatureId.NETWORK_TYPE: return true;
         case ProductFeatureId.NETWORK_TRAFFIC: return true;
@@ -41,6 +49,10 @@ export function stringifyProductFeatureId (value: ProductFeatureId): string {
         case ProductFeatureId.DISK_SIZE : return 'DISK_SIZE';
         case ProductFeatureId.DISK_RAID : return 'DISK_RAID';
         case ProductFeatureId.DISK_BACKUP : return 'DISK_BACKUP';
+        case ProductFeatureId.DISK_2_TYPE : return 'DISK_2_TYPE';
+        case ProductFeatureId.DISK_2_SIZE : return 'DISK_2_SIZE';
+        case ProductFeatureId.DISK_2_RAID : return 'DISK_2_RAID';
+        case ProductFeatureId.DISK_2_BACKUP : return 'DISK_2_BACKUP';
         case ProductFeatureId.MEMORY_SIZE : return 'MEMORY_SIZE';
         case ProductFeatureId.NETWORK_TYPE : return 'NETWORK_TYPE';
         case ProductFeatureId.NETWORK_TRAFFIC : return 'NETWORK_TRAFFIC';
@@ -55,9 +67,14 @@ export function parseProductFeatureId (value: any): ProductFeatureId | undefined
     switch (value) {
         case 'VPS_TYPE' : return ProductFeatureId.VPS_TYPE;
         case 'VPS_OS' : return ProductFeatureId.VPS_OS;
+        case 'DISK_TYPE' : return ProductFeatureId.DISK_TYPE;
         case 'DISK_SIZE' : return ProductFeatureId.DISK_SIZE;
         case 'DISK_RAID' : return ProductFeatureId.DISK_RAID;
         case 'DISK_BACKUP' : return ProductFeatureId.DISK_BACKUP;
+        case 'DISK_2_TYPE' : return ProductFeatureId.DISK_2_TYPE;
+        case 'DISK_2_SIZE' : return ProductFeatureId.DISK_2_SIZE;
+        case 'DISK_2_RAID' : return ProductFeatureId.DISK_2_RAID;
+        case 'DISK_2_BACKUP' : return ProductFeatureId.DISK_2_BACKUP;
         case 'MEMORY_SIZE' : return ProductFeatureId.MEMORY_SIZE;
         case 'NETWORK_TYPE' : return ProductFeatureId.NETWORK_TYPE;
         case 'NETWORK_TRAFFIC' : return ProductFeatureId.NETWORK_TRAFFIC;
