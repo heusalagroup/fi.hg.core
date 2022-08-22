@@ -10,6 +10,10 @@ import { ProductPrice } from "../types/product/ProductPrice";
 import { InventoryState } from "../types/inventory/InventoryState";
 import { NetworkType } from "../types/product/features/NetworkType";
 import { RaidType } from "../types/product/features/RaidType";
+import { NetworkIpType } from "../types/product/features/NetworkIpType";
+import { NetworkZone } from "../types/product/features/NetworkZone";
+import { VirtualizationType } from "../types/product/features/VirtualizationType";
+import { OperatingSystem } from "../types/product/features/OperatingSystem";
 
 export function getProductFeatureCategoryTitleTranslationToken (categoryId: ProductFeatureCategory) {
     return `productFeatureCategory.${categoryId}`;
@@ -53,6 +57,18 @@ export const T_COMMON_PIECE = "common.piece";
 
 export function getNetworkTypeFeatureTranslation (networkType: NetworkType): string {
     return `networkType.${networkType}`;
+}
+
+export function getNetworkZoneFeatureTranslation (networkZone: NetworkZone): string {
+    return `networkZone.${networkZone}`;
+}
+
+export function getVirtualizationTypeFeatureTranslation (value: VirtualizationType): string {
+    return `virtualizationType.${value}`;
+}
+
+export function getOperatingSystemFeatureTranslation (value: OperatingSystem): string {
+    return `operatingSystem.${value}`;
 }
 
 export function getDiskRaidTypeFeatureTranslation (raidType: RaidType): string {
