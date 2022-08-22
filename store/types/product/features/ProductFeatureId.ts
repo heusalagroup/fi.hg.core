@@ -17,9 +17,9 @@ export enum ProductFeatureId {
     NETWORK_IP6     = "NETWORK_IP6",
     NETWORK_NET6     = "NETWORK_NET6",
     NETWORK_TRAFFIC = "NETWORK_TRAFFIC",
+    NETWORK_ZONE    = "NETWORK_ZONE",
     CPU_SHARE       = "CPU_SHARE",
-    CPU_AMOUNT      = "CPU_AMOUNT",
-    NETWORK_ZONE    = "NETWORK_ZONE"
+    CPU_AMOUNT      = "CPU_AMOUNT"
 }
 
 export function isProductFeatureId (value: any): value is ProductFeatureId {
