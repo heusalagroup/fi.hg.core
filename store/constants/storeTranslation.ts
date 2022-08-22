@@ -63,6 +63,10 @@ export function getNetworkZoneFeatureTranslation (networkZone: NetworkZone): str
     return `networkZone.${networkZone}`;
 }
 
+export function getNetworkIpTypeFeatureTranslation (networkIpType: NetworkIpType): string {
+    return `networkIpType.${networkIpType}`;
+}
+
 export function getVirtualizationTypeFeatureTranslation (value: VirtualizationType): string {
     return `virtualizationType.${value}`;
 }
