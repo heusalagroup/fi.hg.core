@@ -1,5 +1,5 @@
 /**
- * Unit test for MemoryRepository and hgrs.
+ * Unit test for MemoryRepository.
  *
  * 
  */
@@ -8,7 +8,8 @@
 import { isStoredRepositoryItem, StoredRepositoryItem, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { MemoryRepository } from "./MemoryRepository";
 import { RepositoryEntry } from "./types/RepositoryEntry";
-import { isArrayOf } from "../../core/modules/lodash";
+import { isArrayOf } from "../modules/lodash";
+import { isJson } from "../Json";
 
 
 const test = {
@@ -16,6 +17,10 @@ const test = {
 };
 const test2 = {
     id: "2", target: "test2"
+};
+
+const uniqueTest = {
+    id: "22", target: "unique"
 };
 
 
@@ -33,27 +38,22 @@ interface StoredTestRepositoryItem extends StoredRepositoryItem {
 
 }
 
-describe('system', () => {
 
-    describe('MemoryRepository', () => {
+describe('MemoryRepository', () => {
 
-        describe('#construct', () => {
+    describe('#construct', () => {
 
-            it('can create unauthenticated client object', () => {
-                const memoryrepository = new MemoryRepository(isStoredRepositoryItem);
-                expect(memoryrepository).toBeDefined();
-            });
+             it('can create memoryrepository', () => {
+                 const memoryrepository = new MemoryRepository(isStoredRepositoryItem);
+                 expect(memoryrepository).toBeDefined();
+             });
 
-        });
+         });
 
-        describe('#getAll', () => {
+         describe('#getAll', () => {
 
-            const memoryRepository: MemoryRepository<StoredTestRepositoryItem> = new MemoryRepository<StoredTestRepositoryItem>(isStoredRepositoryItem);
+             const memoryRepository: MemoryRepository<StoredTestRepositoryItem> = new MemoryRepository<StoredTestRepositoryItem>(isStoredRepositoryItem);
 
-            beforeAll(() => {
-                // expect(client.getState()).toBe(HttpRepositoryClientState.UNAUTHENTICATED);
-                //const service = new HttpRepositoryClient(`${BACKEND_URL}`);
-            });
 
              it('can list items when no items exists', async () => {
                  const list = await memoryRepository.getAll();
@@ -74,7 +74,6 @@ describe('system', () => {
                  expect(item?.data.target).toBe("test");
 
                  const list = await memoryRepository.getAll();
-                 //console.log("list", JSON.stringify(list))
 
                  expect(isArrayOf(list)).toBe(true);
                  expect(list?.length).toBe(1);
@@ -87,7 +86,7 @@ describe('system', () => {
 
              })
 
-             it('can find items: getAll, getSome and findById', async () => {
+             it('can find items: getSome, findById, getAllByProperty, findByProperty', async () => {
 
                  const list = await memoryRepository.getAll();
 
@@ -98,7 +97,6 @@ describe('system', () => {
                  expect(list[1]?.data.target).toBe("test2")
 
                  //getsome
-
                  const list1 = await memoryRepository.getSome([list[0]?.id]);
 
                  expect(isArrayOf(list1)).toBe(true);
@@ -107,7 +105,6 @@ describe('system', () => {
                  expect(list1[0]?.data.target).toBe("test");
 
                  //findById
-
                  const item = await memoryRepository.findById(list[1]?.id);
 
                  expect(isArrayOf(list1)).toBe(true);
@@ -126,6 +123,16 @@ describe('system', () => {
                  expect(propertyList[0].data.target).toBe("test2");
                  expect(propertyList[1].data.target).toBe("test2");
 
+                 //findByProperty
+                 const itemUnique: RepositoryEntry<any> = await memoryRepository.createItem(uniqueTest);
+                 const propertyItemUnique = await memoryRepository.findByProperty('target', itemUnique?.data.target);
+
+                 expect(isJson(propertyItemUnique)).toBe(true);
+                 expect(isArrayOf(propertyItemUnique)).toBe(false);
+                 expect(propertyItemUnique?.data.target).toBe("unique");
+
+                 const propertyItemUniqueId = await memoryRepository.findByProperty('id', itemUnique?.data.id);
+                 expect(propertyItemUnique?.data.id).toBe("22");
 
              });
 
@@ -161,13 +168,23 @@ describe('system', () => {
                  expect(id).not.toBe('');
                  expect(item4?.data.target).toBe("test");
 
-                 const updatedItem = await memoryrepository.findByIdAndUpdate(
+                 //findByIdAndUpdate
+                 let updatedItem = await memoryrepository.findByIdAndUpdate(
                      id,
                      modification.data
                  );
                  expect(updatedItem?.id).toBe(id);
                  expect(updatedItem?.data.id).toBe("11");
                  expect(updatedItem?.data.target).toBe("modification");
+
+                 //update
+                 updatedItem = await memoryrepository.update(
+                     id,
+                     test
+                 );
+                 expect(updatedItem?.id).toBe(id);
+                 expect(updatedItem?.data.id).toBe("1");
+                 expect(updatedItem?.data.target).toBe("test");
 
              });
 
@@ -201,7 +218,32 @@ describe('system', () => {
 
          })
 
+         describe('wait by id', () => {
+             let id: string;
+             let item5: RepositoryEntry<any>;
+
+             const memoryrepository = new MemoryRepository(isStoredRepositoryItem);
+
+
+             it('can wait and find item by it id', async () => {
+                 const item5: RepositoryEntry<any> = await memoryrepository.createItem(test);
+                 id = item5?.id;
+
+                 expect(id).toBeDefined();
+                 expect(id).not.toBe('');
+                 expect(item5?.data.target).toBe("test");
+
+                 const waitItem = await memoryrepository.waitById(id, false, undefined);
+
+                 expect(waitItem?.id).toBe(id);
+
+                 const waitItem2 = await memoryrepository.waitById(id, true, 100);
+                 expect(waitItem2?.id).toBe(id);
+
+             });
+
+         })
+
+
 
      });
-
- });
