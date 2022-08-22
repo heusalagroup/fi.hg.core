@@ -13,6 +13,9 @@ export enum ProductFeatureId {
     DISK_2_BACKUP     = "DISK_2_BACKUP",
     MEMORY_SIZE     = "MEMORY_SIZE",
     NETWORK_TYPE    = "NETWORK_TYPE",
+    NETWORK_IP4     = "NETWORK_IP4",
+    NETWORK_IP6     = "NETWORK_IP6",
+    NETWORK_NET6     = "NETWORK_NET6",
     NETWORK_TRAFFIC = "NETWORK_TRAFFIC",
     CPU_SHARE       = "CPU_SHARE",
     CPU_AMOUNT      = "CPU_AMOUNT",
@@ -33,6 +36,9 @@ export function isProductFeatureId (value: any): value is ProductFeatureId {
         case ProductFeatureId.DISK_2_BACKUP: return true;
         case ProductFeatureId.MEMORY_SIZE: return true;
         case ProductFeatureId.NETWORK_TYPE: return true;
+        case ProductFeatureId.NETWORK_IP4: return true;
+        case ProductFeatureId.NETWORK_IP6: return true;
+        case ProductFeatureId.NETWORK_NET6: return true;
         case ProductFeatureId.NETWORK_TRAFFIC: return true;
         case ProductFeatureId.CPU_SHARE: return true;
         case ProductFeatureId.CPU_AMOUNT: return true;
@@ -55,6 +61,9 @@ export function stringifyProductFeatureId (value: ProductFeatureId): string {
         case ProductFeatureId.DISK_2_BACKUP : return 'DISK_2_BACKUP';
         case ProductFeatureId.MEMORY_SIZE : return 'MEMORY_SIZE';
         case ProductFeatureId.NETWORK_TYPE : return 'NETWORK_TYPE';
+        case ProductFeatureId.NETWORK_IP4 : return 'NETWORK_IP4';
+        case ProductFeatureId.NETWORK_IP6 : return 'NETWORK_IP6';
+        case ProductFeatureId.NETWORK_NET6 : return 'NETWORK_NET6';
         case ProductFeatureId.NETWORK_TRAFFIC : return 'NETWORK_TRAFFIC';
         case ProductFeatureId.CPU_SHARE : return 'CPU_SHARE';
         case ProductFeatureId.CPU_AMOUNT : return 'CPU_AMOUNT';
@@ -77,6 +86,9 @@ export function parseProductFeatureId (value: any): ProductFeatureId | undefined
         case 'DISK_2_BACKUP' : return ProductFeatureId.DISK_2_BACKUP;
         case 'MEMORY_SIZE' : return ProductFeatureId.MEMORY_SIZE;
         case 'NETWORK_TYPE' : return ProductFeatureId.NETWORK_TYPE;
+        case 'NETWORK_IP4' : return ProductFeatureId.NETWORK_IP4;
+        case 'NETWORK_IP6' : return ProductFeatureId.NETWORK_IP6;
+        case 'NETWORK_NET6' : return ProductFeatureId.NETWORK_NET6;
         case 'NETWORK_TRAFFIC' : return ProductFeatureId.NETWORK_TRAFFIC;
         case 'CPU_SHARE' : return ProductFeatureId.CPU_SHARE;
         case 'CPU_AMOUNT' : return ProductFeatureId.CPU_AMOUNT;
