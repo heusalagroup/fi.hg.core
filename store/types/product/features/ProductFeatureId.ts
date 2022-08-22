@@ -9,7 +9,8 @@ export enum ProductFeatureId {
     NETWORK_TYPE    = "NETWORK_TYPE",
     NETWORK_TRAFFIC = "NETWORK_TRAFFIC",
     CPU_SHARE       = "CPU_SHARE",
-    CPU_AMOUNT      = "CPU_AMOUNT"
+    CPU_AMOUNT      = "CPU_AMOUNT",
+    NETWORK_ZONE    = "NETWORK_ZONE"
 }
 
 export function isProductFeatureId (value: any): value is ProductFeatureId {
@@ -23,6 +24,7 @@ export function isProductFeatureId (value: any): value is ProductFeatureId {
         case ProductFeatureId.NETWORK_TRAFFIC: return true;
         case ProductFeatureId.CPU_SHARE: return true;
         case ProductFeatureId.CPU_AMOUNT: return true;
+        case ProductFeatureId.NETWORK_ZONE: return true;
         default: return false;
     }
 }
@@ -38,6 +40,7 @@ export function stringifyProductFeatureId (value: ProductFeatureId): string {
         case ProductFeatureId.NETWORK_TRAFFIC : return 'NETWORK_TRAFFIC';
         case ProductFeatureId.CPU_SHARE : return 'CPU_SHARE';
         case ProductFeatureId.CPU_AMOUNT : return 'CPU_AMOUNT';
+        case ProductFeatureId.NETWORK_ZONE : return 'NETWORK_ZONE';
     }
     throw new TypeError(`Unsupported ProductFeatureId value: ${value}`);
 }
@@ -54,6 +57,7 @@ export function parseProductFeatureId (value: any): ProductFeatureId | undefined
         case 'NETWORK_TRAFFIC' : return ProductFeatureId.NETWORK_TRAFFIC;
         case 'CPU_SHARE' : return ProductFeatureId.CPU_SHARE;
         case 'CPU_AMOUNT' : return ProductFeatureId.CPU_AMOUNT;
+        case 'NETWORK_ZONE' : return ProductFeatureId.NETWORK_ZONE;
         default    : return undefined;
     }
 
