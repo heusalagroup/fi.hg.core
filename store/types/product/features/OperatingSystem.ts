@@ -9,6 +9,7 @@ export enum OperatingSystem {
     LINUX_DEBIAN_10        = "LINUX_DEBIAN_10",
     LINUX_ARCH             = "LINUX_ARCH",
     LINUX_NIXOS            = "LINUX_NIXOS",
+    LINUX_FREEBSD          = "LINUX_FREEBSD",
     FREEBSD                = "FREEBSD",
 }
 
@@ -20,6 +21,7 @@ export function isOperatingSystem (value: any): value is OperatingSystem {
         case OperatingSystem.LINUX_DEBIAN_10:
         case OperatingSystem.LINUX_ARCH:
         case OperatingSystem.LINUX_NIXOS:
+        case OperatingSystem.LINUX_FREEBSD:
         case OperatingSystem.FREEBSD:
             return true;
         default:
@@ -40,6 +42,7 @@ export function stringifyOperatingSystem (value: OperatingSystem): string {
         case OperatingSystem.LINUX_ARCH              : return 'LINUX_ARCH';
         case OperatingSystem.LINUX_NIXOS             : return 'LINUX_NIXOS';
         case OperatingSystem.FREEBSD                 : return 'FREEBSD';
+        case OperatingSystem.LINUX_FREEBSD           : return 'LINUX_FREEBSD';
     }
     throw new TypeError(`Unsupported OperatingSystem value: ${value}`);
 }
@@ -60,6 +63,7 @@ export function parseOperatingSystem (value: any): OperatingSystem | undefined {
         case 'LINUX_ARCH'             : return OperatingSystem.LINUX_ARCH;
         case 'LINUX_NIXOS'            : return OperatingSystem.LINUX_NIXOS;
         case 'FREEBSD'                : return OperatingSystem.FREEBSD;
+        case 'LINUX_FREEBSD'          : return OperatingSystem.LINUX_FREEBSD;
 
         default     : return undefined;
     }
