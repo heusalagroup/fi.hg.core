@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 export enum ProductFeatureCategory {
+    SUPPORT    = "SUPPORT",
     DISK    = "DISK",
     DISK_2  = "DISK_2",
     MEMORY  = "MEMORY",
@@ -17,6 +18,7 @@ export function isProductFeatureCategory (value: any): value is ProductFeatureCa
         case ProductFeatureCategory.CPU: return true;
         case ProductFeatureCategory.NETWORK: return true;
         case ProductFeatureCategory.VPS: return true;
+        case ProductFeatureCategory.SUPPORT: return true;
         default: return false;
     }
 }
@@ -29,6 +31,7 @@ export function stringifyProductFeatureCategory (value: ProductFeatureCategory):
         case ProductFeatureCategory.CPU : return 'CPU';
         case ProductFeatureCategory.NETWORK : return 'NETWORK';
         case ProductFeatureCategory.VPS : return 'VPS';
+        case ProductFeatureCategory.SUPPORT : return 'SUPPORT';
     }
     throw new TypeError(`Unsupported ProductFeatureCategory value: ${value}`);
 }
@@ -41,6 +44,7 @@ export function parseProductFeatureCategory (value: any): ProductFeatureCategory
         case 'CPU' : return ProductFeatureCategory.CPU;
         case 'NETWORK' : return ProductFeatureCategory.NETWORK;
         case 'VPS' : return ProductFeatureCategory.VPS;
+        case 'SUPPORT' : return ProductFeatureCategory.SUPPORT;
         default    : return undefined;
     }
 }

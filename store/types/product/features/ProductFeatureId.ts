@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 export enum ProductFeatureId {
+    WP        = "WP",
     VPS_TYPE        = "VPS_TYPE",
     VPS_OS          = "VPS_OS",
     DISK_TYPE       = "DISK_TYPE",
@@ -24,31 +25,35 @@ export enum ProductFeatureId {
 
 export function isProductFeatureId (value: any): value is ProductFeatureId {
     switch (value) {
-        case ProductFeatureId.VPS_TYPE: return true;
-        case ProductFeatureId.VPS_OS: return true;
-        case ProductFeatureId.DISK_TYPE: return true;
-        case ProductFeatureId.DISK_SIZE: return true;
-        case ProductFeatureId.DISK_RAID: return true;
-        case ProductFeatureId.DISK_BACKUP: return true;
-        case ProductFeatureId.DISK_2_TYPE: return true;
-        case ProductFeatureId.DISK_2_SIZE: return true;
-        case ProductFeatureId.DISK_2_RAID: return true;
-        case ProductFeatureId.DISK_2_BACKUP: return true;
-        case ProductFeatureId.MEMORY_SIZE: return true;
-        case ProductFeatureId.NETWORK_TYPE: return true;
-        case ProductFeatureId.NETWORK_IP4: return true;
-        case ProductFeatureId.NETWORK_IP6: return true;
-        case ProductFeatureId.NETWORK_NET6: return true;
-        case ProductFeatureId.NETWORK_TRAFFIC: return true;
-        case ProductFeatureId.CPU_SHARE: return true;
-        case ProductFeatureId.CPU_AMOUNT: return true;
-        case ProductFeatureId.NETWORK_ZONE: return true;
-        default: return false;
+        case ProductFeatureId.WP:
+        case ProductFeatureId.VPS_TYPE:
+        case ProductFeatureId.VPS_OS:
+        case ProductFeatureId.DISK_TYPE:
+        case ProductFeatureId.DISK_SIZE:
+        case ProductFeatureId.DISK_RAID:
+        case ProductFeatureId.DISK_BACKUP:
+        case ProductFeatureId.DISK_2_TYPE:
+        case ProductFeatureId.DISK_2_SIZE:
+        case ProductFeatureId.DISK_2_RAID:
+        case ProductFeatureId.DISK_2_BACKUP:
+        case ProductFeatureId.MEMORY_SIZE:
+        case ProductFeatureId.NETWORK_TYPE:
+        case ProductFeatureId.NETWORK_IP4:
+        case ProductFeatureId.NETWORK_IP6:
+        case ProductFeatureId.NETWORK_NET6:
+        case ProductFeatureId.NETWORK_TRAFFIC:
+        case ProductFeatureId.CPU_SHARE:
+        case ProductFeatureId.CPU_AMOUNT:
+        case ProductFeatureId.NETWORK_ZONE:
+            return true;
+        default:
+            return false;
     }
 }
 
 export function stringifyProductFeatureId (value: ProductFeatureId): string {
     switch (value) {
+        case ProductFeatureId.WP : return 'WP';
         case ProductFeatureId.VPS_TYPE : return 'VPS_TYPE';
         case ProductFeatureId.VPS_OS : return 'VPS_OS';
         case ProductFeatureId.DISK_TYPE : return 'DISK_TYPE';
@@ -74,6 +79,7 @@ export function stringifyProductFeatureId (value: ProductFeatureId): string {
 
 export function parseProductFeatureId (value: any): ProductFeatureId | undefined {
     switch (value) {
+        case 'WP' : return ProductFeatureId.WP;
         case 'VPS_TYPE' : return ProductFeatureId.VPS_TYPE;
         case 'VPS_OS' : return ProductFeatureId.VPS_OS;
         case 'DISK_TYPE' : return ProductFeatureId.DISK_TYPE;
