@@ -10,8 +10,8 @@ export interface Product {
     readonly type      : ProductType;
     readonly title     : string;
     readonly summary   : string;
-    readonly features  : ProductFeature[];
-    readonly prices    : ProductPrice[];
+    readonly features  : readonly ProductFeature[];
+    readonly prices    : readonly ProductPrice[];
 }
 
 export function isProduct (value: any): value is Product {
