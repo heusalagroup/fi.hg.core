@@ -31,6 +31,10 @@ export function isProductPrice (value: any): value is ProductPrice {
     );
 }
 
+export function isProductPriceOrUndefined (value: any): value is ProductPrice | undefined {
+    return value === undefined || isProductPrice(value);
+}
+
 export function stringifyProductPrice (value: ProductPrice): string {
     return `ProductPrice(${value})`;
 }

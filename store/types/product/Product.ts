@@ -26,6 +26,10 @@ export function isProduct (value: any): value is Product {
     );
 }
 
+export function isProductOrUndefined (value: any): value is Product | undefined {
+    return value === undefined || isProduct(value);
+}
+
 export function stringifyProduct (value: Product): string {
     if ( !isProduct(value) ) throw new TypeError(`Not Product: ${value}`);
     return `Product(${value?.id})`;
