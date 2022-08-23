@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 export enum ProductFeatureCategory {
-    SUPPORT    = "SUPPORT",
+    SUPPORT = "SUPPORT",
     DISK    = "DISK",
     DISK_2  = "DISK_2",
     MEMORY  = "MEMORY",
