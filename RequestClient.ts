@@ -9,6 +9,7 @@ import { REQUEST_CLIENT_FETCH_ENABLED, REQUEST_CLIENT_NODE_ENABLED } from "./req
 import { NodeRequestClient } from "./requestClient/node/NodeRequestClient";
 import { FetchRequestClient } from "./requestClient/fetch/FetchRequestClient";
 import { LogLevel } from "./types/LogLevel";
+import { WindowObjectService } from "../frontend/services/WindowObjectService";
 
 export const HTTP = REQUEST_CLIENT_NODE_ENABLED ? require('http') : undefined;
 export const HTTPS = REQUEST_CLIENT_NODE_ENABLED ? require('https') : undefined;
@@ -21,7 +22,6 @@ export class RequestClient {
         LOG.setLogLevel(level);
         NodeRequestClient.setLogLevel(level);
     }
-
 
     private static _client : RequestClientInterface = RequestClient._initClient();
 
@@ -78,7 +78,6 @@ export class RequestClient {
         return await this._client.textRequest(RequestMethod.DELETE, url, headers, data);
     }
 
-
     public static async jsonRequest (
         method   : RequestMethod,
         url      : string,
@@ -133,24 +132,16 @@ export class RequestClient {
     }
 
     private static _initClient () : RequestClientInterface {
-
-        if ( REQUEST_CLIENT_FETCH_ENABLED  && this._hasWindowObject() ) {
+        if ( REQUEST_CLIENT_FETCH_ENABLED && WindowObjectService.hasWindow() ) {
             LOG.debug('Detected browser environment');
-            return new FetchRequestClient( window.fetch.bind(window) );
+            const w = WindowObjectService.getWindow();
+            return new FetchRequestClient( w.fetch.bind(w) );
         }
-
         if ( REQUEST_CLIENT_NODE_ENABLED ) {
             // Could not control this with LOG_LEVEL on rolluped content
             // LOG.debug('Detected NodeJS environment');
             return new NodeRequestClient(HTTP, HTTPS);
         }
-
         throw new TypeError(`Could not detect request client implementation`);
-
     }
-
-    private static _hasWindowObject () : boolean {
-        return typeof window !== 'undefined';
-    }
-
 }
