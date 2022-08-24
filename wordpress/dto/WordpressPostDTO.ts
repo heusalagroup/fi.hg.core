@@ -1,13 +1,12 @@
-import {hasNoOtherKeysInDevelopment, isRegularObject, isString} from "../../modules/lodash";
+import {hasNoOtherKeysInDevelopment, isRegularObject} from "../../modules/lodash";
 import { WP_Types} from "./WordpressTypesDTO";
 
-export interface WordpressPageDTO {
-    title:{rendered:string, protected:boolean};
-    content:{rendered:string, protected:boolean};
-    type?:string;
-    id?:string;
+export interface WordpressPostDTO {
+    title:object;
+    content:object;
     date?: string | null;
     status?: WP_Types;
+    id?:string;
     generated_slug?:string;
     permalink_template?:string;
     parent?:number;
@@ -19,21 +18,19 @@ export interface WordpressPageDTO {
     menu_order?:number;
     meta?:object;
     template?:string;
+    type?:string;
     password?:string;
     date_gtm?: string | null;
     slug?: string;
 }
 
-export function isWordpressPageDTO (value:any): value is WordpressPageDTO {
+export function isWordpressPostDTO (value:any): value is WordpressPostDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
-            'id',
-            'title',
-            'content',
-            'type',
+            'Title',
+            'Content',
         ])
-        && isString(value?.id)
         && isRegularObject(value?.title)
         && isRegularObject(value?.content)
     )
