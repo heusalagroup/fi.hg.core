@@ -9,7 +9,7 @@ import { REQUEST_CLIENT_FETCH_ENABLED, REQUEST_CLIENT_NODE_ENABLED } from "./req
 import { NodeRequestClient } from "./requestClient/node/NodeRequestClient";
 import { FetchRequestClient } from "./requestClient/fetch/FetchRequestClient";
 import { LogLevel } from "./types/LogLevel";
-import { WindowObjectService } from "../frontend/services/WindowObjectService";
+import { WindowObjectService } from "./WindowObjectService";
 
 export const HTTP = REQUEST_CLIENT_NODE_ENABLED ? require('http') : undefined;
 export const HTTPS = REQUEST_CLIENT_NODE_ENABLED ? require('https') : undefined;
