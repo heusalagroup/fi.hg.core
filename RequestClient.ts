@@ -132,16 +132,20 @@ export class RequestClient {
     }
 
     private static _initClient () : RequestClientInterface {
-        if ( REQUEST_CLIENT_FETCH_ENABLED && WindowObjectService.hasWindow() ) {
-            LOG.debug('Detected browser environment');
+        if (REQUEST_CLIENT_FETCH_ENABLED) {
             const w = WindowObjectService.getWindow();
-            return new FetchRequestClient( w.fetch.bind(w) );
-        }
-        if ( REQUEST_CLIENT_NODE_ENABLED ) {
+            if ( w ) {
+                LOG.debug('Detected browser environment');
+                return new FetchRequestClient( w.fetch.bind(w) );
+            } else {
+                throw new TypeError(`RequestClient: Could not detect request client implementation: No window object`);
+            }
+        } else if ( REQUEST_CLIENT_NODE_ENABLED ) {
             // Could not control this with LOG_LEVEL on rolluped content
             // LOG.debug('Detected NodeJS environment');
             return new NodeRequestClient(HTTP, HTTPS);
+        } else {
+            throw new TypeError(`RequestClient: Could not detect request client implementation`);
         }
-        throw new TypeError(`Could not detect request client implementation`);
     }
 }
