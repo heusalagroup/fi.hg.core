@@ -3,17 +3,20 @@
 export class WindowObjectService {
 
     public static hasWindow (): boolean {
-        return typeof window !== 'undefined';
+        return !!_getWindow();
     }
 
     public static getWindow (): Window | undefined {
-        if ( typeof window === "undefined" ) return undefined;
-        return window;
+        return _getWindow();
     }
 
     public static getParent (): Window | undefined {
-        if ( typeof window === "undefined" ) return undefined;
-        return window?.parent;
+        return _getWindow()?.parent;
     }
 
+}
+
+function _getWindow () : Window | undefined {
+    if ( typeof window === "undefined" ) return undefined;
+    return window;
 }
