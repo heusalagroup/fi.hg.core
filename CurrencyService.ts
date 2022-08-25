@@ -1,29 +1,60 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { Currency } from "./types/Currency";
-import { CurrencyExchangeService } from "./CurrencyExchangeService";
+import { CurrencyFetchRatesCallback } from "./types/CurrencyFetchRatesCallback";
+import { LogService } from "./LogService";
+import { CurrencyRates } from "./types/CurrencyRates";
+import { CurrencyUtils } from "./CurrencyUtils";
 
-export interface CurrencyExchangeCallback {
-    (
-        amount    : number,
-        from      : Currency,
-        to        : Currency,
-        accuracy ?: number
-    ) : Promise<number>;
-}
+const LOG = LogService.createLogger('CurrencyService');
 
-export class CurrencyService implements CurrencyExchangeService {
+const DEFAULT_FETCH_INTERVAL_SECONDS = 24*60*60;
 
-    private readonly _exchangeCallback : CurrencyExchangeCallback;
+export class CurrencyService {
+
+    private readonly _fetchRatesCallback : CurrencyFetchRatesCallback;
+    private _rates : CurrencyRates | undefined;
+    private _fetchIntervalMinutes : number;
+    private _fetchIntervalId : any | undefined;
 
     /**
      *
      * @param callback
+     * @param fetchInterval
      */
     public constructor (
-        callback: CurrencyExchangeCallback
+        callback: CurrencyFetchRatesCallback,
+        fetchInterval : number = DEFAULT_FETCH_INTERVAL_SECONDS
     ) {
-        this._exchangeCallback = callback;
+        this._fetchRatesCallback = callback;
+        this._rates = undefined;
+        this._fetchIntervalMinutes = fetchInterval;
+    }
+
+    public async initialize () : Promise<void> {
+        await this._updateRates();
+        this._startInterval();
+    }
+
+    public getRates () : CurrencyRates | undefined {
+        return this._rates;
+    }
+
+    /**
+     * Set rates directly
+     * @param rates
+     */
+    public setRates (rates : CurrencyRates) {
+        this._rates = rates;
+    }
+
+    /**
+     * Update rates using fetch callback
+     */
+    public updateRates () {
+        this._updateRates().catch((err) => {
+            LOG.error(`Could not update rates: `, err);
+        });
     }
 
     /**
@@ -37,9 +68,34 @@ export class CurrencyService implements CurrencyExchangeService {
         amount    : number,
         from      : Currency,
         to        : Currency,
-        accuracy ?: number
+        accuracy  : number
     ) : Promise<number> {
-        return this._exchangeCallback(amount, from, to, accuracy);
+        return CurrencyUtils.convertCurrencyAmount(this._rates, amount, from, to, accuracy);
+    }
+
+    /**
+     *
+     * @private
+     */
+    private async _updateRates () {
+        this._rates = await this._fetchRatesCallback();
+    }
+
+    private _stopInterval () {
+        if (this._fetchIntervalId !== undefined) {
+            clearInterval(this._fetchIntervalId);
+            this._fetchIntervalId = undefined;
+        }
+    }
+
+    private _startInterval () {
+        this._stopInterval();
+        this._fetchIntervalId = setInterval(
+            () => {
+                this.updateRates();
+            },
+            this._fetchIntervalMinutes * 1000
+        );
     }
 
 }
