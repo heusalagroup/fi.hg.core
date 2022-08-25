@@ -9,20 +9,21 @@ import {
     hasNoOtherKeys,
     isRegularObject
 } from "../modules/lodash";
+import { Currency } from "./Currency";
 
 /**
  * ECB backend's DTO containing euro exchange rates
  * @see https://github.com/heusalagroup/ecb.hg.fi
  */
 export interface EcbDTO {
-    readonly euroRates : CurrencyRates;
+    readonly [Currency.EUR] : CurrencyRates;
 }
 
 export function createEcbDTO (
-    euroRates: CurrencyRates
+    eurRates: CurrencyRates
 ) : EcbDTO {
     return {
-        euroRates
+        [Currency.EUR]: eurRates
     };
 }
 
@@ -30,9 +31,9 @@ export function isEcbDTO (value: any) : value is EcbDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
-            'euroRates'
+            Currency.EUR
         ])
-        && isCurrencyRates(value?.euroRates)
+        && isCurrencyRates(value[Currency.EUR])
     );
 }
 
@@ -41,9 +42,9 @@ export function explainEcbDTO (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeys(value, [
-                'euroRates'
+                Currency.EUR
             ]),
-            explainProperty("euroRates", explainCurrencyRates(value?.euroRates))
+            explainProperty(Currency.EUR, explainCurrencyRates(value[Currency.EUR]))
         ]
     );
 }
