@@ -13,8 +13,8 @@ const DEFAULT_FETCH_INTERVAL_SECONDS = 24*60*60;
 export class CurrencyService {
 
     private readonly _fetchRatesCallback : CurrencyFetchRatesCallback;
+    private readonly _fetchIntervalMinutes : number;
     private _rates : CurrencyRates | undefined;
-    private _fetchIntervalMinutes : number;
     private _fetchIntervalId : any | undefined;
 
     /**

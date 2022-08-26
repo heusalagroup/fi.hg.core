@@ -49,20 +49,10 @@ export class CurrencyUtils {
         to        : Currency,
         accuracy  : number = 10
     ) : number {
-        if (from === Currency.EUR) {
-            const toRate = get(rates, to);
-            if (toRate === undefined) throw new TypeError(`CurrencyService: To: No exchange rate: ${to}`);
-            return CurrencyUtils.roundByAccuracy( amount * toRate, accuracy);
-        }
-        if (to === Currency.EUR) {
-            const fromRate = get(rates, from);
-            if (fromRate === undefined) throw new TypeError(`CurrencyService: From: No exchange rate: ${from}`);
-            return CurrencyUtils.roundByAccuracy( amount / fromRate, accuracy);
-        }
         const toRate = get(rates, to);
-        if (toRate === undefined) throw new TypeError(`CurrencyService: To: No exchange rate: ${to}`);
+        if (toRate === undefined) throw new TypeError(`CurrencyService: To: No exchange rate found: ${to}`);
         const fromRate = get(rates, from);
-        if (fromRate === undefined) throw new TypeError(`CurrencyService: From: No exchange rate: ${from}`);
+        if (fromRate === undefined) throw new TypeError(`CurrencyService: From: No exchange rate found: ${from}`);
         return CurrencyUtils.roundByAccuracy( (amount / fromRate) * toRate, accuracy);
     }
 

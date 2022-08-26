@@ -13,8 +13,9 @@ import {
 } from "../modules/lodash";
 
 export interface CurrencyRates {
-    readonly [Currency.USD]: number,
-    readonly [Currency.GBP]: number
+    readonly [Currency.EUR]: number;
+    readonly [Currency.USD]: number;
+    readonly [Currency.GBP]: number;
 }
 
 export function createCurrencyRates (
@@ -22,6 +23,7 @@ export function createCurrencyRates (
     gbp: number
 ): CurrencyRates {
     return {
+        [Currency.EUR]: 1,
         [Currency.USD]: usd,
         [Currency.GBP]: gbp
     };
@@ -31,9 +33,11 @@ export function isCurrencyRates (value: any): value is CurrencyRates {
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
+            Currency.EUR,
             Currency.USD,
             Currency.GBP
         ])
+        && isNumber(value[Currency.EUR])
         && isNumber(value[Currency.USD])
         && isNumber(value[Currency.GBP])
     );
@@ -44,9 +48,11 @@ export function explainCurrencyRates (value: any): string {
         [
             explainRegularObject(value)
             && explainNoOtherKeys(value, [
+                Currency.EUR,
                 Currency.USD,
                 Currency.GBP
             ])
+            && explainProperty(Currency.EUR, explainNumber(value[Currency.EUR]))
             && explainProperty(Currency.USD, explainNumber(value[Currency.USD]))
             && explainProperty(Currency.GBP, explainNumber(value[Currency.GBP]))
         ]
