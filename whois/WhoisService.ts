@@ -25,6 +25,9 @@ export interface WhoisServerList {
     readonly [key: string]: string | WhoisServerOptions | null;
 }
 
+/**
+ * @see NodeWhoisService at https://github.com/heusalagroup/fi.hg.node
+ */
 export interface WhoisService {
 
     whoisLookup (
