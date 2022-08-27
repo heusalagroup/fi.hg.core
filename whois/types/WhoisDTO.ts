@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 // import { explain, explainNoOtherKeys, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isRegularObject } from "../../modules/lodash";
-import { WhoisLookupResult } from "../WhoisService";
+import { WhoisLookupResult } from "./WhoisLookupResult";
 
 export interface WhoisDTO {
     readonly payload : readonly WhoisLookupResult[];
