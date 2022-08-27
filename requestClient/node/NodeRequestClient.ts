@@ -64,7 +64,6 @@ export class NodeRequestClient implements RequestClientInterface {
         LOG.setLogLevel(level);
     }
 
-
     private readonly _http : HttpModule;
     private readonly _https : HttpModule;
 
@@ -98,23 +97,19 @@ export class NodeRequestClient implements RequestClientInterface {
         headers ?: IncomingHttpHeaders,
         data    ?: string
     ) : Promise< string | undefined > {
-
         const options : HttpClientOptions = {
             method: 'GET',
             headers: {
                 'Content-Type': ContentType.TEXT,
             }
         };
-
         if (headers) {
             options.headers = {
                 ...options.headers,
                 ...headers
             };
         }
-
         return await this._textRequest(RequestMethod.GET, url, options, data).then(NodeRequestClient._successTextResponse);
-
     }
 
     private async _putText (
@@ -122,23 +117,19 @@ export class NodeRequestClient implements RequestClientInterface {
         headers ?: IncomingHttpHeaders,
         data    ?: string
     ) : Promise<string | undefined > {
-
         const options : HttpClientOptions = {
             method: 'PUT',
             headers: {
                 'Content-Type': ContentType.TEXT,
             }
         };
-
         if (headers) {
             options.headers = {
                 ...options.headers,
                 ...headers
             };
         }
-
         return await this._textRequest(RequestMethod.PUT, url, options, data).then(NodeRequestClient._successTextResponse);
-
     }
 
     private async _postText (
@@ -146,23 +137,19 @@ export class NodeRequestClient implements RequestClientInterface {
         headers ?: IncomingHttpHeaders,
         data    ?: string
     ) : Promise<string| undefined> {
-
         const options : HttpClientOptions = {
             method: 'POST',
             headers: {
                 'Content-Type': ContentType.TEXT,
             }
         };
-
         if (headers) {
             options.headers = {
                 ...options.headers,
                 ...headers
             };
         }
-
         return await this._textRequest(RequestMethod.POST, url, options, data).then(NodeRequestClient._successTextResponse);
-
     }
 
     private async _patchText (
@@ -170,23 +157,19 @@ export class NodeRequestClient implements RequestClientInterface {
         headers ?: IncomingHttpHeaders,
         data    ?: string
     ) : Promise<string| undefined> {
-
         const options : HttpClientOptions = {
             method: 'PATCH',
             headers: {
                 'Content-Type': ContentType.TEXT,
             }
         };
-
         if (headers) {
             options.headers = {
                 ...options.headers,
                 ...headers
             };
         }
-
         return await this._textRequest(RequestMethod.PATCH, url, options, data).then(NodeRequestClient._successTextResponse);
-
     }
 
     private async _deleteText (
@@ -194,23 +177,19 @@ export class NodeRequestClient implements RequestClientInterface {
         headers ?: IncomingHttpHeaders,
         data    ?: string
     ) : Promise<string| undefined> {
-
         const options : HttpClientOptions = {
             method: 'DELETE',
             headers: {
                 'Content-Type': ContentType.TEXT,
             }
         };
-
         if (headers) {
             options.headers = {
                 ...options.headers,
                 ...headers
             };
         }
-
         return await this._textRequest(RequestMethod.DELETE, url, options, data).then(NodeRequestClient._successTextResponse);
-
     }
 
     private static async _successTextResponse (response: TextHttpResponse) : Promise<string|undefined> {
@@ -343,41 +322,26 @@ export class NodeRequestClient implements RequestClientInterface {
     private async _httpRequest (
         url      : string,
         options  : HttpClientOptions,
-        body    ?: JsonAny
+        body    ?: string
     ) : Promise<IncomingMessage> {
-
-        // LOG.debug('_httpRequest: url, options, body = ', url, options, body);
-
-        const bodyString : string | undefined = body ? JSON.stringify(body) + '\n' : undefined;
-
+        const bodyString : string | undefined = body ? body + '\n' : undefined;
         const urlParsed = new URL.URL(url);
-        // LOG.debug('urlParsed = ', urlParsed);
-
         let httpModule : HttpModule | undefined;
-
         const protocol : string = urlParsed?.protocol ?? '';
-
         if ( protocol === 'unix:' || protocol === 'socket:' ) {
 
             const fullSocketPath = urlParsed?.pathname ? urlParsed?.pathname : '/';
-
             if (fullSocketPath === '/') {
                 throw new TypeError(`No socket path found for unix protocol URL: ${url}`);
             }
 
-            // LOG.debug('_httpRequest: fullSocketPath: ', fullSocketPath);
-
             const realSocketPath : string | undefined = await this._findSocketFile(fullSocketPath);
-
             if (!realSocketPath) {
                 throw new TypeError(`No socket path found for unix protocol URL: ${url}`);
             }
 
             const socketSuffix = realSocketPath.length < fullSocketPath.length ? fullSocketPath.substr(realSocketPath.length) : '';
-
             const path : string = `${socketSuffix}${urlParsed.search !== '?' ? urlParsed.search : ''}`;
-
-            // LOG.debug('Using unix socket: ', realSocketPath, path, urlParsed);
 
             options = {
                 ...options,
@@ -394,9 +358,6 @@ export class NodeRequestClient implements RequestClientInterface {
         } else {
             httpModule = this._http;
         }
-
-        // LOG.debug('Calling inside a promise...');
-
         return await new Promise( (resolve, reject) => {
             let resolved = false;
             try {
@@ -415,31 +376,21 @@ export class NodeRequestClient implements RequestClientInterface {
                 };
 
                 let req : ClientRequest | undefined;
-
                 if ( url ) {
-
                     options = {
                         ...options,
                         hostname: urlParsed.hostname,
                         port: (urlParsed?.port ? parseInt(urlParsed.port, 10) : undefined) ?? (protocol === "https:" ? 443 : 80),
                         path: urlParsed.pathname + urlParsed.search
                     };
-
-                    // LOG.debug(`Requesting "${url}" with options:`, options);
-
-                } else {
-                    // LOG.debug('Requesting with options ', options);
                 }
 
                 req = httpModule.request(options, callback);
 
                 req.on('error', err => {
                     if (resolved) {
-
                         LOG.warn('Warning! Request had already ended when the response was received.');
-
                         LOG.debug('Error from event: ', err);
-
                     } else {
                         LOG.debug('Passing on error from event: ', err);
                         resolved = true;
@@ -448,31 +399,19 @@ export class NodeRequestClient implements RequestClientInterface {
                 });
 
                 if (bodyString) {
-
-                    // LOG.debug('_jsonRequest: writing bodyString = ', bodyString);
-
                     req.write(bodyString);
-
-                } else {
-                    // LOG.debug('_jsonRequest: no body');
                 }
-
                 req.end();
 
             } catch(err) {
-
                 if (resolved) {
-
                     LOG.warn('Warning! Request had already ended when the response was received.');
-
                     LOG.debug('Exception: ', err);
-
                 } else {
                     LOG.debug('Passing on error: ', err);
                     resolved = true;
                     reject(err);
                 }
-
             }
         });
     }
@@ -483,20 +422,10 @@ export class NodeRequestClient implements RequestClientInterface {
         options  : HttpClientOptions,
         body    ?: JsonAny
     ) : Promise<JsonHttpResponse> {
-
-        // LOG.debug('_jsonRequest: url, options, body = ', url, options, body);
-
-        const response : IncomingMessage = await this._httpRequest(url, options, body);
-
-        // LOG.debug('Reading response for request...');
-
+        const bodyString : string | undefined = body ? JSON.stringify(body) + '\n' : undefined;
+        const response : IncomingMessage = await this._httpRequest(url, options, bodyString);
         const result : JsonAny | undefined = await NodeHttpUtils.getRequestDataAsJson(response);
-
-        // LOG.debug('Received: ', result);
-
         const statusCode = response?.statusCode ?? 0;
-        // LOG.debug('_jsonRequest: statusCode = ', statusCode);
-
         return {
             method: method,
             url,
@@ -504,7 +433,6 @@ export class NodeRequestClient implements RequestClientInterface {
             headers: response.headers,
             body: result
         };
-
     }
 
     private async _getJson (
