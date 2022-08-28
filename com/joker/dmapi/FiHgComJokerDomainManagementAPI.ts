@@ -19,6 +19,16 @@ import { JokerStringObject } from "./types/JokerStringObject";
  */
 export interface FiHgComJokerDomainManagementAPI {
 
+    /**
+     *
+     */
+    hasSession() : boolean;
+
+    /**
+     *
+     */
+    isReady() : Promise<boolean>;
+
     /** Login using api key
      * @see https://joker.com/faq/content/26/14/en/login.html
      */
