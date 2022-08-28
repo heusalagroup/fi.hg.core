@@ -6,6 +6,7 @@ export enum ProductType {
     VIRTUAL_SERVER       = "VIRTUAL_SERVER",
     VIRTUAL_SERVER_EXTRA = "VIRTUAL_SERVER_EXTRA",
     WEB_HOTEL            = "WEB_HOTEL",
+    DOMAIN_TRANSFER      = "DOMAIN_TRANSFER",
     DOMAIN               = "DOMAIN",
     EMAIL                = "EMAIL",
     SHELL                = "SHELL",
@@ -19,6 +20,7 @@ export function isProductType (value: any): value is ProductType {
         case ProductType.VIRTUAL_SERVER_EXTRA:
         case ProductType.WEB_HOTEL:
         case ProductType.DOMAIN:
+        case ProductType.DOMAIN_TRANSFER:
         case ProductType.EMAIL:
         case ProductType.SHELL:
         case ProductType.DATABASE:
@@ -39,6 +41,7 @@ export function stringifyProductType (value: ProductType): string {
         case ProductType.VIRTUAL_SERVER_EXTRA : return 'VIRTUAL_SERVER_EXTRA';
         case ProductType.WEB_HOTEL : return 'WEB_HOTEL';
         case ProductType.DOMAIN : return 'DOMAIN';
+        case ProductType.DOMAIN_TRANSFER : return 'DOMAIN_TRANSFER';
         case ProductType.EMAIL : return 'EMAIL';
         case ProductType.SHELL : return 'SHELL';
         case ProductType.DATABASE : return 'DATABASE';
@@ -53,6 +56,7 @@ export function parseProductType (value: any): ProductType | undefined {
         case 'VIRTUAL_SERVER_EXTRA' : return ProductType.VIRTUAL_SERVER_EXTRA;
         case 'WEB_HOTEL' : return ProductType.WEB_HOTEL;
         case 'DOMAIN' : return ProductType.DOMAIN;
+        case 'DOMAIN_TRANSFER' : return ProductType.DOMAIN_TRANSFER;
         case 'EMAIL' : return ProductType.EMAIL;
         case 'SHELL' : return ProductType.SHELL;
         case 'DATABASE' : return ProductType.DATABASE;
