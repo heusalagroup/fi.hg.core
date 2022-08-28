@@ -2,7 +2,12 @@
 
 import { explainProductPriceType, isProductPriceType, ProductPriceType } from "./ProductPriceType";
 import {
-    explain, explainNoOtherKeys, explainNumber, explainProperty, explainRegularObject, explainString,
+    explain,
+    explainNoOtherKeys,
+    explainNumber,
+    explainProperty,
+    explainRegularObject,
+    explainString,
     hasNoOtherKeys,
     isNumber,
     isRegularObject,
@@ -15,6 +20,21 @@ export interface ProductPrice {
     readonly type       : ProductPriceType;
     readonly buyUrl     : string;
 }
+
+export function createProductPrice (
+    sum        : number,
+    vatPercent : number,
+    type       : ProductPriceType,
+    buyUrl     : string,
+): ProductPrice {
+    return {
+        sum,
+        vatPercent,
+        type,
+        buyUrl
+    };
+}
+
 
 export function isProductPrice (value: any): value is ProductPrice {
     return (

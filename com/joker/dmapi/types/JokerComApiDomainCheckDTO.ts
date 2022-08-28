@@ -5,11 +5,11 @@ import {
     explainArrayOfOrUndefined,
     explainNoOtherKeys,
     explainProperty,
-    explainRegularObject,
+    explainRegularObject, explainString,
     explainStringOrUndefined,
     hasNoOtherKeys,
     isArrayOfOrUndefined,
-    isRegularObject,
+    isRegularObject, isString,
     isStringOrUndefined
 } from "../../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
@@ -21,6 +21,7 @@ import { explainJokerComApiDomainPrice, isJokerComApiDomainPrice, JokerComApiDom
  * @see https://joker.com/faq/content/27/497/en/domain_check.html
  */
 export interface JokerComApiDomainCheckDTO {
+    readonly domain        : string;
     readonly body          : JokerStringObject;
     readonly headers       : JokerStringObject;
     readonly status        : JokerComApiDomainStatus;
@@ -30,6 +31,7 @@ export interface JokerComApiDomainCheckDTO {
 }
 
 export function createJokerComApiDomainCheckDTO (
+    domain         : string,
     headers        : JokerStringObject,
     body           : JokerStringObject,
     status         : JokerComApiDomainStatus,
@@ -38,6 +40,7 @@ export function createJokerComApiDomainCheckDTO (
     prices        ?: readonly JokerComApiDomainPrice[]
 ) : JokerComApiDomainCheckDTO {
     return {
+        domain,
         headers,
         body,
         status,
@@ -51,6 +54,7 @@ export function isJokerComApiDomainCheckDTO (value: any) : value is JokerComApiD
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
+            'domain',
             'headers',
             'body',
             'status',
@@ -58,6 +62,7 @@ export function isJokerComApiDomainCheckDTO (value: any) : value is JokerComApiD
             'domainClass',
             'prices'
         ])
+        && isString(value?.domain)
         && isJokerStringObject(value?.headers)
         && isJokerStringObject(value?.body)
         && isJokerComApiDomainStatus(value?.status)
@@ -72,6 +77,7 @@ export function explainJokerComApiDomainCheckDTO (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeys(value, [
+                'domain',
                 'headers',
                 'body',
                 'status',
@@ -79,6 +85,7 @@ export function explainJokerComApiDomainCheckDTO (value: any) : string {
                 'domainClass',
                 'prices'
             ]),
+            explainProperty("domain", explainString(value?.domain)),
             explainProperty("headers", explainJokerStringObject(value?.headers)),
             explainProperty("body", explainJokerStringObject(value?.body)),
             explainProperty("status", explainJokerComApiDomainStatus(value?.status)),

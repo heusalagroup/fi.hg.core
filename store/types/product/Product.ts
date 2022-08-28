@@ -14,6 +14,25 @@ export interface Product {
     readonly prices    : readonly ProductPrice[];
 }
 
+export function createProduct (
+    id        : string,
+    type      : ProductType,
+    title     : string,
+    summary   : string,
+    features  : readonly ProductFeature[],
+    prices    : readonly ProductPrice[],
+) : Product {
+    return {
+        id,
+        type,
+        title,
+        summary,
+        features,
+        prices
+    };
+}
+
+
 export function isProduct (value: any): value is Product {
     return (
         isRegularObject(value)
