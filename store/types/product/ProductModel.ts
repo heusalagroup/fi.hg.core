@@ -3,6 +3,7 @@
 import { hasNoOtherKeys, isNumber, isNumberOrUndefined, isRegularObject, isString, isStringOrUndefined } from "../../../modules/lodash";
 import { isProductOrUndefined, Product } from "./Product";
 import { isProductPriceOrUndefined, ProductPrice } from "./ProductPrice";
+import { ButtonStyle, isButtonStyleOrUndefined } from "../../../../frontend/components/button/types/ButtonStyle";
 
 export interface SelectProductModelCallback {
     (item: ProductModel): void;
@@ -18,6 +19,7 @@ export interface ProductModel {
     readonly buttonLabel  ?: string;
     readonly product      ?: Product;
     readonly productPrice ?: ProductPrice;
+    readonly buttonStyle  ?: ButtonStyle;
 }
 
 export function createProductModel (
@@ -29,7 +31,8 @@ export function createProductModel (
     route ?: string,
     buttonLabel ?: string,
     product ?: Product,
-    productPrice ?: ProductPrice
+    productPrice ?: ProductPrice,
+    buttonStyle ?: ButtonStyle
 ): ProductModel {
     return {
         id,
@@ -40,7 +43,8 @@ export function createProductModel (
         route,
         buttonLabel,
         product,
-        productPrice
+        productPrice,
+        buttonStyle
     };
 }
 
@@ -56,7 +60,8 @@ export function isProductModel (value: any): value is ProductModel {
             'route',
             'buttonLabel',
             'product',
-            'productPrice'
+            'productPrice',
+            'buttonStyle'
         ])
         && isString(value?.id)
         && isString(value?.title)
@@ -66,6 +71,7 @@ export function isProductModel (value: any): value is ProductModel {
         && isStringOrUndefined(value?.route)
         && isProductOrUndefined(value?.product)
         && isProductPriceOrUndefined(value?.productPrice)
+        && isButtonStyleOrUndefined(value?.buttonStyle)
     );
 }
 
@@ -78,7 +84,11 @@ export function isPartialProductModel (value: any): value is Partial<ProductMode
             'title',
             'description',
             'price',
-            'route'
+            'route',
+            'buttonLabel',
+            'product',
+            'productPrice',
+            'buttonStyle'
         ])
         && isStringOrUndefined(value?.id)
         && isStringOrUndefined(value?.title)
@@ -88,6 +98,7 @@ export function isPartialProductModel (value: any): value is Partial<ProductMode
         && isStringOrUndefined(value?.buttonLabel)
         && isProductOrUndefined(value?.product)
         && isProductPriceOrUndefined(value?.productPrice)
+        && isButtonStyleOrUndefined(value?.buttonStyle)
     );
 }
 
