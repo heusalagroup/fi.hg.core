@@ -1,10 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { createWhoisServerOptions, WhoisServerOptions } from "../../whois/types/WhoisServerOptions";
-import { WhoisService } from "../../whois/WhoisService";
-import { LogService } from "../../LogService";
-import { WhoisLookupResult } from "../../whois/types/WhoisLookupResult";
-import { first } from "../../modules/lodash";
+import { LogService } from "../../../LogService";
+import { first } from "../../../modules/lodash";
+import { WhoisService } from "../../../whois/WhoisService";
+import { WhoisLookupResult } from "../../../whois/types/WhoisLookupResult";
+import { createWhoisServerOptions, WhoisServerOptions } from "../../../whois/types/WhoisServerOptions";
 import { JokerComWhoisDTO, parseJokerComWhoisDTOFromString } from "./types/JokerComWhoisDTO";
 
 const LOG = LogService.createLogger('JokerComWhoisService');

@@ -7,8 +7,8 @@ import {
     explainRegularObject,
     hasNoOtherKeys,
     isRegularObject
-} from "../../../modules/lodash";
-import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "../../../../node/com/joker/dmapi/types/JokerStringObject";
+} from "../../../../modules/lodash";
+import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 
 /**
  *

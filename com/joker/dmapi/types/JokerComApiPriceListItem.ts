@@ -15,10 +15,10 @@ import {
     map,
     reduce,
     trim
-} from "../../../modules/lodash";
+} from "../../../../modules/lodash";
 import { explainJokerComApiPriceListItemType, isJokerComApiPriceListItemType, JokerComApiPriceListItemType, parseJokerComApiPriceListItemType } from "./JokerComApiPriceListItemType";
 import { explainJokerComApiPriceListItemOperation, isJokerComApiPriceListItemOperation, JokerComApiPriceListItemOperation, parseJokerComApiPriceListItemOperation } from "./JokerComApiPriceListItemOperation";
-import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "../../../../node/com/joker/dmapi/types/JokerStringObject";
+import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 import { explainJokerComApiPriceAmountOrUndefined, isJokerComApiPriceAmountOrUndefined, JokerComApiPriceAmount, parseJokerComApiPriceAmount } from "./JokerComApiPriceAmount";
 
 export interface JokerComApiPriceListItem {

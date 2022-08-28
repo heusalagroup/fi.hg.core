@@ -16,7 +16,7 @@ import {
     isRegularObject,
     isString,
     startsWith
-} from "../../../modules/lodash";
+} from "../../../../modules/lodash";
 
 export interface JokerComWhoisDTO {
     readonly name   : string;
@@ -75,6 +75,7 @@ export function parseJokerComWhoisDTOFromString (value: string) : JokerComWhoisD
     value = value.substring('domain:'.length);
     const parts = value.split(/\s+/);
     const name = parts.shift();
+    if (!name) throw new TypeError(`parseJokerComWhoisDTOFromString: Could not parse domain name from value: "${value}"`);
     return createJokerComWhoisDTO(
         name,
         parseJokerComDomainStatus(parts.shift()) ?? JokerComDomainStatus.UNKNOWN

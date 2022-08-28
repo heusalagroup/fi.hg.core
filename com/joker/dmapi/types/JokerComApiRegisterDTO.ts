@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explain, explainNoOtherKeys, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isRegularObject, isString } from "../../../modules/lodash";
-import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "../../../../node/com/joker/dmapi/types/JokerStringObject";
+import { explain, explainNoOtherKeys, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isRegularObject, isString } from "../../../../modules/lodash";
+import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 
 export interface JokerComApiRegisterDTO {
     readonly trackingId : string;

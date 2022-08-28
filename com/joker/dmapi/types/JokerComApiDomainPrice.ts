@@ -7,7 +7,7 @@ import {
     hasNoOtherKeys,
     isRegularObject,
     explainProperty, isBooleanOrUndefined, isStringOrUndefined, explainStringOrUndefined, explainBooleanOrUndefined
-} from "../../../modules/lodash";
+} from "../../../../modules/lodash";
 import { explainJokerComApiDomainPeriod, isJokerComApiDomainPeriod, JokerComApiDomainPeriod } from "./JokerComApiDomainPeriod";
 import { explainJokerComApiCurrency, isJokerComApiCurrency, JokerComApiCurrency } from "./JokerComApiCurrency";
 import { explainJokerComApiPriceAmount, isJokerComApiPriceAmount, JokerComApiPriceAmount } from "./JokerComApiPriceAmount";

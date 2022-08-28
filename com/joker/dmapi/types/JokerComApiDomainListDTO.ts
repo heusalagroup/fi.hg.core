@@ -4,7 +4,7 @@ import {
     explainJokerDomainResult,
     isJokerDomainResult,
     JokerDomainResult
-} from "../../../../node/com/joker/dmapi/types/JokerDomainResult";
+} from "./JokerDomainResult";
 import {
     explain,
     explainArrayOf,
@@ -14,7 +14,7 @@ import {
     hasNoOtherKeys,
     isArrayOf,
     isRegularObject
-} from "../../../modules/lodash";
+} from "../../../../modules/lodash";
 
 export interface JokerComApiDomainListDTO {
     readonly domainList : readonly JokerDomainResult[];

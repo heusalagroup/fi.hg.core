@@ -11,8 +11,8 @@ import {
     isArrayOfOrUndefined,
     isRegularObject,
     isStringOrUndefined
-} from "../../../modules/lodash";
-import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "../../../../node/com/joker/dmapi/types/JokerStringObject";
+} from "../../../../modules/lodash";
+import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 import { explainJokerComApiDomainStatus, isJokerComApiDomainStatus, JokerComApiDomainStatus } from "./JokerComApiDomainStatus";
 import { explainJokerComApiDomainPrice, isJokerComApiDomainPrice, JokerComApiDomainPrice } from "./JokerComApiDomainPrice";
 

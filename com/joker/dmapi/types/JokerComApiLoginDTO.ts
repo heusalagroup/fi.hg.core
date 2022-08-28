@@ -11,8 +11,8 @@ import {
     isRegularObject,
     isString,
     isStringArray
-} from "../../../modules/lodash";
-import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "../../../../node/com/joker/dmapi/types/JokerStringObject";
+} from "../../../../modules/lodash";
+import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 
 /**
  * @see https://joker.com/faq/content/26/14/en/login.html
