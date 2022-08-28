@@ -11,6 +11,7 @@ import { JokerComApiPeriodType } from "./types/JokerComApiPeriodType";
 import { JokerComApiDomainCheckDTO } from "./types/JokerComApiDomainCheckDTO";
 import { JokerComApiRegisterDTO } from "./types/JokerComApiRegisterDTO";
 import { JokerStringObject } from "./types/JokerStringObject";
+import { JokerComApiProfileDTO } from "./types/JokerComApiProfileDTO";
 
 /**
  * Joker.com DMAPI client interface
@@ -93,7 +94,7 @@ export interface FiHgComJokerDomainManagementAPI {
     ) : Promise<JokerComApiWhoisDTO>;
 
     /** query-profile */
-    queryProfile () : Promise<JokerStringObject>;
+    queryProfile () : Promise<JokerComApiProfileDTO>;
 
     /** query-price-list
      * @see https://joker.com/faq/content/79/509/en/query_price_list.html

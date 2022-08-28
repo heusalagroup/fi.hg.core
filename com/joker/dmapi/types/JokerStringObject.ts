@@ -17,7 +17,13 @@ export function isJokerStringObject (value: any) : value is JokerStringObject {
 }
 
 export function explainJokerStringObject (value: any) : string {
-    return explainObjectOf<string, string>(value, isString, isString, "string", "string");
+    return explainObjectOf<string, string>(
+        value,
+        isString,
+        isString,
+        "string",
+        "string"
+    );
 }
 
 export function stringifyJokerStringObject (value : JokerStringObject) : string {

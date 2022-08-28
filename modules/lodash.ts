@@ -1202,6 +1202,9 @@ export function explainObjectOf<K extends string = string, T = any> (
     keyTypeName : string,
     itemTypeName : string
 ) : string {
+    if (isObjectOf<K>(value, isKey, isItem)) {
+        return explainOk();
+    }
     if (isKey === undefined) {
         return explainObject(value);
     }

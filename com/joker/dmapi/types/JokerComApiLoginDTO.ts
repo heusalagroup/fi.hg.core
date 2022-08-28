@@ -2,45 +2,88 @@
 
 import {
     explain,
-    explainNoOtherKeys,
+    explainNoOtherKeys, explainNumber,
     explainProperty,
     explainRegularObject,
     explainString,
     explainStringArray,
-    hasNoOtherKeys,
+    hasNoOtherKeys, isNumber,
     isRegularObject,
     isString,
     isStringArray
 } from "../../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
+import { explainJokerComApiUserAccess, isJokerComApiUserAccess, JokerComApiUserAccess } from "./JokerComApiUserAccess";
+import { explainJokerComApiCurrency, isJokerComApiCurrency, JokerComApiCurrency } from "./JokerComApiCurrency";
+import { explainJokerComApiPriceAmount, isJokerComApiPriceAmount, JokerComApiPriceAmount } from "./JokerComApiPriceAmount";
 
 /**
  * @see https://joker.com/faq/content/26/14/en/login.html
  */
 export interface JokerComApiLoginDTO {
 
-    readonly authSID : string;
-
-    readonly uid : string;
+    readonly headers                 : JokerStringObject;
+    readonly authSID                 : string;
+    readonly uid                     : string;
+    readonly userLogin               : string;
+    readonly sessionTimeout          : number;
+    readonly userAccess              : JokerComApiUserAccess;
+    readonly accountCurrency         : JokerComApiCurrency;
+    readonly accountBalance          : JokerComApiPriceAmount;
+    readonly accountPendingAmount    : JokerComApiPriceAmount;
+    readonly accountRebate           : number;
+    readonly accountContractDate     : string;
+    readonly statsNumberOfDomains    : number;
+    readonly statsLastLogin          : string;
+    readonly statsLastIp             : string;
+    readonly statsLastError          : string;
+    readonly statsLastErrorIp        : string;
+    readonly statsNumberOfAutoRenew  : number;
 
     /**
      * List of domain TLDs which are available to the reseller.
      */
-    readonly tldList : readonly string[];
-
-    readonly headers ?: JokerStringObject;
+    readonly tldList                 : readonly string[];
 
 }
 
 export function createJokerComApiLoginDTO (
-    authSID  : string,
-    uid      : string,
-    tldList  : readonly string[],
-    headers ?: JokerStringObject
+    headers                 : JokerStringObject,
+    authSID                 : string,
+    uid                     : string,
+    userLogin               : string,
+    sessionTimeout          : number,
+    userAccess              : JokerComApiUserAccess,
+    accountCurrency         : JokerComApiCurrency,
+    accountBalance          : JokerComApiPriceAmount,
+    accountPendingAmount    : JokerComApiPriceAmount,
+    accountRebate           : number,
+    accountContractDate     : string,
+    statsNumberOfDomains    : number,
+    statsLastLogin          : string,
+    statsLastIp             : string,
+    statsLastError          : string,
+    statsLastErrorIp        : string,
+    statsNumberOfAutoRenew  : number,
+    tldList                 : readonly string[]
 ) : JokerComApiLoginDTO {
     return {
         authSID,
         uid,
+        userLogin,
+        sessionTimeout,
+        userAccess,
+        accountCurrency,
+        accountBalance,
+        accountPendingAmount,
+        accountRebate,
+        accountContractDate,
+        statsNumberOfDomains,
+        statsLastLogin,
+        statsLastIp,
+        statsLastError,
+        statsLastErrorIp,
+        statsNumberOfAutoRenew,
         tldList,
         headers
     };
@@ -50,15 +93,43 @@ export function isJokerComApiLoginDTO (value: any) : value is JokerComApiLoginDT
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
+            'headers',
             'authSID',
             'uid',
-            'tldList',
-            'headers'
+            'userLogin',
+            'sessionTimeout',
+            'userAccess',
+            'accountCurrency',
+            'accountBalance',
+            'accountPendingAmount',
+            'accountRebate',
+            'accountContractDate',
+            'statsNumberOfDomains',
+            'statsLastLogin',
+            'statsLastIp',
+            'statsLastError',
+            'statsLastErrorIp',
+            'statsNumberOfAutoRenew',
+            'tldList'
         ])
+        && isJokerStringObject(value?.headers)
         && isString(value?.authSID)
         && isString(value?.uid)
+        && isString(value?.userLogin)
+        && isNumber(value?.sessionTimeout)
+        && isJokerComApiUserAccess(value?.userAccess)
+        && isJokerComApiCurrency(value?.accountCurrency)
+        && isJokerComApiPriceAmount(value?.accountBalance)
+        && isJokerComApiPriceAmount(value?.accountPendingAmount)
+        && isNumber(value?.accountRebate)
+        && isString(value?.accountContractDate)
+        && isNumber(value?.statsNumberOfDomains)
+        && isString(value?.statsLastLogin)
+        && isString(value?.statsLastIp)
+        && isString(value?.statsLastError)
+        && isString(value?.statsLastErrorIp)
+        && isNumber(value?.statsNumberOfAutoRenew)
         && isStringArray(value?.tldList)
-        && isJokerStringObject(value?.headers)
     );
 }
 
@@ -67,13 +138,41 @@ export function explainJokerComApiLoginDTO (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeys(value, [
+                'headers',
                 'authSID',
                 'uid',
-                'tldList',
-                'headers'
+                'userLogin',
+                'sessionTimeout',
+                'userAccess',
+                'accountCurrency',
+                'accountBalance',
+                'accountPendingAmount',
+                'accountRebate',
+                'accountContractDate',
+                'statsNumberOfDomains',
+                'statsLastLogin',
+                'statsLastIp',
+                'statsLastError',
+                'statsLastErrorIp',
+                'statsNumberOfAutoRenew',
+                'tldList'
             ]),
             explainProperty("authSID", explainString(value?.authSID)),
-            explainProperty("uid", explainStringArray(value?.uid)),
+            explainProperty("uid",     explainString(value?.uid)),
+            explainProperty("userLogin",              explainString(value?.userLogin)),
+            explainProperty("sessionTimeout",         explainNumber(value?.sessionTimeout)),
+            explainProperty("userAccess",             explainJokerComApiUserAccess(value?.userAccess)),
+            explainProperty("accountCurrency",        explainJokerComApiCurrency(value?.accountCurrency)),
+            explainProperty("accountBalance",         explainJokerComApiPriceAmount(value?.accountBalance)),
+            explainProperty("accountPendingAmount",   explainJokerComApiPriceAmount(value?.accountPendingAmount)),
+            explainProperty("accountRebate",          explainNumber(value?.accountRebate)),
+            explainProperty("accountContractDate",    explainString(value?.accountContractDate)),
+            explainProperty("statsNumberOfDomains",   explainNumber(value?.statsNumberOfDomains)),
+            explainProperty("statsLastLogin",         explainString(value?.statsLastLogin)),
+            explainProperty("statsLastIp",            explainString(value?.statsLastIp)),
+            explainProperty("statsLastError",         explainString(value?.statsLastError)),
+            explainProperty("statsLastErrorIp",       explainString(value?.statsLastErrorIp)),
+            explainProperty("statsNumberOfAutoRenew", explainNumber(value?.statsNumberOfAutoRenew)),
             explainProperty("tldList", explainStringArray(value?.tldList)),
             explainProperty("headers", explainJokerStringObject(value?.headers))
         ]
