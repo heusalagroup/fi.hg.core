@@ -4,7 +4,7 @@ import { explainEnum } from "../../../../modules/lodash";
 
 export enum JokerComApiUserAccess {
     FULL     = '@full',
-    READONLY = '@readonly'
+    READONLY = '@read-only'
 }
 
 export function isJokerComApiUserAccess (value: any) : value is JokerComApiUserAccess {
@@ -24,7 +24,7 @@ export function explainJokerComApiUserAccess (value : any) : string {
 export function stringifyJokerComApiUserAccess (value : JokerComApiUserAccess) : string {
     switch (value) {
         case JokerComApiUserAccess.FULL      : return '@full';
-        case JokerComApiUserAccess.READONLY  : return '@readonly';
+        case JokerComApiUserAccess.READONLY  : return '@read-only';
     }
     throw new TypeError(`Unsupported JokerComApiAccessLevel value: ${value}`)
 }
@@ -37,6 +37,8 @@ export function parseJokerComApiUserAccess (value: any) : JokerComApiUserAccess 
         case 'full'     : return JokerComApiUserAccess.FULL;
 
         case '@readonly':
+        case '@read-only':
+        case 'read-only':
         case 'readonly' : return JokerComApiUserAccess.READONLY;
 
         default         : return undefined;
