@@ -584,6 +584,16 @@ export function isStringArray (value : any) : value is string[] {
  * @__PURE__
  * @nosideeffects
  */
+export function explainStringArray (value : any) : string {
+    return isStringArray(value) ? explainOk() : explainNot('string[]');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isStringArrayOrUndefined (value : any) : value is string[] | undefined {
     return isUndefined(value) || isStringArray(value);
 }
