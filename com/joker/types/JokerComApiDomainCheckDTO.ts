@@ -1,12 +1,16 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
-    explain, explainArrayOfOrUndefined,
+    explain,
+    explainArrayOfOrUndefined,
     explainNoOtherKeys,
     explainProperty,
-    explainRegularObject, explainString, explainStringOrUndefined,
-    hasNoOtherKeys, isArrayOfOrUndefined,
-    isRegularObject, isString, isStringOrUndefined
+    explainRegularObject,
+    explainStringOrUndefined,
+    hasNoOtherKeys,
+    isArrayOfOrUndefined,
+    isRegularObject,
+    isStringOrUndefined
 } from "../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "../../../../node/com/joker/dmapi/types/JokerStringObject";
 import { explainJokerComApiDomainStatus, isJokerComApiDomainStatus, JokerComApiDomainStatus } from "./JokerComApiDomainStatus";
