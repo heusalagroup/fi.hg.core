@@ -3,14 +3,14 @@
 import { explainEnum } from "../../../modules/lodash";
 
 export enum ProductType {
-    VIRTUAL_SERVER   = "VIRTUAL_SERVER",
-    VIRTUAL_SERVER_EXTRA   = "VIRTUAL_SERVER_EXTRA",
-    WEB_HOTEL        = "WEB_HOTEL",
-    DOMAIN           = "DOMAIN",
-    EMAIL            = "EMAIL",
-    SHELL            = "SHELL",
-    DATABASE         = "DATABASE",
-    WP        = "WP",
+    VIRTUAL_SERVER       = "VIRTUAL_SERVER",
+    VIRTUAL_SERVER_EXTRA = "VIRTUAL_SERVER_EXTRA",
+    WEB_HOTEL            = "WEB_HOTEL",
+    DOMAIN               = "DOMAIN",
+    EMAIL                = "EMAIL",
+    SHELL                = "SHELL",
+    DATABASE             = "DATABASE",
+    WP                   = "WP",
 }
 
 export function isProductType (value: any): value is ProductType {
@@ -18,6 +18,7 @@ export function isProductType (value: any): value is ProductType {
         case ProductType.VIRTUAL_SERVER:
         case ProductType.VIRTUAL_SERVER_EXTRA:
         case ProductType.WEB_HOTEL:
+        case ProductType.DOMAIN:
         case ProductType.EMAIL:
         case ProductType.SHELL:
         case ProductType.DATABASE:

@@ -1,5 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { explainEnum } from "../../../../modules/lodash";
+
 export enum ProductFeatureId {
     WP        = "WP",
     VPS_TYPE        = "VPS_TYPE",
@@ -49,6 +51,10 @@ export function isProductFeatureId (value: any): value is ProductFeatureId {
         default:
             return false;
     }
+}
+
+export function explainProductFeatureId (value : any) : string {
+    return explainEnum("ProductFeatureId", ProductFeatureId, isProductFeatureId, value);
 }
 
 export function stringifyProductFeatureId (value: ProductFeatureId): string {

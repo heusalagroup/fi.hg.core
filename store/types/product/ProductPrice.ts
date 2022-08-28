@@ -1,7 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isProductPriceType, ProductPriceType } from "./ProductPriceType";
+import { explainProductPriceType, isProductPriceType, ProductPriceType } from "./ProductPriceType";
 import {
+    explain, explainNoOtherKeys, explainNumber, explainProperty, explainRegularObject, explainString,
     hasNoOtherKeys,
     isNumber,
     isRegularObject,
@@ -28,6 +29,24 @@ export function isProductPrice (value: any): value is ProductPrice {
         && isNumber(value?.vatPercent)
         && isProductPriceType(value?.type)
         && isString(value?.buyUrl)
+    );
+}
+
+export function explainProductPrice (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeys(value, [
+                'sum',
+                'vatPercent',
+                'type',
+                'buyUrl'
+            ]),
+            explainProperty("sum", explainNumber(value?.sum)),
+            explainProperty("vatPercent", explainNumber(value?.vatPercent)),
+            explainProperty("type", explainProductPriceType(value?.type)),
+            explainProperty("buyUrl", explainString(value?.buyUrl))
+        ]
     );
 }
 

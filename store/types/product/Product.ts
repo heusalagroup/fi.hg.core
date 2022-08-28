@@ -1,9 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isProductType, ProductType } from "./ProductType";
-import { isProductFeature, ProductFeature } from "./features/ProductFeature";
-import { isArrayOf, isString } from "../../../modules/lodash";
-import { ProductPrice, isProductPrice } from "./ProductPrice";
+import { explainProductType, isProductType, ProductType } from "./ProductType";
+import { explainProductFeature, isProductFeature, ProductFeature } from "./features/ProductFeature";
+import { explain, explainArrayOf, explainNoOtherKeys, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isArrayOf, isRegularObject, isString } from "../../../modules/lodash";
+import { ProductPrice, isProductPrice, explainProductPrice } from "./ProductPrice";
 
 export interface Product {
     readonly id        : string;
@@ -16,7 +16,15 @@ export interface Product {
 
 export function isProduct (value: any): value is Product {
     return (
-        !!value
+        isRegularObject(value)
+        && hasNoOtherKeys(value, [
+            'id',
+            'type',
+            'title',
+            'summary',
+            'features',
+            'prices'
+        ])
         && isString(value?.id)
         && isProductType(value?.type)
         && isString(value?.title)
@@ -25,6 +33,29 @@ export function isProduct (value: any): value is Product {
         && isArrayOf<ProductPrice>(value?.prices, isProductPrice)
     );
 }
+
+export function explainProduct (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeys(value, [
+                'id',
+                'type',
+                'title',
+                'summary',
+                'features',
+                'prices'
+            ]),
+            explainProperty("isArrayOf", explainString(value?.isArrayOf)),
+            explainProperty("type", explainProductType(value?.type)),
+            explainProperty("title", explainString(value?.title)),
+            explainProperty("summary", explainString(value?.summary)),
+            explainProperty("features", explainArrayOf<ProductFeature>("ProductFeature", explainProductFeature, value?.features)),
+            explainProperty("prices", explainArrayOf<ProductPrice>("ProductPrice", explainProductPrice, value?.prices)),
+        ]
+    );
+}
+
 
 export function isProductOrUndefined (value: any): value is Product | undefined {
     return value === undefined || isProduct(value);

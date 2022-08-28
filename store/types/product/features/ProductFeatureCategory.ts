@@ -1,5 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { explainEnum } from "../../../../modules/lodash";
+
 export enum ProductFeatureCategory {
     SUPPORT = "SUPPORT",
     DISK    = "DISK",
@@ -21,6 +23,10 @@ export function isProductFeatureCategory (value: any): value is ProductFeatureCa
         case ProductFeatureCategory.SUPPORT: return true;
         default: return false;
     }
+}
+
+export function explainProductFeatureCategory (value : any) : string {
+    return explainEnum("ProductFeatureCategory", ProductFeatureCategory, isProductFeatureCategory, value);
 }
 
 export function stringifyProductFeatureCategory (value: ProductFeatureCategory): string {
