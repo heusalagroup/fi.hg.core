@@ -2,6 +2,8 @@
 
 import moment from "moment";
 
+export type momentType = moment.Moment;
+
 export class TimeService {
 
     public static getCurrentTimeString () : string {
@@ -17,9 +19,16 @@ export class TimeService {
     }
 
     public static parseISOString (
-        time: string
+        time: string,
+        offSet?:boolean     // Added offset so the selected day is correct and not 1 behind
     ) : string {
-        return moment(time).toISOString();
+        return moment(time).toISOString(offSet);
+    }
+
+    public static momentEntity (
+        value?: moment.Moment
+    ) : moment.Moment {
+        return moment(value);
     }
 
 }
