@@ -26,7 +26,7 @@ export class TimeService {
     }
 
     public static momentEntity (
-        value?: moment.Moment
+        value?: moment.Moment | string
     ) : moment.Moment {
         return moment(value);
     }
