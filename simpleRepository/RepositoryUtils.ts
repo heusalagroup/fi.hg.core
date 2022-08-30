@@ -3,7 +3,7 @@
 import { explainRepositoryEntry, isRepositoryEntry, RepositoryEntry } from "./types/RepositoryEntry";
 
 import {
-    explain, explainArrayOf, explainRegularObject,
+    explainArrayOf,
     has, isArrayOf,
     reduce,
     values

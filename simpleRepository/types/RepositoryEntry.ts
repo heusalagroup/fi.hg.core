@@ -1,7 +1,15 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import {
-    explain, explainArrayOrUndefinedOf, explainBooleanOrUndefined, ExplainCallback, explainNoOtherKeys, explainNumber, explainProperty, explainRegularObject, explainString,
+    explain,
+    explainArrayOrUndefinedOf,
+    explainBooleanOrUndefined,
+    ExplainCallback,
+    explainNoOtherKeys,
+    explainNumber,
+    explainProperty,
+    explainRegularObject,
+    explainString,
     hasNoOtherKeys,
     isArrayOrUndefinedOf,
     isBooleanOrUndefined,
