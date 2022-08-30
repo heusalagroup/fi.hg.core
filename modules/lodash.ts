@@ -401,11 +401,31 @@ export function isArrayOrUndefinedOf<T = any> (
     minLength : number | undefined = undefined,
     maxLength : number | undefined = undefined
 ) : value is (T[] | readonly T[] | undefined) {
-
     if (value === undefined) return true;
-
     return isArrayOf<T>(value, isItem, minLength, maxLength);
+}
 
+/**
+ *
+ * @param itemTypeName
+ * @param itemExplain
+ * @param value
+ * @param isItem
+ * @param minLength
+ * @param maxLength
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainArrayOrUndefinedOf<T = any> (
+    itemTypeName : string,
+    itemExplain : ExplainCallback,
+    value     : any,
+    isItem    : TestCallback | undefined = undefined,
+    minLength : number | undefined = undefined,
+    maxLength : number | undefined = undefined
+) : string {
+    if (value === undefined) return explainOk();
+    return explainArrayOf<T>(itemTypeName, itemExplain, value, isItem, minLength, maxLength);
 }
 
 /**

@@ -1,6 +1,7 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import {
+    explain, explainArrayOrUndefinedOf, explainBooleanOrUndefined, ExplainCallback, explainNoOtherKeys, explainNumber, explainProperty, explainRegularObject, explainString,
     hasNoOtherKeys,
     isArrayOrUndefinedOf,
     isBooleanOrUndefined,
@@ -9,7 +10,7 @@ import {
     isString,
     TestCallbackNonStandard
 } from "../../modules/lodash";
-import { isRepositoryMember, RepositoryMember } from "./RepositoryMember";
+import { explainRepositoryMember, isRepositoryMember, RepositoryMember } from "./RepositoryMember";
 
 export interface RepositoryEntry<T> {
 
@@ -43,5 +44,29 @@ export function isRepositoryEntry<T> (
         && isNumber(value?.version)
         && isBooleanOrUndefined(value?.deleted)
         && isArrayOrUndefinedOf<RepositoryMember>(value?.members, isRepositoryMember)
+    );
+}
+
+export function explainRepositoryEntry<T> (
+    value    : any,
+    isT      : TestCallbackNonStandard,
+    explainT : ExplainCallback
+) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeys(value, [
+                'data',
+                'id',
+                'version',
+                'deleted',
+                'members'
+            ]),
+            explainProperty("data", explainT(value?.data)),
+            explainProperty("id", explainString(value?.id)),
+            explainProperty("version", explainNumber(value?.version)),
+            explainProperty("deleted", explainBooleanOrUndefined(value?.deleted)),
+            explainProperty("members", explainArrayOrUndefinedOf<RepositoryMember>("RepositoryMember", explainRepositoryMember, value?.members, isRepositoryMember))
+        ]
     );
 }

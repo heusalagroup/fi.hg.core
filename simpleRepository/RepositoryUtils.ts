@@ -1,13 +1,14 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import { isRepositoryEntry, RepositoryEntry } from "./types/RepositoryEntry";
+import { explainRepositoryEntry, isRepositoryEntry, RepositoryEntry } from "./types/RepositoryEntry";
 
 import {
+    explain, explainArrayOf, explainRegularObject,
     has, isArrayOf,
     reduce,
     values
 } from "../modules/lodash";
-import { StoredRepositoryItem, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
+import { StoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 
 export class RepositoryUtils {
 
@@ -50,5 +51,27 @@ export class RepositoryUtils {
             )
         );
     }
+
+    public static explainRepositoryEntryList<T extends StoredRepositoryItem> (
+        list: any,
+        isT: StoredRepositoryItemTestCallback,
+        explainT: StoredRepositoryItemExplainCallback,
+        tName : string
+    ) : string {
+        return explainArrayOf(
+            tName,
+            (item: RepositoryEntry<T>): string => explainRepositoryEntry<T>(
+                item,
+                isT,
+                explainT
+            ),
+            list,
+            (item: RepositoryEntry<T>): boolean => isRepositoryEntry<T>(
+                item,
+                isT
+            )
+        );
+    }
+
 
 }

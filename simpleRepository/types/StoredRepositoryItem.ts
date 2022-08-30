@@ -51,3 +51,7 @@ export function parseStoredRepositoryItem (value: any): StoredRepositoryItem | u
 export interface StoredRepositoryItemTestCallback {
     (value: StoredRepositoryItem) : boolean;
 }
+
+export interface StoredRepositoryItemExplainCallback {
+    (value: StoredRepositoryItem) : string;
+}

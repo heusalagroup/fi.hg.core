@@ -2,10 +2,10 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { randomBytes } from "crypto";
-import { concat, filter, find, findIndex, get, map, remove, uniq } from "../modules/lodash";
+import { concat, explainNot, explainOk, filter, find, findIndex, get, map, remove, uniq } from "../modules/lodash";
 import { RepositoryEntry } from "./types/RepositoryEntry";
 import { Repository, REPOSITORY_NEW_IDENTIFIER } from "./types/Repository";
-import { StoredRepositoryItem, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
+import { StoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { MemoryItem } from "./types/MemoryItem";
 import { RepositoryUtils } from "./RepositoryUtils";
 
@@ -19,8 +19,10 @@ import { RepositoryUtils } from "./RepositoryUtils";
  */
 export class MemoryRepository<T extends StoredRepositoryItem> implements Repository<T> {
 
-    private readonly _members : readonly string[];
-    private readonly _isT     : StoredRepositoryItemTestCallback;
+    private readonly _members  : readonly string[];
+    private readonly _isT      : StoredRepositoryItemTestCallback;
+    private readonly _explainT : StoredRepositoryItemExplainCallback;
+    private readonly _tName    : string;
 
     private _items        : readonly MemoryItem<T>[];
 
@@ -28,14 +30,20 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
      *
      * @param members Array of members to add in any item created
      * @param isT Test function for T type
+     * @param explainT Function to explain if isT fails
+     * @param tName The name of the T type for debugging purposes. Defaults to "T".
      */
     public constructor (
-        isT     : StoredRepositoryItemTestCallback,
-        members : readonly string[] = []
+        isT       : StoredRepositoryItemTestCallback,
+        members   : readonly string[] = [],
+        tName     : string = undefined,
+        explainT  : StoredRepositoryItemExplainCallback = undefined
     ) {
-        this._members = members;
-        this._items   = [];
-        this._isT     = isT;
+        this._members  = members;
+        this._items    = [];
+        this._isT      = isT;
+        this._tName    = tName ?? 'T';
+        this._explainT = explainT ?? ( (value: any) : string => isT(value) ? explainOk() : explainNot(this._tName) );
     }
 
     public async getAll () : Promise<readonly RepositoryEntry<T>[]> {
@@ -198,7 +206,7 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
 
     public async inviteToItem (
         id       : string,
-        members  : string[]
+        members  : readonly string[]
     ): Promise<void> {
 
         const itemIndex = findIndex(this._items, item => item.id === id);
@@ -265,11 +273,16 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
         for (; i < list.length; i += 1) {
             results.push( await this.deleteById(list[i]) );
         }
+        if (!this.isRepositoryEntryList(results)) {
+            throw new TypeError(`MemoryRepository.getSome: Illegal data from database: Not RepositoryEntryList: ${
+                this.explainRepositoryEntryList(results)
+            }`);
+        }
         return results;
     }
 
     public async deleteByList (list: RepositoryEntry<T>[]): Promise<RepositoryEntry<T>[]> {
-        return this.deleteByIdList( map(list, item => item.id) );
+        return await this.deleteByIdList( map(list, item => item.id) );
     }
 
     public async getSome (idList: readonly string[]): Promise<RepositoryEntry<T>[]> {
@@ -279,13 +292,19 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
             (item : RepositoryEntry<T>) : boolean => !!item?.id && idList.includes(item?.id)
         );
         if (!this.isRepositoryEntryList(list)) {
-            throw new TypeError(`MemoryRepository.getSome: Illegal data from database`);
+            throw new TypeError(`MemoryRepository.getSome: Illegal data from database: Not RepositoryEntryList: ${
+                this.explainRepositoryEntryList(list)
+            }`);
         }
         return list;
     }
 
     public isRepositoryEntryList (list: any): list is RepositoryEntry<T>[] {
         return RepositoryUtils.isRepositoryEntryList(list, this._isT);
+    }
+
+    public explainRepositoryEntryList (list: any): string {
+        return RepositoryUtils.explainRepositoryEntryList(list, this._isT, this._explainT, this._tName);
     }
 
     public async updateOrCreateItem (item: T): Promise<RepositoryEntry<T>> {
