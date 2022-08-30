@@ -36,8 +36,8 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
     public constructor (
         isT       : StoredRepositoryItemTestCallback,
         members   : readonly string[] = [],
-        tName     : string = undefined,
-        explainT  : StoredRepositoryItemExplainCallback = undefined
+        tName     : string | undefined = undefined,
+        explainT  : StoredRepositoryItemExplainCallback | undefined = undefined
     ) {
         this._members  = members;
         this._items    = [];
