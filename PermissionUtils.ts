@@ -6,7 +6,7 @@ import {
     ExplainCallback,
     filter,
     isArrayOf,
-    isString, keys,
+    isString, keys, map,
     reduce,
     TestCallback,
     TestCallbackNonStandard,
@@ -53,6 +53,11 @@ export function explainPermissionList<T extends string> (
 }
 
 export type PermissionObject = {readonly [key: string]: boolean};
+
+export interface PermissionValueObject<T extends string> {
+    readonly permission : T;
+    readonly value      : boolean;
+}
 
 export class PermissionUtils {
 
@@ -137,6 +142,25 @@ export class PermissionUtils {
     public static somePermissionAccepted (permissions: PermissionObject) : boolean {
         const acceptedPermissions = this.getAcceptedPermissionList(permissions);
         return acceptedPermissions.length !== 0;
+    }
+
+    /**
+     * Populates an array of permission value objects
+     *
+     * @param showPermissions
+     * @param enabledPermissions
+     */
+    public static createPermissionValueObjectArray<T extends string> (
+        showPermissions: readonly T[],
+        enabledPermissions: readonly T[]
+    ) : readonly PermissionValueObject<T>[] {
+        return map(
+            showPermissions,
+            (permission : T) : PermissionValueObject<T> => ({
+                permission,
+                value: enabledPermissions.includes(permission)
+            })
+        );
     }
 
 }
