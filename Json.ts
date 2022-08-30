@@ -202,6 +202,10 @@ export function isJsonString (value : any) : value is string {
     return parseJson(value) !== undefined;
 }
 
+export function explainJsonString (value : any) : string {
+    return isJsonString(value) ? explainOk() : explainNot('JSON as string');
+}
+
 export function closeJsonArray (value: JsonArray | ReadonlyJsonArray) : JsonArray | ReadonlyJsonArray {
     if (isJsonArray(value)) {
         return map(value, cloneJson) as JsonArray | ReadonlyJsonArray;
