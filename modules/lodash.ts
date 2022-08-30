@@ -624,6 +624,17 @@ export function isStringArrayOrUndefined (value : any) : value is string[] | und
  * @__PURE__
  * @nosideeffects
  */
+export function explainStringArrayOrUndefined (value : any) : string {
+    return isStringArrayOrUndefined(value) ? explainOk() : explainNot(explainOr(['string[]', 'undefined']));
+
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isBooleanArray (value : any) : value is boolean[] {
     return (
         !!value
