@@ -4,6 +4,7 @@ import { MemoryRepository } from "./MemoryRepository";
 import { StoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { RepositoryInitializer } from "./types/RepositoryInitializer";
 import { Repository } from "./types/Repository";
+import { explainNot, explainOk } from "../modules/lodash";
 
 export class MemoryRepositoryInitializer<T extends StoredRepositoryItem> implements RepositoryInitializer<T> {
 
@@ -17,8 +18,8 @@ export class MemoryRepositoryInitializer<T extends StoredRepositoryItem> impleme
         explainT            : StoredRepositoryItemExplainCallback | undefined = undefined
     ) {
         this._isT = isT;
-        this._explainT = explainT;
-        this._tName = tName;
+        this._tName    = tName ?? 'T';
+        this._explainT = explainT ?? ( (value: any) : string => isT(value) ? explainOk() : explainNot(this._tName) );
     }
 
     public async initializeRepository () : Promise<Repository<T>> {
