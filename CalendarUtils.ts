@@ -6,7 +6,7 @@ import { LogService } from "./LogService";
 import { createInternetCalendarLine, InternetCalendarLine, isInternetCalendarLine } from "./types/InternetCalendarLine";
 import { createInternetCalendarParam, InternetCalendarParam } from "./types/InternetCalendarParam";
 import { CalendarEvent, createCalendarEvent } from "./types/CalendarEvent";
-import { tz as momentTz, utc as parseUtc } from 'moment-timezone';
+import { momentTz, parseUtc } from "./modules/moment";
 
 const LOG = LogService.createLogger('CalendarUtils');
 
@@ -16,6 +16,9 @@ export type ReadonlyInternetCalendarLineBlockList = readonly (InternetCalendarLi
 export type InternetCalendarLineList = InternetCalendarLine[];
 export type InternetCalendarLineBlockList = (InternetCalendarLine | InternetCalendarLineList)[];
 
+/**
+ * See also `TimeService`
+ */
 export class CalendarUtils {
 
     /**

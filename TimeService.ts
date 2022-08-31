@@ -1,9 +1,13 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import moment from "moment";
+import { moment } from "./modules/moment";
 
-export type momentType = moment.Moment;
-
+/**
+ *
+ * ***Note!*** Keep moment as private entity; do not expose outside of the
+ * `TimeService`. We might refactor this as an interface with multiple
+ * implementations later.
+ */
 export class TimeService {
 
     public static getCurrentTimeString () : string {
@@ -23,12 +27,6 @@ export class TimeService {
         offSet?:boolean     // Added offset so the selected day is correct and not 1 behind
     ) : string {
         return moment(time).toISOString(offSet);
-    }
-
-    public static momentEntity (
-        value?: moment.Moment | string
-    ) : moment.Moment {
-        return moment(value);
     }
 
 }

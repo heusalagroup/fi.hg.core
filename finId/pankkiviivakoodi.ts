@@ -25,9 +25,9 @@
  * SOFTWARE.
  */
 
-import moment from 'moment';
 import { refNumParse } from './refNum';
 import { isString } from "../modules/lodash";
+import { moment } from "../modules/moment";
 
 export interface PankkiViivakoodi {
     readonly iban: string;
@@ -112,6 +112,7 @@ export function parseDueDate(date : string) : string {
     if(!date) {
         return '000000';
     }
+    // FIXME: Use TimeService here
     let str = moment(date).format("YYMMDD");
     // debug.assert(str).is('string').length(6).is('integer');
     return str;
