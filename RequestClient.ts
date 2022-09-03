@@ -5,16 +5,21 @@ import { RequestMethod } from "./request/types/RequestMethod";
 import { JsonAny } from "./Json";
 import { RequestClientInterface } from "./requestClient/RequestClientInterface";
 import { LogService } from "./LogService";
-import { REQUEST_CLIENT_FETCH_ENABLED, REQUEST_CLIENT_NODE_ENABLED } from "./requestClient/request-client-constants";
+import { REQUEST_CLIENT_FETCH_ENABLED } from "./requestClient/request-client-constants";
 import { LogLevel } from "./types/LogLevel";
 import { WindowObjectService } from "./WindowObjectService";
 import { FetchRequestClient } from "./requestClient/fetch/FetchRequestClient";
 
 const LOG = LogService.createLogger('RequestClient');
 
+/**
+ * Note! You need to call `RequestClient.useClient()` to enable specific implementation.
+ *
+ * @see `HgNode.initialize()` which calls `useClient()` for NodeJS
+ */
 export class RequestClient {
 
-    private _client : RequestClientInterface | undefined = undefined;
+    private static _client : RequestClientInterface | undefined = undefined;
 
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
@@ -25,8 +30,6 @@ export class RequestClient {
     ) {
         this._client = client;
     }
-
-    private static _client : RequestClientInterface = RequestClient._initClient();
 
     public static async textRequest (
         method   : RequestMethod,
@@ -134,7 +137,7 @@ export class RequestClient {
         return await this._client.jsonRequest(RequestMethod.DELETE, url, headers, data);
     }
 
-    private static _initClient () : RequestClientInterface {
+    public static autoInitClient () : RequestClientInterface {
         if (REQUEST_CLIENT_FETCH_ENABLED) {
             const w = WindowObjectService.getWindow();
             if ( w ) {
@@ -143,7 +146,7 @@ export class RequestClient {
             } else {
                 throw new TypeError(`RequestClient: Could not detect request client implementation: No window object`);
             }
-        } else if ( REQUEST_CLIENT_NODE_ENABLED && this._client ) {
+        } else if ( this._client !== undefined ) {
             return this._client;
         } else {
             throw new TypeError(`RequestClient: Could not detect request client implementation`);
