@@ -189,4 +189,62 @@ export class Observer<EventName extends keyof any> {
 
     }
 
+    /**
+     * Waits for an event
+     *
+     * @param eventName Event to wait for
+     * @param time Timeout in milliseconds
+     */
+    public async waitForEvent (
+        eventName : EventName,
+        time: number
+    ): Promise<void> {
+        await new Promise<void>(
+            (resolve, reject) => {
+                try {
+                    let timeout: any | undefined = undefined;
+                    let listener: ObserverDestructor | undefined = undefined;
+                    timeout = setTimeout(
+                        () => {
+                            try {
+                                timeout = undefined;
+                                if ( listener ) {
+                                    listener();
+                                    listener = undefined;
+                                }
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        },
+                        time
+                    );
+
+                    listener = this.listenEvent(
+                        eventName,
+                        () => {
+                            try {
+                                if ( timeout ) {
+                                    clearTimeout(timeout);
+                                    timeout = undefined;
+                                }
+                                if (listener) {
+                                    listener();
+                                    listener = undefined;
+                                }
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        }
+                    );
+
+                } catch (err) {
+                    reject(err);
+                }
+            }
+        );
+    }
+
+
 }
