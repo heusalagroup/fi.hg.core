@@ -3,7 +3,7 @@
 import { hasNoOtherKeys, isNumber, isNumberOrUndefined, isRegularObject, isString, isStringOrUndefined } from "../../../modules/lodash";
 import { isProductOrUndefined, Product } from "./Product";
 import { isProductPriceOrUndefined, ProductPrice } from "./ProductPrice";
-import { ButtonStyle, isButtonStyleOrUndefined } from "../../../../frontend/components/button/types/ButtonStyle";
+import { ButtonStyle, isButtonStyleOrUndefined } from "../../../frontend/button/ButtonStyle";
 
 export interface SelectProductModelCallback {
     (item: ProductModel): void;
