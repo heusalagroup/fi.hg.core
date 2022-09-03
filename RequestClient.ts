@@ -6,21 +6,24 @@ import { JsonAny } from "./Json";
 import { RequestClientInterface } from "./requestClient/RequestClientInterface";
 import { LogService } from "./LogService";
 import { REQUEST_CLIENT_FETCH_ENABLED, REQUEST_CLIENT_NODE_ENABLED } from "./requestClient/request-client-constants";
-import { NodeRequestClient } from "./requestClient/node/NodeRequestClient";
-import { FetchRequestClient } from "./requestClient/fetch/FetchRequestClient";
 import { LogLevel } from "./types/LogLevel";
 import { WindowObjectService } from "./WindowObjectService";
-
-export const HTTP = REQUEST_CLIENT_NODE_ENABLED ? require('http') : undefined;
-export const HTTPS = REQUEST_CLIENT_NODE_ENABLED ? require('https') : undefined;
+import { FetchRequestClient } from "./requestClient/fetch/FetchRequestClient";
 
 const LOG = LogService.createLogger('RequestClient');
 
 export class RequestClient {
 
+    private _client : RequestClientInterface | undefined = undefined;
+
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
-        NodeRequestClient.setLogLevel(level);
+    }
+
+    public static useClient (
+        client: RequestClientInterface
+    ) {
+        this._client = client;
     }
 
     private static _client : RequestClientInterface = RequestClient._initClient();
@@ -140,10 +143,8 @@ export class RequestClient {
             } else {
                 throw new TypeError(`RequestClient: Could not detect request client implementation: No window object`);
             }
-        } else if ( REQUEST_CLIENT_NODE_ENABLED ) {
-            // Could not control this with LOG_LEVEL on rolluped content
-            // LOG.debug('Detected NodeJS environment');
-            return new NodeRequestClient(HTTP, HTTPS);
+        } else if ( REQUEST_CLIENT_NODE_ENABLED && this._client ) {
+            return this._client;
         } else {
             throw new TypeError(`RequestClient: Could not detect request client implementation`);
         }
