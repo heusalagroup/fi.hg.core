@@ -5,21 +5,151 @@ import { RequestMethod } from "./request/types/RequestMethod";
 import { JsonAny } from "./Json";
 import { RequestClientInterface } from "./requestClient/RequestClientInterface";
 import { LogService } from "./LogService";
-import { REQUEST_CLIENT_FETCH_ENABLED } from "./requestClient/request-client-constants";
 import { LogLevel } from "./types/LogLevel";
-import { WindowObjectService } from "./WindowObjectService";
-import { FetchRequestClient } from "./requestClient/fetch/FetchRequestClient";
 
 const LOG = LogService.createLogger('RequestClient');
 
 /**
- * Note! You need to call `RequestClient.useClient()` to enable specific implementation.
+ * Before using static methods of this library the implementation must be defined
+ * and selected using `RequestClient.useClient()`.
  *
- * @see `HgNode.initialize()` which calls `useClient()` for NodeJS
+ * - See `HgNode.initialize()` which calls `useClient()` for NodeJS projects
+ * - See `HgFrontend.initialize()` which calls `useClient()` for frontend projects
+ *
+ * You may also use it as a standard class:
+ *
+ * `const client = new RequestClient( clientImplementation );
+ *
  */
 export class RequestClient {
 
-    private static _client : RequestClientInterface | undefined = undefined;
+    /** Internal state for static methods.
+     *
+     * You must call `.useClient()` to initialize it
+     *
+     * @private
+     */
+    private static _client : RequestClient | undefined = undefined;
+
+    /**
+     * Internal state for normal methods
+     * @private
+     */
+    private readonly _client : RequestClientInterface;
+
+    /**
+     * Creates client instance
+     * @param client
+     */
+    public constructor (client : RequestClientInterface) {
+        this._client = client;
+    }
+
+    public async textRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string| undefined> {
+        return await this._client.textRequest(method, url, headers, data);
+    }
+
+    public async getText (
+        url      : string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        return await this._client.textRequest(RequestMethod.GET, url, headers);
+    }
+
+    public async postText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        LOG.debug('.postJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.POST, url, headers, data);
+    }
+
+    public async patchText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        LOG.debug('.patchJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.PATCH, url, headers, data);
+    }
+
+    public async putText (
+        url      : string,
+        data    ?: string,
+        headers ?: {[key: string]: string}
+    ) : Promise<string| undefined> {
+        LOG.debug('.putJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.PUT, url, headers, data);
+    }
+
+    public async deleteText (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: string
+    ) : Promise<string| undefined> {
+        LOG.debug('.deleteJson: ', url, data, headers);
+        return await this._client.textRequest(RequestMethod.DELETE, url, headers, data);
+    }
+
+    public async jsonRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
+        return await this._client.jsonRequest(method, url, headers, data);
+    }
+
+    public async getJson (
+        url      : string,
+        headers ?: {[key: string]: string}
+    ) : Promise<JsonAny| undefined> {
+        return await this._client.jsonRequest(RequestMethod.GET, url, headers);
+    }
+
+    public async postJson (
+        url      : string,
+        data    ?: JsonAny,
+        headers ?: {[key: string]: string}
+    ) : Promise<JsonAny| undefined> {
+        return await this._client.jsonRequest(RequestMethod.POST, url, headers, data);
+    }
+
+    public async patchJson (
+        url      : string,
+        data    ?: JsonAny,
+        headers ?: {[key: string]: string}
+    ) : Promise<JsonAny| undefined> {
+        return await this._client.jsonRequest(RequestMethod.PATCH, url, headers, data);
+    }
+
+    public async putJson (
+        url      : string,
+        data    ?: JsonAny,
+        headers ?: {[key: string]: string}
+    ) : Promise<JsonAny| undefined> {
+        return await this._client.jsonRequest(RequestMethod.PUT, url, headers, data);
+    }
+
+    public async deleteJson (
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: JsonAny
+    ) : Promise<JsonAny| undefined> {
+        return await this._client.jsonRequest(RequestMethod.DELETE, url, headers, data);
+    }
+
+
+
+
+
+
 
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
@@ -28,7 +158,7 @@ export class RequestClient {
     public static useClient (
         client: RequestClientInterface
     ) {
-        this._client = client;
+        this._client = new RequestClient( client );
     }
 
     public static async textRequest (
@@ -37,7 +167,7 @@ export class RequestClient {
         headers ?: {[key: string]: string},
         data    ?: string
     ) : Promise<string| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
+        if (!this._client) throw this._createClientError();
         return await this._client.textRequest(method, url, headers, data);
     }
 
@@ -45,9 +175,8 @@ export class RequestClient {
         url      : string,
         headers ?: {[key: string]: string}
     ) : Promise<string| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        // LOG.debug('.getJson: ', url, headers);
-        return await this._client.textRequest(RequestMethod.GET, url, headers);
+        if (!this._client) throw this._createClientError();
+        return await this._client.getText(url, headers);
     }
 
     public static async postText (
@@ -55,9 +184,9 @@ export class RequestClient {
         data    ?: string,
         headers ?: {[key: string]: string}
     ) : Promise<string| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
+        if (!this._client) throw this._createClientError();
         LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.POST, url, headers, data);
+        return await this._client.postText(url, data, headers);
     }
 
     public static async patchText (
@@ -65,9 +194,9 @@ export class RequestClient {
         data    ?: string,
         headers ?: {[key: string]: string}
     ) : Promise<string| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
+        if (!this._client) throw this._createClientError();
         LOG.debug('.patchJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.PATCH, url, headers, data);
+        return await this._client.patchText(url, data, headers);
     }
 
     public static async putText (
@@ -75,9 +204,8 @@ export class RequestClient {
         data    ?: string,
         headers ?: {[key: string]: string}
     ) : Promise<string| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        LOG.debug('.putJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.PUT, url, headers, data);
+        if (!this._client) throw this._createClientError();
+        return await this._client.putText(url, data, headers);
     }
 
     public static async deleteText (
@@ -85,9 +213,8 @@ export class RequestClient {
         headers ?: {[key: string]: string},
         data    ?: string
     ) : Promise<string| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        LOG.debug('.deleteJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.DELETE, url, headers, data);
+        if (!this._client) throw this._createClientError();
+        return await this._client.deleteText(url, headers, data);
     }
 
     public static async jsonRequest (
@@ -96,7 +223,7 @@ export class RequestClient {
         headers ?: {[key: string]: string},
         data    ?: JsonAny
     ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
+        if (!this._client) throw this._createClientError();
         return await this._client.jsonRequest(method, url, headers, data);
     }
 
@@ -104,9 +231,8 @@ export class RequestClient {
         url      : string,
         headers ?: {[key: string]: string}
     ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        // LOG.debug('.getJson: ', url, headers);
-        return await this._client.jsonRequest(RequestMethod.GET, url, headers);
+        if (!this._client) throw this._createClientError();
+        return await this._client.getJson(url, headers);
     }
 
     public static async postJson (
@@ -114,9 +240,9 @@ export class RequestClient {
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
     ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
+        if (!this._client) throw this._createClientError();
         LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.jsonRequest(RequestMethod.POST, url, headers, data);
+        return await this._client.postJson(url, data, headers);
     }
 
     public static async patchJson (
@@ -124,9 +250,8 @@ export class RequestClient {
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
     ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        LOG.debug('.patchJson: ', url, data, headers);
-        return await this._client.jsonRequest(RequestMethod.PATCH, url, headers, data);
+        if (!this._client) throw this._createClientError();
+        return await this._client.patchJson(url, data, headers);
     }
 
     public static async putJson (
@@ -134,9 +259,8 @@ export class RequestClient {
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
     ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        LOG.debug('.putJson: ', url, data, headers);
-        return await this._client.jsonRequest(RequestMethod.PUT, url, headers, data);
+        if (!this._client) throw this._createClientError();
+        return await this._client.putJson(url, data, headers);
     }
 
     public static async deleteJson (
@@ -144,24 +268,16 @@ export class RequestClient {
         headers ?: {[key: string]: string},
         data    ?: JsonAny
     ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw new TypeError(`RequestClient: You must call HgNode.initialize() or RequestClient.useClient() first`);
-        LOG.debug('.deleteJson: ', url, data, headers);
-        return await this._client.jsonRequest(RequestMethod.DELETE, url, headers, data);
+        if (!this._client) throw this._createClientError();
+        return await this._client.deleteJson(url, headers, data);
     }
 
-    public static autoInitClient () : RequestClientInterface {
-        if (REQUEST_CLIENT_FETCH_ENABLED) {
-            const w = WindowObjectService.getWindow();
-            if ( w ) {
-                LOG.debug('Detected browser environment');
-                return new FetchRequestClient( w.fetch.bind(w) );
-            } else {
-                throw new TypeError(`RequestClient: Could not detect request client implementation: No window object`);
-            }
-        } else if ( this._client !== undefined ) {
-            return this._client;
-        } else {
-            throw new TypeError(`RequestClient: Could not detect request client implementation`);
-        }
+    /**
+     * @throw TypeError
+     * @private
+     */
+    private static _createClientError () {
+        return new TypeError(`RequestClient: You must initialize implementation first using HgFrontend.initialize() or HgNode.initialize()`);
     }
+
 }
