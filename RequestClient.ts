@@ -155,7 +155,7 @@ export class RequestClient {
         LOG.setLogLevel(level);
     }
 
-    public static useClient (
+    public static setClient (
         client: RequestClientInterface
     ) {
         this._client = new RequestClient( client );
