@@ -27,9 +27,10 @@ import trimStart from "lodash/trimStart";
 import { default as _isObject } from 'lodash/isObject.js';
 import isNull from 'lodash/isNull.js';
 import { default as _isArray } from 'lodash/isArray.js';
-import isFunction from 'lodash/isFunction.js';
+import { default as _isFunction } from 'lodash/isFunction.js';
 import { default as _isString } from 'lodash/isString.js';
 import { default as _isNumber } from 'lodash/isNumber.js';
+import { default as _isBuffer } from 'lodash/isBuffer.js';
 import { default as _isInteger } from 'lodash/isInteger.js';
 import { default as _isSafeInteger } from 'lodash/isSafeInteger.js';
 import toInteger from 'lodash/toInteger.js';
@@ -474,6 +475,16 @@ export function isString (value : any) : value is string {
  * @__PURE__
  * @nosideeffects
  */
+export function isFunction (value : any) : value is Function {
+    return _isFunction(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function explainString (value : any) : string {
     return isString(value) ? explainOk() : explainNot('string');
 }
@@ -486,6 +497,16 @@ export function explainString (value : any) : string {
  */
 export function isNumber (value : any) : value is number {
     return _isNumber(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isBuffer (value : any) : value is Buffer {
+    return _isBuffer(value);
 }
 
 /**
@@ -1487,7 +1508,6 @@ export {
     trim,
     isBoolean,
     isNull,
-    isFunction,
     toInteger,
     toSafeInteger,
     startsWith,
