@@ -32,13 +32,14 @@ const LOG = LogService.createLogger('yTunnus');
 /** Parse integers in base 10
  * @returns {number} value of `parseInt(n, 10)`
  */
-function yTunnusParseInt10 (n: any): number {
+export function yTunnusParseInt10 (n: any): number {
     return parseInt(n, 10);
 }
 
 /** Generate Finnish business IDs
  * @param id_ {string} The business ID with or without checksum
  * @returns {string} The business ID with checksum
+ * @throws TypeError
  */
 export function yTunnusWithSum (id_: string): string {
     let numbers = [ 7, 9, 10, 5, 8, 4, 2 ];
@@ -86,13 +87,14 @@ export function yTunnusWithSum (id_: string): string {
  * @param id {string} Finnish business ID
  * @returns {boolean} `true` if `id` has a checksum
  */
-function yTunnusHasSum (id: string): boolean {
+export function yTunnusHasSum (id: string): boolean {
     return ('' + id).match("-") !== null;
 }
 
 /** Parse Finnish business ID
  * @param id {string} ID with or without checksum
  * @returns {string} ID with checksum
+ * @throws TypeError
  */
 export function yTunnusParse (id: string): string {
     return yTunnusWithSum(id);
@@ -102,7 +104,7 @@ export function yTunnusParse (id: string): string {
  * @param id {string} The ID to parse
  * @returns {string} ID with checksum otherwise undefined
  */
-function yTunnusParseNoThrow (id: string): string | undefined {
+export function yTunnusParseNoThrow (id: string): string | undefined {
     try {
         return yTunnusParse(id);
     } catch (err) {
@@ -123,6 +125,7 @@ export function yTunnusCompare (a: string, b: string): boolean {
 /** Check Finnish business ID validity. This function might throw an exception! See _check_nothrow().
  * @param id {string} The ID to check
  * @returns {boolean} `true` if ID was valid
+ * @throws TypeError
  */
 export function yTunnusCheck (id: string): boolean {
     id = '' + id;
@@ -133,7 +136,7 @@ export function yTunnusCheck (id: string): boolean {
  * @param id {string} The ID to check
  * @returns {boolean} `true` if ID was valid
  */
-function yTunnusCheckNoThrow (id: string): boolean {
+export function yTunnusCheckNoThrow (id: string): boolean {
     try {
         return yTunnusCheck(id);
     } catch (err) {

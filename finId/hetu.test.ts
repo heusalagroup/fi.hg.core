@@ -1,21 +1,52 @@
-import { checkHetuString, Hetu, hetuChecksum, HetuObject, HetuSex, parseHetuDate, parseHetuObject, parseHetuString, parseSex } from "./hetu";
+import {
+  checkHetuString,
+  Hetu,
+  hetuChecksum,
+  HetuObject,
+  HetuSex,
+  parseHetuDate,
+  parseHetuObject,
+  parseHetuString,
+  parseSex
+} from "./hetu";
+
+const VALID_HETU_1 = '010171-1000';
+const VALID_HETU_1_YEAR = 1971;
+const VALID_HETU_1_MONTH = 1;
+const VALID_HETU_1_DAY = 1;
+
+const VALID_HETU_2 = '010171-1985';
+const INVALID_HETU_1 = '010171-1234';
 
 describe('HetuObject', () => {
 
-  test('HetuObject is object', () => {
-    expect( HetuObject ).toBe(Object);
+  test('HetuObject is class', () => {
+    expect(new HetuObject(VALID_HETU_1)).toBeInstanceOf(HetuObject);
+    expect(new HetuObject(VALID_HETU_2)).toBeInstanceOf(HetuObject);
   });
-  test('parseHetuObject can return HetuObject', () => {
-    expect( parseHetuObject('010171-1985')).toBe(HetuObject);
+
+  describe('#parseHetuObject', () => {
+    test('parseHetuObject can return HetuObject', () => {
+      expect(parseHetuObject(VALID_HETU_1)).toBeInstanceOf(HetuObject);
+      expect(parseHetuObject(VALID_HETU_2)).toBeInstanceOf(HetuObject);
+    });
   });
-  test('checkHetuString can check valid hetu string', () => {
-    expect( checkHetuString('010171-1985')).toBe(true);
+
+  describe('#checkHetuString', () => {
+    test('can check valid hetu string', () => {
+      expect(checkHetuString(VALID_HETU_1)).toStrictEqual(true);
+      expect(checkHetuString(VALID_HETU_2)).toStrictEqual(true);
+    });
+    test('can check invalid hetu string', () => {
+      expect(checkHetuString(INVALID_HETU_1)).toStrictEqual(false);
+    });
   });
 
 });
 
 describe('parseHetuString / hetuChecksum / parseSex', () => {
   test('can parse valid hetu string', () => {
+    expect(parseHetuString(INVALID_HETU_1)).toBeDefined();
     expect(parseHetuString('010171-1985')).toBeDefined();
     expect(parseHetuString('010171-198-')).toBeUndefined();
     expect(parseHetuString('010171-19855')).toBeUndefined();
@@ -25,20 +56,21 @@ describe('parseHetuString / hetuChecksum / parseSex', () => {
     expect(parseHetuString('0101A1-1985')).toBeUndefined();
     expect(parseHetuString('010171#1985')).toBeUndefined();
   });
-  
+
   test('can parse hetu checksum', () => {
-    const hetu = parseHetuString('010171-1985') as Hetu;
-    expect(hetuChecksum(hetu)).toEqual ('5');
+    const hetu : Hetu | undefined = parseHetuString(VALID_HETU_1);
+    expect( hetu && hetuChecksum(hetu)).toEqual ('5');
   });
 
   test('can parse hetu date', () => {
-    const hetu = parseHetuString('010171-1985') as Hetu;
-    expect(parseHetuDate(hetu)).toEqual(new Date(1971, 1, 1));
+    const hetu : Hetu | undefined = parseHetuString(VALID_HETU_1);
+    expect(hetu && parseHetuDate(hetu) ).toEqual(new Date(VALID_HETU_1_YEAR, VALID_HETU_1_MONTH-1, VALID_HETU_1_DAY));
   });
 
   test('can parse hetu sex', () => {
-    const hetu = parseHetuString('010171-1985') as Hetu;
-    expect(parseSex(hetu)).toEqual(HetuSex.FEMALE);
+    const hetu : Hetu | undefined = parseHetuString(VALID_HETU_1);
+    expect(hetu).not.toBe(undefined);
+    expect(  hetu && parseSex(hetu) ).toEqual(HetuSex.FEMALE);
   });
 
 });

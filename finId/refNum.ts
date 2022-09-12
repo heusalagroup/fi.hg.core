@@ -154,7 +154,7 @@ export function refNumParse (refnum: string | number): string | undefined {
  * @returns {boolean} True if a equals to b
  */
 export function refNumCmp (a: string | number, b: string | number): boolean {
-    const a2 = refNumParse(a);
-    const b2 = refNumParse(b);
+    const a2 : string | undefined = refNumParse(a);
+    const b2 : string | undefined = refNumParse(b);
     return !!a2 && !!b2 && (a2 === b2);
 }
