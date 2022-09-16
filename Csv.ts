@@ -39,18 +39,16 @@ export function getCsvRowFromJsonObject (
 
 export function getCsvFromJsonObjectList (
     list: readonly ReadonlyJsonObject[],
-    properties: readonly string[] = undefined
+    properties: readonly string[] | undefined = undefined
 ): Csv {
-    if ( properties === undefined ) {
-        if ( list.length === 0 ) {
-            properties = [];
-        } else {
-            properties = keys(list[0]);
-        }
-    }
     return map(
         list,
-        (item: ReadonlyJsonObject): CsvRow => getCsvRowFromJsonObject(item, properties)
+        (item: ReadonlyJsonObject): CsvRow => getCsvRowFromJsonObject(
+            item,
+            ( properties === undefined ) ? (
+                list.length === 0 ? [] : keys(list[0])
+            ) : properties
+        )
     );
 }
 
