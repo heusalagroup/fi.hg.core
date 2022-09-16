@@ -2,16 +2,22 @@
 
 import {
     endsWith,
+    get,
     isArrayOf,
     isString,
+    keys,
     map,
     split,
     startsWith
 } from "./modules/lodash";
+import { ReadonlyJsonObject } from "./Json";
 
 // FIXME: Add unit tests
 export type CsvRow = string[];
 export type Csv = CsvRow[];
+
+export type ReadonlyCsvRow = readonly string[];
+export type ReadonlyCsv = ReadonlyCsvRow[];
 
 export function isCsvRow (value: any): value is CsvRow {
     return isArrayOf<string>(value, isString);
@@ -19,6 +25,33 @@ export function isCsvRow (value: any): value is CsvRow {
 
 export function isCsv (value: any): value is Csv {
     return isArrayOf<CsvRow>(value, isCsvRow);
+}
+
+export function getCsvRowFromJsonObject (
+    item: ReadonlyJsonObject,
+    properties: readonly string[]
+): CsvRow {
+    return map(
+        properties,
+        (key: string): string => `${get(item, key)}`
+    );
+}
+
+export function getCsvFromJsonObjectList (
+    list: readonly ReadonlyJsonObject[],
+    properties: readonly string[] = undefined
+): Csv {
+    if ( properties === undefined ) {
+        if ( list.length === 0 ) {
+            properties = [];
+        } else {
+            properties = keys(list[0]);
+        }
+    }
+    return map(
+        list,
+        (item: ReadonlyJsonObject): CsvRow => getCsvRowFromJsonObject(item, properties)
+    );
 }
 
 /**
@@ -31,10 +64,10 @@ export function isCsv (value: any): value is Csv {
  * @param lineBreak
  */
 export function parseCsvRow (
-    value     : any,
-    separator : string = ',',
-    quote     : string = '"',
-    lineBreak : string = '\n'
+    value: any,
+    separator: string = ',',
+    quote: string = '"',
+    lineBreak: string = '\n'
 ): CsvRow {
 
     if ( separator?.length !== 1 ) {
@@ -89,10 +122,10 @@ export function parseCsvRow (
  * @param lineBreak
  */
 export function parseCsv (
-    value     : any,
-    separator : string = ',',
-    quote     : string = '"',
-    lineBreak : string = '\n'
+    value: any,
+    separator: string = ',',
+    quote: string = '"',
+    lineBreak: string = '\n'
 ): Csv | undefined {
 
     if ( isCsv(value) ) {
@@ -111,10 +144,10 @@ export function parseCsv (
 }
 
 export function stringifyCsvRow (
-    value     : CsvRow,
-    separator : string = ',',
-    quote     : string = '"',
-    lineBreak : string = '\n'
+    value: CsvRow,
+    separator: string = ',',
+    quote: string = '"',
+    lineBreak: string = '\n'
 ): string {
 
     return map(value, (column: string) => {
@@ -142,10 +175,10 @@ export function stringifyCsvRow (
  * @param lineBreak
  */
 export function stringifyCsv (
-    value     : Csv,
-    separator : string = ',',
-    quote     : string = '"',
-    lineBreak : string = '\n'
+    value: Csv,
+    separator: string = ',',
+    quote: string = '"',
+    lineBreak: string = '\n'
 ): string {
 
     return map(value, (row: CsvRow) => {
