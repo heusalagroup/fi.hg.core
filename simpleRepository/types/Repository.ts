@@ -49,6 +49,7 @@ export interface Repository<T extends StoredRepositoryItem> {
     deleteById (id: string): Promise<RepositoryEntry<T>>;
     deleteByIdList (list: readonly string[]): Promise<readonly RepositoryEntry<T>[]>;
     deleteByList (list: readonly RepositoryEntry<T>[]): Promise<readonly RepositoryEntry<T>[]>;
+    deleteAll (): Promise<readonly RepositoryEntry<T>[]>;
 
     inviteToItem (id: string, members : readonly string[]): Promise<void>;
 

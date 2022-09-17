@@ -285,6 +285,10 @@ export class MemoryRepository<T extends StoredRepositoryItem> implements Reposit
         return await this.deleteByIdList( map(list, item => item.id) );
     }
 
+    public async deleteAll (): Promise<RepositoryEntry<T>[]> {
+        return await this.deleteByIdList( map(this._items, item => item.id) );
+    }
+
     public async getSome (idList: readonly string[]): Promise<RepositoryEntry<T>[]> {
         const allList : readonly RepositoryEntry<T>[] = await this.getAll();
         const list = filter(
