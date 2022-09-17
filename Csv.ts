@@ -2,7 +2,7 @@
 
 import {
     endsWith,
-    get,
+    get, has, isArray,
     isArrayOf,
     isString,
     keys,
@@ -27,29 +27,74 @@ export function isCsv (value: any): value is Csv {
     return isArrayOf<CsvRow>(value, isCsvRow);
 }
 
-export function getCsvRowFromJsonObject (
-    item: ReadonlyJsonObject,
-    properties: readonly string[]
+export interface CsvPropertyTransformerCallback<T> {
+    (item: T, key: string) : string;
+}
+
+export interface CsvPropertyTransformerMap<T> {
+    [key: string]: CsvPropertyTransformerCallback<T>;
+}
+
+export function stringifyCsvCellValue (value: any) : string {
+    if (value === undefined) return '';
+    if (isArray(value)) {
+        return `${value.join(',') ?? ''}`;
+    }
+    return `${value ?? ''}`;
+}
+
+export function getCsvCellFromProperty<T> (item: T, key: string) : string {
+    return stringifyCsvCellValue( get(item, key) );
+}
+
+export function getCsvRowFromJsonObject<T = ReadonlyJsonObject> (
+    item: T,
+    properties: readonly string[],
+    propertyTransformer : CsvPropertyTransformerMap<T> = {}
 ): CsvRow {
     return map(
         properties,
-        (key: string): string => `${get(item, key)}`
+        (key: string): string => {
+            if (has(propertyTransformer, key)) {
+                return stringifyCsvCellValue( propertyTransformer[key](item, key) );
+            }
+            return getCsvCellFromProperty(item, key);
+        }
     );
 }
 
-export function getCsvFromJsonObjectList (
-    list: readonly ReadonlyJsonObject[],
-    properties: readonly string[] | undefined = undefined
+export function getCsvFromJsonObjectList<T = ReadonlyJsonObject> (
+    list: readonly T[],
+    properties: readonly string[] | undefined = undefined,
+    includeHeader : boolean = true,
+    propertyTransformer : CsvPropertyTransformerMap<T> = {}
 ): Csv {
-    return map(
-        list,
-        (item: ReadonlyJsonObject): CsvRow => getCsvRowFromJsonObject(
-            item,
-            ( properties === undefined ) ? (
-                list.length === 0 ? [] : keys(list[0])
-            ) : properties
+
+    const keyList : CsvRow = (
+        properties === undefined ? (
+            list.length === 0 ? [] : keys(list[0])
+        ) : (
+            map(properties, item => item)
         )
     );
+
+    const rows : Csv = map(
+        list,
+        (item: T): CsvRow => getCsvRowFromJsonObject<T>(
+            item,
+            keyList,
+            propertyTransformer
+        )
+    );
+
+    if (includeHeader) {
+        return [
+            keyList,
+            ...rows
+        ];
+    }
+
+    return rows;
 }
 
 /**
