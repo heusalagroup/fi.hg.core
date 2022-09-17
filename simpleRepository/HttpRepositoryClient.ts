@@ -43,11 +43,15 @@ export class HttpRepositoryClient<T extends StoredRepositoryItem> implements Rep
         };
     }
 
-    public async deleteByIdList (list: readonly string[]): Promise<RepositoryEntry<T>[]> {
+    public async deleteByIdList (list: readonly string[]): Promise<readonly RepositoryEntry<T>[]> {
         return [];
     }
 
-    public async deleteByList (list: RepositoryEntry<T>[]): Promise<RepositoryEntry<T>[]> {
+    public async deleteByList (list: RepositoryEntry<T>[]): Promise<readonly RepositoryEntry<T>[]> {
+        return [];
+    }
+
+    public async deleteAll (): Promise<readonly RepositoryEntry<T>[]> {
         return [];
     }
 
@@ -67,15 +71,15 @@ export class HttpRepositoryClient<T extends StoredRepositoryItem> implements Rep
         return undefined;
     }
 
-    public async getAll (): Promise<RepositoryEntry<T>[]> {
+    public async getAll (): Promise<readonly RepositoryEntry<T>[]> {
         return [];
     }
 
-    public async getAllByProperty (propertyName: string, propertyValue: any): Promise<RepositoryEntry<T>[]> {
+    public async getAllByProperty (propertyName: string, propertyValue: any): Promise<readonly RepositoryEntry<T>[]> {
         return [];
     }
 
-    public async getSome (idList: readonly string[]): Promise<RepositoryEntry<T>[]> {
+    public async getSome (idList: readonly string[]): Promise<readonly RepositoryEntry<T>[]> {
         return [];
     }
 
