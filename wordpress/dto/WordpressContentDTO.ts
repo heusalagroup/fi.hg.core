@@ -4,19 +4,19 @@ import { hasNoOtherKeysInDevelopment, isRegularObject, isString } from "../../mo
 import { HeadersObject, isHeadersObject } from "../../request/types/HeadersObject";
 
 export interface WordpressContentDTO {
-    readonly Body : string;
-    readonly Headers : HeadersObject;
+    readonly body : string;
+    readonly headers : HeadersObject;
 }
 
 export function isWordpressContentDTO (value: any): value is WordpressContentDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
-            'Body'
-            ,'Headers'
+            'body'
+            ,'headers'
         ])
-        && isString(value?.Body)
-        && isHeadersObject(value?.Headers)
+        && isString(value?.body)
+        && isHeadersObject(value?.headers)
     );
 }
 
