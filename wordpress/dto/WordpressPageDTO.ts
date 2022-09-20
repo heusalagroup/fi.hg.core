@@ -28,10 +28,26 @@ export function isWordpressPageDTO (value:any): value is WordpressPageDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
-            'id',
             'title',
             'content',
             'type',
+            'id',
+            'date',
+            'status',
+            'generated_slug',
+            'permalink_template',
+            'parent',
+            'author',
+            'excerpt',
+            'featured_media',
+            'comment_status',
+            'ping_status',
+            'menu_order',
+            'meta',
+            'template',
+            'password',
+            'date_gtm',
+            'slug'
         ])
         && isString(value?.id)
         && isRegularObject(value?.title)

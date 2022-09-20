@@ -15,7 +15,7 @@ import {isWordpressPageDTO, WordpressPageDTO} from "./dto/WordpressPageDTO";
 const LOG = LogService.createLogger('WordpressClient');
 
 /**
- * @see https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md
+ * Url placeholder
  */
 export class WordpressClient {
 

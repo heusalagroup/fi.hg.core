@@ -1,11 +1,15 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { WordpressPageDTO } from "./WordpressPageDTO";
+import { LogService } from "../../LogService";
+
+const LOG = LogService.createLogger('Wordpress');
+
 
 export type WordpressPageListDTO = WordpressPageDTO[];
 
 export function isWordpressPagesDTO (value: any): value is WordpressPageListDTO {
-    console.log('reached')
+    LOG.debug('reached')
     return true
 }
 
