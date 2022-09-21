@@ -2,20 +2,22 @@
 
 import {
     WORD_PRESS_API_GET_PAGE_PATH,
-    WORD_PRESS_API_GET_POST_PATH
+    WORD_PRESS_API_GET_POST_PATH, WORD_PRESS_API_GET_REFERENCES_PATH, WORD_PRESS_API_GET_USER_PROFILES_PATH
 } from "./wordpress-api";
-import {LogLevel} from "../types/LogLevel";
-import {LogService} from "../LogService";
-import {HttpService} from "../HttpService";
-import {isWordpressPagesDTO, WordpressPageListDTO} from "./dto/WordpressPageListDTO";
-import {ReadonlyJsonAny} from "../Json";
-import {isWordpressPageDTO, WordpressPageDTO} from "./dto/WordpressPageDTO";
+import { LogLevel } from "../types/LogLevel";
+import { LogService } from "../LogService";
+import { HttpService } from "../HttpService";
+import { isWordpressPagesDTO, WordpressPageListDTO } from "./dto/WordpressPageListDTO";
+import { isWordpressReferenceDTO, WordpressReferenceDTO } from "./dto/WordpressReferenceDTO";
+import { isWordpressPageDTO, WordpressPageDTO } from "./dto/WordpressPageDTO";
+import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
+import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
 
 
 const LOG = LogService.createLogger('WordpressClient');
 
 /**
- * Url placeholder
+ * @see https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md
  */
 export class WordpressClient {
 
@@ -53,21 +55,6 @@ export class WordpressClient {
         return this._url;
     }
 
-    public async createPage
-    (content: ReadonlyJsonAny, headers?: { [key: string]: string }): Promise<WordpressPageDTO> {
-        if (this._url.length < 1) return;
-        const result = await HttpService.postJson(
-            `${this._url}${WORD_PRESS_API_GET_PAGE_PATH},`,
-            content,
-            headers
-        );
-
-        if (!isWordpressPageDTO(result)) {
-            LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not WordpressPageDTO: ` + result);
-        }
-        return result;
-    }
 
     public async getPages(): Promise<WordpressPageListDTO> {
         if (this._url.length < 1) return;
@@ -76,7 +63,6 @@ export class WordpressClient {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressPageDTO: ` + result);
         }
-        console.log('but does it complete')
         return result;
     }
 
@@ -87,19 +73,39 @@ export class WordpressClient {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressPageDTO: ` + result);
         }
-        console.log('but does it complete')
         return result;
     }
 
-    public async getPosts(): Promise<WordpressPageListDTO> {
+    public async getReferences(): Promise<WordpressReferenceListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_POST_PATH}`);
-
-        if (!isWordpressPagesDTO(result)) {
+        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_REFERENCES_PATH}`);
+        if (!isWordpressReferencesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not WordpressPageDTO: ` + result);
+            throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
         }
         return result;
     }
+
+    public async getUserProfiles(): Promise<WordpressUserProfileListDTO> {
+        if (this._url.length < 1) return;
+        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_USER_PROFILES_PATH}`);
+        if (!isWordpressUserProfilesDTO(result)) {
+            LOG.debug(`getIndex: result = `, result);
+            throw new TypeError(`Result was not WordpressUserProfilesDTO: ` + result);
+        }
+        return result;
+    }
+
+    public async getReference(id:string): Promise<WordpressReferenceDTO> {
+        if (this._url.length < 1) return;
+        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_REFERENCES_PATH}/${id}`);
+        if (!isWordpressReferenceDTO(result)) {
+            LOG.debug(`getIndex: result = `, result);
+            throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
+        }
+        return result;
+    }
+
+
 
 }
