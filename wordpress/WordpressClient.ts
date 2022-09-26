@@ -13,8 +13,13 @@ import { isWordpressPageDTO, WordpressPageDTO } from "./dto/WordpressPageDTO";
 import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
 import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
 
-
 const LOG = LogService.createLogger('WordpressClient');
+
+export interface WordpressContentInterface {
+    readonly pages?: Promise<WordpressPageListDTO>;
+    readonly references?: Promise<WordpressReferenceListDTO>;
+    readonly profiles?: Promise<WordpressUserProfileListDTO>;
+}
 
 /**
  * @see https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md
@@ -27,12 +32,14 @@ export class WordpressClient {
     }
 
     private static _defaultUrl: string = '/';
+    private static _endpoint: string = '/';
 
     private readonly _url: string;
+    private readonly _endpoint: string;
     private readonly _sessionId: string | undefined;
 
-    public static setDefaultUrl(url: string) {
-        this._defaultUrl = url;
+    public static setDefaultUrl(url: string, endpoint: string) {
+        this._defaultUrl = url + endpoint;
     }
 
     public static getDefaultUrl(): string {
@@ -46,8 +53,11 @@ export class WordpressClient {
     }
 
     public constructor(
-        url: string = WordpressClient._defaultUrl) {
+        url: string = WordpressClient._defaultUrl,
+        endpoint: string = WordpressClient._endpoint
+    ) {
         this._url = url;
+        this._endpoint = endpoint;
         this._sessionId = undefined;
     }
 
@@ -55,10 +65,31 @@ export class WordpressClient {
         return this._url;
     }
 
+    public async getWordpressContent(): Promise<WordpressPageListDTO>  {
+        if (this._url.length < 1) return;
+        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
+        if(isWordpressPagesDTO(result)) {
+            LOG.info(`getIndex: Pages = `, result);
+            const pages = result;
+            return pages;
+        } else if (isWordpressUserProfilesDTO(result)) {
+            LOG.info(`getIndex: Profiles = `, result);
+            const profiles = result;
+            return profiles;
+        } else if (isWordpressReferencesDTO(result)) {
+            LOG.info(`getIndex: Reference = `, result);
+            const references = result;
+            return references;
+        } else {
+            LOG.debug(`getIndex: result = `, result);
+            throw new TypeError(`Result was not any of the DTO's: ` + result);
+        }
+    }
+
 
     public async getPages(): Promise<WordpressPageListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_PAGE_PATH}`);
+        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
         if (!isWordpressPagesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressPageDTO: ` + result);
@@ -78,7 +109,7 @@ export class WordpressClient {
 
     public async getReferences(): Promise<WordpressReferenceListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_REFERENCES_PATH}`);
+        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
         if (!isWordpressReferencesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
@@ -88,7 +119,7 @@ export class WordpressClient {
 
     public async getUserProfiles(): Promise<WordpressUserProfileListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_USER_PROFILES_PATH}`);
+        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
         if (!isWordpressUserProfilesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressUserProfilesDTO: ` + result);
