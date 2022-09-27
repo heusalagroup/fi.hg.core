@@ -1,15 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    WORD_PRESS_API_GET_PAGE_PATH,
-    WORD_PRESS_API_GET_POST_PATH, WORD_PRESS_API_GET_REFERENCES_PATH, WORD_PRESS_API_GET_USER_PROFILES_PATH
-} from "./wordpress-api";
 import { LogLevel } from "../types/LogLevel";
 import { LogService } from "../LogService";
 import { HttpService } from "../HttpService";
 import { isWordpressPagesDTO, WordpressPageListDTO } from "./dto/WordpressPageListDTO";
-import { isWordpressReferenceDTO, WordpressReferenceDTO } from "./dto/WordpressReferenceDTO";
-import { isWordpressPageDTO, WordpressPageDTO } from "./dto/WordpressPageDTO";
 import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
 import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
 
@@ -65,6 +59,7 @@ export class WordpressClient {
         return this._url;
     }
 
+    // Used for possible initialization
     public async getWordpressContent(): Promise<WordpressPageListDTO>  {
         if (this._url.length < 1) return;
         const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
@@ -97,15 +92,6 @@ export class WordpressClient {
         return result;
     }
 
-    public async getPage(id:string): Promise<WordpressPageDTO> {
-        if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_PAGE_PATH}/${id}`);
-        if (!isWordpressPageDTO(result)) {
-            LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not WordpressPageDTO: ` + result);
-        }
-        return result;
-    }
 
     public async getReferences(): Promise<WordpressReferenceListDTO> {
         if (this._url.length < 1) return;
@@ -126,17 +112,5 @@ export class WordpressClient {
         }
         return result;
     }
-
-    public async getReference(id:string): Promise<WordpressReferenceDTO> {
-        if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_GET_REFERENCES_PATH}/${id}`);
-        if (!isWordpressReferenceDTO(result)) {
-            LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
-        }
-        return result;
-    }
-
-
 
 }
