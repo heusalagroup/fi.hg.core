@@ -4,7 +4,7 @@ import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
 import {
     RequestControllerMappingObject,
     explainRequestControllerMappingObject,
-    isRequestControllerMappingObject, getOpenApiDocumentFromRequestControllerMappingObject
+    isRequestControllerMappingObject, getOpenApiDocumentFromRequestControllerMappingObject, InternalRequestControllerMappingObject
 } from "./RequestControllerMappingObject";
 import {has} from "../../modules/lodash";
 import { LogService } from "../../LogService";
@@ -64,7 +64,7 @@ export function hasInternalRequestMappingObject (
 export function setInternalRequestMappingObject (
     value   : RequestController,
     mapping : RequestControllerMappingObject
-) : RequestControllerMappingObject {
+) : InternalRequestControllerMappingObject {
     const strippedMapping : RequestControllerMappingObject = {
         ...mapping
     };

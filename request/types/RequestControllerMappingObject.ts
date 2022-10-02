@@ -15,6 +15,23 @@ import { getOpenApiMethodFromRequestMethod, RequestMethod } from "./RequestMetho
 
 const LOG = LogService.createLogger('RequestControllerMappingObject');
 
+export interface InternalRequestControllerMappingObject {
+
+    mappings              : readonly RequestMappingObject[];
+    controllerProperties  : { readonly [key: string]: RequestControllerMethodObject };
+
+    /**
+     * OpenAPI v3 document annotations
+     */
+    openApiPartials      ?: readonly Partial<OpenAPIV3.Document>[];
+
+    /**
+     * OpenAPI v3 operation annotations for undefined properties
+     */
+    operations           ?: readonly Partial<OpenAPIV3.OperationObject>[];
+
+}
+
 export interface RequestControllerMappingObject {
 
     mappings              : readonly RequestMappingObject[];

@@ -8,7 +8,7 @@ import {
 import { RequestMappingObject } from "./types/RequestMappingObject";
 import { isRequestMethod} from "./types/RequestMethod";
 import { filter, has, isFunction, isObject, isString} from "../modules/lodash";
-import { RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
+import { InternalRequestControllerMappingObject, RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 import { RequestParamValueType } from "./types/RequestParamValueType";
 import { RequestParamObject } from "./types/RequestParamObject";
 import { RequestBodyParamObject } from "./types/RequestBodyParamObject";
@@ -407,23 +407,29 @@ export class RequestControllerUtils {
     private static _getOrInitializeControllerMapping (
         controller    : RequestController,
         parsedObject ?: RequestMappingObject
-    ) : RequestControllerMappingObject {
+    ) : InternalRequestControllerMappingObject {
         // LOG.debug('attachControllerMapping: controller = ', controller);
         // LOG.debug('attachControllerMapping: parsedObject = ', parsedObject);
         const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
         // LOG.debug('attachControllerMapping: origMapping = ', origMapping);
         if (origMapping === undefined) {
             // ...when no previous mapping found at all, we'll create from stretch
-            return setInternalRequestMappingObject(controller, {
-                mappings: parsedObject ? [parsedObject] : [],
-                controllerProperties: {}
-            });
+            return setInternalRequestMappingObject(
+                controller,
+                {
+                    mappings: parsedObject ? [parsedObject] : [],
+                    controllerProperties: {}
+                }
+            );
         } else {
             // ...when previous mapping object was found, we'll append to it
-            return setInternalRequestMappingObject(controller, {
-                ...origMapping,
-                mappings: parsedObject ? [ ...origMapping.mappings, parsedObject] : origMapping.mappings
-            });
+            return setInternalRequestMappingObject(
+                controller,
+                {
+                    ...origMapping,
+                    mappings: parsedObject ? [ ...origMapping.mappings, parsedObject] : origMapping.mappings
+                }
+            );
         }
     }
 
@@ -431,9 +437,9 @@ export class RequestControllerUtils {
         controller     : RequestController,
         propertyKey    : string,
         parsedObject  ?: RequestMappingObject
-    ) : RequestControllerMappingObject {
+    ) : InternalRequestControllerMappingObject {
 
-        const origMapping : RequestControllerMappingObject = this._getOrInitializeControllerMapping(controller, parsedObject);
+        const origMapping : InternalRequestControllerMappingObject = this._getOrInitializeControllerMapping(controller, parsedObject);
 
         if (!has(origMapping.controllerProperties, propertyKey)) {
             // When mapping exists, but property does not, we'll create new property from stretch
@@ -457,12 +463,10 @@ export class RequestControllerUtils {
                 ...origMapping.controllerProperties,
                 [propertyKey] : {
                     ...origMapping.controllerProperties[propertyKey],
-                    mappings: (
-                        parsedObject ? [
-                            ...origMapping.controllerProperties[propertyKey].mappings,
-                            parsedObject
-                        ] : origMapping.controllerProperties[propertyKey].mappings
-                    )
+                    mappings: parsedObject ? [
+                        ...origMapping.controllerProperties[propertyKey].mappings,
+                        parsedObject
+                    ] : origMapping.controllerProperties[propertyKey].mappings
                 }
             }
         });
