@@ -183,7 +183,7 @@ function setOpenApiDocumentPathOperationsObject (
     }
 
     // Append our changes
-    const origObjPath : PathItemObject = obj[path];
+    const origObjPath : OpenAPIV3.PathItemObject = obj[path];
     if (!origObjPath) throw new TypeError('Path was undefined; this should not happen');
     obj = {
         ...obj,
