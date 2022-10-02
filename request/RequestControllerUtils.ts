@@ -2,7 +2,8 @@
 
 import {
     RequestController,
-    getInternalRequestMappingObject, isRequestController,
+    getInternalRequestMappingObject,
+    isRequestController,
     setInternalRequestMappingObject
 } from "./types/RequestController";
 import { RequestMappingObject } from "./types/RequestMappingObject";
@@ -57,10 +58,13 @@ export class RequestControllerUtils {
         LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
         LOG.debug('attachControllerOperation: config = ', config);
         const openApiPartials = mappingObject?.openApiPartials ?? [];
-        setInternalRequestMappingObject(controller, {
-            ...mappingObject,
-            openApiPartials: [...openApiPartials, config]
-        });
+        setInternalRequestMappingObject(
+            controller,
+            {
+                ...mappingObject,
+                openApiPartials: [...openApiPartials, config]
+            }
+        );
         return;
     }
 
@@ -78,10 +82,13 @@ export class RequestControllerUtils {
         if (propertyKey === undefined) {
             // When property does not exist, append to root mapping
             const operations = mappingObject?.operations ?? [];
-            setInternalRequestMappingObject(controller, {
-                ...mappingObject,
-                operations: [...operations, config]
-            });
+            setInternalRequestMappingObject(
+                controller,
+                {
+                    ...mappingObject,
+                    operations: [...operations, config]
+                }
+            );
             return;
         }
 
@@ -89,16 +96,19 @@ export class RequestControllerUtils {
 
         const operations : readonly Partial<OpenAPIV3.OperationObject>[] = mappingObject?.controllerProperties[propertyKey]?.operations ?? [];
 
-        setInternalRequestMappingObject(controller, {
-            ...mappingObject,
-            controllerProperties: {
-                ...mappingObject.controllerProperties,
-                [propertyKey] : {
-                    ...mappingObject.controllerProperties[propertyKey],
-                    operations: [...operations, config]
+        setInternalRequestMappingObject(
+            controller,
+            {
+                ...mappingObject,
+                controllerProperties: {
+                    ...mappingObject.controllerProperties,
+                    [propertyKey] : {
+                        ...mappingObject.controllerProperties[propertyKey],
+                        operations: [...operations, config]
+                    }
                 }
             }
-        });
+        );
 
     }
 
@@ -122,82 +132,100 @@ export class RequestControllerUtils {
         if (origMapping === undefined) {
             const params : readonly (RequestParamObject|null)[] = RequestControllerUtils._initializeParams(paramIndex, newParam);
             if (requestBodyRequired) {
-                setInternalRequestMappingObject(controller, {
-                    mappings: [],
-                    controllerProperties: {
-                        [propertyKey] : {
-                            requestBodyRequired : true,
-                            mappings            : [],
-                            modelAttributes     : [],
-                            params              : params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        mappings: [],
+                        controllerProperties: {
+                            [propertyKey] : {
+                                requestBodyRequired : true,
+                                mappings            : [],
+                                modelAttributes     : [],
+                                params              : params
+                            }
                         }
                     }
-                });
+                );
             } else {
-                setInternalRequestMappingObject(controller, {
-                    mappings: [],
-                    controllerProperties: {
-                        [propertyKey] : {
-                            mappings : [],
-                            modelAttributes     : [],
-                            params   : params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        mappings: [],
+                        controllerProperties: {
+                            [propertyKey] : {
+                                mappings : [],
+                                modelAttributes     : [],
+                                params   : params
+                            }
                         }
                     }
-                });
+                );
             }
         } else if (!has(origMapping.controllerProperties, propertyKey)) {
             const params : readonly (RequestParamObject|null)[] = RequestControllerUtils._initializeParams(paramIndex, newParam);
             if (requestBodyRequired) {
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey] : {
-                            requestBodyRequired: true,
-                            modelAttributes     : [],
-                            mappings : [],
-                            params   : params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey] : {
+                                requestBodyRequired: true,
+                                modelAttributes     : [],
+                                mappings : [],
+                                params   : params
+                            }
                         }
                     }
-                });
+                );
             } else {
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey]: {
-                            mappings: [],
-                            modelAttributes : [],
-                            params: params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey]: {
+                                mappings: [],
+                                modelAttributes : [],
+                                params: params
+                            }
                         }
                     }
-                });
+                );
             }
         } else {
             const params : (RequestParamObject|null)[] = RequestControllerUtils._reinitializeParams(origMapping, propertyKey, paramIndex, newParam);
             if (requestBodyRequired) {
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey]: {
-                            ...origMapping.controllerProperties[propertyKey],
-                            requestBodyRequired: true,
-                            params: params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey]: {
+                                ...origMapping.controllerProperties[propertyKey],
+                                requestBodyRequired: true,
+                                params: params
+                            }
                         }
                     }
-                });
+                );
             } else {
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey] : {
-                            ...origMapping.controllerProperties[propertyKey],
-                            params: params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey] : {
+                                ...origMapping.controllerProperties[propertyKey],
+                                params: params
+                            }
                         }
                     }
-                });
+                );
             }
         }
     }
@@ -407,43 +435,52 @@ export class RequestControllerUtils {
     private static _getOrInitializeControllerMapping (
         controller    : RequestController,
         parsedObject ?: RequestMappingObject
-    ) : InternalRequestControllerMappingObject {
+    ) : RequestControllerMappingObject {
         // LOG.debug('attachControllerMapping: controller = ', controller);
         // LOG.debug('attachControllerMapping: parsedObject = ', parsedObject);
-        const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+        let origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
         // LOG.debug('attachControllerMapping: origMapping = ', origMapping);
         if (origMapping === undefined) {
             // ...when no previous mapping found at all, we'll create from stretch
-            return setInternalRequestMappingObject(
+            const internalObject : InternalRequestControllerMappingObject = setInternalRequestMappingObject(
                 controller,
                 {
                     mappings: parsedObject ? [parsedObject] : [],
                     controllerProperties: {}
                 }
             );
+            origMapping = {
+                ...internalObject,
+                controller
+            };
         } else {
             // ...when previous mapping object was found, we'll append to it
-            return setInternalRequestMappingObject(
+            const internalObject : InternalRequestControllerMappingObject = setInternalRequestMappingObject(
                 controller,
                 {
                     ...origMapping,
                     mappings: parsedObject ? [ ...origMapping.mappings, parsedObject] : origMapping.mappings
                 }
             );
+            origMapping = {
+                ...internalObject,
+                controller
+            };
         }
+        return origMapping;
     }
 
     private static _setControllerMappingProperty (
         controller     : RequestController,
         propertyKey    : string,
         parsedObject  ?: RequestMappingObject
-    ) : InternalRequestControllerMappingObject {
+    ) : RequestControllerMappingObject {
 
-        const origMapping : InternalRequestControllerMappingObject = this._getOrInitializeControllerMapping(controller, parsedObject);
+        let origMapping : RequestControllerMappingObject = this._getOrInitializeControllerMapping(controller, parsedObject);
 
         if (!has(origMapping.controllerProperties, propertyKey)) {
             // When mapping exists, but property does not, we'll create new property from stretch
-            return setInternalRequestMappingObject(controller, {
+            const internalObject : InternalRequestControllerMappingObject = setInternalRequestMappingObject(controller, {
                 ...origMapping,
                 controllerProperties: {
                     ...origMapping.controllerProperties,
@@ -454,10 +491,15 @@ export class RequestControllerUtils {
                     }
                 }
             });
+            origMapping = {
+                ...internalObject,
+                controller
+            };
+            return origMapping;
         }
 
         // When both mapping and property exists, we'll append to it
-        return setInternalRequestMappingObject(controller, {
+        const internalObject : InternalRequestControllerMappingObject = setInternalRequestMappingObject(controller, {
             ...origMapping,
             controllerProperties: {
                 ...origMapping.controllerProperties,
@@ -470,6 +512,13 @@ export class RequestControllerUtils {
                 }
             }
         });
+
+        origMapping = {
+            ...internalObject,
+            controller
+        };
+
+        return origMapping;
 
     }
 
