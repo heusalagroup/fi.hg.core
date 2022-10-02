@@ -7,7 +7,7 @@ import {
 } from "./types/RequestController";
 import { RequestMappingObject } from "./types/RequestMappingObject";
 import { isRequestMethod} from "./types/RequestMethod";
-import { concat, filter, has, isFunction, isObject, isString} from "../modules/lodash";
+import { filter, has, isFunction, isObject, isString} from "../modules/lodash";
 import { RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 import { RequestParamValueType } from "./types/RequestParamValueType";
 import { RequestParamObject } from "./types/RequestParamObject";
@@ -59,7 +59,7 @@ export class RequestControllerUtils {
         const openApiPartials = mappingObject?.openApiPartials ?? [];
         setInternalRequestMappingObject(controller, {
             ...mappingObject,
-            openApiPartials: concat([], openApiPartials, [config])
+            openApiPartials: [...openApiPartials, config]
         });
         return;
     }
@@ -80,7 +80,7 @@ export class RequestControllerUtils {
             const operations = mappingObject?.operations ?? [];
             setInternalRequestMappingObject(controller, {
                 ...mappingObject,
-                operations: concat([], operations, [config])
+                operations: [...operations, config]
             });
             return;
         }
@@ -95,7 +95,7 @@ export class RequestControllerUtils {
                 ...mappingObject.controllerProperties,
                 [propertyKey] : {
                     ...mappingObject.controllerProperties[propertyKey],
-                    operations: concat([], operations, [config])
+                    operations: [...operations, config]
                 }
             }
         });
@@ -266,7 +266,10 @@ export class RequestControllerUtils {
                     ...origMapping.controllerProperties,
                     [propertyKey] : {
                         ...origMapping.controllerProperties[propertyKey],
-                        modelAttributes: concat([attributeName], origMapping.controllerProperties[propertyKey].modelAttributes)
+                        modelAttributes: [
+                            attributeName,
+                            ...origMapping.controllerProperties[propertyKey].modelAttributes
+                        ]
                     }
                 }
             });
@@ -386,7 +389,7 @@ export class RequestControllerUtils {
         paramIndex  : number,
         newParam    : RequestParamObject
     ) : (RequestParamObject|null)[] {
-        let params : (RequestParamObject|null)[] = concat([], origMapping.controllerProperties[propertyKey].params);
+        let params : (RequestParamObject|null)[] = [ ...origMapping.controllerProperties[propertyKey].params ];
         while (paramIndex >= params.length) {
             params.push(null);
         }
@@ -419,7 +422,7 @@ export class RequestControllerUtils {
             // ...when previous mapping object was found, we'll append to it
             return setInternalRequestMappingObject(controller, {
                 ...origMapping,
-                mappings: parsedObject ? concat([], origMapping.mappings, [parsedObject]) : origMapping.mappings
+                mappings: parsedObject ? [ ...origMapping.mappings, parsedObject] : origMapping.mappings
             });
         }
     }
@@ -429,7 +432,9 @@ export class RequestControllerUtils {
         propertyKey    : string,
         parsedObject  ?: RequestMappingObject
     ) : RequestControllerMappingObject {
-        const origMapping = this._getOrInitializeControllerMapping(controller, parsedObject);
+
+        const origMapping : RequestControllerMappingObject = this._getOrInitializeControllerMapping(controller, parsedObject);
+
         if (!has(origMapping.controllerProperties, propertyKey)) {
             // When mapping exists, but property does not, we'll create new property from stretch
             return setInternalRequestMappingObject(controller, {
@@ -453,12 +458,10 @@ export class RequestControllerUtils {
                 [propertyKey] : {
                     ...origMapping.controllerProperties[propertyKey],
                     mappings: (
-                        parsedObject
-                            ? concat(
-                                [parsedObject],
-                                origMapping.controllerProperties[propertyKey].mappings
-                            )
-                            : origMapping.controllerProperties[propertyKey].mappings
+                        parsedObject ? [
+                            ...origMapping.controllerProperties[propertyKey].mappings,
+                            parsedObject
+                        ] : origMapping.controllerProperties[propertyKey].mappings
                     )
                 }
             }
