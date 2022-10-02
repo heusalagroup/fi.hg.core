@@ -9,7 +9,7 @@ import {
     isRequestControllerMethodObject,
     RequestControllerMethodObject
 } from "./RequestControllerMethodObject";
-import { OpenAPIV3 } from "../../types/openapi";
+import { OpenAPIV3, PathItemObject } from "../../types/openapi";
 import { LogService } from "../../LogService";
 import { getOpenApiMethodFromRequestMethod, RequestMethod } from "./RequestMethod";
 
@@ -183,7 +183,8 @@ function setOpenApiDocumentPathOperationsObject (
     }
 
     // Append our changes
-    const origObjPath = obj[path];
+    const origObjPath : PathItemObject = obj[path];
+    if (!origObjPath) throw new TypeError('Path was undefined; this should not happen');
     obj = {
         ...obj,
         [path]: {
