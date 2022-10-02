@@ -9,7 +9,7 @@ import {
     isRequestControllerMethodObject,
     RequestControllerMethodObject
 } from "./RequestControllerMethodObject";
-import { OpenAPIV3, PathItemObject } from "../../types/openapi";
+import { OpenAPIV3 } from "../../types/openapi";
 import { LogService } from "../../LogService";
 import { getOpenApiMethodFromRequestMethod, RequestMethod } from "./RequestMethod";
 
