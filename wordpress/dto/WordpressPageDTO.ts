@@ -4,6 +4,7 @@ import { WP_Types} from "./WordpressTypesDTO";
 export interface WordpressPageDTO {
     title:{rendered:string, protected:boolean};
     content:{rendered:string, protected:boolean};
+    excerpt?:{rendered?:string, protected?:boolean};
     type?:string;
     id?:string;
     date?: string | null;
@@ -12,7 +13,6 @@ export interface WordpressPageDTO {
     permalink_template?:string;
     parent?:number;
     author?:number;
-    excerpt?:object;
     featured_media?:number;
     comment_status?:string;
     ping_status?:string;
