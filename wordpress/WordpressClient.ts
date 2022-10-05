@@ -15,9 +15,6 @@ export interface WordpressContentInterface {
     readonly profiles?: Promise<WordpressUserProfileListDTO>;
 }
 
-/**
- * @see https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md
- */
 export class WordpressClient {
 
     public static setLogLevel(level: LogLevel) {
