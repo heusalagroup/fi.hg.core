@@ -3,7 +3,7 @@
 import { WordpressUserProfileDTO } from "./WordpressUserProfileDTO";
 import { LogService } from "../../LogService";
 
-const LOG = LogService.createLogger('Wordpress-Userprofiles');
+const LOG = LogService.createLogger('WordpressUserProfileListDTO');
 
 
 export type WordpressUserProfileListDTO = WordpressUserProfileDTO[];

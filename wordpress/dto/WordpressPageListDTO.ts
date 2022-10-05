@@ -3,7 +3,7 @@
 import { WordpressPageDTO } from "./WordpressPageDTO";
 import { LogService } from "../../LogService";
 
-const LOG = LogService.createLogger('Wordpress-Pages');
+const LOG = LogService.createLogger('WordpressPageListDTO');
 
 
 export type WordpressPageListDTO = WordpressPageDTO[];

@@ -3,7 +3,7 @@
 import { WordpressReferenceDTO } from "./WordpressReferenceDTO";
 import { LogService } from "../../LogService";
 
-const LOG = LogService.createLogger('Wordpress-References');
+const LOG = LogService.createLogger('WordpressReferenceListDTO');
 
 
 export type WordpressReferenceListDTO = WordpressReferenceDTO[];
