@@ -2,7 +2,6 @@
 
 import { RequestMappingObject } from "./types/RequestMappingObject";
 import { RequestControllerUtils } from "./RequestControllerUtils";
-import { RequestMapping } from "./types/RequestMapping";
 import { RequestMethod } from "./types/RequestMethod";
 
 describe('RequestControllerUtils', () => {
@@ -10,7 +9,7 @@ describe('RequestControllerUtils', () => {
     describe('#parseRequestMappings', () => {
 
         test('can parse single path', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 '/path/to'
             ];
             const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
@@ -24,7 +23,7 @@ describe('RequestControllerUtils', () => {
         });
 
         test('can parse multiple paths', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 '/path',
                 '/path/to'
             ];
@@ -42,7 +41,7 @@ describe('RequestControllerUtils', () => {
         });
 
         test('can parse GET method', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 RequestMethod.GET
             ];
             const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
@@ -58,7 +57,7 @@ describe('RequestControllerUtils', () => {
         });
 
         test('can parse POST method', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 RequestMethod.POST
             ];
             const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
@@ -74,7 +73,7 @@ describe('RequestControllerUtils', () => {
         });
 
         test('can parse multiple methods', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 RequestMethod.GET,
                 RequestMethod.POST
             ];
@@ -92,7 +91,7 @@ describe('RequestControllerUtils', () => {
         });
 
         test('can parse multiple paths with method', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 RequestMethod.GET,
                 '/path',
                 '/path/to'
@@ -113,7 +112,7 @@ describe('RequestControllerUtils', () => {
         });
 
         test('can parse multiple paths with multiple methods', () => {
-            const config: readonly RequestMapping[] = [
+            const config: (RequestMethod|string)[] = [
                 RequestMethod.GET,
                 '/path',
                 RequestMethod.POST,

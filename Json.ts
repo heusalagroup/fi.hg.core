@@ -1,5 +1,6 @@
-// Copyright (c) 2020 Sendanor. All rights reserved.
-//               2020 Jaakko Heusala <jheusala@iki.fi>
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2020. Sendanor. All rights reserved.
+//               2020. Jaakko Heusala <jheusala@iki.fi>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
