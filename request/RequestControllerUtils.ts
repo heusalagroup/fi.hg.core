@@ -33,6 +33,12 @@ export class RequestControllerUtils {
         LOG.setLogLevel(level);
     }
 
+    /**
+     * Filters items by type to separate properties in the return object
+     *
+     * @param value Array of paths (string) or methods (RequestMethod e.g. numbers)
+     * @returns RequestMappingObject with methods and paths separated
+     */
     static parseRequestMappings (value : RequestMappingArray) : RequestMappingObject {
 
         return {
@@ -42,6 +48,12 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Attach request mapping configuration into a controller directly.
+     *
+     * @param controller A controller. Usually an instance of class or the class itself (when static)
+     * @param config The request mapping configuration
+     */
     static attachControllerMapping (
         controller : RequestController,
         config     : RequestMappingArray
@@ -74,6 +86,13 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Attach request mapping configuration for a method into a controller directly.
+     *
+     * @param controller A controller. Usually an instance of class or the class itself (when static)
+     * @param config The request mapping configuration
+     * @param propertyKey The name of the method
+     */
     static attachControllerMethodMapping (
         controller  : RequestController,
         config      : RequestMappingArray,
@@ -243,6 +262,17 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Find the controller from arbitrary variable.
+     *
+     * If provided with a class directly, will return the class itself.
+     *
+     * If provided with an instance of a class, will return the class instead.
+     *
+     * Otherwise, will return `undefined`.
+     *
+     * @param target
+     */
     static findController (target : any) : RequestController | undefined {
 
         if ( isFunction(target) && isRequestController(target) ) {
@@ -257,6 +287,16 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * This method is used to configure how ModelAttribute is mapped to the
+     * method's parameter
+     *
+     * @param controller The controller to attach the configuration to
+     * @param propertyKey The method name
+     * @param paramIndex The index of the parameter
+     * @param attributeName The parameter name
+     * @param paramType The parameter type
+     */
     static setControllerMethodModelAttributeParam (
         controller    : RequestController,
         propertyKey   : string,
@@ -277,6 +317,16 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * This function is used when the ModelAttribute decorator provides a PropertyDescriptor instead of a parameter
+     * number. (FIXME: Add better explanation. What is the actual use case from annotations?)
+     *
+     * @param controller
+     * @param propertyKey
+     * @param propertyDescriptor
+     * @param attributeName
+     * @see https://www.typescriptlang.org/docs/handbook/decorators.html#accessor-decorators
+     */
     static attachControllerMethodModelAttributeBuilder (
         controller         : RequestController,
         propertyKey        : string,
@@ -332,6 +382,15 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Set query param configuration into the controller
+     *
+     * @param controller
+     * @param propertyKey
+     * @param paramIndex
+     * @param queryParam
+     * @param paramType
+     */
     static setControllerMethodQueryParam (
         controller  : RequestController,
         propertyKey : string,
@@ -352,6 +411,17 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * This method is used to set the configuration for the HTTP header ( Request.header() ) annotation in to the controller.
+     *
+     * @param controller
+     * @param propertyKey
+     * @param paramIndex
+     * @param headerName
+     * @param paramType
+     * @param isRequired
+     * @param defaultValue
+     */
     static setControllerMethodHeader (
         controller   : RequestController,
         propertyKey  : string,
@@ -374,6 +444,18 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Set configuration for path variable into the controller.
+     *
+     * @param controller The controller
+     * @param propertyKey The method name
+     * @param paramIndex The index of the parameter
+     * @param variableName The variable name in the path
+     * @param paramType The variable type in the path
+     * @param isRequired True if variable is required
+     * @param decodeValue True if variable must be decoded
+     * @param defaultValue The default value if missing
+     */
     static setControllerMethodPathVariable (
         controller   : RequestController,
         propertyKey  : string,
@@ -398,6 +480,15 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Sets configuration to pass on a full map of parameters into the controller's
+     * method argument at specified index.
+     *
+     * @param controller The controller
+     * @param propertyKey The method name
+     * @param paramIndex The index of the method's parameter
+     * @param defaultValues The default values if some parameters missing
+     */
     static setControllerMethodPathVariableMap (
         controller    : RequestController,
         propertyKey   : string,
@@ -414,7 +505,17 @@ export class RequestControllerUtils {
 
     }
 
-
+    /**
+     * Sets configuration to pass on a full map of headers into the controller's
+     * method argument at specified index.
+     *
+     * Used at `Request.header()`
+     *
+     * @param controller The controller
+     * @param propertyKey The method name
+     * @param paramIndex The index of the method's parameter
+     * @param defaultValues The default values if some parameters missing
+     */
     static setControllerMethodHeaderMap (
         controller    : RequestController,
         propertyKey   : string,
@@ -431,6 +532,17 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     * Sets configuration to pass on the request body into the controller's
+     * method argument at specified index.
+     *
+     * Used at `Request.body()`
+     *
+     * @param controller The controller
+     * @param propertyKey The method name
+     * @param paramIndex The index of the method's parameter
+     * @param paramType The type of the parameter
+     */
     static setControllerMethodBodyParam (
         controller  : RequestController,
         propertyKey : string,
