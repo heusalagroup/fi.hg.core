@@ -2,13 +2,13 @@
 
 import {
     RequestController,
-    getInternalRequestMappingObject, isRequestController,
+    getInternalRequestMappingObject,
+    isRequestController,
     setInternalRequestMappingObject
 } from "./types/RequestController";
 import { RequestMappingObject } from "./types/RequestMappingObject";
-import { RequestMappingArray } from "./types/RequestMappingArray";
 import { isRequestMethod} from "./types/RequestMethod";
-import { concat, filter, has, isFunction, isObject, isString} from "../modules/lodash";
+import { concat, filter, has, isFunction, isObject, isString } from "../modules/lodash";
 import { RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 import { RequestParamValueType } from "./types/RequestParamValueType";
 import { RequestParamObject } from "./types/RequestParamObject";
@@ -24,6 +24,8 @@ import { DefaultPathVariableMapValuesType } from "./types/DefaultPathVariableMap
 import { RequestModelAttributeParamObject } from "./types/RequestModelAttributeParamObject";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
+import { RequestMapping } from "./types/RequestMapping";
+import { OpenAPIV3 } from "../types/openapi";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
@@ -39,13 +41,11 @@ export class RequestControllerUtils {
      * @param value Array of paths (string) or methods (RequestMethod e.g. numbers)
      * @returns RequestMappingObject with methods and paths separated
      */
-    public static parseRequestMappings (value : RequestMappingArray) : RequestMappingObject {
-
+    public static parseRequestMappings (value : readonly RequestMapping[]) : RequestMappingObject {
         return {
             methods : filter(value, isRequestMethod),
             paths   : filter(value, isString)
         };
-
     }
 
     /**
@@ -56,7 +56,7 @@ export class RequestControllerUtils {
      */
     public static attachControllerMapping (
         controller : RequestController,
-        config     : RequestMappingArray
+        config     : readonly RequestMapping[]
     ) {
 
         const parsedObject = RequestControllerUtils.parseRequestMappings(config);
@@ -95,7 +95,7 @@ export class RequestControllerUtils {
      */
     public static attachControllerMethodMapping (
         controller  : RequestController,
-        config      : RequestMappingArray,
+        config      : readonly RequestMapping[],
         propertyKey : string
     ) {
 
@@ -159,17 +159,13 @@ export class RequestControllerUtils {
      * @param target
      */
     public static findController (target : any) : RequestController | undefined {
-
         if ( isFunction(target) && isRequestController(target) ) {
             return target;
         }
-
         if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) ) {
             return target.constructor;
         }
-
         return undefined;
-
     }
 
     /**
@@ -189,17 +185,13 @@ export class RequestControllerUtils {
         attributeName : string,
         paramType     : RequestParamValueType
     ) {
-
         LOG.debug('setControllerMethodModelAttributeParam: attributeName =', attributeName, paramType);
-
         const newParam : RequestModelAttributeParamObject = {
             objectType    : RequestParamObjectType.MODEL_ATTRIBUTE,
             attributeName : attributeName,
             valueType     : paramType
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-
     }
 
     /**
@@ -218,13 +210,9 @@ export class RequestControllerUtils {
         propertyDescriptor : PropertyDescriptor,
         attributeName      : string
     ) {
-
         LOG.debug('attachControllerMethodModelAttributeBuilder: attributeName =', attributeName, propertyKey);
-
         const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
-
         if (origMapping === undefined) {
-
             setInternalRequestMappingObject(controller, {
                 mappings: [],
                 controllerProperties: {
@@ -235,9 +223,7 @@ export class RequestControllerUtils {
                     }
                 }
             });
-
         } else if (!has(origMapping.controllerProperties, propertyKey)) {
-
             setInternalRequestMappingObject(controller, {
                 ...origMapping,
                 controllerProperties: {
@@ -249,22 +235,21 @@ export class RequestControllerUtils {
                     }
                 }
             });
-
         } else {
-
             setInternalRequestMappingObject(controller, {
                 ...origMapping,
                 controllerProperties: {
                     ...origMapping.controllerProperties,
                     [propertyKey] : {
                         ...origMapping.controllerProperties[propertyKey],
-                        modelAttributes: concat([attributeName], origMapping.controllerProperties[propertyKey].modelAttributes)
+                        modelAttributes: [
+                            attributeName,
+                            ...origMapping.controllerProperties[propertyKey].modelAttributes
+                        ]
                     }
                 }
             });
-
         }
-
     }
 
     /**
@@ -283,17 +268,13 @@ export class RequestControllerUtils {
         queryParam  : string,
         paramType   : RequestParamValueType
     ) {
-
         // LOG.debug('setControllerMethodQueryParam: queryParam =', queryParam, paramType);
-
         const newParam : RequestQueryParamObject = {
             objectType : RequestParamObjectType.QUERY_PARAM,
             queryParam : queryParam,
             valueType  : paramType
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-
     }
 
     /**
@@ -316,7 +297,6 @@ export class RequestControllerUtils {
         isRequired   : boolean | undefined,
         defaultValue : string | undefined
     ) {
-
         const newParam : RequestHeaderParamObject = {
             objectType   : RequestParamObjectType.REQUEST_HEADER,
             headerName   : headerName,
@@ -324,9 +304,7 @@ export class RequestControllerUtils {
             isRequired   : isRequired ?? false,
             defaultValue : defaultValue
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-
     }
 
     /**
@@ -351,7 +329,6 @@ export class RequestControllerUtils {
         decodeValue  : boolean | undefined,
         defaultValue : string | undefined
     ) {
-
         const newParam : RequestPathVariableParamObject = {
             objectType   : RequestParamObjectType.PATH_VARIABLE,
             variableName : variableName,
@@ -360,9 +337,7 @@ export class RequestControllerUtils {
             decodeValue  : decodeValue ?? true,
             defaultValue : defaultValue
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-
     }
 
     /**
@@ -380,14 +355,11 @@ export class RequestControllerUtils {
         paramIndex    : number,
         defaultValues : DefaultPathVariableMapValuesType | undefined
     ) {
-
         const newParam : RequestPathVariableMapParamObject = {
             objectType    : RequestParamObjectType.PATH_VARIABLE_MAP,
             defaultValues : defaultValues
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-
     }
 
     /**
@@ -407,14 +379,11 @@ export class RequestControllerUtils {
         paramIndex    : number,
         defaultValues : DefaultHeaderMapValuesType | undefined
     ) {
-
         const newParam : RequestHeaderMapParamObject = {
             objectType    : RequestParamObjectType.REQUEST_HEADER_MAP,
             defaultValues : defaultValues
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-
     }
 
     /**
@@ -434,15 +403,146 @@ export class RequestControllerUtils {
         paramIndex  : number,
         paramType   : RequestParamValueType
     ) {
-
         const newParam : RequestBodyParamObject = {
             objectType : RequestParamObjectType.REQUEST_BODY,
             valueType  : paramType
         };
-
         RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam, true);
+    }
+
+    /**
+     * Set OpenAPI document configuration into the controller directly
+     *
+     * @param controller
+     * @param config
+     */
+    public static attachControllerOpenApiDocument (
+        controller  : RequestController,
+        config      : Partial<OpenAPIV3.Document>
+    ) : void {
+
+        let mappingObject : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+        if (mappingObject === undefined) {
+            // ...when no previous mapping found at all, we'll create from stretch
+            setInternalRequestMappingObject(
+                controller,
+                {
+                    mappings: [],
+                    controllerProperties: {},
+                    openApiPartials: [config]
+                }
+            );
+            return;
+        }
+
+        LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
+        LOG.debug('attachControllerOperation: config = ', config);
+        const openApiPartials = mappingObject?.openApiPartials ?? [];
+        setInternalRequestMappingObject(
+            controller,
+            {
+                ...mappingObject,
+                openApiPartials: [...openApiPartials, config]
+            }
+        );
+        return;
+    }
+
+    /**
+     *
+     * @param controller
+     * @param propertyKey
+     * @param config
+     */
+    public static attachControllerOperation (
+        controller  : RequestController,
+        propertyKey : string | undefined,
+        config      : Partial<OpenAPIV3.OperationObject>
+    ) : void {
+
+        let mappingObject : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+        if (mappingObject === undefined) {
+            // ...when no previous mapping found at all, we'll create from stretch
+            if (propertyKey === undefined) {
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        mappings: [],
+                        controllerProperties: {},
+                        operations: [config]
+                    }
+                );
+            } else {
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        mappings: [],
+                        controllerProperties: {
+                            [propertyKey]: {
+                                modelAttributes: [],
+                                mappings: [],
+                                params: [],
+                                operations: [config]
+                            }
+                        }
+                    }
+                );
+            }
+            return;
+        }
+
+        LOG.debug('attachControllerOperation: propertyKey = ', propertyKey);
+        LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
+        LOG.debug('attachControllerOperation: config = ', config);
+
+        if (propertyKey === undefined) {
+            // When property does not exist, append to root mapping
+            const operations = mappingObject?.operations ?? [];
+            setInternalRequestMappingObject(
+                controller,
+                {
+                    ...mappingObject,
+                    operations: [...operations, config]
+                }
+            );
+            return;
+        }
+
+        if (!has(mappingObject.controllerProperties, propertyKey)) {
+            // When mapping exists, but property does not, we'll create new property from stretch
+            setInternalRequestMappingObject(controller, {
+                ...mappingObject,
+                controllerProperties: {
+                    ...mappingObject.controllerProperties,
+                    [propertyKey] : {
+                        mappings        : [],
+                        params          : [],
+                        modelAttributes : [],
+                        operations      : [config]
+                    }
+                }
+            });
+            return;
+        }
+
+        const operations : readonly Partial<OpenAPIV3.OperationObject>[] = mappingObject?.controllerProperties[propertyKey]?.operations ?? [];
+
+        setInternalRequestMappingObject(
+            controller,
+            {
+                ...mappingObject,
+                controllerProperties: {
+                    ...mappingObject.controllerProperties,
+                    [propertyKey] : {
+                        ...mappingObject.controllerProperties[propertyKey],
+                        operations: [...operations, config]
+                    }
+                }
+            }
+        );
 
     }
+
 
     private static _setControllerMethodParam (
         controller          : RequestController,
@@ -451,129 +551,118 @@ export class RequestControllerUtils {
         newParam            : RequestParamObject,
         requestBodyRequired : boolean             = false
     ) {
-
         const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
-
         if (origMapping === undefined) {
-
-            const params : Array<RequestParamObject|null> = RequestControllerUtils._initializeParams(paramIndex, newParam);
-
+            const params : readonly (RequestParamObject|null)[] = RequestControllerUtils._initializeParams(paramIndex, newParam);
             if (requestBodyRequired) {
-
-                setInternalRequestMappingObject(controller, {
-                    mappings: [],
-                    controllerProperties: {
-                        [propertyKey] : {
-                            requestBodyRequired : true,
-                            mappings            : [],
-                            modelAttributes     : [],
-                            params              : params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        mappings: [],
+                        controllerProperties: {
+                            [propertyKey] : {
+                                requestBodyRequired : true,
+                                mappings            : [],
+                                modelAttributes     : [],
+                                params              : params
+                            }
                         }
                     }
-                });
-
+                );
             } else {
-
-                setInternalRequestMappingObject(controller, {
-                    mappings: [],
-                    controllerProperties: {
-                        [propertyKey] : {
-                            mappings : [],
-                            modelAttributes     : [],
-                            params   : params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        mappings: [],
+                        controllerProperties: {
+                            [propertyKey] : {
+                                mappings : [],
+                                modelAttributes     : [],
+                                params   : params
+                            }
                         }
                     }
-                });
-
+                );
             }
-
         } else if (!has(origMapping.controllerProperties, propertyKey)) {
-
-            const params : Array<RequestParamObject|null> = RequestControllerUtils._initializeParams(paramIndex, newParam);
-
+            const params : readonly (RequestParamObject|null)[] = RequestControllerUtils._initializeParams(paramIndex, newParam);
             if (requestBodyRequired) {
-
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey] : {
-                            requestBodyRequired: true,
-                            modelAttributes     : [],
-                            mappings : [],
-                            params   : params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey] : {
+                                requestBodyRequired: true,
+                                modelAttributes     : [],
+                                mappings : [],
+                                params   : params
+                            }
                         }
                     }
-                });
-
+                );
             } else {
-
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey]: {
-                            mappings: [],
-                            modelAttributes : [],
-                            params: params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey]: {
+                                mappings: [],
+                                modelAttributes : [],
+                                params: params
+                            }
                         }
                     }
-                });
-
+                );
             }
-
         } else {
-
-            const params : Array<RequestParamObject|null> = RequestControllerUtils._reinitializeParams(origMapping, propertyKey, paramIndex, newParam);
-
+            const params : (RequestParamObject|null)[] = RequestControllerUtils._reinitializeParams(origMapping, propertyKey, paramIndex, newParam);
             if (requestBodyRequired) {
-
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey]: {
-                            ...origMapping.controllerProperties[propertyKey],
-                            requestBodyRequired: true,
-                            params: params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey]: {
+                                ...origMapping.controllerProperties[propertyKey],
+                                requestBodyRequired: true,
+                                params: params
+                            }
                         }
                     }
-                });
-
+                );
             } else {
-
-                setInternalRequestMappingObject(controller, {
-                    ...origMapping,
-                    controllerProperties: {
-                        ...origMapping.controllerProperties,
-                        [propertyKey] : {
-                            ...origMapping.controllerProperties[propertyKey],
-                            params: params
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...origMapping,
+                        controllerProperties: {
+                            ...origMapping.controllerProperties,
+                            [propertyKey] : {
+                                ...origMapping.controllerProperties[propertyKey],
+                                params: params
+                            }
                         }
                     }
-                });
-
+                );
             }
-
         }
-
     }
 
     private static _initializeParams (
         paramIndex  : number,
         newParam    : RequestParamObject
-    ) : Array<RequestParamObject|null> {
-
-        let params : Array<RequestParamObject|null> = [];
-
+    ) : (RequestParamObject|null)[] {
+        let params : (RequestParamObject|null)[] = [];
         while (paramIndex >= params.length) {
             params.push(null);
         }
-
         params[paramIndex] = newParam;
-
         return params;
-
     }
 
     private static _reinitializeParams (
@@ -581,18 +670,13 @@ export class RequestControllerUtils {
         propertyKey : string,
         paramIndex  : number,
         newParam    : RequestParamObject
-    ) : Array<RequestParamObject|null> {
-
-        let params : Array<RequestParamObject|null> = concat([], origMapping.controllerProperties[propertyKey].params);
-
+    ) : (RequestParamObject|null)[] {
+        let params : (RequestParamObject|null)[] = [ ...origMapping.controllerProperties[propertyKey].params ];
         while (paramIndex >= params.length) {
             params.push(null);
         }
-
         params[paramIndex] = newParam;
-
         return params;
-
     }
 
 }
