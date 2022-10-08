@@ -1,11 +1,12 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
-import { RequestControllerMappingObject, 
+import {
+    RequestControllerMappingObject,
     explainRequestControllerMappingObject,
     isRequestControllerMappingObject
 } from "./RequestControllerMappingObject";
-import {has, isFunction, isObject} from "../../modules/lodash";
+import {has} from "../../modules/lodash";
 import { LogService } from "../../LogService";
 
 const LOG = LogService.createLogger('RequestController');
@@ -14,7 +15,7 @@ export const INTERNAL_KEYWORD = '__requestMappings';
 
 export interface RequestController {
 
-    [INTERNAL_KEYWORD] ?: RequestControllerMappingObject;
+    [INTERNAL_KEYWORD] ?: RequestControllerMappingObject | undefined;
 
 }
 
