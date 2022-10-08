@@ -4,7 +4,7 @@ import { RequestMethod } from "./request/types/RequestMethod";
 import { LogService } from "./LogService";
 import { RequestController } from "./request/types/RequestController";
 import { RequestControllerUtils } from "./request/RequestControllerUtils";
-import { RequestMappingArray } from "./request/types/RequestMappingArray";
+import { RequestMapping } from "./request/types/RequestMapping";
 import {
     RequestParamValueType,
     isRequestParamValueTypeOrUndefined
@@ -30,6 +30,7 @@ import {
 } from "./request/types/RequestPathVariableOptions";
 import { ParameterOrMethodDecoratorFunction } from "./request/types/ParameterOrMethodDecoratorFunction";
 import { LogLevel } from "./types/LogLevel";
+import { OpenAPIV3 } from "./types/openapi";
 
 const LOG = LogService.createLogger('Request');
 
@@ -55,7 +56,7 @@ export class Request {
      * @param config
      */
     public static mapping (
-        ...config : RequestMappingArray
+        ...config : readonly RequestMapping[]
     ) : MethodDecoratorFunction {
         return (
             target       : any | Function,
@@ -81,7 +82,7 @@ export class Request {
      * @deprecated Use @RequestMapping or @Request.mapping
      */
     public static Mapping (
-        ...config : RequestMappingArray
+        ...config : readonly RequestMapping[]
     ) : MethodDecoratorFunction {
         return Request.mapping(...config);
     }
@@ -522,13 +523,13 @@ export class Request {
 
     // @OptionsMapping / @Request.Options
 
-    public static optionsMapping (...config : RequestMappingArray) {
+    public static optionsMapping (...config : readonly RequestMapping[]) {
         return Request.mapping(Request.Method.OPTIONS, ...config);
     }
 
     // @GetMapping / @Request.Get
 
-    public static getMapping (...config : RequestMappingArray) {
+    public static getMapping (...config : readonly RequestMapping[]) {
         return Request.mapping(Request.Method.GET, ...config);
     }
 
@@ -537,14 +538,14 @@ export class Request {
      * @param config
      * @deprecated Use @GetMapping or @Request.getMapping
      */
-    public static Get (...config : RequestMappingArray) {
+    public static Get (...config : readonly RequestMapping[]) {
         return Request.getMapping(...config);
     }
 
 
     // @PostMapping / @Request.Post
 
-    public static postMapping (...config : RequestMappingArray) {
+    public static postMapping (...config : readonly RequestMapping[]) {
         return Request.mapping(Request.Method.POST, ...config);
     }
 
@@ -553,14 +554,14 @@ export class Request {
      * @param config
      * @deprecated Use @PostMapping or @Request.postMapping
      */
-    public static Post (...config : RequestMappingArray) {
+    public static Post (...config : readonly RequestMapping[]) {
         return Request.postMapping(...config);
     }
 
 
     // @DeleteMapping / @Request.Delete
 
-    public static deleteMapping (...config : RequestMappingArray) {
+    public static deleteMapping (...config : readonly RequestMapping[]) {
         return Request.mapping(Request.Method.DELETE, ...config);
     }
 
@@ -569,14 +570,14 @@ export class Request {
      * @param config
      * @deprecated Use @DeleteMapping or @Request.deleteMapping
      */
-    public static Delete (...config : RequestMappingArray) {
+    public static Delete (...config : readonly RequestMapping[]) {
         return Request.deleteMapping(...config);
     }
 
 
     // @PutMapping / @Request.Put
 
-    public static putMapping (...config : RequestMappingArray) {
+    public static putMapping (...config : readonly RequestMapping[]) {
         return Request.mapping(Request.Method.PUT, ...config);
     }
 
@@ -585,7 +586,7 @@ export class Request {
      * @param config
      * @deprecated Use @PutMapping or @Request.putMapping
      */
-    public static Put (...config : RequestMappingArray) {
+    public static Put (...config : readonly RequestMapping[]) {
         return Request.putMapping(...config);
     }
 
@@ -655,10 +656,56 @@ export class Request {
         throw Request.createInternalErrorRequestError(message);
     }
 
+    /**
+     * Define OpenAPI operation
+     * @param config
+     */
+    public static operation (
+        config: Partial<OpenAPIV3.OperationObject>
+    ) : MethodDecoratorFunction {
+        return (
+            target       : any | Function,
+            propertyKey ?: string,
+            descriptor  ?: PropertyDescriptor
+        ) => {
+            const requestController = RequestControllerUtils.findController(target);
+            if (requestController !== undefined) {
+                if (propertyKey === undefined) {
+                    RequestControllerUtils.attachControllerOperation(requestController, undefined, config);
+                } else {
+                    RequestControllerUtils.attachControllerOperation(requestController, propertyKey, config);
+                }
+            } else {
+                LOG.debug("mapping: for other: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=',descriptor);
+            }
+        };
+    }
+
+    /**
+     * Define OpenAPI document definition
+     * @param config
+     */
+    public static openAPIDefinition (
+        config: Partial<OpenAPIV3.Document>
+    ) : MethodDecoratorFunction {
+        return (
+            target       : any | Function,
+            propertyKey ?: string,
+            descriptor  ?: PropertyDescriptor
+        ) => {
+            const requestController = RequestControllerUtils.findController(target);
+            if (requestController !== undefined) {
+                RequestControllerUtils.attachControllerOpenApiDocument(requestController, config);
+            } else {
+                LOG.debug("mapping: for other: config=", config, 'target=', target, 'propertyKey=', propertyKey, 'descriptor=',descriptor);
+            }
+        };
+    }
+
 }
 
 // noinspection JSUnusedGlobalSymbols
-export function RequestMapping (...config : RequestMappingArray) {
+export function RequestMapping (...config : readonly RequestMapping[]) {
     return Request.mapping(...config);
 }
 
@@ -753,27 +800,27 @@ export function ModelAttribute (
 }
 
 // noinspection JSUnusedGlobalSymbols
-export function OptionsMapping (...config : RequestMappingArray) {
+export function OptionsMapping (...config : readonly RequestMapping[]) {
     return Request.optionsMapping(...config);
 }
 
 // noinspection JSUnusedGlobalSymbols
-export function GetMapping (...config : RequestMappingArray) {
+export function GetMapping (...config : readonly RequestMapping[]) {
     return Request.getMapping(...config);
 }
 
 // noinspection JSUnusedGlobalSymbols
-export function PostMapping (...config : RequestMappingArray) {
+export function PostMapping (...config : readonly RequestMapping[]) {
     return Request.postMapping(...config);
 }
 
 // noinspection JSUnusedGlobalSymbols
-export function PutMapping (...config : RequestMappingArray) {
+export function PutMapping (...config : readonly RequestMapping[]) {
     return Request.putMapping(...config);
 }
 
 // noinspection JSUnusedGlobalSymbols
-export function DeleteMapping (...config : RequestMappingArray) {
+export function DeleteMapping (...config : readonly RequestMapping[]) {
     return Request.deleteMapping(...config);
 }
 
@@ -784,4 +831,12 @@ export function RequestBody (
     paramIndex  ?: number
 ) : void {
     return Request.body(target, propertyKey, paramIndex);
+}
+
+export function Operation (config: Partial<OpenAPIV3.OperationObject>) : MethodDecoratorFunction {
+    return Request.operation(config);
+}
+
+export function OpenAPIDefinition (config: Partial<OpenAPIV3.Document>) : MethodDecoratorFunction {
+    return Request.openAPIDefinition(config);
 }

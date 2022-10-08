@@ -141,7 +141,7 @@ describe('RequestControllerUtils', () => {
 
     describe('#attachControllerMapping', () => {
 
-        test('can attach mapping to the controller', () => {
+        test('can attach request mapping to the controller', () => {
             class TestController {
 
             }
@@ -305,7 +305,7 @@ describe('RequestControllerUtils', () => {
 
             const internalMapping = getInternalRequestMappingObject(TestController as RequestController, TestController);
             expect(internalMapping?.controller).toStrictEqual(TestController);
-            expect(internalMapping?.mappings?.length).toBe(0);
+            expect(internalMapping?.mappings).toStrictEqual([]);
 
             expect(internalMapping?.controllerProperties?.getList?.mappings?.length).toBe(1);
             expect(internalMapping?.controllerProperties?.getList?.mappings[0]).toStrictEqual(
@@ -716,6 +716,194 @@ describe('RequestControllerUtils', () => {
                 }
             );
             expect(internalMapping?.mappings?.length).toBe(0);
+        });
+
+    });
+
+    describe('#attachControllerOpenApiDocument', () => {
+
+        test("can attach openAPI configuration for the controller", () => {
+            class TestController {
+                static getEcho (test: string) {
+
+                };
+            }
+            RequestControllerUtils.attachControllerOpenApiDocument(
+                TestController as RequestController,
+                {
+                    info: {
+                        title: 'Hello world API',
+                        version: '0.1.0'
+                    }
+                }
+            );
+            const internalMapping = getInternalRequestMappingObject(TestController as RequestController, TestController);
+            expect(internalMapping?.controller).toStrictEqual(TestController);
+            expect(internalMapping?.mappings).toStrictEqual([]);
+            expect(internalMapping?.openApiPartials?.length).toStrictEqual(1);
+            expect((internalMapping?.openApiPartials?? [])[0]).toStrictEqual(
+                {
+                    info: {
+                        title: 'Hello world API',
+                        version: '0.1.0'
+                    }
+                }
+            );
+        });
+
+    });
+
+    describe('#attachControllerOperation', () => {
+
+        test("can attach openAPI operation info for the controller's method", () => {
+            class TestController {
+                static getEcho (test: string) {
+
+                };
+            }
+            RequestControllerUtils.attachControllerOperation(
+                TestController as RequestController,
+                'getEcho',
+                {
+                    summary: 'Returns echo of the parameter provided'
+                }
+            );
+            const internalMapping = getInternalRequestMappingObject(TestController as RequestController, TestController);
+            expect(internalMapping?.controller).toStrictEqual(TestController);
+            expect(internalMapping?.mappings).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.mappings).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.modelAttributes).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.params).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.operations?.length).toBe(1);
+            expect((internalMapping?.controllerProperties?.getEcho?.operations??[])[0]).toStrictEqual(
+                {
+                    summary: 'Returns echo of the parameter provided'
+                }
+            );
+        });
+
+        test("can attach openAPI operation info for the controller's method with request mapping", () => {
+            class TestController {
+                static getEcho (test: string) {
+                    return test;
+                };
+            }
+
+            const config: (RequestMethod | string)[] = [
+                RequestMethod.GET,
+                '/path/to'
+            ];
+
+            RequestControllerUtils.attachControllerMapping(TestController as RequestController, config);
+
+            RequestControllerUtils.attachControllerOperation(
+                TestController as RequestController,
+                'getEcho',
+                {
+                    summary: 'Returns echo of the parameter provided'
+                }
+            );
+
+            const internalMapping = getInternalRequestMappingObject(TestController as RequestController, TestController);
+
+            expect(internalMapping?.controller).toStrictEqual(TestController);
+
+            expect(internalMapping?.mappings?.length).toStrictEqual(1);
+            expect(internalMapping?.mappings[0]).toStrictEqual(
+                {
+                    methods: [
+                        RequestMethod.GET
+                    ],
+                    paths: [
+                        '/path/to'
+                    ]
+                }
+            );
+
+            expect(internalMapping?.controllerProperties?.getEcho?.mappings).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.modelAttributes).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.params).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.operations?.length).toBe(1);
+            expect((internalMapping?.controllerProperties?.getEcho?.operations??[])[0]).toStrictEqual(
+                {
+                    summary: 'Returns echo of the parameter provided'
+                }
+            );
+
+        });
+
+        test("can attach openAPI operation info for the controller's method with request mapping with method mappings1", () => {
+            class TestController {
+                static getFoo (test: string) {
+                    return test;
+                };
+                static getEcho (test: string) {
+                    return test;
+                };
+            }
+
+            const config1: (RequestMethod | string)[] = [
+                RequestMethod.GET,
+                '/echo'
+            ];
+            RequestControllerUtils.attachControllerMethodMapping(TestController as RequestController, config1, 'getEcho');
+
+            const config2: (RequestMethod | string)[] = [
+                RequestMethod.GET,
+                '/foo'
+            ];
+            RequestControllerUtils.attachControllerMethodMapping(TestController as RequestController, config2, 'getFoo');
+
+            RequestControllerUtils.attachControllerOperation(
+                TestController as RequestController,
+                'getEcho',
+                {
+                    summary: 'Returns echo of the parameter provided'
+                }
+            );
+
+            const internalMapping = getInternalRequestMappingObject(TestController as RequestController, TestController);
+
+            expect(internalMapping?.controller).toStrictEqual(TestController);
+
+            expect(internalMapping?.mappings).toStrictEqual([]);
+
+            expect(internalMapping?.controllerProperties?.getFoo?.mappings?.length).toBe(1);
+            expect(internalMapping?.controllerProperties?.getFoo?.mappings[0]).toStrictEqual(
+                {
+                    methods: [
+                        RequestMethod.GET
+                    ],
+                    paths: [
+                        '/foo'
+                    ]
+                }
+            );
+            expect(internalMapping?.controllerProperties?.getFoo?.modelAttributes).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getFoo?.params).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getFoo?.operations).not.toBeDefined();
+
+            expect(internalMapping?.controllerProperties?.getEcho?.mappings?.length).toStrictEqual(1);
+            expect(internalMapping?.controllerProperties?.getEcho?.mappings[0]).toStrictEqual(
+                {
+                    methods: [
+                        RequestMethod.GET
+                    ],
+                    paths: [
+                        '/echo'
+                    ]
+                }
+            );
+
+            expect(internalMapping?.controllerProperties?.getEcho?.modelAttributes).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.params).toStrictEqual([]);
+            expect(internalMapping?.controllerProperties?.getEcho?.operations?.length).toBe(1);
+            expect((internalMapping?.controllerProperties?.getEcho?.operations??[])[0]).toStrictEqual(
+                {
+                    summary: 'Returns echo of the parameter provided'
+                }
+            );
+
         });
 
     });
