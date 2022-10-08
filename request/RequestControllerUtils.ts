@@ -1,3 +1,4 @@
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import {
@@ -35,14 +36,14 @@ export class RequestControllerUtils {
         LOG.setLogLevel(level);
     }
 
-    static parseRequestMappings (value : readonly RequestMapping[]) : RequestMappingObject {
+    public static parseRequestMappings (value : readonly RequestMapping[]) : RequestMappingObject {
         return {
             methods : filter(value, isRequestMethod),
             paths   : filter(value, isString)
         };
     }
 
-    static attachControllerMapping (
+    public static attachControllerMapping (
         controller : RequestController,
         config     : readonly RequestMapping[]
     ) : void {
@@ -50,7 +51,7 @@ export class RequestControllerUtils {
         this._getOrInitializeControllerMapping(controller, parsedObject);
     }
 
-    static attachControllerOpenApiDocument (
+    public static attachControllerOpenApiDocument (
         controller  : RequestController,
         config      : Partial<OpenAPIV3.Document>
     ) : void {
@@ -68,7 +69,7 @@ export class RequestControllerUtils {
         return;
     }
 
-    static attachControllerOperation (
+    public static attachControllerOperation (
         controller  : RequestController,
         propertyKey : string | undefined,
         config      : Partial<OpenAPIV3.OperationObject>
@@ -112,7 +113,7 @@ export class RequestControllerUtils {
 
     }
 
-    static attachControllerMethodMapping (
+    public static attachControllerMethodMapping (
         controller  : RequestController,
         config      : readonly RequestMapping[],
         propertyKey : string
@@ -120,6 +121,176 @@ export class RequestControllerUtils {
         const parsedObject : RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
         this._setControllerMappingProperty(controller, propertyKey, parsedObject);
     }
+
+    public static findController (target : any) : RequestController | undefined {
+        if ( isFunction(target) && isRequestController(target) ) {
+            return target;
+        }
+        if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) ) {
+            return target.constructor;
+        }
+        return undefined;
+    }
+
+    public static setControllerMethodModelAttributeParam (
+        controller    : RequestController,
+        propertyKey   : string,
+        paramIndex    : number,
+        attributeName : string,
+        paramType     : RequestParamValueType
+    ) {
+        LOG.debug('setControllerMethodModelAttributeParam: attributeName =', attributeName, paramType);
+        const newParam : RequestModelAttributeParamObject = {
+            objectType    : RequestParamObjectType.MODEL_ATTRIBUTE,
+            attributeName : attributeName,
+            valueType     : paramType
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+    }
+
+    public static attachControllerMethodModelAttributeBuilder (
+        controller         : RequestController,
+        propertyKey        : string,
+        propertyDescriptor : PropertyDescriptor,
+        attributeName      : string
+    ) {
+        LOG.debug('attachControllerMethodModelAttributeBuilder: attributeName =', attributeName, propertyKey);
+        const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+        if (origMapping === undefined) {
+            setInternalRequestMappingObject(controller, {
+                mappings: [],
+                controllerProperties: {
+                    [propertyKey] : {
+                        mappings        : [],
+                        params          : [],
+                        modelAttributes : [attributeName]
+                    }
+                }
+            });
+        } else if (!has(origMapping.controllerProperties, propertyKey)) {
+            setInternalRequestMappingObject(controller, {
+                ...origMapping,
+                controllerProperties: {
+                    ...origMapping.controllerProperties,
+                    [propertyKey] : {
+                        mappings : [],
+                        params   : [],
+                        modelAttributes : [attributeName]
+                    }
+                }
+            });
+        } else {
+            setInternalRequestMappingObject(controller, {
+                ...origMapping,
+                controllerProperties: {
+                    ...origMapping.controllerProperties,
+                    [propertyKey] : {
+                        ...origMapping.controllerProperties[propertyKey],
+                        modelAttributes: [
+                            attributeName,
+                            ...origMapping.controllerProperties[propertyKey].modelAttributes
+                        ]
+                    }
+                }
+            });
+        }
+    }
+
+    public static setControllerMethodQueryParam (
+        controller  : RequestController,
+        propertyKey : string,
+        paramIndex  : number,
+        queryParam  : string,
+        paramType   : RequestParamValueType
+    ) {
+        // LOG.debug('setControllerMethodQueryParam: queryParam =', queryParam, paramType);
+        const newParam : RequestQueryParamObject = {
+            objectType : RequestParamObjectType.QUERY_PARAM,
+            queryParam : queryParam,
+            valueType  : paramType
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+    }
+
+    public static setControllerMethodHeader (
+        controller   : RequestController,
+        propertyKey  : string,
+        paramIndex   : number,
+        headerName   : string,
+        paramType    : RequestParamValueType,
+        isRequired   : boolean | undefined,
+        defaultValue : string | undefined
+    ) {
+        const newParam : RequestHeaderParamObject = {
+            objectType   : RequestParamObjectType.REQUEST_HEADER,
+            headerName   : headerName,
+            valueType    : paramType,
+            isRequired   : isRequired ?? false,
+            defaultValue : defaultValue
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+    }
+
+    public static setControllerMethodPathVariable (
+        controller   : RequestController,
+        propertyKey  : string,
+        paramIndex   : number,
+        variableName : string,
+        paramType    : RequestParamValueType,
+        isRequired   : boolean | undefined,
+        decodeValue  : boolean | undefined,
+        defaultValue : string | undefined
+    ) {
+        const newParam : RequestPathVariableParamObject = {
+            objectType   : RequestParamObjectType.PATH_VARIABLE,
+            variableName : variableName,
+            valueType    : paramType,
+            isRequired   : isRequired ?? true,
+            decodeValue  : decodeValue ?? true,
+            defaultValue : defaultValue
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+    }
+
+    public static setControllerMethodPathVariableMap (
+        controller    : RequestController,
+        propertyKey   : string,
+        paramIndex    : number,
+        defaultValues : DefaultPathVariableMapValuesType | undefined
+    ) {
+        const newParam : RequestPathVariableMapParamObject = {
+            objectType    : RequestParamObjectType.PATH_VARIABLE_MAP,
+            defaultValues : defaultValues
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+    }
+
+    public static setControllerMethodHeaderMap (
+        controller    : RequestController,
+        propertyKey   : string,
+        paramIndex    : number,
+        defaultValues : DefaultHeaderMapValuesType | undefined
+    ) {
+        const newParam : RequestHeaderMapParamObject = {
+            objectType    : RequestParamObjectType.REQUEST_HEADER_MAP,
+            defaultValues : defaultValues
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
+    }
+
+    public static setControllerMethodBodyParam (
+        controller  : RequestController,
+        propertyKey : string,
+        paramIndex  : number,
+        paramType   : RequestParamValueType
+    ) {
+        const newParam : RequestBodyParamObject = {
+            objectType : RequestParamObjectType.REQUEST_BODY,
+            valueType  : paramType
+        };
+        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam, true);
+    }
+
 
     private static _setControllerMethodParam (
         controller          : RequestController,
@@ -228,175 +399,6 @@ export class RequestControllerUtils {
                 );
             }
         }
-    }
-
-    static findController (target : any) : RequestController | undefined {
-        if ( isFunction(target) && isRequestController(target) ) {
-            return target;
-        }
-        if ( isObject(target) && isFunction(target?.constructor) && isRequestController(target.constructor) ) {
-            return target.constructor;
-        }
-        return undefined;
-    }
-
-    static setControllerMethodModelAttributeParam (
-        controller    : RequestController,
-        propertyKey   : string,
-        paramIndex    : number,
-        attributeName : string,
-        paramType     : RequestParamValueType
-    ) {
-        LOG.debug('setControllerMethodModelAttributeParam: attributeName =', attributeName, paramType);
-        const newParam : RequestModelAttributeParamObject = {
-            objectType    : RequestParamObjectType.MODEL_ATTRIBUTE,
-            attributeName : attributeName,
-            valueType     : paramType
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-    }
-
-    static attachControllerMethodModelAttributeBuilder (
-        controller         : RequestController,
-        propertyKey        : string,
-        propertyDescriptor : PropertyDescriptor,
-        attributeName      : string
-    ) {
-        LOG.debug('attachControllerMethodModelAttributeBuilder: attributeName =', attributeName, propertyKey);
-        const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
-        if (origMapping === undefined) {
-            setInternalRequestMappingObject(controller, {
-                mappings: [],
-                controllerProperties: {
-                    [propertyKey] : {
-                        mappings        : [],
-                        params          : [],
-                        modelAttributes : [attributeName]
-                    }
-                }
-            });
-        } else if (!has(origMapping.controllerProperties, propertyKey)) {
-            setInternalRequestMappingObject(controller, {
-                ...origMapping,
-                controllerProperties: {
-                    ...origMapping.controllerProperties,
-                    [propertyKey] : {
-                        mappings : [],
-                        params   : [],
-                        modelAttributes : [attributeName]
-                    }
-                }
-            });
-        } else {
-            setInternalRequestMappingObject(controller, {
-                ...origMapping,
-                controllerProperties: {
-                    ...origMapping.controllerProperties,
-                    [propertyKey] : {
-                        ...origMapping.controllerProperties[propertyKey],
-                        modelAttributes: [
-                            attributeName,
-                            ...origMapping.controllerProperties[propertyKey].modelAttributes
-                        ]
-                    }
-                }
-            });
-        }
-    }
-
-    static setControllerMethodQueryParam (
-        controller  : RequestController,
-        propertyKey : string,
-        paramIndex  : number,
-        queryParam  : string,
-        paramType   : RequestParamValueType
-    ) {
-        // LOG.debug('setControllerMethodQueryParam: queryParam =', queryParam, paramType);
-        const newParam : RequestQueryParamObject = {
-            objectType : RequestParamObjectType.QUERY_PARAM,
-            queryParam : queryParam,
-            valueType  : paramType
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-    }
-
-    static setControllerMethodHeader (
-        controller   : RequestController,
-        propertyKey  : string,
-        paramIndex   : number,
-        headerName   : string,
-        paramType    : RequestParamValueType,
-        isRequired   : boolean | undefined,
-        defaultValue : string | undefined
-    ) {
-        const newParam : RequestHeaderParamObject = {
-            objectType   : RequestParamObjectType.REQUEST_HEADER,
-            headerName   : headerName,
-            valueType    : paramType,
-            isRequired   : isRequired ?? false,
-            defaultValue : defaultValue
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-    }
-
-    static setControllerMethodPathVariable (
-        controller   : RequestController,
-        propertyKey  : string,
-        paramIndex   : number,
-        variableName : string,
-        paramType    : RequestParamValueType,
-        isRequired   : boolean | undefined,
-        decodeValue  : boolean | undefined,
-        defaultValue : string | undefined
-    ) {
-        const newParam : RequestPathVariableParamObject = {
-            objectType   : RequestParamObjectType.PATH_VARIABLE,
-            variableName : variableName,
-            valueType    : paramType,
-            isRequired   : isRequired ?? true,
-            decodeValue  : decodeValue ?? true,
-            defaultValue : defaultValue
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-    }
-
-    static setControllerMethodPathVariableMap (
-        controller    : RequestController,
-        propertyKey   : string,
-        paramIndex    : number,
-        defaultValues : DefaultPathVariableMapValuesType | undefined
-    ) {
-        const newParam : RequestPathVariableMapParamObject = {
-            objectType    : RequestParamObjectType.PATH_VARIABLE_MAP,
-            defaultValues : defaultValues
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-    }
-
-    static setControllerMethodHeaderMap (
-        controller    : RequestController,
-        propertyKey   : string,
-        paramIndex    : number,
-        defaultValues : DefaultHeaderMapValuesType | undefined
-    ) {
-        const newParam : RequestHeaderMapParamObject = {
-            objectType    : RequestParamObjectType.REQUEST_HEADER_MAP,
-            defaultValues : defaultValues
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam);
-    }
-
-    static setControllerMethodBodyParam (
-        controller  : RequestController,
-        propertyKey : string,
-        paramIndex  : number,
-        paramType   : RequestParamValueType
-    ) {
-        const newParam : RequestBodyParamObject = {
-            objectType : RequestParamObjectType.REQUEST_BODY,
-            valueType  : paramType
-        };
-        RequestControllerUtils._setControllerMethodParam(controller, propertyKey, paramIndex, newParam, true);
     }
 
     private static _initializeParams (
