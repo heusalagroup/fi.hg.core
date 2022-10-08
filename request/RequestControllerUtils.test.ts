@@ -1,44 +1,139 @@
-/**
- * Unit test for RequestControlUtils.
- *
- *
- */
+// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-
-import { isRequestMethod} from "./types/RequestMethod";
-import {
-    RequestController,
-    getInternalRequestMappingObject,
-    isRequestController,
-    setInternalRequestMappingObject, INTERNAL_KEYWORD, getRequestControllerMappingObject
-} from "./types/RequestController";
 import { RequestMappingObject } from "./types/RequestMappingObject";
-import { OpenAPIV3 } from "../types/openapi";
-import {RequestControllerUtils} from "./RequestControllerUtils";
-import {RequestMapping} from "./types/RequestMapping";
-import {LogService} from "../LogService";
-
-const LOG = LogService.createLogger('RequestControllerUtilsTest');
-
-let controller  : RequestController ;
-let config2      : Partial<OpenAPIV3.Document>;
-let config     : readonly RequestMapping[];
-let controller2: RequestController['__requestMappings'];
+import { RequestControllerUtils } from "./RequestControllerUtils";
+import { RequestMapping } from "./types/RequestMapping";
+import { RequestMethod } from "./types/RequestMethod";
 
 describe('RequestControllerUtils', () => {
 
-    describe('#parseRequestMapping', () => {
+    describe('#parseRequestMappings', () => {
 
-        test('can test get or initalizing object', () => {
+        test('can parse single path', () => {
+            const config: readonly RequestMapping[] = [
+                '/path/to'
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [],
+                    paths: [ '/path/to' ]
+                }
+            );
+        });
 
-            const parsedObject : RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
-            LOG.debug('parseRequestMapping: parseObject = ', parsedObject);
-            LOG.debug('parseRequestMapping: config = ', config);
-            expect( parsedObject ).toBeDefined();
-            expect( parsedObject ).toMatchObject( {methods: [], paths: []} );
-            expect( controller).toBeUndefined();
+        test('can parse multiple paths', () => {
+            const config: readonly RequestMapping[] = [
+                '/path',
+                '/path/to'
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [],
+                    paths: [
+                        '/path',
+                        '/path/to'
+                    ]
+                }
+            );
+        });
 
-              });
+        test('can parse GET method', () => {
+            const config: readonly RequestMapping[] = [
+                RequestMethod.GET
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [
+                        RequestMethod.GET
+                    ],
+                    paths: []
+                }
+            );
+        });
+
+        test('can parse POST method', () => {
+            const config: readonly RequestMapping[] = [
+                RequestMethod.POST
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [
+                        RequestMethod.POST
+                    ],
+                    paths: []
+                }
+            );
+        });
+
+        test('can parse multiple methods', () => {
+            const config: readonly RequestMapping[] = [
+                RequestMethod.GET,
+                RequestMethod.POST
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [
+                        RequestMethod.GET,
+                        RequestMethod.POST
+                    ],
+                    paths: []
+                }
+            );
+        });
+
+        test('can parse multiple paths with method', () => {
+            const config: readonly RequestMapping[] = [
+                RequestMethod.GET,
+                '/path',
+                '/path/to'
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [
+                        RequestMethod.GET
+                    ],
+                    paths: [
+                        '/path',
+                        '/path/to'
+                    ]
+                }
+            );
+        });
+
+        test('can parse multiple paths with multiple methods', () => {
+            const config: readonly RequestMapping[] = [
+                RequestMethod.GET,
+                '/path',
+                RequestMethod.POST,
+                '/path/to'
+            ];
+            const parsedObject: RequestMappingObject = RequestControllerUtils.parseRequestMappings(config);
+            expect(parsedObject).toBeDefined();
+            expect(parsedObject).toMatchObject(
+                {
+                    methods: [
+                        RequestMethod.GET,
+                        RequestMethod.POST
+                    ],
+                    paths: [
+                        '/path',
+                        '/path/to'
+                    ]
+                }
+            );
+        });
 
     });
 
