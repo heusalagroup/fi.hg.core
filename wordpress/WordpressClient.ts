@@ -6,15 +6,13 @@ import { HttpService } from "../HttpService";
 import { isWordpressPagesDTO, WordpressPageListDTO } from "./dto/WordpressPageListDTO";
 import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
 import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
+import { WORD_PRESS_API_V2_PAGES, WORD_PRESS_API_V3_REFERENCES, WORD_PRESS_API_V3_USERPROFILES } from "./wordpress-api";
 
 const LOG = LogService.createLogger('WordpressClient');
 
-export interface WordpressContentInterface {
-    readonly pages?: Promise<WordpressPageListDTO>;
-    readonly references?: Promise<WordpressReferenceListDTO>;
-    readonly profiles?: Promise<WordpressUserProfileListDTO>;
-}
-
+/**
+ * @see https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md
+ */
 export class WordpressClient {
 
     public static setLogLevel(level: LogLevel) {
@@ -23,14 +21,12 @@ export class WordpressClient {
     }
 
     private static _defaultUrl: string = '/';
-    private static _endpoint: string = '/';
 
     private readonly _url: string;
-    private readonly _endpoint: string;
     private readonly _sessionId: string | undefined;
 
-    public static setDefaultUrl(url: string, endpoint: string) {
-        this._defaultUrl = url + endpoint;
+    public static setDefaultUrl(url: string) {
+        this._defaultUrl = url;
     }
 
     public static getDefaultUrl(): string {
@@ -45,43 +41,14 @@ export class WordpressClient {
 
     public constructor(
         url: string = WordpressClient._defaultUrl,
-        endpoint: string = WordpressClient._endpoint
     ) {
         this._url = url;
-        this._endpoint = endpoint;
         this._sessionId = undefined;
     }
 
-    public getUrl(): string {
-        return this._url;
-    }
-
-    // Used for possible initialization
-    public async getWordpressContent(): Promise<WordpressPageListDTO>  {
-        if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
-        if(isWordpressPagesDTO(result)) {
-            LOG.info(`getIndex: Pages = `, result);
-            const pages = result;
-            return pages;
-        } else if (isWordpressUserProfilesDTO(result)) {
-            LOG.info(`getIndex: Profiles = `, result);
-            const profiles = result;
-            return profiles;
-        } else if (isWordpressReferencesDTO(result)) {
-            LOG.info(`getIndex: Reference = `, result);
-            const references = result;
-            return references;
-        } else {
-            LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not any of the DTO's: ` + result);
-        }
-    }
-
-
     public async getPages(): Promise<WordpressPageListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
+        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V2_PAGES}`);
         if (!isWordpressPagesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressPageDTO: ` + result);
@@ -89,10 +56,9 @@ export class WordpressClient {
         return result;
     }
 
-
     public async getReferences(): Promise<WordpressReferenceListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
+        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_REFERENCES}`);
         if (!isWordpressReferencesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
@@ -102,7 +68,7 @@ export class WordpressClient {
 
     public async getUserProfiles(): Promise<WordpressUserProfileListDTO> {
         if (this._url.length < 1) return;
-        const result = await HttpService.getJson(`${this._url}${this._endpoint}`);
+        const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_USERPROFILES}`);
         if (!isWordpressUserProfilesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressUserProfilesDTO: ` + result);
