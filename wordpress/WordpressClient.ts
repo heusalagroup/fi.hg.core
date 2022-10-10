@@ -10,9 +10,7 @@ import { WORD_PRESS_API_V2_PAGES, WORD_PRESS_API_V3_REFERENCES, WORD_PRESS_API_V
 
 const LOG = LogService.createLogger('WordpressClient');
 
-/**
- * @see https://github.com/mailhog/MailHog/blob/master/docs/APIv1.md
- */
+
 export class WordpressClient {
 
     public static setLogLevel(level: LogLevel) {
