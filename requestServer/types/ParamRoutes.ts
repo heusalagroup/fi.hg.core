@@ -6,6 +6,7 @@ import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
 import {every, find, isString, keys, map, some, trim} from "../../modules/lodash";
 import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
 import { LogService } from "../../LogService";
+import { LogLevel } from "../../types/LogLevel";
 
 const LOG = LogService.createLogger('ParamRoutes');
 
@@ -14,6 +15,10 @@ interface CompiledRequestPathCallback {
 }
 
 export class ParamRoutes implements BaseRoutes {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     private readonly _routes: CompiledRequestPathCallback[];
 
