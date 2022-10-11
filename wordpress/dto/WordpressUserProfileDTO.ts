@@ -1,5 +1,5 @@
 import {hasNoOtherKeysInDevelopment, isRegularObject, isString} from "../../modules/lodash";
-import { WP_Enum } from "./WordpressTypesDTO";
+import { WordpressEnum } from "./WordpressTypesDTO";
 
 export interface WordpressUserProfileDTO {
     title:{rendered:string, protected:boolean};
@@ -9,7 +9,7 @@ export interface WordpressUserProfileDTO {
     description?:string;
     date?:string;
     "extra Information"?: string[];
-    status?: WP_Enum;
+    status?: WordpressEnum;
     featured_image?: {
         thumbnail : string;
         medium :string;

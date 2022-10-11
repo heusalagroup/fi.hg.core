@@ -1,6 +1,6 @@
 import {isString} from "../../modules/lodash";
 
-export enum WP_Enum {
+export enum WordpressEnum {
     publish = "publish",
     future = "future",
     draft = "draft",
@@ -8,7 +8,7 @@ export enum WP_Enum {
     private = "private"
 }
 
-export function isWordpressTypesDTO (value: WP_Enum): boolean {
+export function isWordpressTypesDTO (value: WordpressEnum): boolean {
     return (
         isString(value)
     )

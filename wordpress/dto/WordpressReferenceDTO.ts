@@ -1,5 +1,5 @@
 import {hasNoOtherKeysInDevelopment, isRegularObject, isString} from "../../modules/lodash";
-import { WP_Enum } from "./WordpressTypesDTO";
+import { WordpressEnum } from "./WordpressTypesDTO";
 
 export interface WordpressReferenceDTO {
     title:{rendered:string, protected:boolean};
@@ -7,7 +7,7 @@ export interface WordpressReferenceDTO {
     id?:string;
     type?:string;
     date?: string | null;
-    status?: WP_Enum;
+    status?: WordpressEnum;
     generated_slug?:string;
     permalink_template?:string;
     parent?:number;
