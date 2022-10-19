@@ -2,25 +2,27 @@
 
 import { explainProductType, isProductType, ProductType } from "./ProductType";
 import { explainProductFeature, isProductFeature, ProductFeature } from "./features/ProductFeature";
-import { explain, explainArrayOf, explainNoOtherKeys, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isArrayOf, isRegularObject, isString } from "../../../modules/lodash";
+import { explain, explainArrayOf, explainNoOtherKeys, explainNumberOrUndefined, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isArrayOf, isNumberOrUndefined, isRegularObject, isString } from "../../../modules/lodash";
 import { ProductPrice, isProductPrice, explainProductPrice } from "./ProductPrice";
 
 export interface Product {
-    readonly id        : string;
-    readonly type      : ProductType;
-    readonly title     : string;
-    readonly summary   : string;
-    readonly features  : readonly ProductFeature[];
-    readonly prices    : readonly ProductPrice[];
+    readonly id           : string;
+    readonly type         : ProductType;
+    readonly title        : string;
+    readonly summary      : string;
+    readonly features     : readonly ProductFeature[];
+    readonly prices       : readonly ProductPrice[];
+    readonly stockAmount ?: number;
 }
 
 export function createProduct (
-    id        : string,
-    type      : ProductType,
-    title     : string,
-    summary   : string,
-    features  : readonly ProductFeature[],
-    prices    : readonly ProductPrice[],
+    id           : string,
+    type         : ProductType,
+    title        : string,
+    summary      : string,
+    features     : readonly ProductFeature[],
+    prices       : readonly ProductPrice[],
+    stockAmount  : number = 0,
 ) : Product {
     return {
         id,
@@ -28,7 +30,8 @@ export function createProduct (
         title,
         summary,
         features,
-        prices
+        prices,
+        stockAmount
     };
 }
 
@@ -42,12 +45,14 @@ export function isProduct (value: any): value is Product {
             'title',
             'summary',
             'features',
-            'prices'
+            'prices',
+            'stockAmount'
         ])
         && isString(value?.id)
         && isProductType(value?.type)
         && isString(value?.title)
         && isString(value?.summary)
+        && isNumberOrUndefined(value?.stockAmount)
         && isArrayOf<ProductFeature>(value?.features, isProductFeature)
         && isArrayOf<ProductPrice>(value?.prices, isProductPrice)
     );
@@ -63,12 +68,14 @@ export function explainProduct (value: any) : string {
                 'title',
                 'summary',
                 'features',
-                'prices'
+                'prices',
+                'stockAmount'
             ]),
             explainProperty("isArrayOf", explainString(value?.isArrayOf)),
             explainProperty("type", explainProductType(value?.type)),
             explainProperty("title", explainString(value?.title)),
             explainProperty("summary", explainString(value?.summary)),
+            explainProperty("stockAmount", explainNumberOrUndefined(value?.stockAmount)),
             explainProperty("features", explainArrayOf<ProductFeature>("ProductFeature", explainProductFeature, value?.features)),
             explainProperty("prices", explainArrayOf<ProductPrice>("ProductPrice", explainProductPrice, value?.prices)),
         ]

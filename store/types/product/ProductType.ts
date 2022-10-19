@@ -12,6 +12,7 @@ export enum ProductType {
     SHELL                = "SHELL",
     DATABASE             = "DATABASE",
     WP                   = "WP",
+    STOCK                = "STOCK"
 }
 
 export function isProductType (value: any): value is ProductType {
@@ -25,6 +26,7 @@ export function isProductType (value: any): value is ProductType {
         case ProductType.SHELL:
         case ProductType.DATABASE:
         case ProductType.WP:
+        case ProductType.STOCK:
             return true;
         default:
             return false;
@@ -46,6 +48,7 @@ export function stringifyProductType (value: ProductType): string {
         case ProductType.SHELL : return 'SHELL';
         case ProductType.DATABASE : return 'DATABASE';
         case ProductType.WP : return 'WP';
+        case ProductType.STOCK : return 'STOCK';
     }
     throw new TypeError(`Unsupported ProductType value: ${value}`);
 }
@@ -61,6 +64,7 @@ export function parseProductType (value: any): ProductType | undefined {
         case 'SHELL' : return ProductType.SHELL;
         case 'DATABASE' : return ProductType.DATABASE;
         case 'WP' : return ProductType.WP;
+        case 'STOCK' : return ProductType.STOCK;
         default    :
             return undefined;
     }

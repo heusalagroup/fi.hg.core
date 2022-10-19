@@ -42,3 +42,4 @@ export function parseProductPriceType (value: any): ProductPriceType | undefined
         default : return undefined;
     }
 }
+
