@@ -1,8 +1,11 @@
+// Copyright (c) 2022. Heusala Group Oy <info@sendanor.fi>. All rights reserved.
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import {
     endsWith,
-    get, has, isArray,
+    get,
+    has,
+    isArray,
     isArrayOf,
     isString,
     keys,
@@ -11,6 +14,9 @@ import {
     startsWith
 } from "./modules/lodash";
 import { ReadonlyJsonObject } from "./Json";
+import { LogService } from "./LogService";
+
+const LOG = LogService.createLogger('Csv');
 
 // FIXME: Add unit tests
 export type CsvRow = string[];
@@ -104,13 +110,11 @@ export function getCsvFromJsonObjectList<T = ReadonlyJsonObject> (
  * @param value
  * @param separator
  * @param quote
- * @param lineBreak
  */
 export function parseCsvRow (
     value: any,
     separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    quote: string = '"'
 ): CsvRow {
 
     if ( separator?.length !== 1 ) {
@@ -170,33 +174,28 @@ export function parseCsv (
     quote: string = '"',
     lineBreak: string = '\n'
 ): Csv | undefined {
-
-    if ( isCsv(value) ) {
-        return value;
-    }
-
+    if (!separator) throw new TypeError('parseCsv: Attempt to parse using empty separator character');
+    if (!quote) throw new TypeError('parseCsv: Attempt to parse using empty quote character');
+    if (!lineBreak) throw new TypeError('parseCsv: Attempt to parse using empty line break character');
+    if ( isCsv(value) ) return value;
     if ( !isString(value) ) {
         value = `${value}`;
     }
-
     return map(
         split(value, lineBreak),
         (item: any): CsvRow => parseCsvRow(item, separator, quote)
     );
-
 }
 
 export function stringifyCsvRow (
     value: CsvRow,
     separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    quote: string = '"'
 ): string {
-
+    if (!separator) throw new TypeError('stringifyCsvRow: Attempt to stringify using empty separator character');
+    if (!quote) throw new TypeError('stringifyCsvRow: Attempt to stringify using empty quote character');
     return map(value, (column: string) => {
-
         if ( column.length === 0 ) return column;
-
         if ( column.indexOf(separator) >= 0 || (column[0] === quote) ) {
             if ( column.indexOf(quote) >= 0 ) {
                 return `${quote}${column.split(quote).join(quote + quote)}${quote}`;
@@ -206,9 +205,7 @@ export function stringifyCsvRow (
         } else {
             return column;
         }
-
     }).join(separator);
-
 }
 
 /**
@@ -223,9 +220,11 @@ export function stringifyCsv (
     quote: string = '"',
     lineBreak: string = '\n'
 ): string {
-
-    return map(value, (row: CsvRow) => {
-        return stringifyCsvRow(row, separator, quote, lineBreak);
-    }).join(lineBreak);
-
+    if (!separator) throw new TypeError('stringifyCsv: Attempt to stringify using empty separator character');
+    if (!quote) throw new TypeError('stringifyCsv: Attempt to stringify using empty quote character');
+    if (!lineBreak) throw new TypeError('stringifyCsv: Attempt to stringify using empty line break character');
+    return map(
+        value,
+        (row: CsvRow) => stringifyCsvRow(row, separator, quote)
+    ).join(lineBreak);
 }
