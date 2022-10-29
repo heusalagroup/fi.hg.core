@@ -16,7 +16,9 @@ import {
 import { ReadonlyJsonObject } from "./Json";
 import { LogService } from "./LogService";
 
-const LOG = LogService.createLogger('Csv');
+export const DEFAULT_CSV_SEPARATOR  = ',';
+export const DEFAULT_CSV_QUOTE      = '"';
+export const DEFAULT_CSV_LINE_BREAK = '\n';
 
 // FIXME: Add unit tests
 export type CsvRow = string[];
@@ -113,9 +115,12 @@ export function getCsvFromJsonObjectList<T = ReadonlyJsonObject> (
  */
 export function parseCsvRow (
     value: any,
-    separator: string = ',',
-    quote: string = '"'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE
 ): CsvRow {
+
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
 
     if ( separator?.length !== 1 ) {
         throw new TypeError(`The separator must be exactly 1 character long: ${separator}`);
@@ -170,13 +175,13 @@ export function parseCsvRow (
  */
 export function parseCsv (
     value: any,
-    separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE,
+    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): Csv | undefined {
-    if (!separator) throw new TypeError('parseCsv: Attempt to parse using empty separator character');
-    if (!quote) throw new TypeError('parseCsv: Attempt to parse using empty quote character');
-    if (!lineBreak) throw new TypeError('parseCsv: Attempt to parse using empty line break character');
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
+    lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
     if ( isCsv(value) ) return value;
     if ( !isString(value) ) {
         value = `${value}`;
@@ -189,11 +194,11 @@ export function parseCsv (
 
 export function stringifyCsvRow (
     value: CsvRow,
-    separator: string = ',',
-    quote: string = '"'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE
 ): string {
-    if (!separator) throw new TypeError('stringifyCsvRow: Attempt to stringify using empty separator character');
-    if (!quote) throw new TypeError('stringifyCsvRow: Attempt to stringify using empty quote character');
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
     return map(value, (column: string) => {
         if ( column.length === 0 ) return column;
         if ( column.indexOf(separator) >= 0 || (column[0] === quote) ) {
@@ -216,13 +221,13 @@ export function stringifyCsvRow (
  */
 export function stringifyCsv (
     value: Csv,
-    separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE,
+    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): string {
-    if (!separator) throw new TypeError('stringifyCsv: Attempt to stringify using empty separator character');
-    if (!quote) throw new TypeError('stringifyCsv: Attempt to stringify using empty quote character');
-    if (!lineBreak) throw new TypeError('stringifyCsv: Attempt to stringify using empty line break character');
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
+    lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
     return map(
         value,
         (row: CsvRow) => stringifyCsvRow(row, separator, quote)

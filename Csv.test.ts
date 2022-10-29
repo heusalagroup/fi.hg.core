@@ -1,9 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { LogService } from "./LogService"
 import { stringifyCsv } from "./Csv";
-
-const LOG = LogService.createLogger('Csv.test');
 
 const properties = [
    'ticketNumber',
@@ -22,84 +19,148 @@ const properties = [
    'supplierId',
    'supplier',
    'approver',
-   'labels',
-    '\n'
+   'labels'
 ];
 
-const firstFIle = ['1', 'test-title', 'SALES', 'WAITING', 'MEDIUM', 'Mike', '1200', 'Oh yes! I have some text here for you to test.', 'EUR', 'WAITING', '\n'];
-const secondFIle =  ['2', 'second-test-title', 'ICT', 'WAITING', 'HIGH', 'Jacob', '2200', 'Oh yeah I ended up ordering, some new stuff, and so on.', 'EUR', 'WAITING', '\n'];
-const testArr: any = []
-testArr.push(properties)
-testArr.push(firstFIle)
-testArr.push(secondFIle)
+const firstLine = ['1', 'test-title', 'SALES', 'WAITING', 'MEDIUM', 'Mike', '1200', 'Oh yes! I have some text here for you to test.', 'EUR', 'WAITING'];
+const secondLine =  ['2', 'second-test-title', 'ICT', 'WAITING', 'HIGH', 'Jacob', '2200,12', 'Oh yeah I ended up ordering, some new stuff; and so on.', 'EUR', 'WAITING'];
+const thirdLine =  ['3', 'third-test-title', 'ICT', 'WAITING', 'HIGH', 'Jacob', '2200,12', 'Hermot ei kestä kaamosta, pitää päästä lepuuttamaan', 'EUR', 'WAITING'];
 
 describe('Csv', () => {
-   const result = stringifyCsv(testArr, ',', '"', '\n')
 
-   describe('Csv type and basic tests', () => {
-      test('Can stringify csv file', () => {
-         expect(typeof result).toBe("string")
-         expect(result).toMatch("title")
-         expect(result).toMatch("test-title")
-         expect(result).toMatch("second-test-title")
+   describe('#stringifyCsv', () => {
+
+      test('can stringify csv data', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine], ',', '"', '\n');
+         expect(typeof result).toBe("string");
+      });
+
+      test('can stringify csv headers correctly', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine], ';', "'", '\t');
+         const headerLine = result.split('\t').shift();
+         expect(headerLine).toStrictEqual(
+             'ticketNumber'
+             +';title'
+             +';categoryType'
+             +';state'
+             +';priority'
+             +';requester'
+             +';cost'
+             +';detail'
+             +';currency'
+             +';status'
+             +';dueDate'
+             +';workspaceId'
+             +';workspace'
+             +';supplierId'
+             +';supplier'
+             +';approver'
+             +';labels'
+         );
+      });
+
+      test('can stringify csv data without cvs control characters', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine], ';', "'", '\t');
+         const rows = result.split('\t');
+         expect(rows[1]).toStrictEqual(
+             '1'
+            +';test-title'
+            +';SALES'
+            +';WAITING'
+            +';MEDIUM'
+            +';Mike'
+            +';1200'
+            +';Oh yes! I have some text here for you to test.'
+            +';EUR'
+            +';WAITING'
+         );
       })
-   })
 
-   LOG.debug('csv results, headers and data: ', result)
+      test('can stringify csv data with csv control characters', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine], ';', "'", '\t');
+         const rows = result.split('\t');
+         expect(rows[2]).toStrictEqual(
+            '2'
+            +';second-test-title'
+            +';ICT'
+            +';WAITING'
+            +';HIGH'
+            +';Jacob'
+            +';2200,12'
+            +";'Oh yeah I ended up ordering, some new stuff; and so on.'"
+            +';EUR'
+            +';WAITING'
+         );
+      });
 
-   test('Can create csv headers correctly as first loop', () => {
+      test('can stringify csv data with unicode characters', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine, thirdLine], ',', '"', '\n');
+         const rows = result.split('\n');
+         expect(rows[3]).toStrictEqual(
+            '3'
+            +',third-test-title'
+            +',ICT'
+            +',WAITING'
+            +',HIGH'
+            +',Jacob'
+            +',"2200,12"'
+            +',"Hermot ei kestä kaamosta, pitää päästä lepuuttamaan"'
+            +',EUR'
+            +',WAITING'
+         );
+      });
 
-      expect(result.split(',')[0]).toBe('ticketNumber')
-      expect(result.split(',')[1]).toBe('title')
-      expect(result.split(',')[2]).toBe('categoryType')
-      expect(result.split(',')[3]).toBe('state')
-      expect(result.split(',')[4]).toBe('priority')
-      expect(result.split(',')[5]).toBe('requester')
-      expect(result.split(',')[6]).toBe('cost')
-      expect(result.split(',')[7]).toBe('detail')
-      expect(result.split(',')[8]).toBe('currency')
-      expect(result.split(',')[9]).toBe('status')
-      expect(result.split(',')[10]).toBe('dueDate')
-      expect(result.split(',')[11]).toBe('workspaceId')
-      expect(result.split(',')[12]).toBe('workspace')
-      expect(result.split(',')[13]).toBe('supplierId')
-      expect(result.split(',')[14]).toBe('supplier')
-      expect(result.split(',')[15]).toBe('approver')
-      expect(result.split(',')[16]).toBe('labels')
+      test('can stringify csv data with empty separator characters (using default)', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine, thirdLine], '', '"', '\n');
+         const rows = result.split('\n');
+         expect(rows[3]).toStrictEqual(
+            '3'
+            +',third-test-title'
+            +',ICT'
+            +',WAITING'
+            +',HIGH'
+            +',Jacob'
+            +',"2200,12"'
+            +',"Hermot ei kestä kaamosta, pitää päästä lepuuttamaan"'
+            +',EUR'
+            +',WAITING'
+         );
+      });
+
+      test('can stringify csv data with empty quote characters (using default)', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine, thirdLine], ',', '', '\n');
+         const rows = result.split('\n');
+         expect(rows[3]).toStrictEqual(
+            '3'
+            +',third-test-title'
+            +',ICT'
+            +',WAITING'
+            +',HIGH'
+            +',Jacob'
+            +',"2200,12"'
+            +',"Hermot ei kestä kaamosta, pitää päästä lepuuttamaan"'
+            +',EUR'
+            +',WAITING'
+         );
+      });
+
+      test('can stringify csv data with empty line break characters (using default)', () => {
+         const result = stringifyCsv([properties, firstLine, secondLine, thirdLine], ',', '"', '');
+         const rows = result.split('\n');
+         expect(rows[3]).toStrictEqual(
+            '3'
+            +',third-test-title'
+            +',ICT'
+            +',WAITING'
+            +',HIGH'
+            +',Jacob'
+            +',"2200,12"'
+            +',"Hermot ei kestä kaamosta, pitää päästä lepuuttamaan"'
+            +',EUR'
+            +',WAITING'
+         );
+      });
 
    });
-
-   describe('First array csv test without comma', () => {
-      test('Can loop csv data correctly ', () => {
-
-         expect(result.split(',')[17]).toMatch('1')
-         expect(result.split(',')[18]).toBe('test-title')
-         expect(result.split(',')[19]).toBe('SALES')
-         expect(result.split(',')[20]).toBe('WAITING')
-         expect(result.split(',')[21]).toBe('MEDIUM')
-         expect(result.split(',')[22]).toBe('Mike')
-         expect(result.split(',')[23]).toBe('1200')
-         expect(result.split(',')[24]).toBe('Oh yes! I have some text here for you to test.')
-         expect(result.split(',')[25]).toBe('EUR')
-         expect(result.split(',')[26]).toBe('WAITING')
-      })
-   })
-
-   describe('Second array csv test with comma ', () => {
-      xtest('Can loop csv data correctly ', () => {
-
-         expect(result.split(',')[27]).toMatch('2')
-         expect(result.split(',')[28]).toBe('second-test-title')
-         expect(result.split(',')[29]).toBe('ICT')
-         expect(result.split(',')[30]).toBe('WAITING')
-         expect(result.split(',')[31]).toBe('HIGH')
-         expect(result.split(',')[32]).toBe('Jacob')
-         expect(result.split(',')[33]).toBe('2200')
-         expect(result.split(',')[34]).toBe('Oh yeah I ended up ordering, some new stuff, and so on.')
-         expect(result.split(',')[35]).toBe('EUR')
-         expect(result.split(',')[36]).toBe('WAITING')
-      })
-   })
-
 
 });
