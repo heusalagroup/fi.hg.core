@@ -1,8 +1,11 @@
+// Copyright (c) 2022. Heusala Group Oy <info@sendanor.fi>. All rights reserved.
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import {
     endsWith,
-    get, has, isArray,
+    get,
+    has,
+    isArray,
     isArrayOf,
     isString,
     keys,
@@ -11,6 +14,11 @@ import {
     startsWith
 } from "./modules/lodash";
 import { ReadonlyJsonObject } from "./Json";
+import { LogService } from "./LogService";
+
+export const DEFAULT_CSV_SEPARATOR  = ',';
+export const DEFAULT_CSV_QUOTE      = '"';
+export const DEFAULT_CSV_LINE_BREAK = '\n';
 
 // FIXME: Add unit tests
 export type CsvRow = string[];
@@ -104,14 +112,15 @@ export function getCsvFromJsonObjectList<T = ReadonlyJsonObject> (
  * @param value
  * @param separator
  * @param quote
- * @param lineBreak
  */
 export function parseCsvRow (
     value: any,
-    separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE
 ): CsvRow {
+
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
 
     if ( separator?.length !== 1 ) {
         throw new TypeError(`The separator must be exactly 1 character long: ${separator}`);
@@ -166,37 +175,32 @@ export function parseCsvRow (
  */
 export function parseCsv (
     value: any,
-    separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE,
+    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): Csv | undefined {
-
-    if ( isCsv(value) ) {
-        return value;
-    }
-
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
+    lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
+    if ( isCsv(value) ) return value;
     if ( !isString(value) ) {
         value = `${value}`;
     }
-
     return map(
         split(value, lineBreak),
         (item: any): CsvRow => parseCsvRow(item, separator, quote)
     );
-
 }
 
 export function stringifyCsvRow (
     value: CsvRow,
-    separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE
 ): string {
-
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
     return map(value, (column: string) => {
-
         if ( column.length === 0 ) return column;
-
         if ( column.indexOf(separator) >= 0 || (column[0] === quote) ) {
             if ( column.indexOf(quote) >= 0 ) {
                 return `${quote}${column.split(quote).join(quote + quote)}${quote}`;
@@ -206,9 +210,7 @@ export function stringifyCsvRow (
         } else {
             return column;
         }
-
     }).join(separator);
-
 }
 
 /**
@@ -219,13 +221,15 @@ export function stringifyCsvRow (
  */
 export function stringifyCsv (
     value: Csv,
-    separator: string = ',',
-    quote: string = '"',
-    lineBreak: string = '\n'
+    separator: string = DEFAULT_CSV_SEPARATOR,
+    quote: string = DEFAULT_CSV_QUOTE,
+    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): string {
-
-    return map(value, (row: CsvRow) => {
-        return stringifyCsvRow(row, separator, quote, lineBreak);
-    }).join(lineBreak);
-
+    separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
+    quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
+    lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
+    return map(
+        value,
+        (row: CsvRow) => stringifyCsvRow(row, separator, quote)
+    ).join(lineBreak);
 }
