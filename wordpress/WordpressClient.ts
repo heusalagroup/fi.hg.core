@@ -44,7 +44,7 @@ export class WordpressClient {
     }
 
     public async getPages(): Promise<WordpressPageListDTO> {
-        if (this._url.length < 1) return;
+        if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V2_PAGES}`);
         if (!isWordpressPagesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
@@ -54,7 +54,7 @@ export class WordpressClient {
     }
 
     public async getReferences(): Promise<WordpressReferenceListDTO> {
-        if (this._url.length < 1) return;
+        if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_REFERENCES}`);
         if (!isWordpressReferencesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
@@ -64,7 +64,7 @@ export class WordpressClient {
     }
 
     public async getUserProfiles(): Promise<WordpressUserProfileListDTO> {
-        if (this._url.length < 1) return;
+        if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_USERPROFILES}`);
         if (!isWordpressUserProfilesDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
