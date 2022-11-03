@@ -195,16 +195,26 @@ export function parseCsv (
 export function stringifyCsvRow (
     value: CsvRow,
     separator: string = DEFAULT_CSV_SEPARATOR,
-    quote: string = DEFAULT_CSV_QUOTE
+    quote: string = DEFAULT_CSV_QUOTE,
+    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): string {
     separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
     quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
+    lineBreak = lineBreak     ? lineBreak     : DEFAULT_CSV_LINE_BREAK;
     return map(value, (column: string) => {
         if ( column.length === 0 ) return column;
-        if ( column.indexOf(separator) >= 0 || (column[0] === quote) ) {
-            if ( column.indexOf(quote) >= 0 ) {
+       // if ( column.indexOf(separator) >= 0 || (column[0] === quote) ) {
+        if ( column.indexOf(separator) >= 0 || (column[0] === lineBreak) || (column[0] === quote) ) {
+
+           if ( column.indexOf(quote) >= 0 ) {
+                console.log("_______: ", column.indexOf(quote))
                 return `${quote}${column.split(quote).join(quote + quote)}${quote}`;
             } else {
+
+               if ( column.indexOf(lineBreak) >= 0 ) {
+                   console.log("LÖYTYI suurempi L2_______: ", `${lineBreak}${column}${lineBreak}`)
+                   return `${quote}${column.split(lineBreak).join(' ')}${quote}`;
+               }
                 return `${quote}${column}${quote}`;
             }
         } else {
@@ -230,6 +240,6 @@ export function stringifyCsv (
     lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
     return map(
         value,
-        (row: CsvRow) => stringifyCsvRow(row, separator, quote)
+        (row: CsvRow) => stringifyCsvRow(row, separator, quote, lineBreak)
     ).join(lineBreak);
 }
