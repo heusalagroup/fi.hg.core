@@ -214,7 +214,7 @@ export function stringifyCsvRow (
                if ( column.indexOf(lineBreak) >= 0 ) {
                    console.log("LÖYTYI suurempi L2_______: ", `${lineBreak}${column}${lineBreak}`)
                    //return `${quote}${column.split(lineBreak).join(' ')}${quote}`;
-                   return `${quote}${column.replace(lineBreak, ' ')}${quote}`;
+                   return `${quote}${column.replaceAll(lineBreak, ' ')}${quote}`;
                }
                 return `${quote}${column}${quote}`;
             }
