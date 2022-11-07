@@ -207,14 +207,14 @@ export function stringifyCsvRow (
         if ( column.indexOf(separator) >= 0 || (column[0] === lineBreak) || (column[0] === quote) ) {
 
            if ( column.indexOf(quote) >= 0 ) {
-                console.log("_______: ", column.indexOf(quote))
+               if ( column.indexOf(lineBreak) >= 0 ) {
+                   return `${column.split(lineBreak).join(' ').split(quote).join('')}`;
+               }
                 return `${quote}${column.split(quote).join(quote + quote)}${quote}`;
             } else {
 
                if ( column.indexOf(lineBreak) >= 0 ) {
-                   console.log("LÖYTYI suurempi L2_______: ", `${lineBreak}${column}${lineBreak}`)
                    return `${quote}${column.split(lineBreak).join(' ')}${quote}`;
-                  // return `${quote}${column.replaceAll(lineBreak, ' ')}${quote}`;
                }
                 return `${quote}${column}${quote}`;
             }
