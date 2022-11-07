@@ -170,7 +170,6 @@ describe('Csv', () => {
       test('can stringify csv data with linebreak (using default)', () => {
          const result = stringifyCsv([properties, firstLine, secondLine, forthLine], ',', '', '\n');
          const rows = result.split('\n');
-         //console.log("DATA:________________", JSON.stringify(rows[3]))
          expect(rows[3]).toStrictEqual(
              '3'
              +',forth-test-title'
@@ -188,7 +187,6 @@ describe('Csv', () => {
       test('can stringify csv data with data linebreak (using default)', () => {
          const result = stringifyCsv(data, ',', '"', '\n');
          const rows = result.split('\n');
-         console.log("DATA:________________", JSON.stringify(rows[3]))
          expect(rows[1]).toStrictEqual(
              '1'
              +',muumipapan hattu'
