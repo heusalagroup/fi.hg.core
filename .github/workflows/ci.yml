@@ -1,0 +1,21 @@
+name: Run Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-test:
+    runs-on: self-hosted
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: heusalagroup/test
+          submodules: recursive
+      - name: set submodule branch
+        run: |
+          repo="${{ github.repository }}"; repo="${repo//./\/}"; repo="${repo/heusalagroup/}"; cd src$repo;
+          git checkout ${{ github.ref_name }}
+      - name: run tests
+        run: NODE_ENV="dev" npm run test:ci
