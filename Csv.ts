@@ -11,8 +11,7 @@ import {
     keys,
     map,
     split,
-    startsWith,
-    replace, replaceAll
+    startsWith
 } from "./modules/lodash";
 import { ReadonlyJsonObject } from "./Json";
 
@@ -227,14 +226,13 @@ export function stringifyCsv (
     separator        : string = DEFAULT_CSV_SEPARATOR,
     quote            : string = DEFAULT_CSV_QUOTE,
     lineBreak        : string = DEFAULT_CSV_LINE_BREAK,
-    replaceLineBreak : string | undefined = DEFAULT_CSV_LINE_BREAK_REPLACE_CHARACTER
+    replaceLineBreak : string | false = DEFAULT_CSV_LINE_BREAK_REPLACE_CHARACTER
 ): string {
     separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
     quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
     lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
-    replaceLineBreak = replaceLineBreak ? replaceLineBreak : undefined;
 
-    if (replaceLineBreak !== undefined) {
+    if (replaceLineBreak !== false ) {
         value = replaceCsvContentLineBreaks(
             value,
             lineBreak,
@@ -265,7 +263,7 @@ export function replaceCsvContentLineBreaks (
         (row: CsvRow) : CsvRow =>
             map(
                 row,
-                (column: string): string => replaceAll(column, lineBreak, replaceTo)
+                (column: string): string => column.replaceAll(lineBreak, replaceTo)
             )
     );
 }

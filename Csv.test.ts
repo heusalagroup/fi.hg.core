@@ -286,6 +286,103 @@ describe('Csv', () => {
          );
       });
 
+      test('can stringify csv data with data linebreak removed', () => {
+         const result = stringifyCsv(
+             [
+                [ 'ticketNumber',
+                   'title',
+                   'categoryType',
+                   'state',
+                   'priority',
+                   'requester',
+                   'cost',
+                   'detail',
+                   'currency',
+                   'status',
+                   'dueDate',
+                   'workspaceId', 'workspace', 'supplierId', 'supplier', 'approver', 'labels'
+                ],
+                [
+                   '1', 'muumipapan hattu', 'OTHER', 'REQUEST', 'STANDARD', 'haisuli@heusalagroup.fi', '45',
+                   'Kissa ei \nkestä kaamosta - pitää\npäästä koiruuksia tekemään', 'EUR', 'WAITING_APPROVAL', '2022-11-04T00:00:00+02:00', '!FSlIOckQywLzmGoePz:matrix.my.host', 'pappa', '', '', '' ]
+             ]
+             ,
+             ',', '"', '\n', ''
+         );
+         const rows = result.split('\n');
+         expect(rows[1]).toStrictEqual(
+             '1'
+             +',muumipapan hattu'
+             +',OTHER'
+             +',REQUEST'
+             +',STANDARD'
+             +',haisuli@heusalagroup.fi'
+             +',45'
+             +',Kissa ei kestä kaamosta - pitääpäästä koiruuksia tekemään'
+             +',EUR'
+             +',WAITING_APPROVAL'
+             +',2022-11-04T00:00:00+02:00'
+             +',!FSlIOckQywLzmGoePz:matrix.my.host'
+             +',pappa'
+             +','
+             +','
+             +','
+         );
+      });
+
+      test('can stringify csv data with data linebreak kept', () => {
+         const result = stringifyCsv(
+             [
+                [ 'ticketNumber',
+                   'title',
+                   'categoryType',
+                   'state',
+                   'priority',
+                   'requester',
+                   'cost',
+                   'detail',
+                   'currency',
+                   'status',
+                   'dueDate',
+                   'workspaceId', 'workspace', 'supplierId', 'supplier', 'approver', 'labels'
+                ],
+                [
+                   '1', 'muumipapan hattu', 'OTHER', 'REQUEST', 'STANDARD', 'haisuli@heusalagroup.fi', '45',
+                   'Kissa ei \nkestä kaamosta - pitää\npäästä koiruuksia tekemään', 'EUR', 'WAITING_APPROVAL', '2022-11-04T00:00:00+02:00', '!FSlIOckQywLzmGoePz:matrix.my.host', 'pappa', '', '', '' ]
+             ]
+             ,
+             ',',
+             '"',
+             '\n',
+             false
+         );
+         const rows = result.split('\n');
+         expect(rows[1]).toStrictEqual(
+             '1'
+             +',muumipapan hattu'
+             +',OTHER'
+             +',REQUEST'
+             +',STANDARD'
+             +',haisuli@heusalagroup.fi'
+             +',45'
+             +',Kissa ei '
+         );
+         expect(rows[2]).toStrictEqual(
+      'kestä kaamosta - pitää'
+         );
+         expect(rows[3]).toStrictEqual(
+             'päästä koiruuksia tekemään'
+             +',EUR'
+             +',WAITING_APPROVAL'
+             +',2022-11-04T00:00:00+02:00'
+             +',!FSlIOckQywLzmGoePz:matrix.my.host'
+             +',pappa'
+             +','
+             +','
+             +','
+         );
+      });
+
    });
 
 });
