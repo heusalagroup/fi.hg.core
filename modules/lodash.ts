@@ -1491,20 +1491,6 @@ export function explainProperty (
     return isExplainOk(e) ? explainOk() : `property "${name}" ${e}`;
 }
 
-export function replaceAll (
-    value: string,
-    pattern: string,
-    replacement: string
-) : string {
-    if (replacement.indexOf(pattern) >= 0) {
-        throw new TypeError(`replaceAll: Pattern inside replacement string is currently not supported`)
-    }
-    do {
-        value = replace(value, pattern, replacement);
-    } while (value.indexOf(pattern) >= 0);
-    return value;
-}
-
 export {
     map,
     get,
