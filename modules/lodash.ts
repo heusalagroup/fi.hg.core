@@ -36,6 +36,7 @@ import { default as _isSafeInteger } from 'lodash/isSafeInteger.js';
 import toInteger from 'lodash/toInteger.js';
 import toSafeInteger from 'lodash/toSafeInteger.js';
 import startsWith from 'lodash/startsWith.js';
+import replace from 'lodash/replace.js';
 import endsWith from 'lodash/endsWith.js';
 import values from 'lodash/values.js';
 import join from 'lodash/join.js';
@@ -1511,6 +1512,7 @@ export {
     toInteger,
     toSafeInteger,
     startsWith,
+    replace,
     endsWith,
     has,
     values,
