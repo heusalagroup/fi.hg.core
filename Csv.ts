@@ -11,14 +11,15 @@ import {
     keys,
     map,
     split,
-    startsWith
+    startsWith,
+    replace, replaceAll
 } from "./modules/lodash";
 import { ReadonlyJsonObject } from "./Json";
-import { LogService } from "./LogService";
 
 export const DEFAULT_CSV_SEPARATOR  = ',';
 export const DEFAULT_CSV_QUOTE      = '"';
 export const DEFAULT_CSV_LINE_BREAK = '\n';
+export const DEFAULT_CSV_LINE_BREAK_REPLACE_CHARACTER : string = ' ';
 
 // FIXME: Add unit tests
 export type CsvRow = string[];
@@ -195,7 +196,8 @@ export function parseCsv (
 export function stringifyCsvRow (
     value: CsvRow,
     separator: string = DEFAULT_CSV_SEPARATOR,
-    quote: string = DEFAULT_CSV_QUOTE
+    quote: string = DEFAULT_CSV_QUOTE,
+    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): string {
     separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
     quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
@@ -218,18 +220,52 @@ export function stringifyCsvRow (
  * @param separator
  * @param quote
  * @param lineBreak
+ * @param replaceLineBreak
  */
 export function stringifyCsv (
-    value: Csv,
-    separator: string = DEFAULT_CSV_SEPARATOR,
-    quote: string = DEFAULT_CSV_QUOTE,
-    lineBreak: string = DEFAULT_CSV_LINE_BREAK
+    value            : Csv,
+    separator        : string = DEFAULT_CSV_SEPARATOR,
+    quote            : string = DEFAULT_CSV_QUOTE,
+    lineBreak        : string = DEFAULT_CSV_LINE_BREAK,
+    replaceLineBreak : string | undefined = DEFAULT_CSV_LINE_BREAK_REPLACE_CHARACTER
 ): string {
     separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
     quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
     lineBreak = lineBreak ? lineBreak : DEFAULT_CSV_LINE_BREAK;
+    replaceLineBreak = replaceLineBreak ? replaceLineBreak : undefined;
+
+    if (replaceLineBreak !== undefined) {
+        value = replaceCsvContentLineBreaks(
+            value,
+            lineBreak,
+            replaceLineBreak
+        );
+    }
+
     return map(
         value,
-        (row: CsvRow) => stringifyCsvRow(row, separator, quote)
+        (row: CsvRow) => stringifyCsvRow(row, separator, quote, lineBreak)
     ).join(lineBreak);
+}
+
+/**
+ * Can be used to modify Csv data structure so that line breaks in the Csv content
+ * are replaced to different character
+ * @param value
+ * @param lineBreak
+ * @param replaceTo
+ */
+export function replaceCsvContentLineBreaks (
+    value     : Csv,
+    lineBreak : string = DEFAULT_CSV_LINE_BREAK,
+    replaceTo : string = DEFAULT_CSV_LINE_BREAK_REPLACE_CHARACTER
+) : Csv {
+    return map(
+        value,
+        (row: CsvRow) : CsvRow =>
+            map(
+                row,
+                (column: string): string => replaceAll(column, lineBreak, replaceTo)
+            )
+    );
 }

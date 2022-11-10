@@ -36,6 +36,7 @@ import { default as _isSafeInteger } from 'lodash/isSafeInteger.js';
 import toInteger from 'lodash/toInteger.js';
 import toSafeInteger from 'lodash/toSafeInteger.js';
 import startsWith from 'lodash/startsWith.js';
+import replace from 'lodash/replace.js';
 import endsWith from 'lodash/endsWith.js';
 import values from 'lodash/values.js';
 import join from 'lodash/join.js';
@@ -1490,6 +1491,20 @@ export function explainProperty (
     return isExplainOk(e) ? explainOk() : `property "${name}" ${e}`;
 }
 
+export function replaceAll (
+    value: string,
+    pattern: string,
+    replacement: string
+) : string {
+    if (replacement.indexOf(pattern) >= 0) {
+        throw new TypeError(`replaceAll: Pattern inside replacement string is currently not supported`)
+    }
+    do {
+        value = replace(value, pattern, replacement);
+    } while (value.indexOf(pattern) >= 0);
+    return value;
+}
+
 export {
     map,
     get,
@@ -1511,6 +1526,7 @@ export {
     toInteger,
     toSafeInteger,
     startsWith,
+    replace,
     endsWith,
     has,
     values,
