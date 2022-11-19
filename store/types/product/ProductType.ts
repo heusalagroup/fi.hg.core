@@ -3,6 +3,7 @@
 import { explainEnum } from "../../../modules/lodash";
 
 export enum ProductType {
+    PHOTO       = "PHOTO",
     PREMIUM_DOMAIN       = "PREMIUM_DOMAIN",
     VIRTUAL_SERVER       = "VIRTUAL_SERVER",
     VIRTUAL_SERVER_EXTRA = "VIRTUAL_SERVER_EXTRA",
@@ -19,6 +20,7 @@ export enum ProductType {
 
 export function isProductType (value: any): value is ProductType {
     switch (value) {
+        case ProductType.PHOTO:
         case ProductType.PREMIUM_DOMAIN:
         case ProductType.VIRTUAL_SERVER:
         case ProductType.VIRTUAL_SERVER_EXTRA:
@@ -43,6 +45,7 @@ export function explainProductType (value : any) : string {
 
 export function stringifyProductType (value: ProductType): string {
     switch (value) {
+        case ProductType.PHOTO : return 'PHOTO';
         case ProductType.PREMIUM_DOMAIN : return 'PREMIUM_DOMAIN';
         case ProductType.VIRTUAL_SERVER : return 'VIRTUAL_SERVER';
         case ProductType.VIRTUAL_SERVER_EXTRA : return 'VIRTUAL_SERVER_EXTRA';
@@ -61,6 +64,7 @@ export function stringifyProductType (value: ProductType): string {
 
 export function parseProductType (value: any): ProductType | undefined {
     switch (value) {
+        case 'PHOTO' : return ProductType.PHOTO;
         case 'PREMIUM_DOMAIN' : return ProductType.PREMIUM_DOMAIN;
         case 'VIRTUAL_SERVER' : return ProductType.VIRTUAL_SERVER;
         case 'VIRTUAL_SERVER_EXTRA' : return ProductType.VIRTUAL_SERVER_EXTRA;
