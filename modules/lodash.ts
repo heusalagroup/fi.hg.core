@@ -1491,6 +1491,27 @@ export function explainProperty (
     return isExplainOk(e) ? explainOk() : `property "${name}" ${e}`;
 }
 
+/**
+ * Replaces all occurances of a string
+ *
+ * @param value
+ * @param from
+ * @param to
+ */
+export function replaceAll (value: string, from: string, to: string) : string {
+    if (!from) throw new TypeError('replaceAll: from is required');
+    let ret = '';
+    let p = 0;
+    let i = value.indexOf(from);
+    while (i >= p) {
+        ret += value.substring(p, i) + to;
+        p = i + from.length;
+        i = value.indexOf(from, p);
+    }
+    ret += value.substring(p);
+    return ret;
+}
+
 export {
     map,
     get,

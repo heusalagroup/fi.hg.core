@@ -9,7 +9,7 @@ import {
     isArrayOf,
     isString,
     keys,
-    map,
+    map, replaceAll,
     split,
     startsWith
 } from "./modules/lodash";
@@ -263,7 +263,7 @@ export function replaceCsvContentLineBreaks (
         (row: CsvRow) : CsvRow =>
             map(
                 row,
-                (column: string): string => column.replaceAll(lineBreak, replaceTo)
+                (column: string): string => replaceAll(column, lineBreak, replaceTo)
             )
     );
 }
