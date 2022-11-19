@@ -10,6 +10,7 @@ export enum ProductFeatureId {
     DISK_SIZE       = "DISK_SIZE",
     DISK_RAID       = "DISK_RAID",
     DISK_BACKUP     = "DISK_BACKUP",
+    SUPPORT_1H_M    = "SUPPORT_1H_M",
     DISK_2_TYPE       = "DISK_2_TYPE",
     DISK_2_SIZE       = "DISK_2_SIZE",
     DISK_2_RAID       = "DISK_2_RAID",
@@ -34,6 +35,7 @@ export function isProductFeatureId (value: any): value is ProductFeatureId {
         case ProductFeatureId.DISK_SIZE:
         case ProductFeatureId.DISK_RAID:
         case ProductFeatureId.DISK_BACKUP:
+        case ProductFeatureId.SUPPORT_1H_M:
         case ProductFeatureId.DISK_2_TYPE:
         case ProductFeatureId.DISK_2_SIZE:
         case ProductFeatureId.DISK_2_RAID:
@@ -62,6 +64,7 @@ export function stringifyProductFeatureId (value: ProductFeatureId): string {
         case ProductFeatureId.WP : return 'WP';
         case ProductFeatureId.VPS_TYPE : return 'VPS_TYPE';
         case ProductFeatureId.VPS_OS : return 'VPS_OS';
+        case ProductFeatureId.SUPPORT_1H_M : return 'SUPPORT_1H_M';
         case ProductFeatureId.DISK_TYPE : return 'DISK_TYPE';
         case ProductFeatureId.DISK_SIZE : return 'DISK_SIZE';
         case ProductFeatureId.DISK_RAID : return 'DISK_RAID';
@@ -88,6 +91,7 @@ export function parseProductFeatureId (value: any): ProductFeatureId | undefined
         case 'WP' : return ProductFeatureId.WP;
         case 'VPS_TYPE' : return ProductFeatureId.VPS_TYPE;
         case 'VPS_OS' : return ProductFeatureId.VPS_OS;
+        case 'SUPPORT_1H_M' : return ProductFeatureId.SUPPORT_1H_M;
         case 'DISK_TYPE' : return ProductFeatureId.DISK_TYPE;
         case 'DISK_SIZE' : return ProductFeatureId.DISK_SIZE;
         case 'DISK_RAID' : return ProductFeatureId.DISK_RAID;
