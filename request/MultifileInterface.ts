@@ -11,18 +11,16 @@ export interface MultipartFileInterface {
    transferTo:() => void;
 }
 
-export interface InputStreamInterface {
-   readable: boolean;
-   setEncoding(encoding?: 'base64' | 'binary'): this;
-   available:() =>number;
-   close:() => boolean;
-   mark:(readLimit?: number) => number;
-   markSupported():boolean;
-   nullInputStream():void;
-   read(mark?:() => number, size?: number): Buffer | number;
-   readAllBytes():void;
-   readNBytes(mark?: () => number, size?: number, toArray?: []):void;
-   reset():this;
-   skip(count: number):void;
-   transferTo(OutputStream?: () => void):void;
+interface InputStreamInterface {
+   available?: number;
+   close?:() => void;
+   mark?:(readLimit?: number) => void;
+   markSupported?():boolean;
+   nullInputStream?():void;
+   read?(): void;
+   readAllBytes?():void;
+   readNBytes?(mark?: () => number, size?: number, toArray?: []):void;
+   reset?():this;
+   skip?(count: number):void;
+   transferTo?(OutputStream?: () => void):void;
 }
