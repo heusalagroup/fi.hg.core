@@ -84,8 +84,8 @@ export function explainProductPrice (value: any) : string {
             explainProperty("vatPercent", explainNumber(value?.vatPercent)),
             explainProperty("type", explainProductPriceType(value?.type)),
             explainProperty("buyUrl", explainString(value?.buyUrl)),
-            explainProperty("discountPercent", explainNumberOrUndefined(value?.discountPercent))
-            explainProperty("discountFrom", explainStringOrUndefined(value?.discountFrom))
+            explainProperty("discountPercent", explainNumberOrUndefined(value?.discountPercent)),
+            explainProperty("discountFrom", explainStringOrUndefined(value?.discountFrom)),
             explainProperty("discountTo", explainStringOrUndefined(value?.discountTo))
         ]
     );
