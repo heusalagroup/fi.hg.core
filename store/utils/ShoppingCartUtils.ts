@@ -6,6 +6,7 @@ import { filter, find, map, reduce } from "../../modules/lodash";
 import { ProductPrice } from "../types/product/ProductPrice";
 import { createShoppingCart, ShoppingCart } from "../types/cart/ShoppingCart";
 import { CurrencyUtils } from "../../CurrencyUtils";
+import { moment } from "../../modules/moment";
 
 export class ShoppingCartUtils {
 
@@ -104,7 +105,7 @@ export class ShoppingCartUtils {
     public static getItemSum (
         item: ShoppingCartItem
     ): number {
-        return CurrencyUtils.getSum(item.price.sum, item.amount);
+        return CurrencyUtils.getSum(this.getSumFromPrice(item.price), item.amount);
     }
 
     public static getItemVat (
@@ -158,7 +159,30 @@ export class ShoppingCartUtils {
     public static getVatlessSumFromPrice (
         price: ProductPrice
     ) : number {
-        return CurrencyUtils.getVatlessSum(price.sum, price.vatPercent);
+        return CurrencyUtils.getVatlessSum(this.getSumFromPrice(price), price.vatPercent);
+    }
+
+    public static getSumFromPrice (
+        price: ProductPrice
+    ) : number {
+        return CurrencyUtils.getSumWithDiscount(price.sum, this.getDiscountPercent(price));
+    }
+
+    public static getDiscountPercent (
+        price: ProductPrice
+    ) : number | undefined {
+        const discountFrom    : string | undefined = price?.discountFrom ?? (new Date()).toISOString();
+        const discountTo      : string | undefined = price?.discountTo;
+        const discountActive  : boolean = discountTo ? moment().isBetween(moment(discountFrom), moment(discountTo)) : moment().isAfter(moment(discountFrom));
+        const discountPercent : number | undefined = discountActive ? price?.discountPercent : undefined;
+        return discountPercent;
+    }
+
+    public static getDiscountTo (
+        price: ProductPrice
+    ) : string {
+        const discountPercent = this.getDiscountPercent(price);
+        return discountPercent && price?.discountTo ? moment(price?.discountTo).format('DD.MM.YYYY hh.mm') : '';
     }
 
 }

@@ -27,6 +27,13 @@ export class CurrencyUtils {
         return amount * price * (1+vatPercent);
     }
 
+    public static getSumWithDiscount (
+        price           : number,
+        discountPercent : number | undefined
+    ): number {
+        return discountPercent ? price - price * discountPercent : price;
+    }
+
     public static getVatlessSum (
         sum: number,
         vatPercent: number
