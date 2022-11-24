@@ -4,21 +4,24 @@ import { explainProductPriceType, isProductPriceType, ProductPriceType } from ".
 import {
     explain,
     explainNoOtherKeys,
-    explainNumber,
+    explainNumber, explainNumberOrUndefined,
     explainProperty,
     explainRegularObject,
-    explainString,
+    explainString, explainStringOrUndefined,
     hasNoOtherKeys,
-    isNumber,
+    isNumber, isNumberOrUndefined,
     isRegularObject,
-    isString
+    isString, isStringOrUndefined
 } from "../../../modules/lodash";
 
 export interface ProductPrice {
-    readonly sum        : number;
-    readonly vatPercent : number;
-    readonly type       : ProductPriceType;
-    readonly buyUrl     : string;
+    readonly sum              : number;
+    readonly vatPercent       : number;
+    readonly type             : ProductPriceType;
+    readonly buyUrl           : string;
+    readonly discountPercent ?: number;
+    readonly discountFrom    ?: string;
+    readonly discountTo      ?: string;
 }
 
 export function createProductPrice (
@@ -26,12 +29,18 @@ export function createProductPrice (
     vatPercent : number,
     type       : ProductPriceType,
     buyUrl     : string,
+    discountPercent ?: number,
+    discountFrom    ?: string,
+    discountTo      ?: string
 ): ProductPrice {
     return {
         sum,
         vatPercent,
         type,
-        buyUrl
+        buyUrl,
+        discountPercent,
+        discountFrom,
+        discountTo
     };
 }
 
@@ -43,10 +52,16 @@ export function isProductPrice (value: any): value is ProductPrice {
             'sum',
             'vatPercent',
             'type',
+            'discountPercent',
+            'discountFrom',
+            'discountTo',
             'buyUrl'
         ])
         && isNumber(value?.sum)
         && isNumber(value?.vatPercent)
+        && isNumberOrUndefined(value?.discountPercent)
+        && isStringOrUndefined(value?.discountFrom)
+        && isStringOrUndefined(value?.discountTo)
         && isProductPriceType(value?.type)
         && isString(value?.buyUrl)
     );
@@ -60,12 +75,18 @@ export function explainProductPrice (value: any) : string {
                 'sum',
                 'vatPercent',
                 'type',
+                'discountPercent',
+                'discountFrom',
+                'discountTo',
                 'buyUrl'
             ]),
             explainProperty("sum", explainNumber(value?.sum)),
             explainProperty("vatPercent", explainNumber(value?.vatPercent)),
             explainProperty("type", explainProductPriceType(value?.type)),
-            explainProperty("buyUrl", explainString(value?.buyUrl))
+            explainProperty("buyUrl", explainString(value?.buyUrl)),
+            explainProperty("discountPercent", explainNumberOrUndefined(value?.discountPercent))
+            explainProperty("discountFrom", explainStringOrUndefined(value?.discountFrom))
+            explainProperty("discountTo", explainStringOrUndefined(value?.discountTo))
         ]
     );
 }
