@@ -14,17 +14,19 @@ export class CurrencyUtils {
 
     public static getSum (
         price  : number,
-        amount : number
+        amount : number,
+        discountPercent ?: number | undefined
     ): number {
-        return amount * price;
+        return this.getSumWithDiscount(amount * price, discountPercent);
     }
 
     public static getSumWithVat (
         price      : number,
         amount     : number,
-        vatPercent : number
+        vatPercent : number,
+        discountPercent ?: number | undefined
     ): number {
-        return amount * price * (1+vatPercent);
+        return this.getSumWithDiscount(amount * price, discountPercent) * (1+vatPercent);
     }
 
     public static getSumWithDiscount (
@@ -36,9 +38,10 @@ export class CurrencyUtils {
 
     public static getVatlessSum (
         sum: number,
-        vatPercent: number
+        vatPercent: number,
+        discountPercent ?: number | undefined
     ) : number {
-        return sum / (1+vatPercent);
+        return this.getSumWithDiscount(sum / (1+vatPercent), discountPercent);
     }
 
     public static roundByAccuracy (
