@@ -6,6 +6,7 @@ export enum ProductFeatureCategory {
     SUPPORT = "SUPPORT",
     DISK    = "DISK",
     DISK_2  = "DISK_2",
+    DISK_3  = "DISK_3",
     MEMORY  = "MEMORY",
     CPU     = "CPU",
     NETWORK = "NETWORK",
@@ -16,6 +17,7 @@ export function isProductFeatureCategory (value: any): value is ProductFeatureCa
     switch (value) {
         case ProductFeatureCategory.DISK: return true;
         case ProductFeatureCategory.DISK_2: return true;
+        case ProductFeatureCategory.DISK_3: return true;
         case ProductFeatureCategory.MEMORY: return true;
         case ProductFeatureCategory.CPU: return true;
         case ProductFeatureCategory.NETWORK: return true;
@@ -33,6 +35,7 @@ export function stringifyProductFeatureCategory (value: ProductFeatureCategory):
     switch (value) {
         case ProductFeatureCategory.DISK : return 'DISK';
         case ProductFeatureCategory.DISK_2 : return 'DISK_2';
+        case ProductFeatureCategory.DISK_3 : return 'DISK_3';
         case ProductFeatureCategory.MEMORY : return 'MEMORY';
         case ProductFeatureCategory.CPU : return 'CPU';
         case ProductFeatureCategory.NETWORK : return 'NETWORK';
