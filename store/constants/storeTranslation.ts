@@ -31,6 +31,10 @@ export function getDiskTypeFeatureTranslation (diskType: DiskType): string {
     return `diskType.${diskType}`;
 }
 
+export function getBackupFeatureTranslation (diskType: DiskType): string {
+    return `backupType.${diskType}`;
+}
+
 export function getSelectPriceTypeTextForPriceType (type: ProductPriceType): string {
     return `product.selectPriceType.${type}`;
 }

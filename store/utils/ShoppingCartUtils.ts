@@ -179,10 +179,11 @@ export class ShoppingCartUtils {
     }
 
     public static getDiscountTo (
-        price: ProductPrice
+        price: ProductPrice,
+        format: string = 'DD.MM.YYYY HH:mm'
     ) : string {
         const discountPercent = this.getDiscountPercent(price);
-        return discountPercent && price?.discountTo ? moment(price?.discountTo).format('DD.MM.YYYY hh.mm') : '';
+        return discountPercent && price?.discountTo ? moment(price?.discountTo).format(format) : '';
     }
 
 }
