@@ -51,19 +51,16 @@ export function isProductFeatureId (value: any): value is ProductFeatureId {
         case ProductFeatureId.DISK_USAGE:
         case ProductFeatureId.SUPPORT_1H_M:
         case ProductFeatureId.BACKUP_RESTORE_1H_M:
-
         case ProductFeatureId.DISK_2_TYPE:
         case ProductFeatureId.DISK_2_SIZE:
         case ProductFeatureId.DISK_2_RAID:
         case ProductFeatureId.DISK_2_BACKUP:
         case ProductFeatureId.DISK_2_USAGE:
-
         case ProductFeatureId.DISK_3_TYPE:
         case ProductFeatureId.DISK_3_SIZE:
         case ProductFeatureId.DISK_3_RAID:
         case ProductFeatureId.DISK_3_BACKUP:
         case ProductFeatureId.DISK_3_USAGE:
-
         case ProductFeatureId.MEMORY_SIZE:
         case ProductFeatureId.NETWORK_TYPE:
         case ProductFeatureId.NETWORK_IP4:
