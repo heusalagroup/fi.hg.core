@@ -15,6 +15,7 @@ export enum ProductType {
     DATABASE             = "DATABASE",
     WP                   = "WP",
     NET                  = "NET",
+    WEBRTC               = "WEBRTC",
     STOCK                = "STOCK"
 }
 
@@ -32,6 +33,7 @@ export function isProductType (value: any): value is ProductType {
         case ProductType.DATABASE:
         case ProductType.WP:
         case ProductType.NET:
+        case ProductType.WEBRTC:
         case ProductType.STOCK:
             return true;
         default:
@@ -57,6 +59,7 @@ export function stringifyProductType (value: ProductType): string {
         case ProductType.DATABASE : return 'DATABASE';
         case ProductType.WP : return 'WP';
         case ProductType.NET : return 'NET';
+        case ProductType.WEBRTC : return 'WEBRTC';
         case ProductType.STOCK : return 'STOCK';
     }
     throw new TypeError(`Unsupported ProductType value: ${value}`);
@@ -76,6 +79,7 @@ export function parseProductType (value: any): ProductType | undefined {
         case 'DATABASE' : return ProductType.DATABASE;
         case 'WP' : return ProductType.WP;
         case 'NET' : return ProductType.NET;
+        case 'WEBRTC' : return ProductType.WEBRTC;
         case 'STOCK' : return ProductType.STOCK;
         default    :
             return undefined;
