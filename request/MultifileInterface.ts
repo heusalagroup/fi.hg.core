@@ -1,14 +1,14 @@
 
         // All the MultipartFile fields are methods
 export interface MultipartFileInterface {
-   getBytes:() => Blob[];
+   getBytes:() => ArrayBuffer[];
    getContentType:() => string;
    getInputStream:() => InputStreamInterface;
    getName:() => string;
    getOriginalFilename:() => string;
    getSize:() => number;
    isEmpty:() => boolean;
-   transferTo:() => void;
+   transferTo:(newPath:string) => void;
 }
 
 interface InputStreamInterface {
