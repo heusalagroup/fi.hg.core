@@ -4,6 +4,7 @@ import { explainProductType, isProductType, ProductType } from "./ProductType";
 import { explainProductFeature, isProductFeature, ProductFeature } from "./features/ProductFeature";
 import { explain, explainArrayOf, explainNoOtherKeys, explainNumberOrUndefined, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isArrayOf, isNumberOrUndefined, isRegularObject, isString } from "../../../modules/lodash";
 import { ProductPrice, isProductPrice, explainProductPrice } from "./ProductPrice";
+import { CompositeProductSelection } from "./CompositeProductSelection";
 
 export interface Product {
     readonly id           : string;
@@ -13,6 +14,13 @@ export interface Product {
     readonly features     : readonly ProductFeature[];
     readonly prices       : readonly ProductPrice[];
     readonly stockAmount ?: number;
+
+    /**
+     * If defined, this product is a special product combined from other products
+     * based on customer's choices
+     */
+    readonly composite   ?: readonly CompositeProductSelection[];
+
 }
 
 export function createProduct (

@@ -3,7 +3,7 @@
 import { explainEnum } from "../../../modules/lodash";
 
 export enum ProductType {
-    PHOTO       = "PHOTO",
+    PHOTO                = "PHOTO",
     PREMIUM_DOMAIN       = "PREMIUM_DOMAIN",
     VIRTUAL_SERVER       = "VIRTUAL_SERVER",
     VIRTUAL_SERVER_EXTRA = "VIRTUAL_SERVER_EXTRA",
