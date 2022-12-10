@@ -10,6 +10,9 @@ import { ProductPriceType } from "../types/product/ProductPriceType";
 import { ProductPrice } from "../types/product/ProductPrice";
 import { ProductFeatureCategoryMappingType } from "../types/product/features/ProductFeatureCategoryMappingType";
 import { getProductFeatureCategoryTitleTranslationToken, getProductFeatureTitleTranslationToken } from "../constants/storeTranslation";
+import { LogService } from "../../LogService";
+
+const LOG = LogService.createLogger('ProductUtils');
 
 export class ProductUtils {
 
@@ -94,6 +97,29 @@ export class ProductUtils {
             (a: ProductPriceType[], item: ProductTableItemModel) => uniq([ ...a, ...item.priceTypeOptions ]),
             []
         );
+    }
+
+    /**
+     * This will calculate the best product combination from provided
+     * preferred options.
+     *
+     * @param model
+     * @param options
+     */
+    public static calculateCompositeProductFromOptions (
+        model   : Product,
+        options : {readonly [key: string]: string|number}
+    ) : Product {
+
+        // Check if this is a composite product
+        if (!model?.composite) {
+            LOG.warn(`Warning! This model doesn't seem to be a composite product. Passing the product on without changes.`);
+            return model;
+        }
+
+
+
+        return model;
     }
 
 }
