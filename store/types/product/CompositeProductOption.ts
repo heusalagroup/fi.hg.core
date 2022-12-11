@@ -1,10 +1,26 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explain, explainNoOtherKeys, explainRegularObject, hasNoOtherKeys, isRegularObject } from "../../../modules/lodash";
+import {
+    explain,
+    explainNoOtherKeys,
+    explainNumber,
+    explainNumberOrStringOrBooleanOrUndefined,
+    explainNumberOrUndefined,
+    explainProperty,
+    explainRegularObject,
+    explainStringOrUndefined,
+    hasNoOtherKeys,
+    isNumber,
+    isNumberOrStringOrBooleanOrUndefined,
+    isNumberOrUndefined,
+    isRegularObject,
+    isStringOrUndefined
+} from "../../../modules/lodash";
+import { explainProductIdListWithAmount, isProductIdListWithAmount, ProductIdListWithAmount } from "./ProductIdList";
 
 export interface CompositeProductOption {
 
-    readonly value         : number | string;
+    readonly value         : number | string | boolean;
     readonly minAmount     : number;
     readonly maxAmount    ?: number;
 
@@ -18,14 +34,14 @@ export interface CompositeProductOption {
     /**
      * These products will be selected if user selects this option
      */
-    readonly products : readonly string[];
+    readonly products : ProductIdListWithAmount;
 
 }
 
 export function createCompositeProductOption (
-    value          : number | string,
-    products       : readonly string[],
-    groupBy ?: string,
+    value          : number | string | boolean,
+    products       : ProductIdListWithAmount,
+    groupBy       ?: string,
     minAmount     ?: number,
     maxAmount     ?: number
 ) : CompositeProductOption {
@@ -42,9 +58,17 @@ export function isCompositeProductOption (value: any) : value is CompositeProduc
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
-            ''
+            'value',
+            'products',
+            'groupBy',
+            'minAmount',
+            'maxAmount'
         ])
-        //&& isString(value?.foo)
+        && isNumberOrStringOrBooleanOrUndefined(value?.value)
+        && isStringOrUndefined(value?.groupBy)
+        && isProductIdListWithAmount(value?.products)
+        && isNumber(value?.minAmount)
+        && isNumberOrUndefined(value?.maxAmount)
     );
 }
 
@@ -53,9 +77,17 @@ export function explainCompositeProductOption (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeys(value, [
-                ''
+                'value',
+                'products',
+                'groupBy',
+                'minAmount',
+                'maxAmount'
             ])
-            //, explainProperty("foo", explainString(value?.foo))
+            , explainProperty("value", explainNumberOrStringOrBooleanOrUndefined(value?.value))
+            , explainProperty("products", explainProductIdListWithAmount(value?.products))
+            , explainProperty("groupBy", explainStringOrUndefined(value?.groupBy))
+            , explainProperty("minAmount", explainNumber(value?.minAmount))
+            , explainProperty("maxAmount", explainNumberOrUndefined(value?.maxAmount))
         ]
     );
 }

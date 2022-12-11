@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { ProductTableItemDataModel } from "../types/product/ProductTableItemDataModel";
-import { filter, find, has, map, reduce, uniq } from "../../modules/lodash";
+import { filter, find, forEach, has, isNumber, map, reduce, uniq } from "../../modules/lodash";
 import { ProductFeatureCategory } from "../types/product/features/ProductFeatureCategory";
 import { ProductFeatureId } from "../types/product/features/ProductFeatureId";
 import { Product } from "../types/product/Product";
@@ -11,10 +11,18 @@ import { ProductPrice } from "../types/product/ProductPrice";
 import { ProductFeatureCategoryMappingType } from "../types/product/features/ProductFeatureCategoryMappingType";
 import { getProductFeatureCategoryTitleTranslationToken, getProductFeatureTitleTranslationToken } from "../constants/storeTranslation";
 import { LogService } from "../../LogService";
+import { LogLevel } from "../../types/LogLevel";
+import { CompositeProductSelection } from "../types/product/CompositeProductSelection";
+import { CompositeProductOption } from "../types/product/CompositeProductOption";
+import { ProductIdListWithAmount } from "../types/product/ProductIdList";
 
 const LOG = LogService.createLogger('ProductUtils');
 
 export class ProductUtils {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     public static createProductTableItemsList (
         title: string,
@@ -103,23 +111,69 @@ export class ProductUtils {
      * This will calculate the best product combination from provided
      * preferred options.
      *
-     * @param model
-     * @param options
+     * @param model The composite product model
+     * @param options Preferred options to use when calculating best combination
+     * @param products All the available products to use to combine the derived product
      */
     public static calculateCompositeProductFromOptions (
-        model   : Product,
-        options : {readonly [key: string]: string|number}
+        model    : Product,
+        options  : {readonly [key: string]: string|number|boolean},
+        products : readonly Product[]
     ) : Product {
 
+        const compositeSelections : readonly CompositeProductSelection[] | undefined = model?.composite;
+
         // Check if this is a composite product
-        if (!model?.composite) {
-            LOG.warn(`Warning! This model doesn't seem to be a composite product. Passing the product on without changes.`);
+        if (!compositeSelections) {
+            LOG.warn(`Warning! This model doesn't seem to be a composite product. Passing the product on without any changes.`);
             return model;
         }
 
+        let enabledProductIds : ProductIdListWithAmount = [];
 
+        const matchingProductLists : readonly ProductIdListWithAmount[] = map(
+            compositeSelections,
+            (item: CompositeProductSelection) : ProductIdListWithAmount => {
+                const featureId = item.featureId;
+                const featureOptions : readonly CompositeProductOption[] = item.options;
+                const preferredValue : string|number|boolean | undefined = has(options, featureId) ? options[featureId] : undefined;
+                if (!isNumber(preferredValue)) {
+                    LOG.warn('Warning! calculateCompositeProductFromOptions: Only number values implemented. Ignored selection.');
+                    return [];
+                }
+                const option = ProductUtils.getBestMatchingNumericCompositeProductOption(
+                    preferredValue,
+                    featureOptions
+                );
+                if (!option) {
+                    LOG.warn('Warning! calculateCompositeProductFromOptions: No matching options found. Ignored selection');
+                    return [];
+                }
+                return option.products;
+            }
+        );
 
         return model;
+    }
+
+    public static getBestMatchingNumericCompositeProductOption (
+        preferredValue: number,
+        list: readonly CompositeProductOption[]
+    ) : CompositeProductOption | undefined {
+        let suitableOptions : CompositeProductOption[] = filter(
+            list,
+            (option: CompositeProductOption) => isNumber(option.value) && preferredValue <= option.value
+        );
+        if (suitableOptions.length === 0) return undefined;
+        suitableOptions.sort(ProductUtils.sortCompositeProductOptionsByNumericValue);
+        return suitableOptions[0];
+    }
+
+    public static sortCompositeProductOptionsByNumericValue (a: CompositeProductOption, b: CompositeProductOption) : number {
+        const aNum = isNumber(a.value) ? a.value : -1;
+        const bNum = isNumber(b.value) ? b.value : -1;
+        if (aNum === bNum) return 0;
+        return aNum < bNum ? -1 : 1;
     }
 
 }

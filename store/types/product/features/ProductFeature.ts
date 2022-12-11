@@ -10,6 +10,18 @@ export interface ProductFeature {
     readonly value    : string | number | boolean;
 }
 
+export function createProductFeature (
+    id       : ProductFeatureId,
+    category : ProductFeatureCategory,
+    value    : string | number | boolean
+) : ProductFeature {
+    return {
+        id,
+        category,
+        value
+    };
+}
+
 export function isProductFeature (value: any): value is ProductFeature {
     return (
         isRegularObject(value)

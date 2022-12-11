@@ -30,7 +30,7 @@ export function createProduct (
     summary      : string,
     features     : readonly ProductFeature[],
     prices       : readonly ProductPrice[],
-    stockAmount  : number = 0,
+    stockAmount  : number = 0
 ) : Product {
     return {
         id,
@@ -39,6 +39,26 @@ export function createProduct (
         summary,
         features,
         prices,
+        stockAmount
+    };
+}
+
+export function createCompositeProduct (
+    id           : string,
+    type         : ProductType,
+    title        : string,
+    summary      : string,
+    composite    : readonly CompositeProductSelection[],
+    stockAmount  : number = 0
+) : Product {
+    return {
+        id,
+        type,
+        title,
+        summary,
+        features: [],
+        prices: [],
+        composite,
         stockAmount
     };
 }

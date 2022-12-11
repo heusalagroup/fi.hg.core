@@ -543,6 +543,26 @@ export function explainNumberOrUndefined (value : any) : string {
 /**
  *
  * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isNumberOrStringOrBooleanOrUndefined (value : any) : value is number | undefined {
+    return isUndefined(value) || isNumber(value) || isString(value) || isBoolean(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNumberOrStringOrBooleanOrUndefined (value : any) : string {
+    return isNumberOrStringOrBooleanOrUndefined(value) ? explainOk() : explainNot( explainOr(['number', 'string', 'boolean', 'undefined']) );
+}
+
+/**
+ *
+ * @param value
  * @param minLength
  * @param maxLength
  * @__PURE__
