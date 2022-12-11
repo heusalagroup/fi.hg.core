@@ -4,14 +4,16 @@ import { explainProductPriceType, isProductPriceType, ProductPriceType } from ".
 import {
     explain,
     explainNoOtherKeys,
-    explainNumber, explainNumberOrUndefined,
+    explainNumber,
+    explainNumberOrUndefined,
     explainProperty,
     explainRegularObject,
-    explainString, explainStringOrUndefined,
+    explainStringOrUndefined,
     hasNoOtherKeys,
-    isNumber, isNumberOrUndefined,
+    isNumber,
+    isNumberOrUndefined,
     isRegularObject,
-    isString, isStringOrUndefined
+    isStringOrUndefined
 } from "../../../modules/lodash";
 
 export interface ProductPrice {

@@ -14,7 +14,6 @@ import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
 import { CompositeProductSelection } from "../types/product/CompositeProductSelection";
 import { CompositeProductOption } from "../types/product/CompositeProductOption";
-import { ProductIdListWithAmount } from "../types/product/ProductIdList";
 
 const LOG = LogService.createLogger('ProductUtils');
 
@@ -129,29 +128,29 @@ export class ProductUtils {
             return model;
         }
 
-        let enabledProductIds : ProductIdListWithAmount = [];
-
-        const matchingProductLists : readonly ProductIdListWithAmount[] = map(
-            compositeSelections,
-            (item: CompositeProductSelection) : ProductIdListWithAmount => {
-                const featureId = item.featureId;
-                const featureOptions : readonly CompositeProductOption[] = item.options;
-                const preferredValue : string|number|boolean | undefined = has(options, featureId) ? options[featureId] : undefined;
-                if (!isNumber(preferredValue)) {
-                    LOG.warn('Warning! calculateCompositeProductFromOptions: Only number values implemented. Ignored selection.');
-                    return [];
-                }
-                const option = ProductUtils.getBestMatchingNumericCompositeProductOption(
-                    preferredValue,
-                    featureOptions
-                );
-                if (!option) {
-                    LOG.warn('Warning! calculateCompositeProductFromOptions: No matching options found. Ignored selection');
-                    return [];
-                }
-                return option.products;
-            }
-        );
+        // let enabledProductIds : ProductIdListWithAmount = [];
+        //
+        // const matchingProductLists : readonly ProductIdListWithAmount[] = map(
+        //     compositeSelections,
+        //     (item: CompositeProductSelection) : ProductIdListWithAmount => {
+        //         const featureId = item.featureId;
+        //         const featureOptions : readonly CompositeProductOption[] = item.options;
+        //         const preferredValue : string|number|boolean | undefined = has(options, featureId) ? options[featureId] : undefined;
+        //         if (!isNumber(preferredValue)) {
+        //             LOG.warn('Warning! calculateCompositeProductFromOptions: Only number values implemented. Ignored selection.');
+        //             return [];
+        //         }
+        //         const option = ProductUtils.getBestMatchingNumericCompositeProductOption(
+        //             preferredValue,
+        //             featureOptions
+        //         );
+        //         if (!option) {
+        //             LOG.warn('Warning! calculateCompositeProductFromOptions: No matching options found. Ignored selection');
+        //             return [];
+        //         }
+        //         return option.products;
+        //     }
+        // );
 
         return model;
     }
