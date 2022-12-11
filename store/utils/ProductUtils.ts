@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { ProductTableItemDataModel } from "../types/product/ProductTableItemDataModel";
-import { filter, find, forEach, has, isNumber, map, reduce, uniq } from "../../modules/lodash";
+import { filter, find, has, isNumber, map, reduce, uniq } from "../../modules/lodash";
 import { ProductFeatureCategory } from "../types/product/features/ProductFeatureCategory";
 import { ProductFeatureId } from "../types/product/features/ProductFeatureId";
 import { Product } from "../types/product/Product";
