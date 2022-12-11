@@ -3,37 +3,39 @@
 import {
     explain,
     explainArrayOfOrUndefined,
-    explainNoOtherKeys, explainNumberOrUndefined,
+    explainNoOtherKeys, explainNumberOrStringOrBooleanOrUndefined, explainNumberOrUndefined,
     explainProperty,
     explainRegularObject, explainString,
     explainStringOrUndefined,
     hasNoOtherKeys,
-    isArrayOfOrUndefined, isNumberOrUndefined,
+    isArrayOfOrUndefined, isBoolean, isNumberOrStringOrBooleanOrUndefined, isNumberOrUndefined,
     isRegularObject, isString,
     isStringOrUndefined
 } from "../../../modules/lodash";
 import { CompositeProductOption, explainCompositeProductOption, isCompositeProductOption } from "./CompositeProductOption";
-import { ProductFeatureId } from "./features/ProductFeatureId";
+import { explainProductFeatureId, isProductFeatureId, ProductFeatureId } from "./features/ProductFeatureId";
 
 export interface CompositeProductSelection {
+    readonly featureId      : ProductFeatureId;
     readonly title          : string;
     readonly options        : readonly CompositeProductOption[];
     readonly description   ?: string;
-    readonly defaultValue  ?: number;
+    readonly defaultValue  ?: number | string | boolean;
     readonly minValue      ?: number;
     readonly maxValue      ?: number;
 }
 
 export function createCompositeProductSelection (
+    featureId      : ProductFeatureId,
     title          : string,
     description   ?: string,
-    featureId     ?: ProductFeatureId,
     options       ?: readonly CompositeProductOption[],
-    defaultValue  ?: number,
+    defaultValue  ?: number | string | boolean,
     minValue      ?: number,
     maxValue      ?: number
 ) : CompositeProductSelection {
     return {
+        featureId,
         title,
         description,
         options: options ?? [],
@@ -47,6 +49,7 @@ export function isCompositeProductSelection (value: any) : value is CompositePro
     return (
         isRegularObject(value)
         && hasNoOtherKeys(value, [
+            'featureId',
             'title',
             'description',
             'options',
@@ -54,10 +57,11 @@ export function isCompositeProductSelection (value: any) : value is CompositePro
             'minValue',
             'maxValue'
         ])
+        && isProductFeatureId(value?.featureId)
         && isString(value?.title)
         && isStringOrUndefined(value?.description)
         && isArrayOfOrUndefined<CompositeProductOption>(value?.options, isCompositeProductOption)
-        && isNumberOrUndefined(value?.defaultValue)
+        && isNumberOrStringOrBooleanOrUndefined(value?.defaultValue)
         && isNumberOrUndefined(value?.minValue)
         && isNumberOrUndefined(value?.maxValue)
     );
@@ -68,6 +72,7 @@ export function explainCompositeProductSelection (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeys(value, [
+                'featureId',
                 'title',
                 'description',
                 'options',
@@ -75,6 +80,7 @@ export function explainCompositeProductSelection (value: any) : string {
                 'minValue',
                 'maxValue'
             ])
+            , explainProperty("featureId", explainProductFeatureId(value?.featureId))
             , explainProperty("title", explainString(value?.title))
             , explainProperty("description", explainStringOrUndefined(value?.description))
             , explainProperty(
@@ -86,7 +92,7 @@ export function explainCompositeProductSelection (value: any) : string {
                     isCompositeProductOption
                 )
         )
-            , explainProperty("defaultValue", explainNumberOrUndefined(value?.defaultValue))
+            , explainProperty("defaultValue", explainNumberOrStringOrBooleanOrUndefined(value?.defaultValue))
             , explainProperty("minValue", explainNumberOrUndefined(value?.minValue))
             , explainProperty("maxValue", explainNumberOrUndefined(value?.maxValue))
         ]

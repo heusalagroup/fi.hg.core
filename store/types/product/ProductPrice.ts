@@ -18,17 +18,17 @@ export interface ProductPrice {
     readonly sum              : number;
     readonly vatPercent       : number;
     readonly type             : ProductPriceType;
-    readonly buyUrl           : string;
+    readonly buyUrl          ?: string;
     readonly discountPercent ?: number;
     readonly discountFrom    ?: string;
     readonly discountTo      ?: string;
 }
 
 export function createProductPrice (
-    sum        : number,
-    vatPercent : number,
-    type       : ProductPriceType,
-    buyUrl     : string,
+    sum              : number,
+    vatPercent       : number,
+    type             : ProductPriceType,
+    buyUrl          ?: string,
     discountPercent ?: number,
     discountFrom    ?: string,
     discountTo      ?: string
@@ -63,7 +63,7 @@ export function isProductPrice (value: any): value is ProductPrice {
         && isStringOrUndefined(value?.discountFrom)
         && isStringOrUndefined(value?.discountTo)
         && isProductPriceType(value?.type)
-        && isString(value?.buyUrl)
+        && isStringOrUndefined(value?.buyUrl)
     );
 }
 
@@ -83,7 +83,7 @@ export function explainProductPrice (value: any) : string {
             explainProperty("sum", explainNumber(value?.sum)),
             explainProperty("vatPercent", explainNumber(value?.vatPercent)),
             explainProperty("type", explainProductPriceType(value?.type)),
-            explainProperty("buyUrl", explainString(value?.buyUrl)),
+            explainProperty("buyUrl", explainStringOrUndefined(value?.buyUrl)),
             explainProperty("discountPercent", explainNumberOrUndefined(value?.discountPercent)),
             explainProperty("discountFrom", explainStringOrUndefined(value?.discountFrom)),
             explainProperty("discountTo", explainStringOrUndefined(value?.discountTo))
