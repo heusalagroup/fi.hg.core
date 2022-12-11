@@ -7,6 +7,9 @@ export enum ProductType {
     PREMIUM_DOMAIN       = "PREMIUM_DOMAIN",
     VIRTUAL_SERVER       = "VIRTUAL_SERVER",
     VIRTUAL_SERVER_EXTRA = "VIRTUAL_SERVER_EXTRA",
+    WEB_HOTEL_EXTRA      = "WEB_HOTEL_EXTRA",
+    EMAIL_EXTRA          = "EMAIL_EXTRA",
+    SHELL_EXTRA          = "SHELL_EXTRA",
     WEB_HOTEL            = "WEB_HOTEL",
     DOMAIN_TRANSFER      = "DOMAIN_TRANSFER",
     DOMAIN               = "DOMAIN",
@@ -25,6 +28,9 @@ export function isProductType (value: any): value is ProductType {
         case ProductType.PREMIUM_DOMAIN:
         case ProductType.VIRTUAL_SERVER:
         case ProductType.VIRTUAL_SERVER_EXTRA:
+        case ProductType.WEB_HOTEL_EXTRA:
+        case ProductType.EMAIL_EXTRA:
+        case ProductType.SHELL_EXTRA:
         case ProductType.WEB_HOTEL:
         case ProductType.DOMAIN:
         case ProductType.DOMAIN_TRANSFER:
@@ -51,6 +57,9 @@ export function stringifyProductType (value: ProductType): string {
         case ProductType.PREMIUM_DOMAIN : return 'PREMIUM_DOMAIN';
         case ProductType.VIRTUAL_SERVER : return 'VIRTUAL_SERVER';
         case ProductType.VIRTUAL_SERVER_EXTRA : return 'VIRTUAL_SERVER_EXTRA';
+        case ProductType.WEB_HOTEL_EXTRA : return 'WEB_HOTEL_EXTRA';
+        case ProductType.EMAIL_EXTRA : return 'EMAIL_EXTRA';
+        case ProductType.SHELL_EXTRA : return 'SHELL_EXTRA';
         case ProductType.WEB_HOTEL : return 'WEB_HOTEL';
         case ProductType.DOMAIN : return 'DOMAIN';
         case ProductType.DOMAIN_TRANSFER : return 'DOMAIN_TRANSFER';
@@ -71,6 +80,9 @@ export function parseProductType (value: any): ProductType | undefined {
         case 'PREMIUM_DOMAIN' : return ProductType.PREMIUM_DOMAIN;
         case 'VIRTUAL_SERVER' : return ProductType.VIRTUAL_SERVER;
         case 'VIRTUAL_SERVER_EXTRA' : return ProductType.VIRTUAL_SERVER_EXTRA;
+        case 'WEB_HOTEL_EXTRA' : return ProductType.WEB_HOTEL_EXTRA;
+        case 'EMAIL_EXTRA' : return ProductType.EMAIL_EXTRA;
+        case 'SHELL_EXTRA' : return ProductType.SHELL_EXTRA;
         case 'WEB_HOTEL' : return ProductType.WEB_HOTEL;
         case 'DOMAIN' : return ProductType.DOMAIN;
         case 'DOMAIN_TRANSFER' : return ProductType.DOMAIN_TRANSFER;
