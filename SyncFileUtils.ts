@@ -80,7 +80,7 @@ export class SyncFileUtils {
 
         keys(replacements).forEach((key: string) => {
             const value = replacements[key];
-            fileContentString = fileContentString.replace(key, value);
+            fileContentString = fileContentString.replaceAll(key, value);
         });
 
         SyncFileUtils.writeTextFile(toFile, fileContentString);
