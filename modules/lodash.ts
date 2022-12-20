@@ -1355,7 +1355,20 @@ export function explainNoOtherKeys (value: any, array : readonly string[] ) : st
             )
         }`;
     } else {
-        return '';
+        return explainOk();
+    }
+}
+
+export function explainNoOtherKeysInDevelopment (value: any, array : readonly string[] ) : string {
+    if (!hasNoOtherKeysInDevelopment(value, array) ) {
+        return `Value had extra properties: ${
+            filter(
+                keys(value),
+                (item:string): boolean => !array.includes(item)
+            )
+        }`;
+    } else {
+        return explainOk();
     }
 }
 
