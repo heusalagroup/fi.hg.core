@@ -1496,6 +1496,9 @@ export function explain (
     values: readonly string[] | string
 ) : string {
     if (isString(values)) return values;
+    if (every(values, (item: string): boolean => isExplainOk(item))) {
+        return explainOk();
+    }
     return filter(values, (item: string): boolean => !isExplainOk(item) && !!item).join(', ');
 }
 
