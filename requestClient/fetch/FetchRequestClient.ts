@@ -179,7 +179,7 @@ export class FetchRequestClient implements RequestClientInterface {
 
         if ( !response.ok || (statusCode < 200 || statusCode >= 400) ) {
             const url     = response.url;
-            const message = `${statusCode} ${response.statusText} for ${stringifyRequestMethod(method)} ${url}`;
+            const message = `${statusCode}${ response.statusText ? ` "${response.statusText}"` : '' } for ${stringifyRequestMethod(method)} ${url}`;
             //LOG.error(`Unsuccessful response with status ${statusCode}: `, response);
             return response.json().then(body => {
                 throw new RequestError(
@@ -325,7 +325,7 @@ export class FetchRequestClient implements RequestClientInterface {
         const statusCode = response.status;
         if ( !response.ok || (statusCode < 200 || statusCode >= 400) ) {
             const url     = response.url;
-            const message = `${statusCode} ${response.statusText} for ${stringifyRequestMethod(method)} ${url}`;
+            const message = `${statusCode}${ response.statusText ? ` "${response.statusText}"` : '' } for ${stringifyRequestMethod(method)} ${url}`;
             return response.text().then(body => {
                 throw new RequestError(
                     statusCode,
