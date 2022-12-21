@@ -1187,6 +1187,16 @@ export function isRegularObjectOrUndefined (value : any) : value is ({[P in stri
  * @__PURE__
  * @nosideeffects
  */
+export function explainRegularObjectOrUndefined (value: any) : string {
+    return isRegularObjectOrUndefined(value) ? explainOk() : explainNot(explainOr(['regular object', 'undefined']));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isPromise (value: any) : value is Promise<any> {
     // @ts-ignore
     return _isObject(value) && !!value.then && !!value.catch;
