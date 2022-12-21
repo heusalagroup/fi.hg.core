@@ -1228,8 +1228,28 @@ export function isObject (value: any) : value is {[P in string]: any} {
  * @__PURE__
  * @nosideeffects
  */
+export function isObjectOrUndefined (value: any) : value is {[P in string]: any} | undefined {
+    return _isObject(value) || isUndefined(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function explainObject (value: any) : string {
     return isObject(value) ? explainOk() : 'not object';
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainObjectOrUndefined (value: any) : string {
+    return isObjectOrUndefined(value) ? explainOk() : explainNot(explainOr(['object', 'undefined']));
 }
 
 /**
