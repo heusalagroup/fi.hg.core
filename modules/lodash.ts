@@ -1523,7 +1523,7 @@ export function keys<
 
     } else if (isObject(value)) {
 
-        const allKeys : (string|Symbol)[] = Reflect.ownKeys(value);
+        const allKeys : (string|number|Symbol)[] = Reflect.ownKeys(value);
 
         const items = filter(allKeys, (key: string|Symbol) => isKey(key)) as T[];
 
