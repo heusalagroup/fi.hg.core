@@ -2,7 +2,12 @@
 //
 
 import {
-    hasNoOtherKeys,
+    explain, explainNoOtherKeys,
+    explainNoOtherKeysInDevelopment,
+    explainNumberOrUndefined, explainProperty,
+    explainRegularObject,
+    explainString,
+    hasNoOtherKeysInDevelopment,
     isNumberOrUndefined,
     isRegularObject,
     isString
@@ -26,12 +31,26 @@ export function createErrorDTO (
 export function isErrorDTO (value: any): value is ErrorDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'error',
             'code'
         ])
         && isString(value?.error)
         && isNumberOrUndefined(value?.code)
+    );
+}
+
+export function explainErrorDTO (value : any): string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'error',
+                'code'
+            ]),
+            explainProperty("error", explainString(value?.error)),
+            explainProperty("code", explainNumberOrUndefined(value?.code))
+        ]
     );
 }
 
