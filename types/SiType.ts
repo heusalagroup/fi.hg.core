@@ -65,7 +65,7 @@
  */
 
 import { toUpper } from "lodash";
-import { isString } from "../modules/lodash";
+import { isArray, isString } from "../modules/lodash";
 
 /**
  * An enumeration of predefined SI standard values.
@@ -142,6 +142,7 @@ export function stringifySiType (value: SiType): string {
  * @nosideeffects
  */
 export function parseSiType (value: any): SiType | undefined {
+    if (isArray(value)) return undefined;
     if (!isString(value)) value = `${value}`;
     value = value.length === 1 ? value : toUpper(value);
     switch ( value ) {
