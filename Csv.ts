@@ -6,6 +6,7 @@
  * data in TypeScript. It includes functions for parsing CSV data into an array
  * of rows (each of which is an array of cell values), and for converting an
  * array of rows into CSV data as a string.
+ * @see https://docs.hg.fi/common/csv/
  * @file
  */
 
@@ -110,7 +111,6 @@ export function getCsvRowFromJsonObject<T = ReadonlyJsonObject> (
 }
 
 /**
- *
  * The `getCsvFromJsonObjectList` function generates a CSV file from a list of
  * objects. It takes a list of objects, an optional array of property names to
  * include in the file, an optional flag indicating whether to include a header
