@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 /**
- * This module provides utilities for working with SI standard values.
+ * @file This module provides utilities for working with SI standard values.
  *
  * The `SiType` enumeration consists of a set of predefined values representing
  * various units of measurement according to the International System of Units (SI).
