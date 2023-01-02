@@ -1558,14 +1558,20 @@ export function explainProperty (
 }
 
 /**
- * Replaces all occurances of a string
+ * Replaces all occurrences of a string.
  *
- * @param value
- * @param from
- * @param to
+ * @param {string} value - The input string.
+ * @param {string} from - The string to be replaced.
+ * @param {string} to - The string to replace all occurrences of `from`.
+ * @returns {string} The input string with all occurrences of `from` replaced with `to`.
+ *
+ * @throws {TypeError} If `value`, `from`, or `to` are not strings.
  */
 export function replaceAll (value: string, from: string, to: string) : string {
-    if (!from) throw new TypeError('replaceAll: from is required');
+    if (!isString(from)) throw new TypeError('replaceAll: from is required');
+    if (!isString(value)) throw new TypeError('replaceAll: value is not a string');
+    if (!isString(to)) throw new TypeError('replaceAll: to is not a string');
+    if (from === '') return ['', ...value.split(''), ''].join(to);
     let ret = '';
     let p = 0;
     let i = value.indexOf(from);

@@ -6,6 +6,24 @@ describe('lodash', () => {
 
     describe('replaceAll', () => {
 
+        it('replaces all occurrences of a string', () => {
+            const value = 'this is a test';
+            const from = 'is';
+            const to = 'X';
+            const expected = 'thX X a test';
+            const result = replaceAll(value, from, to);
+            expect(result).toEqual(expected);
+        });
+
+        it('replaces all occurrences of a string', () => {
+            const value = 'this is a test';
+            const from = '';
+            const to = 'X';
+            const expected = 'XtXhXiXsX XiXsX XaX XtXeXsXtX';
+            const result = replaceAll(value, from, to);
+            expect(result).toEqual(expected);
+        });
+
         it('cannot replace missing row', () => {
             expect( replaceAll('hello world', 'foo', 'bar') ).toStrictEqual('hello world');
         });
