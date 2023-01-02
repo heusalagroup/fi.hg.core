@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { LogService } from "./LogService";
 import { ReadonlyJsonAny } from "./Json";
-import { keys } from "./modules/lodash";
+import { keys, replaceAll } from "./modules/lodash";
 
 const LOG = LogService.createLogger('SyncFileUtils');
 
@@ -80,7 +80,7 @@ export class SyncFileUtils {
 
         keys(replacements).forEach((key: string) => {
             const value = replacements[key];
-            fileContentString = fileContentString.replaceAll(key, value);
+            fileContentString = replaceAll(fileContentString, key, value);
         });
 
         SyncFileUtils.writeTextFile(toFile, fileContentString);
