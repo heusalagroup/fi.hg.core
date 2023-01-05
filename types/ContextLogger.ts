@@ -1,41 +1,38 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-    /**
-    * A logger that adds a context (name) to log messages.
-    * @implements {Logger}
-    */
 
 import { Logger } from "./Logger";
 import { LogLevel } from "./LogLevel";
-
+/**
+ * The ContextLogger class provides a way to create a logger with a specific name
+ * that can be used to log messages with a context. It also allows setting the
+ * log level for the logger. If no log level is set, the log level of the parent
+ * logger is used.
+ */
 export class ContextLogger implements Logger {
-
-     /**
-     * The underlying logger.
+    /**
+     * The parent logger.
      * @private
-     * @type {Logger}
      */
     private readonly _logger : Logger;
 
-     /**
-     * The context (name) of this logger.
-     * @readonly
-     * @type {string}
+    /**
+     * The name of the logger.
      */
     public readonly name     : string;
 
-    
-     /**
-     * The log level of this logger.
+
+    /**
+     * The log level of the logger.
      * @private
-     * @type {LogLevel | undefined}
      */
     private _level : LogLevel | undefined;
 
-     /**
-     * Create a new context logger.
-     * @param {string} name - The context (name) of this logger.
-     * @param {Logger} logService - The underlying logger.
+    /**
+     * Creates a new context logger with the given name and parent logger.
+     *
+     * @param name - The name of the logger.
+     * @param logService - The parent logger.
      */
     public constructor (
         name       : string,
@@ -46,28 +43,31 @@ export class ContextLogger implements Logger {
         this._level = undefined;
     }
 
-     /**
-     * Get the current log level.
-     * @returns {LogLevel | undefined} - The current log level, or undefined if the log level is not set.
+    /**
+     * Gets the log level of the logger. If no log level is set, the log level of
+     * the parent logger is returned.
+     *
+     * @returns The log level of the logger.
      */
     public getLogLevel () : LogLevel | undefined {
         return this._level ?? this._logger.getLogLevel();
     }
 
-     /**
-     * Set the log level.
-     * @param {LogLevel | undefined} level - The log level to set.
-     * @returns {this} - The logger instance.
+    /**
+     * Sets the log level of the logger.
+     *
+     * @param level - The log level to set.
+     * @returns The ContextLogger instance.
      */
     public setLogLevel (level : LogLevel | undefined) : this {
         this._level = level;
         return this;
     }
 
-    
-     /**
-     * Log a debug message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs a debug message.
+     *
+     * @param args - The message(s) to log.
      */
     public debug (...args: Array<any>) {
         if (this._level === undefined || this._level <= LogLevel.DEBUG) {
@@ -75,9 +75,10 @@ export class ContextLogger implements Logger {
         }
     }
 
-     /**
-     * Log an info message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs an info message.
+     *
+     * @param args - The message(s) to log.
      */
     public info (...args: Array<any>) {
         if (this._level === undefined || this._level <= LogLevel.INFO) {
@@ -85,9 +86,10 @@ export class ContextLogger implements Logger {
         }
     }
 
-     /**
-     * Log a warning message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs a warning message.
+     *
+     * @param args - The message(s) to log.
      */
     public warn (...args: Array<any>) {
         if (this._level === undefined || this._level <= LogLevel.WARN) {

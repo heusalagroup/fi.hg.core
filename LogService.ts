@@ -5,38 +5,34 @@ import { LogLevel, stringifyLogLevel } from "./types/LogLevel";
 import { ContextLogger } from "./types/ContextLogger";
 import { Logger } from "./types/Logger";
 
-     /**
-     * A logging service.
-     */
+/**
+ * The LogService class provides a way to set the log level and logger instance
+ * for a logging system. It also provides methods for logging messages at different
+ * levels (debug, info, warn, error).
+ */
 export class LogService {
-
-     /**
-     * The available log levels.
-     * @static
-     * @type {LogLevel}
+    /**
+     * An object containing the available log levels.
      */
     public static Level = LogLevel;
 
-     /**
+    /**
      * The current log level.
      * @private
-     * @static
-     * @type {LogLevel}
      */
     private static _level  : LogLevel = LogLevel.DEBUG;
-    
-     /**
-     * The logger object.
+
+    /**
+     * The current logger instance.
      * @private
-     * @static
-     * @type {Logger | any}
      */
     private static _logger : Logger | any   = console;
 
-     /**
-     * Set the log level.
-     * @param {LogLevel | undefined} value - The log level to set.
-     * @returns {Logger} - The logging service.
+    /**
+     * Sets the log level.
+     *
+     * @param value - The log level to set.
+     * @returns The LogService instance.
      */
     public static setLogLevel (value : LogLevel | undefined) : Logger {
         if (value) {
@@ -45,35 +41,39 @@ export class LogService {
         return this;
     }
 
-     /**
-     * Get the current log level.
-     * @returns {LogLevel | undefined} - The current log level.
+    /**
+     * Gets the current log level.
+     *
+     * @returns The current log level.
      */
     public static getLogLevel () : LogLevel | undefined {
         return this._level;
     }
 
-     /**
-     * Get the current log level as a string.
-     * @returns {string} - The current log level as a string.
+    /**
+     * Gets the string representation of the current log level.
+     *
+     * @returns The string representation of the current log level.
      */
     public static getLogLevelString () : string {
         return stringifyLogLevel(this._level);
     }
 
-     /**
-     * Set the logger object.
-     * @param {Logger} value - The logger object to set.
-     * @throws {TypeError} - If the logger is not defined.
+    /**
+     * Sets the logger instance.
+     *
+     * @param value - The logger instance to set.
+     * @throws {TypeError} If the logger instance is not defined.
      */
     public static setLogger (value : Logger) {
         if (!value) throw new TypeError(`The logger was not defined`);
         this._logger = value;
     }
 
-     /**
-     * Log a debug message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs a debug message.
+     *
+     * @param args - The message(s) to log.
      */
     public static debug (...args : Array<any>) {
         if (this._level <= LogLevel.DEBUG) {
@@ -81,9 +81,10 @@ export class LogService {
         }
     }
 
-     /**
-     * Log an info message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs an info message.
+     *
+     * @param args - The message(s) to log.
      */
     public static info (...args : Array<any>) {
         if (this._level <= LogLevel.INFO) {
@@ -91,9 +92,10 @@ export class LogService {
         }
     }
 
-     /**
-     * Log a warning message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs a warning message.
+     *
+     * @param args - The message(s) to log.
      */
     public static warn (...args : Array<any>) {
         if (this._level <= LogLevel.WARN) {
@@ -101,9 +103,10 @@ export class LogService {
         }
     }
 
-     /**
-     * Log an error message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs an error message.
+     *
+     * @param args - The message(s) to log.
      */
     public static error (...args : Array<any>) {
         if (this._level <= LogLevel.ERROR) {
@@ -111,10 +114,11 @@ export class LogService {
         }
     }
 
-     /**
-     * Create a new context logger.
-     * @param {string} name - The name of the context logger.
-     * @returns {ContextLogger} - A new context logger with the specified name.
+    /**
+     * Creates a new context logger with the given name.
+     *
+     * @param name - The name of the logger.
+     * @returns The new context logger.
      */
     public static createLogger (name : string) : ContextLogger {
         return new ContextLogger(name, LogService);

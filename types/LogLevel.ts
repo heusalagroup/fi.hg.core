@@ -1,10 +1,8 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-    /**
-    * An enumeration of log levels.
-    * @enum {number}
-    */
-
+/**
+ * The LogLevel enum represents the different log levels that a logger can have.
+ */
 export enum LogLevel {
 
     /** Debug log level. */
@@ -24,11 +22,12 @@ export enum LogLevel {
 
 }
 
-    /**
-    * Check if the given value is a valid log level.
-    * @param {any} value - The value to check.
-    * @returns {value is LogLevel} - True if the value is a valid log level, false otherwise.
-    */
+/**
+ * Determines if the given value is a valid log level.
+ *
+ * @param value - The value to check.
+ * @returns `true` if the value is a valid log level, `false` otherwise.
+ */
 export function isLogLevel (value: any): value is LogLevel {
     switch (value) {
 
@@ -45,11 +44,12 @@ export function isLogLevel (value: any): value is LogLevel {
     }
 }
 
-    /**
-    * Convert a log level to a string.
-    * @param {LogLevel} value - The log level to convert.
-    * @returns {string} - The string representation of the log level.
-    */
+/**
+ * Converts a log level to a string.
+ *
+ * @param value - The log level to convert.
+ * @returns The string representation of the log level.
+ */
 export function stringifyLogLevel (value : LogLevel) : string {
     switch (value) {
         case LogLevel.DEBUG : return 'DEBUG';
@@ -61,11 +61,12 @@ export function stringifyLogLevel (value : LogLevel) : string {
     }
 }
 
-    /**
-    * Convert a value to a log level.
-    * @param {any} value - The value to convert.
-    * @returns {LogLevel | undefined} - The log level, or undefined if the value is invalid.
-    */
+/**
+ * Parses a log level from a string.
+ *
+ * @param value - The string to parse.
+ * @returns The log level, or `undefined` if the string is not a valid log level.
+ */
 export function parseLogLevel (value: any): LogLevel | undefined {
 
     if ( !value ) return undefined;

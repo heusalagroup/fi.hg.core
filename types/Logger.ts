@@ -3,42 +3,50 @@
 
 import { LogLevel } from "./LogLevel";
 
-    /**
-     * A logger interface.
-     * @interface
-     */
+/**
+ * The Logger interface defines the methods that a logger should have.
+ */
 export interface Logger {
-
+    /**
+     * Gets the log level of the logger.
+     *
+     * @returns The log level of the logger.
+     */
     getLogLevel () : LogLevel | undefined;
-    
-     /**
-     * Set the log level.
-     * @param {LogLevel | undefined} level - The log level to set.
-     * @returns {Logger} - The logger instance.
+
+    /**
+     * Sets the log level of the logger.
+     *
+     * @param level - The log level to set.
+     * @returns The Logger instance.
      */
     setLogLevel (level : LogLevel | undefined) : Logger;
 
-     /**
-     * Log a debug message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs a debug message.
+     *
+     * @param args - The message(s) to log.
      */
     debug (...args: any[]) : void;
 
-     /**
-     * Log an info message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs an info message.
+     *
+     * @param args - The message(s) to log.
      */
     info (...args: any[]) : void;
 
-     /**
-     * Log a warning message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs a warning message.
+     *
+     * @param args - The message(s) to log.
      */
     warn (...args: any[]) : void;
 
-     /**
-     * Log an error message.
-     * @param {...any} args - The message arguments.
+    /**
+     * Logs an error message.
+     *
+     * @param args - The message(s) to log.
      */
     error (...args: any[]) : void;
 
