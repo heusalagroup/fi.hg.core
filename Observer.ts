@@ -2,22 +2,52 @@
 
 import { filter, forEach, has } from "./modules/lodash";
 
+// NOTICE! THIS LIBRARY INTENTIONALLY DOES NOT USE HG LOGGER BECAUSE IT IS USED
+// IN LOWER LEVEL CALLS
+
+/**
+ * A callback function that is registered to be executed when a particular event
+ * is triggered by an `Observer` instance.
+ *
+ * @param event The name of the event that was triggered.
+ * @param args An array of arguments that were passed to the `triggerEvent`
+ *             method when the event was triggered.
+ */
 export interface ObserverCallback<EventName extends keyof any, T extends any[] = any[] > {
     (event: EventName, ...args : T) : void;
 }
 
+/**
+ * A function that can be used to stop listening to events on an `Observer`
+ * instance.
+ *
+ * When this function is called, it will remove the callback function that was
+ * registered with the `listenEvent` method
+ * from the list of callback functions that are triggered when the corresponding
+ * event is triggered.
+ */
 export interface ObserverDestructor {
     () : void;
 }
 
+/**
+ * An array of `ObserverCallback` functions that are registered to be executed
+ * when a particular event is triggered by an `Observer` instance.
+ */
 export type ObserverCallbackArray<EventName extends keyof any> = Array<ObserverCallback<EventName>>;
 
+/**
+ * A record that maps event names to `ObserverCallbackArray` arrays.
+ *
+ * This is used by the `Observer` class to store the callback functions that are
+ * registered to be executed when particular events are triggered.
+ */
 export type ObserverRecord<EventName extends keyof any> = Record<EventName, ObserverCallbackArray<EventName> >;
 
 /**
  * This is a simple observer implementation for implementing synchronous in-process events for a local service.
  *
- * You'll use it like:
+ * You can use it like this:
  *
  * ```
  * enum FooEvent {
@@ -38,17 +68,12 @@ export type ObserverRecord<EventName extends keyof any> = Record<EventName, Obse
  *     }
  *
  *     public static refreshData () {
- *
  *         HttpService.doSomething().then((response) => {
- *
  *             this._data = response.data;
- *
  *             this._observer.triggerEvent(FooEvent.CHANGED);
- *
  *         }).catch(err => {
  *             console.error('Error: ', err);
  *         });
- *
  *     }
  *
  * }
@@ -70,15 +95,19 @@ export class Observer<EventName extends keyof any> {
     private _name      : string;
     private _callbacks : ObserverRecord<EventName>;
 
+    /**
+     * Returns the name of this `Observer` instance.
+     */
     getName () : string {
         return this._name;
     }
 
     /**
+     * Creates a new `Observer` instance.
      *
      * @param name You can name this observer, so that you know where it is used.
      */
-    constructor(name: string) {
+    public constructor (name: string) {
 
         this._name = name;
         this._callbacks = {} as ObserverRecord<EventName>;
@@ -86,7 +115,9 @@ export class Observer<EventName extends keyof any> {
     }
 
     /**
-     * Destroy the observer data. Stop using this object after you use destroy.
+     * Removes all data associated with this `Observer` instance.
+     *
+     * After this method is called, the `Observer` instance should no longer be used.
      */
     public destroy () {
 
@@ -190,10 +221,14 @@ export class Observer<EventName extends keyof any> {
     }
 
     /**
-     * Waits for an event
+     * Returns a Promise that is resolved when the specified event is triggered.
      *
-     * @param eventName Event to wait for
-     * @param time Timeout in milliseconds
+     * @param eventName The name of the event to wait for.
+     * @param time The maximum amount of time (in milliseconds) to wait for the
+     *             event before timing out.
+     * @returns A Promise that is resolved when the specified event is triggered,
+     *          or rejected with a timeout error if the event is not triggered
+     *          within the specified timeout.
      */
     public async waitForEvent (
         eventName : EventName,

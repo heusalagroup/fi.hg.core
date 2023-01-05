@@ -34,7 +34,10 @@ import {
     isArrayOf,
     map,
     reduce,
-    keys, explainOk, explainNot, explainOr
+    keys,
+    explainOk,
+    explainNot,
+    explainOr
 } from "./modules/lodash";
 
 
