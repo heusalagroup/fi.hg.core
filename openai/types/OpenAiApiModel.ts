@@ -9,104 +9,144 @@ import { explainEnum } from "../../types/Enum";
  * are not listed in the `OpenAiApiModel` enum. To get an up-to-date list of
  * available models, you can consult the OpenAI API documentation or make a
  * request to the API's /models endpoint.
- *
- * @enum {string}
  */
 export enum OpenAiApiModel {
 
     /**
-     * Davinci model. A large, general-purpose language model. Suitable for most tasks.
+     * The most capable GPT-3 model. Can do any task the other models can do,
+     * often with higher quality, longer output and better instruction-following.
+     * Also supports [inserting completions](https://beta.openai.com/docs/guides/completion/inserting-text) within text.
      *
-     * The Davinci model is a large, general-purpose language model that is trained on a wide range of texts.
-     * It is capable of understanding and generating human-like text across a wide range of topics and styles.
-     * This model is suitable for most tasks that involve language processing, including question answering,
-     * language translation, and text summarization.
-     */
-    DAVINCI = 'davinci',
-
-    /**
-     * Davinci model, version 2. A large, general-purpose language model. Suitable for most tasks.
-     * Modern model. A medium-sized language model that is more powerful than the Curie model.
-     * Suitable for tasks that require more context or require a larger vocabulary.
-     */
-    DAVINCI_002 = 'text-davinci-002',
-
-    /**
-     * Curie model. A small, fast language model. Suitable for tasks that require quick responses.
+     * String presentation recognized by the OpenAI REST API: `text-davinci-003`
      *
-     * The Curie model is a small language model that is optimized for speed and efficiency. It is suitable
-     * for tasks that require quick responses, such as chatbots or other interactive applications. Because
-     * it is a smaller model, it may have a more limited vocabulary and may not be as accurate as larger
-     * models like Davinci or Babbage. However, it is still a powerful tool for many language processing
-     * tasks.
-     */
-    CURIE = 'curie',
-
-    /**
-     * Curie model, version 1. A small, fast language model. Suitable for tasks that require quick responses.
+     * Recommended default values:
+     * - max_tokens: 4,000
+     * - temperature: 0.5
+     * - top_p: 1
+     * - frequency_penalty: 0
+     * - presence_penalty: 0
      *
-     * Curie is a medium-sized language model that is more powerful than the Curie model.
-     * It is suitable for tasks that require more context or require a larger vocabulary.
-     */
-    CURIE_001 = 'text-curie-001',
-
-    /**
-     * Babbage model. A language model optimized for coding and programming tasks.
+     * Link for extra information: https://beta.openai.com/docs/models/gpt-3
      *
-     * Babbage is a language model designed to assist developers with coding tasks.
-     * It is trained on a large dataset of code and documentation, and is able to
-     * generate code completion suggestions, detect errors and bugs, and provide
-     * documentation for functions and libraries.
-     */
-    BABBAGE = 'babbage',
-
-    /**
-     * Babbage model, version 1. A language model optimized for coding and programming tasks.
-     * Heavy model. A large language model that is more powerful than the Davinci model.
-     * Suitable for tasks that require the most context or a very large vocabulary.
-     */
-    BABBAGE_001 = 'text-babbage-001',
-
-    /**
-     * A language model optimized for scientific and technical content.
+     * Remarks:
+     * - This model is generally the most capable in the GPT-3 series.
+     * - The max_tokens parameter specifies the maximum number of tokens that
+     *   the model is allowed to generate in its response.
      *
-     * The Ada model is a small, fast language model. It is suitable for tasks that require quick responses,
-     * and is particularly well-suited for tasks that involve scientific and technical content.
-     * It is trained on a diverse dataset and is able to generate human-like text.
+     * Alias names: `davinci` (older version)
      */
-    ADA      = 'ada',
+    DAVINCI = 'text-davinci-003',
 
     /**
-     * Ada model, version 1. A language model optimized for scientific and technical content.
-     * Ada is a medium-sized language model that is more powerful than the Curie model, and is suitable for tasks that require more context or a larger vocabulary.
+     * Very capable GPT-3 model, but faster and lower cost than Davinci.
+     *
+     * String presentation recognized by the OpenAI REST API: `text-curie-001`
+     *
+     * Recommended default values:
+     * - max_tokens: 2,048
+     * - temperature: 0.5
+     * - top_p: 1
+     * - frequency_penalty: 0
+     * - presence_penalty: 0
+     *
+     * Link for extra information: https://beta.openai.com/docs/models/gpt-3
+     *
+     * Remarks:
+     * - This model can perform many of the same tasks as Davinci, but faster
+     *   and for 1/10th the cost.
+     * - The max_tokens parameter specifies the maximum number of tokens that
+     *   the model is allowed to generate in its response.
+     *
+     * Alias names: `curie` (older version)
      */
-    ADA_001  = 'text-ada-001',
+    CURIE = 'text-curie-001',
 
     /**
-     * Eliza model. A language model optimized for customer service and support tasks.
-     * Eliza is a small language model that is suitable for tasks that require quick responses and a small vocabulary.
+     * Capable of straightforward tasks, very fast, and lower cost.
+     *
+     * String presentation recognized by the OpenAI REST API: `text-babbage-001`
+     *
+     * Recommended default values:
+     * - max_tokens: 2,048
+     * - temperature: 0.5
+     * - top_p: 1
+     * - frequency_penalty: 0
+     * - presence_penalty: 0
+     *
+     * Link for extra information: https://beta.openai.com/docs/models/gpt-3
+     *
+     * Remarks:
+     * - The max_tokens parameter specifies the maximum number of tokens that
+     *   the model is allowed to generate in its response.
+     *
+     * Alias names: `babbage` (older version)
      */
-    ELIZA    = 'eliza',
+    BABBAGE = 'text-babbage-001',
 
     /**
-     * Eliza model, version 1. A language model optimized for customer service and support tasks.
-     * Eliza is a small, fast language model that is specifically designed to answer questions and provide
-     * support in customer service and support scenarios. It is suitable for tasks that require a fast response
-     * time and a large vocabulary of common words and phrases.
+     * Capable of very simple tasks, usually the fastest model in the GPT-3
+     * series, and lowest cost.
+     *
+     * String presentation recognized by the OpenAI REST API: `text-ada-001`
+     *
+     * Recommended default values:
+     * - max_tokens: 2,048
+     * - temperature: 0.5
+     * - top_p: 1
+     * - frequency_penalty: 0
+     * - presence_penalty: 0
+     *
+     * Link for extra information: https://beta.openai.com/docs/models/gpt-3
+     *
+     * Remarks:
+     * - The max_tokens parameter specifies the maximum number of tokens that
+     *   the model is allowed to generate in its response.
+     *
+     * Alias names: `ada` (older version)
      */
-    ELIZA_001 = 'text-eliza-001',
+    ADA = 'text-ada-001',
 
     /**
-     * Einstein model. A language model optimized for translation tasks.
+     * A fine-tuned model that can detect whether text may be sensitive or unsafe.
+     *
+     * String presentation recognized by the OpenAI REST API: `content-filter`
+     *
+     * Recommended default values:
+     * - max_tokens: 1
+     * - temperature: 0.0
+     * - top_p: 0
+     * - frequency_penalty: 0
+     * - presence_penalty: 0
+     * - logprobs: 0
+     *
+     * Wrap your prompt in the following way:
+     * ```
+     * "<|endoftext|>[prompt]\n--\nLabel:"
+     * ```
+     *
+     * Link for extra information: https://beta.openai.com/docs/models/content-filter
      */
-    EINSTEIN = 'einstein',
+    CONTENT_FILTER = 'content-filter-alpha',
 
     /**
-     * Einstein model, version 1. A language model optimized for translation tasks.
-     * Modern model. A medium-sized language model that is more powerful than the Curie model.
-     * Suitable for tasks that require more context or require a larger vocabulary.
+     * A set of models that can understand and generate code, including
+     * translating natural language to code (Limited Beta).
+     *
+     * String presentation recognized by the OpenAI REST API: `codex`
+     *
+     * Link for extra information: https://beta.openai.com/docs/models/codex
+     *
+     * Recommended default values:
+     * - max_tokens: 8000
+     * - temperature: 0.5
+     * - top_p: 1
+     * - frequency_penalty: 0
+     * - presence_penalty: 0
+     *
+     * Remarks:
+     * - This model is currently in limited beta.
      */
-    EINSTEIN_001 = 'text-einstein-001',
+    CODEX = 'code-davinci-002'
 
 }
 
@@ -119,17 +159,11 @@ export enum OpenAiApiModel {
 export function isOpenApiModel (value: unknown) : value is OpenAiApiModel {
     switch (value) {
         case OpenAiApiModel.DAVINCI:
-        case OpenAiApiModel.DAVINCI_002:
         case OpenAiApiModel.CURIE:
-        case OpenAiApiModel.CURIE_001:
         case OpenAiApiModel.BABBAGE:
-        case OpenAiApiModel.BABBAGE_001:
         case OpenAiApiModel.ADA:
-        case OpenAiApiModel.ADA_001:
-        case OpenAiApiModel.ELIZA:
-        case OpenAiApiModel.ELIZA_001:
-        case OpenAiApiModel.EINSTEIN:
-        case OpenAiApiModel.EINSTEIN_001:
+        case OpenAiApiModel.CONTENT_FILTER:
+        case OpenAiApiModel.CODEX:
             return true;
         default:
             return false;
@@ -155,18 +189,12 @@ export function explainOpenApiModel (value : unknown) : string {
  */
 export function stringifyOpenApiModel (value : OpenAiApiModel) : string {
     switch (value) {
-        case OpenAiApiModel.DAVINCI     : return 'davinci';
-        case OpenAiApiModel.DAVINCI_002 : return 'text-davinci-002';
-        case OpenAiApiModel.CURIE     : return 'curie';
-        case OpenAiApiModel.CURIE_001     : return 'text-curie-001';
-        case OpenAiApiModel.BABBAGE   : return 'babbage';
-        case OpenAiApiModel.BABBAGE_001   : return 'text-babbage-001';
-        case OpenAiApiModel.ADA       : return 'ada';
-        case OpenAiApiModel.ADA_001       : return 'text-ada-001';
-        case OpenAiApiModel.ELIZA     : return 'eliza';
-        case OpenAiApiModel.ELIZA_001  : return 'text-eliza-001';
-        case OpenAiApiModel.EINSTEIN  : return 'einstein';
-        case OpenAiApiModel.EINSTEIN_001  : return 'text-einstein-001';
+        case OpenAiApiModel.DAVINCI        : return 'text-davinci-003';
+        case OpenAiApiModel.CURIE          : return 'text-curie-001';
+        case OpenAiApiModel.BABBAGE        : return 'text-babbage-001';
+        case OpenAiApiModel.ADA            : return 'text-ada-001';
+        case OpenAiApiModel.CONTENT_FILTER : return 'content-filter-alpha';
+        case OpenAiApiModel.CODEX          : return 'code-davinci-002';
     }
     throw new TypeError(`Unsupported OpenApiModel value: ${value}`)
 }
@@ -179,19 +207,35 @@ export function stringifyOpenApiModel (value : OpenAiApiModel) : string {
  */
 export function parseOpenApiModel (value: any) : OpenAiApiModel | undefined {
     if (value === undefined) return undefined;
-    switch(`${value}`.toUpperCase()) {
-        case 'DAVINCI'  : return OpenAiApiModel.DAVINCI;
-        case 'DAVINCI_002'  : return OpenAiApiModel.DAVINCI_002;
-        case 'CURIE'    : return OpenAiApiModel.CURIE;
-        case 'CURIE_001'    : return OpenAiApiModel.CURIE_001;
-        case 'BABBAGE'  : return OpenAiApiModel.BABBAGE;
-        case 'BABBAGE_001'  : return OpenAiApiModel.BABBAGE_001;
-        case 'ADA'      : return OpenAiApiModel.ADA;
-        case 'ADA_001'      : return OpenAiApiModel.ADA_001;
-        case 'ELIZA'    : return OpenAiApiModel.ELIZA;
-        case 'ELIZA_001'    : return OpenAiApiModel.ELIZA_001;
-        case 'EINSTEIN' : return OpenAiApiModel.EINSTEIN;
-        case 'EINSTEIN_001' : return OpenAiApiModel.EINSTEIN_001;
-        default         : return undefined;
+    switch(`${value}`.toLowerCase()) {
+
+        case 'text_davinci_003' :
+        case 'text-davinci-003' :
+        case 'davinci'          : return OpenAiApiModel.DAVINCI;
+
+        case 'text_curie_001'   :
+        case 'text-curie-001'   :
+        case 'curie'            : return OpenAiApiModel.CURIE;
+
+        case 'text_babbage_001' :
+        case 'text-babbage-001' :
+        case 'babbage'          : return OpenAiApiModel.BABBAGE;
+
+        case 'text_ada_001'     :
+        case 'text-ada-001'     :
+        case 'ada'              : return OpenAiApiModel.ADA;
+
+        case 'content-filter'   :
+        case 'content_filter'   :
+        case 'content_filter_alpha'   :
+        case 'content-filter-alpha'   : return OpenAiApiModel.CONTENT_FILTER;
+
+        case 'codex'            :
+        case 'code_davinci_002'            :
+        case 'code-davinci-002'            : return OpenAiApiModel.CODEX;
+
+        default                 : return undefined;
     }
 }
+
+

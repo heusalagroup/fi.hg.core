@@ -8,6 +8,7 @@ import { isUndefined } from "./undefined";
 import _isInteger from "lodash/isInteger";
 import _isNumber from "lodash/isNumber";
 import _toSafeInteger from "lodash/toSafeInteger";
+import { isNull } from "./Null";
 
 /**
  *
@@ -57,6 +58,26 @@ export function isNumberOrUndefined (value: unknown): value is number | undefine
  */
 export function explainNumberOrUndefined (value: any): string {
     return isNumberOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'number', 'undefined' ]));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isNumberOrNullOrUndefined (value: unknown): value is number | null | undefined {
+    return isUndefined(value) || isNull(value) || isNumber(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNumberOrNullOrUndefined (value: any): string {
+    return isNumberOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'number', 'null', 'undefined' ]));
 }
 
 /**

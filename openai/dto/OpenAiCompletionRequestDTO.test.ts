@@ -29,7 +29,7 @@ describe("OpenAiCompletionRequestDTO", () => {
 
             const request2: OpenAiCompletionRequestDTO = createOpenAiCompletionRequestDTO(
                 "What is the capital city of France?",
-                OpenAiApiModel.EINSTEIN,
+                OpenAiApiModel.DAVINCI,
                 15,
                 0.7,
                 0.8,
@@ -38,7 +38,7 @@ describe("OpenAiCompletionRequestDTO", () => {
             );
             expect(request2).toEqual({
                                          prompt: "What is the capital city of France?",
-                                         model: OpenAiApiModel.EINSTEIN,
+                                         model: OpenAiApiModel.DAVINCI,
                                          max_tokens: 15,
                                          temperature: 0.7,
                                          top_p: 0.8,
@@ -163,7 +163,7 @@ describe("OpenAiCompletionRequestDTO", () => {
 
             const request2: OpenAiCompletionRequestDTO = {
                 prompt: "What is the capital city of France?",
-                model: OpenAiApiModel.EINSTEIN,
+                model: OpenAiApiModel.DAVINCI,
                 max_tokens: 15,
                 temperature: 0.7,
                 top_p: 0.8,
@@ -284,7 +284,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-number top_p value", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: "What is the capital city of France?",
-                                                    model: OpenAiApiModel.EINSTEIN,
+                                                    model: OpenAiApiModel.DAVINCI,
                                                     max_tokens: 15,
                                                     temperature: 0.7,
                                                     top_p: "0.8",
@@ -339,7 +339,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has extra keys", () => {
             expect(explainOpenAiCompletionRequestDTO({
                                                          prompt: "What is the capital city of France?",
-                                                         model: OpenAiApiModel.EINSTEIN,
+                                                         model: OpenAiApiModel.DAVINCI,
                                                          max_tokens: 15,
                                                          temperature: 0.7,
                                                          top_p: 0.8,
@@ -390,7 +390,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has a non-number temperature property", () => {
             const value = {
                 prompt: "What is the capital city of France?",
-                model: OpenAiApiModel.EINSTEIN,
+                model: OpenAiApiModel.DAVINCI,
                 max_tokens: 15,
                 temperature: "0.7", // This value is a string, not a number
                 top_p: 0.8,
@@ -423,7 +423,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has a non-number frequency_penalty property", () => {
             const invalidValue = {
                 prompt: "What is the capital city of France?",
-                model: OpenAiApiModel.EINSTEIN,
+                model: OpenAiApiModel.DAVINCI,
                 max_tokens: 15,
                 temperature: 0.7,
                 top_p: 0.8,

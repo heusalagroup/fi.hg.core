@@ -1,16 +1,21 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainOpenAiCompletionResponseItemDTO, isOpenAiCompletionResponseItemDTO, OpenAiCompletionResponseItemDTO } from "./OpenAiCompletionResponseItemDTO";
-import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel } from "../types/OpenAiApiModel";
+import {
+    explainOpenAiCompletionResponseChoice,
+    isOpenAiCompletionResponseChoice,
+    OpenAiCompletionResponseChoice
+} from "./OpenAiCompletionResponseChoice";
+import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel
+} from "../types/OpenAiApiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 import { explainString, isString } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
-import { explainArrayOf, isArray, isArrayOf } from "../../types/Array";
-import { explainStringArray, isStringArray } from "../../types/StringArray";
-import { explainNumberArray, isNumberArray } from "../../types/NumberArray";
+import { explainArrayOf, isArrayOf } from "../../types/Array";
 import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";
+import { explainOpenAiCompletionResponseUsage, isOpenAiCompletionResponseUsage, OpenAiCompletionResponseUsage } from "./OpenAiCompletionResponseUsage";
+import { explainNumber, isNumber } from "../../types/Number";
 
 /**
  * @typedef {Object} OpenAiCompletionResponseDTO
@@ -25,34 +30,30 @@ export interface OpenAiCompletionResponseDTO {
     readonly id: string;
 
     /**
+     *
+     */
+    readonly object: string;
+
+    /**
+     *
+     */
+    readonly created: number;
+
+    /**
      * The name of the model used to generate the response.
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-model
      */
     readonly model: OpenAiApiModel;
 
     /**
-     * The prompt used to generate the response.
      */
-    readonly prompt: string;
+    readonly choices: readonly OpenAiCompletionResponseChoice[];
 
     /**
-     * The completed text.
+     *
      */
-    readonly completions: readonly string[];
-
-    /**
-     * The tokens in the completed text.
-     */
-    readonly tokens: readonly string[];
-
-    /**
-     * The scores of the completed text.
-     */
-    readonly scores: readonly number[];
-
-    /**
-     * The response items for each token in the completed text.
-     */
-    readonly responses: readonly OpenAiCompletionResponseItemDTO[];
+    readonly usage : OpenAiCompletionResponseUsage;
 
 }
 
@@ -60,31 +61,28 @@ export interface OpenAiCompletionResponseDTO {
  * Create a new `OpenAiCompletionResponseDTO` object.
  *
  * @param {string} id - The ID of the response.
+ * @param {string} object -
+ * @param {number} created -
  * @param {OpenAiApiModel} model - The name of the model used to generate the response.
- * @param {string} prompt - The prompt used to generate the response.
- * @param {readonly string[]} completions - The completed text.
- * @param {readonly string[]} tokens - The tokens in the completed text.
- * @param {readonly number[]} scores - The scores of the completed text.
- * @param {readonly OpenAiCompletionResponseItemDTO[]} responses - The response items for each token in the completed text.
+ * @param {readonly OpenAiCompletionResponseChoice[]} choices -
+ * @param {OpenAiCompletionResponseUsage} usage -
  * @returns {OpenAiCompletionResponseDTO} The new `OpenAiCompletionResponseDTO` object.
  */
 export function createOpenAiCompletionResponseDTO (
     id: string,
+    object: string,
+    created: number,
     model: OpenAiApiModel,
-    prompt: string,
-    completions: readonly string[],
-    tokens: readonly string[],
-    scores: readonly number[],
-    responses: readonly OpenAiCompletionResponseItemDTO[]
+    choices: readonly OpenAiCompletionResponseChoice[],
+    usage: OpenAiCompletionResponseUsage
 ) : OpenAiCompletionResponseDTO {
     return {
         id,
+        object,
+        created,
         model,
-        prompt,
-        completions,
-        tokens,
-        scores,
-        responses
+        choices,
+        usage
     };
 }
 
@@ -99,20 +97,18 @@ export function isOpenAiCompletionResponseDTO (value: unknown) : value is OpenAi
         isRegularObject(value)
         && hasNoOtherKeys(value, [
             'id',
+            'object',
+            'created',
             'model',
-            'prompt',
-            'completions',
-            'tokens',
-            'scores',
-            'responses',
+            'choices',
+            'usage'
         ])
         && isString(value?.id)
+        && isString(value?.object)
+        && isNumber(value?.created)
         && isOpenApiModel(value?.model)
-        && isString(value?.prompt)
-        && isStringArray(value?.completions)
-        && isStringArray(value?.tokens)
-        && isNumberArray(value?.scores)
-        && isArrayOf<OpenAiCompletionResponseItemDTO>(value?.responses, isOpenAiCompletionResponseItemDTO)
+        && isArrayOf<OpenAiCompletionResponseChoice>(value?.choices, isOpenAiCompletionResponseChoice)
+        && isOpenAiCompletionResponseUsage(value?.usage)
     );
 }
 
@@ -128,25 +124,23 @@ export function explainOpenAiCompletionResponseDTO (value: any) : string {
             explainRegularObject(value),
             explainNoOtherKeys(value, [
                 'id',
+                'object',
+                'created',
                 'model',
-                'prompt',
-                'completions',
-                'tokens',
-                'scores',
-                'responses'
+                'choices',
+                'usage'
             ])
             , explainProperty("id", explainString(value?.id))
+            , explainProperty("object", explainString(value?.object))
+            , explainProperty("created", explainNumber(value?.created))
             , explainProperty("model", explainOpenApiModel(value?.model))
-            , explainProperty("prompt", explainString(value?.prompt))
-            , explainProperty("completions", explainStringArray(value?.completions))
-            , explainProperty("tokens", explainStringArray(value?.tokens))
-            , explainProperty("scores", explainNumberArray(value?.scores))
-            , explainProperty("responses", explainArrayOf<OpenAiCompletionResponseItemDTO>(
-                "OpenAiCompletionResponseItemDTO",
-                explainOpenAiCompletionResponseItemDTO,
+            , explainProperty("choices", explainArrayOf<OpenAiCompletionResponseChoice>(
+                "OpenAiCompletionResponseChoice",
+                explainOpenAiCompletionResponseChoice,
                 value?.responses,
-                isOpenAiCompletionResponseItemDTO
-        ))
+                isOpenAiCompletionResponseChoice
+            ))
+            , explainProperty("usage", explainOpenAiCompletionResponseUsage(value?.usage))
         ]
     );
 }

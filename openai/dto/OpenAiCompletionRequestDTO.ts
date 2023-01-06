@@ -7,46 +7,137 @@ import { explainNumber, isNumber } from "../../types/Number";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 import { startsWith } from "../../functions/startsWith";
-import { parseJson } from "../../Json";
+import { parseJson, ReadonlyJsonObject } from "../../Json";
 
 /**
  * Data Transfer Object for requesting a completion from the OpenAI API.
+ *
+ * @see https://beta.openai.com/docs/api-reference/completions/create
  */
 export interface OpenAiCompletionRequestDTO {
-    /**
-     * The prompt to complete.
-     */
-    readonly prompt: string;
 
     /**
      * The model to use for completion.
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-model
      */
     readonly model: OpenAiApiModel;
 
     /**
-     * The maximum number of tokens to generate in the completion.
+     * The prompt to complete.
+     *
+     * Defaults to `"<|endoftext|>"`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-prompt
      */
-    readonly max_tokens: number;
+    readonly prompt ?: string | string[];
+
+    /**
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-suffix
+     */
+    readonly suffix ?: string;
+
+    /**
+     * The maximum number of tokens to generate in the completion.
+     *
+     * Defaults to 16
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-max_tokens
+     */
+    readonly max_tokens ?: number;
 
     /**
      * The temperature to use for sampling.
+     *
+     * Defaults to 1
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-temperature
      */
-    readonly temperature: number;
+    readonly temperature ?: number;
 
     /**
      * The top probability to use for sampling.
+     *
+     * Defaults to 1
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-top_p
      */
-    readonly top_p: number;
+    readonly top_p ?: number;
 
     /**
-     * The frequency penalty to use for sampling.
+     * How many completions to generate for each prompt.
+     *
+     * Defaults to 1
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-n
      */
-    readonly frequency_penalty: number;
+    readonly n ?: number;
+
+    /**
+     * Defaults to `false`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
+     */
+    readonly stream ?: boolean;
+
+    /**
+     * Defaults to `null`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create
+     */
+    readonly logprobs ?: number | null;
+
+    /**
+     * Defaults to `false`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-echo
+     */
+    readonly echo ?: boolean;
+
+    /**
+     * Defaults to `false`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-stop
+     */
+    readonly stop ?: boolean;
 
     /**
      * The presence penalty to use for sampling.
+     *
+     * Defaults to `0`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-presence_penalty
      */
-    readonly presence_penalty: number;
+    readonly presence_penalty ?: number;
+
+    /**
+     * The frequency penalty to use for sampling.
+     *
+     * Defaults to `0`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-frequency_penalty
+     */
+    readonly frequency_penalty ?: number;
+
+    /**
+     * Defaults to `1`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-best_of
+     */
+    readonly best_of ?: number;
+
+    /**
+     * Detaults to `null`
+     *
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-logit_bias
+     */
+    readonly logit_bias ?: ReadonlyJsonObject;
+
+    /**
+     * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-user
+     */
+    readonly user ?: string;
+
 }
 
 /**
