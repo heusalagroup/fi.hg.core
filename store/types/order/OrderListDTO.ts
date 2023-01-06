@@ -1,7 +1,8 @@
 // Copyright (c) 2020-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isArrayOf, map } from "../../../modules/lodash";
+import { map } from "../../../functions/map";
 import { OrderDTO, isOrderDTO } from "./OrderDTO";
+import { isArrayOf } from "../../../types/Array";
 
 /**
  * The client object used in the REST API communication

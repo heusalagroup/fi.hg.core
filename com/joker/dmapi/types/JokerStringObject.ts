@@ -1,10 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explainObjectOf,
-    isObjectOf,
-    isString
-} from "../../../../modules/lodash";
+import { isString } from "../../../../types/String";
+import { explainObjectOf, isObjectOf } from "../../../../types/Object";
 
 export interface JokerStringObject {
     readonly [key: string]: string;

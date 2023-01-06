@@ -9,7 +9,7 @@ import {
     RequestParamValueType,
     isRequestParamValueTypeOrUndefined
 } from "./request/types/RequestParamValueType";
-import { isBoolean, isNumber, isObject, isString} from "./modules/lodash";
+import { isBoolean } from "./types/Boolean";
 import { RequestStatus } from "./request/types/RequestStatus";
 import { RequestType } from "./request/types/RequestType";
 import { RequestError , createRequestError} from "./request/types/RequestError";
@@ -31,6 +31,9 @@ import {
 import { ParameterOrMethodDecoratorFunction } from "./request/types/ParameterOrMethodDecoratorFunction";
 import { LogLevel } from "./types/LogLevel";
 import { OpenAPIV3 } from "./types/openapi";
+import { isString } from "./types/String";
+import { isNumber } from "./types/Number";
+import { isObject } from "./types/Object";
 
 const LOG = LogService.createLogger('Request');
 

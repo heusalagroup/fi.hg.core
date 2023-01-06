@@ -2,7 +2,7 @@
 
 import { CommandExitStatus } from "../types/CommandExitStatus";
 import { CommandArgumentType, parseCommandArgumentType } from "../types/CommandArgumentType";
-import { startsWith } from "../../modules/lodash";
+import { startsWith } from "../../functions/startsWith";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 
 export interface ParsedCommandArgumentObject {

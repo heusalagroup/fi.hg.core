@@ -1,9 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, hasNoOtherKeysInDevelopment, isArrayOf, isRegularObject, isString } from "../../modules/lodash";
 import { isMailHogContentDTO, MailHogContentDTO } from "./MailHogContentDTO";
 import { isMailHogAddressDTO, MailHogAddressDTO } from "./MailHogAddressDTO";
 import { isMailHogMimeDTO, MailHogMimeDTO } from "./MailHogMimeDTO";
+import { isString } from "../../types/String";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { isArrayOf } from "../../types/Array";
 
 export interface MailHogMessageDTO {
     readonly ID      : string;

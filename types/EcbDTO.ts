@@ -1,15 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { CurrencyRates, explainCurrencyRates, isCurrencyRates } from "./CurrencyRates";
-import {
-    explain,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    hasNoOtherKeys,
-    isRegularObject
-} from "../modules/lodash";
 import { Currency } from "./Currency";
+import { explain, explainProperty } from "./explain";
+import { explainRegularObject, isRegularObject } from "./RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "./OtherKeys";
 
 /**
  * ECB backend's DTO containing euro exchange rates

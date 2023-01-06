@@ -1,16 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainArrayOf,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    hasNoOtherKeys,
-    isArrayOf,
-    isRegularObject
-} from "../modules/lodash";
 import { explainSmsMessageDTO, isSmsMessageDTO, SmsMessageDTO } from "./SmsMessageDTO";
+import { explain, explainProperty } from "../types/explain";
+import { explainRegularObject, isRegularObject } from "../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../types/OtherKeys";
+import { explainArrayOf, isArrayOf } from "../types/Array";
 
 export interface SmsMessageListDTO {
     readonly payload: readonly SmsMessageDTO[];

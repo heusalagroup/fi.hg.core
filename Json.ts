@@ -20,25 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {
-    isFunction,
-    isNumber,
-    isString,
-    isBoolean,
-    isNull,
-    isRegularObject,
-    isUndefined,
-    everyProperty,
-    createOr,
-    TestCallbackNonStandard,
-    isArrayOf,
-    map,
-    reduce,
-    keys,
-    explainOk,
-    explainNot,
-    explainOr
-} from "./modules/lodash";
+import { isBoolean } from "./types/Boolean";
+import { isNull } from "./types/Null";
+import { map } from "./functions/map";
+import { reduce } from "./functions/reduce";
+import { createOr, TestCallbackNonStandard } from "./types/TestCallback";
+import { isUndefined } from "./types/undefined";
+import { explainNot, explainOk, explainOr } from "./types/explain";
+import { isString } from "./types/String";
+import { isFunction } from "./types/Function";
+import { isNumber } from "./types/Number";
+import { isRegularObject } from "./types/RegularObject";
+import { keys } from "./functions/keys";
+import { everyProperty } from "./functions/everyProperty";
+import { isArrayOf } from "./types/Array";
 
 
 export interface WritableJsonSerializable {

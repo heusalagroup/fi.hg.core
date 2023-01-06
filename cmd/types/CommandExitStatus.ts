@@ -1,6 +1,7 @@
 // Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isNumber, parseInteger, startsWith } from "../../modules/lodash";
+import { startsWith } from "../../functions/startsWith";
+import { isNumber, parseInteger } from "../../types/Number";
 
 export enum CommandExitStatus {
 

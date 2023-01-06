@@ -1,6 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isString, isStringOrUndefined } from "../../../modules/lodash";
+import { isString, isStringOrUndefined } from "../../../types/String";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface NewPaymentDTO {
     readonly clientId         : string;

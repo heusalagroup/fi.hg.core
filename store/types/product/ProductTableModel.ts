@@ -1,9 +1,7 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeys,
-    isRegularObject
-} from "../../../modules/lodash";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface SelectProductModelCallback {
     (item: ProductTableModel): void;

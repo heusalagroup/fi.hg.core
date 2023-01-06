@@ -1,21 +1,15 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys, explainNumber,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    explainStringArray,
-    hasNoOtherKeys, isNumber,
-    isRegularObject,
-    isString,
-    isStringArray
-} from "../../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 import { explainJokerComApiUserAccess, isJokerComApiUserAccess, JokerComApiUserAccess } from "./JokerComApiUserAccess";
 import { explainJokerComApiCurrency, isJokerComApiCurrency, JokerComApiCurrency } from "./JokerComApiCurrency";
 import { explainJokerComApiPriceAmount, isJokerComApiPriceAmount, JokerComApiPriceAmount } from "./JokerComApiPriceAmount";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, isString } from "../../../../types/String";
+import { explainNumber, isNumber } from "../../../../types/Number";
+import { explainStringArray, isStringArray } from "../../../../types/StringArray";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 /**
  * @see https://joker.com/faq/content/26/14/en/login.html

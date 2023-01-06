@@ -1,6 +1,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {isNumber, isString} from "../../modules/lodash";
+import { isString } from "../../types/String";
+import { isNumber } from "../../types/Number";
 
 export enum RequestParamObjectType {
 

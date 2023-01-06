@@ -1,19 +1,15 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainArrayOfOrUndefined,
-    explainNoOtherKeys, explainNumberOrStringOrBooleanOrUndefined, explainNumberOrUndefined,
-    explainProperty,
-    explainRegularObject, explainString,
-    explainStringOrUndefined,
-    hasNoOtherKeys,
-    isArrayOfOrUndefined, isBoolean, isNumberOrStringOrBooleanOrUndefined, isNumberOrUndefined,
-    isRegularObject, isString,
-    isStringOrUndefined
-} from "../../../modules/lodash";
+import { isBoolean } from "../../../types/Boolean";
 import { CompositeProductOption, explainCompositeProductOption, isCompositeProductOption } from "./CompositeProductOption";
 import { explainProductFeatureId, isProductFeatureId, ProductFeatureId } from "./features/ProductFeatureId";
+import { explain, explainProperty } from "../../../types/explain";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
+import { explainNumberOrUndefined, isNumberOrUndefined } from "../../../types/Number";
+import { explainNumberOrStringOrBooleanOrUndefined, isNumberOrStringOrBooleanOrUndefined } from "../../../types/NumberOrStringOrBooleanOrUndefined";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
+import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/Array";
 
 export interface CompositeProductSelection {
     readonly featureId      : ProductFeatureId;

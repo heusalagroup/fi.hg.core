@@ -1,14 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject, explainString, explainStringArray,
-    hasNoOtherKeys,
-    isRegularObject, isString, isStringArray
-} from "../../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, isString } from "../../../../types/String";
+import { explainStringArray, isStringArray } from "../../../../types/StringArray";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 /**
  *

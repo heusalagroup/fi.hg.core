@@ -1,13 +1,11 @@
 // Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
 
 import {
-    hasNoOtherKeys,
-    isRegularObject
-} from "../../../modules/lodash";
-import {
     EmailTokenDTO,
     isEmailTokenDTO
 } from "./EmailTokenDTO";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface VerifyEmailTokenDTO {
     readonly token : EmailTokenDTO;

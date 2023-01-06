@@ -1,19 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainBooleanOrUndefined,
-    explainNoOtherKeys,
-    explainNumberOrUndefined,
-    explainProperty,
-    explainRegularObject,
-    explainStringOrUndefined,
-    hasNoOtherKeys,
-    isBooleanOrUndefined,
-    isNumberOrUndefined,
-    isRegularObject,
-    isStringOrUndefined
-} from "../../modules/lodash";
+import { explain, explainProperty } from "../../types/explain";
+import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../types/Boolean";
+import { explainStringOrUndefined, isStringOrUndefined } from "../../types/String";
+import { explainNumberOrUndefined, isNumberOrUndefined } from "../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 
 export interface WhoisServerOptions {
     readonly host?: string;

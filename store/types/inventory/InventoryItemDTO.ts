@@ -1,24 +1,17 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainBoolean,
-    explainNoOtherKeys,
-    explainNumber,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    hasNoOtherKeys,
-    isBoolean,
-    isNumber,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
+import { isBoolean } from "../../../types/Boolean";
 import { explainProductType, isProductType, ProductType } from "../product/ProductType";
 import { explainProductPriceType, isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
 import { isInventoryState, InventoryState, explainInventoryState } from "./InventoryState";
 import { explainInventoryData, InventoryData, isInventoryData } from "./data/InventoryData";
 import { ReadonlyJsonObject } from "../../../Json";
+import { explain, explainProperty } from "../../../types/explain";
+import { explainBoolean } from "../../../types/Boolean";
+import { explainString, isString } from "../../../types/String";
+import { explainNumber, isNumber } from "../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface InventoryItemDTO extends ReadonlyJsonObject {
     readonly inventoryItemId    : string;

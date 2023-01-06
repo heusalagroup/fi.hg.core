@@ -1,8 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {isNumber, isString} from "../../modules/lodash";
 import { OpenAPIV3 } from "../../types/openapi";
+import { isString } from "../../types/String";
+import { isNumber } from "../../types/Number";
 
 export enum RequestMethod {
     OPTIONS,

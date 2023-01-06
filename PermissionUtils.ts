@@ -1,18 +1,16 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    everyValue,
-    explainArrayOf,
-    ExplainCallback,
-    filter,
-    isArrayOf,
-    isString, keys, map,
-    reduce,
-    TestCallback,
-    TestCallbackNonStandard,
-    values
-} from "./modules/lodash";
+import { filter } from "./functions/filter";
+import { map } from "./functions/map";
+import { reduce } from "./functions/reduce";
+import { values } from "./functions/values";
 import { LogService } from "./LogService";
+import { TestCallback, TestCallbackNonStandard } from "./types/TestCallback";
+import { ExplainCallback } from "./types/ExplainCallback";
+import { isString } from "./types/String";
+import { keys } from "./functions/keys";
+import { everyValue } from "./functions/everyValue";
+import { explainArrayOf, isArrayOf } from "./types/Array";
 
 const LOG = LogService.createLogger('PermissionUtils');
 

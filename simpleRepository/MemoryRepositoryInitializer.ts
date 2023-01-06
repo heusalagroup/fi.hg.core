@@ -4,7 +4,7 @@ import { MemoryRepository } from "./MemoryRepository";
 import { StoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { RepositoryInitializer } from "./types/RepositoryInitializer";
 import { Repository } from "./types/Repository";
-import { explainNot, explainOk } from "../modules/lodash";
+import { explainNot, explainOk } from "../types/explain";
 
 export class MemoryRepositoryInitializer<T extends StoredRepositoryItem> implements RepositoryInitializer<T> {
 

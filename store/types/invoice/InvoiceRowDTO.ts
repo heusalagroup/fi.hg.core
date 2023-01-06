@@ -1,11 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeys,
-    isNumber,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
+import { isString } from "../../../types/String";
+import { isNumber } from "../../../types/Number";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface InvoiceRowDTO {
     readonly invoiceRowId       : string;

@@ -2,7 +2,7 @@
 
 import FS     from 'fs';
 import PATH   from 'path';
-import { trim } from "./modules/lodash";
+import { trim } from "./functions/trim";
 import { LogService } from './LogService';
 
 const LOG = LogService.createLogger('ProcessUtils');

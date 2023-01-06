@@ -64,8 +64,9 @@
  * ```
  */
 
-import { toUpper } from "lodash";
-import { isArray, isString } from "../modules/lodash";
+import { toUpper } from "../functions/toUpper";
+import { isArray } from "./Array";
+import { isString } from "./String";
 
 /**
  * An enumeration of predefined SI standard values.

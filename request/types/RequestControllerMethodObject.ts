@@ -1,11 +1,15 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import { RequestMappingObject, isRequestMappingObject} from "./RequestMappingObject";
-import {isRequestParamObject, RequestParamObject} from "./RequestParamObject";
+import { RequestMappingObject, isRequestMappingObject } from "./RequestMappingObject";
+import { isRequestParamObject, RequestParamObject } from "./RequestParamObject";
 import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
-import { every, filter, isArray, isArrayOf, isNull, map } from "../../modules/lodash";
+import { filter } from "../../functions/filter";
+import { isNull } from "../../types/Null";
+import { map } from "../../functions/map";
 import { OpenAPIV3 } from "../../types/openapi";
+import { isArray, isArrayOf } from "../../types/Array";
+import { every } from "../../functions/every";
 
 export interface RequestControllerMethodObject {
     requestBodyRequired ?: boolean,

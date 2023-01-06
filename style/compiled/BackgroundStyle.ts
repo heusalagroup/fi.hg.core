@@ -1,7 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isUndefined } from "../../modules/lodash";
 import { Color, isColor } from "../types/Color";
+import { isUndefined } from "../../types/undefined";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeys } from "../../types/OtherKeys";
 
 export interface BackgroundStyle {
     readonly color ?: Color;

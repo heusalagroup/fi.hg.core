@@ -1,11 +1,10 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeys, isArrayOf,
-    isRegularObject,
-    TestCallbackNonStandard
-} from "../../modules/lodash";
 import { RepositoryEntry } from "./RepositoryEntry";
+import { TestCallbackNonStandard } from "../../types/TestCallback";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeys } from "../../types/OtherKeys";
+import { isArrayOf } from "../../types/Array";
 
 export interface RepositoryEntryList<T> {
     readonly list : RepositoryEntry<T>[];

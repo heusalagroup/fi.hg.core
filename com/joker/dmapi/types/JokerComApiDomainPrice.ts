@@ -1,16 +1,13 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainRegularObject,
-    hasNoOtherKeys,
-    isRegularObject,
-    explainProperty, isBooleanOrUndefined, isStringOrUndefined, explainStringOrUndefined, explainBooleanOrUndefined
-} from "../../../../modules/lodash";
 import { explainJokerComApiDomainPeriod, isJokerComApiDomainPeriod, JokerComApiDomainPeriod } from "./JokerComApiDomainPeriod";
 import { explainJokerComApiCurrency, isJokerComApiCurrency, JokerComApiCurrency } from "./JokerComApiCurrency";
 import { explainJokerComApiPriceAmount, isJokerComApiPriceAmount, JokerComApiPriceAmount } from "./JokerComApiPriceAmount";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../../../types/Boolean";
+import { explainStringOrUndefined, isStringOrUndefined } from "../../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface JokerComApiDomainPrice {
     readonly price    : JokerComApiPriceAmount;

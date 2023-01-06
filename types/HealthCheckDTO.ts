@@ -1,11 +1,9 @@
 // Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
 //
 
-import {
-    hasNoOtherKeys,
-    isBoolean,
-    isRegularObject
-} from "../modules/lodash";
+import { isBoolean } from "../types/Boolean";
+import { isRegularObject } from "./RegularObject";
+import { hasNoOtherKeys } from "./OtherKeys";
 
 export interface HealthCheckDTO {
     readonly ready  ?: boolean;

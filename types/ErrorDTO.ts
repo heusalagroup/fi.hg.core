@@ -1,17 +1,11 @@
 // Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
 //
 
-import {
-    explain, explainNoOtherKeys,
-    explainNoOtherKeysInDevelopment,
-    explainNumberOrUndefined, explainProperty,
-    explainRegularObject,
-    explainString,
-    hasNoOtherKeysInDevelopment,
-    isNumberOrUndefined,
-    isRegularObject,
-    isString
-} from "../modules/lodash";
+import { explain, explainProperty } from "./explain";
+import { explainString, isString } from "./String";
+import { explainNumberOrUndefined, isNumberOrUndefined } from "./Number";
+import { explainRegularObject, isRegularObject } from "./RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "./OtherKeys";
 
 export interface ErrorDTO {
     readonly error  : string;

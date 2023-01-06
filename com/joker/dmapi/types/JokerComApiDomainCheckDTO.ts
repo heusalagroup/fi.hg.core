@@ -1,20 +1,13 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainArrayOfOrUndefined,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject, explainString,
-    explainStringOrUndefined,
-    hasNoOtherKeys,
-    isArrayOfOrUndefined,
-    isRegularObject, isString,
-    isStringOrUndefined
-} from "../../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 import { explainJokerComApiDomainStatus, isJokerComApiDomainStatus, JokerComApiDomainStatus } from "./JokerComApiDomainStatus";
 import { explainJokerComApiDomainPrice, isJokerComApiDomainPrice, JokerComApiDomainPrice } from "./JokerComApiDomainPrice";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
+import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../../types/Array";
 
 /**
  *

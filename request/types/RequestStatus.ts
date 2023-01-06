@@ -1,12 +1,10 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {
-    find,
-    isNumber,
-    isString,
-    keys,
-    trim
-} from "../../modules/lodash";
+import { find } from "../../functions/find";
+import { trim } from "../../functions/trim";
+import { isString } from "../../types/String";
+import { isNumber } from "../../types/Number";
+import { keys } from "../../functions/keys";
 
 export enum RequestStatus {
 

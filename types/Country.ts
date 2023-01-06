@@ -1,8 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isString } from "../modules/lodash";
 import { CountryCode } from "./CountryCode";
 import { Sovereignty } from "./Sovereignty";
+import { isString } from "./String";
+import { isRegularObject } from "./RegularObject";
+import { hasNoOtherKeys } from "./OtherKeys";
 
 export interface Country {
     readonly sovereignty  : Sovereignty;

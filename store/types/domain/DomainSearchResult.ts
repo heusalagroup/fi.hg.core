@@ -1,19 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainArrayOf,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    hasNoOtherKeys,
-    isArrayOf,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
 import { explainProduct, isProduct, Product } from "../product/Product";
 import { DomainSearchState, explainDomainSearchState, isDomainSearchState } from "./DomainSearchState";
+import { explain, explainProperty } from "../../../types/explain";
+import { explainString, isString } from "../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
+import { explainArrayOf, isArrayOf } from "../../../types/Array";
 
 export interface DomainSearchResult {
 

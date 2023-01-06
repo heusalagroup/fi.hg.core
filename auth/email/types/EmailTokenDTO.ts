@@ -1,12 +1,10 @@
 // Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
 //
 
-import {
-    hasNoOtherKeys,
-    isBooleanOrUndefined,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
+import { isString } from "../../../types/String";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface EmailTokenDTO {
     readonly token     : string;

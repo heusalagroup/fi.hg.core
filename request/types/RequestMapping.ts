@@ -2,7 +2,8 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import { RequestMethod, isRequestMethod} from "./RequestMethod";
-import { isString, isArrayOf } from "../../modules/lodash";
+import { isString } from "../../types/String";
+import { isArrayOf } from "../../types/Array";
 
 export type RequestMapping = RequestMethod|string;
 

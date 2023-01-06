@@ -2,7 +2,8 @@
 
 import { Product } from "./store/types/product/Product";
 import { ProductType } from "./store/types/product/ProductType";
-import { filter, map } from "./modules/lodash";
+import { filter } from "./functions/filter";
+import { map } from "./functions/map";
 import { ReadonlyJsonAny } from "./Json";
 import { isStoreIndexDTO } from "./store/types/api/StoreIndexDTO";
 import { LogService } from "./LogService";

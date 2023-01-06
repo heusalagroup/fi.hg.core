@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { every, trimStart } from "./modules/lodash";
+import { trimStart } from "./functions/trimStart";
+import { every } from "./functions/every";
 
 export class PhoneNumberUtils {
 

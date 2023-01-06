@@ -1,7 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isProductId, ProductId } from "./ProductId";
-import { explainNot, explainOk, isArray, isNumber } from "../../../modules/lodash";
+import { isArray } from "../../../types/Array";
+import { explainNot, explainOk } from "../../../types/explain";
+import { isNumber } from "../../../types/Number";
 
 export type ProductIdWithAmount = readonly [number, ProductId];
 

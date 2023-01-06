@@ -1,4 +1,6 @@
-import {isString} from "../../modules/lodash";
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
+import { isString } from "../../types/String";
 
 export enum WordpressEnum {
     publish = "publish",

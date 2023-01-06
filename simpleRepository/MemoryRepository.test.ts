@@ -1,15 +1,15 @@
 /**
  * Unit test for MemoryRepository.
  *
- * 
+ *
  */
 
 
 import { isStoredRepositoryItem, StoredRepositoryItem, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { MemoryRepository } from "./MemoryRepository";
 import { RepositoryEntry } from "./types/RepositoryEntry";
-import { isArrayOf } from "../modules/lodash";
 import { isJson } from "../Json";
+import { isArrayOf } from "../types/Array";
 
 
 const test = {

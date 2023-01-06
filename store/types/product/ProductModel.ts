@@ -1,9 +1,12 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isNumber, isNumberOrUndefined, isRegularObject, isString, isStringOrUndefined } from "../../../modules/lodash";
 import { isProductOrUndefined, Product } from "./Product";
 import { isProductPriceOrUndefined, ProductPrice } from "./ProductPrice";
 import { ButtonStyle, isButtonStyleOrUndefined } from "../../../frontend/button/ButtonStyle";
+import { isString, isStringOrUndefined } from "../../../types/String";
+import { isNumber, isNumberOrUndefined } from "../../../types/Number";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface SelectProductModelCallback {
     (item: ProductModel): void;

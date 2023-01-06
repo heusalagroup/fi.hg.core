@@ -2,7 +2,9 @@
 
 import { ColorMapping, ComponentStyleLayoutMapping, FontMapping, SizeMapping, StyleLayout } from "./style/StyleLayout";
 import { Styles } from "./style/Styles";
-import { filter, get, keys, reduce } from "./modules/lodash";
+import { filter } from "./functions/filter";
+import { get } from "./functions/get";
+import { reduce } from "./functions/reduce";
 import { ComponentStyleLayout } from "./style/layout/ComponentStyleLayout";
 import { createTextStyle, TextStyle } from "./style/compiled/TextStyle";
 import { BorderStyle, createBorderStyle } from "./style/compiled/BorderStyle";
@@ -14,6 +16,7 @@ import { BackgroundStyleLayout } from "./style/layout/BackgroundStyleLayout";
 import { BorderStyleLayout } from "./style/layout/BorderStyleLayout";
 import { BorderType } from "./style/types/BorderType";
 import { ColorScheme } from "./style/types/ColorScheme";
+import { keys } from "./functions/keys";
 
 export class StyleUtils {
 

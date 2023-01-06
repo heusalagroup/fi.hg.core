@@ -1,7 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isArrayOf, isRegularObject, isString } from "../modules/lodash";
 import { InternetCalendarParam, isInternetCalendarParam } from "./InternetCalendarParam";
+import { isString } from "./String";
+import { isRegularObject } from "./RegularObject";
+import { hasNoOtherKeys } from "./OtherKeys";
+import { isArrayOf } from "./Array";
 
 export interface InternetCalendarLine {
     readonly name   : string;

@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { toUpper } from "../../modules/lodash";
+import { toUpper } from "../../functions/toUpper";
 
 export enum RepositoryType {
 

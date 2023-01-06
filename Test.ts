@@ -20,14 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {
-    isString,
-    isNumber,
-    isObject,
-    isArray,
-    keys,
-    every
-} from "./modules/lodash";
+import { isArray } from "./types/Array";
+import { isString } from "./types/String";
+import { isNumber } from "./types/Number";
+import { isObject } from "./types/Object";
+import { keys } from "./functions/keys";
+import { every } from "./functions/every";
 
 /**
  *
@@ -37,7 +35,7 @@ export class Test {
     /**
      *
      * @param value
-     * @deprecated Use `isString`, etc instead from the modules/lodash.ts
+     * @deprecated Use `isString`
      */
     static isString (value: any) : value is string {
         return isString(value);
@@ -46,7 +44,7 @@ export class Test {
     /**
      *
      * @param value
-     * @deprecated Use `isNumber`, etc instead from the modules/lodash.ts
+     * @deprecated Use `isNumber`
      */
     static isNumber (value: any) : value is number {
         return isNumber(value);
@@ -56,7 +54,7 @@ export class Test {
      * Test if it is an regular object (eg. all keys are strings).
      *
      * @param value
-     * @deprecated Use `isRegularObject`, etc instead from the modules/lodash.ts
+     * @deprecated Use `isRegularObject`
      */
     static isRegularObject (value: any) : value is { [name: string]: any } {
         return isObject(value) && !isArray(value) && every(keys(value), (key : any) => isString(key));
@@ -66,7 +64,7 @@ export class Test {
      * Test if the value is an array
      *
      * @param value
-     * @deprecated Use `isArray`, etc instead from the modules/lodash.ts
+     * @deprecated Use `isArray`
      */
     static isArray (value: any) : value is Array<any> {
         return isArray(value);
@@ -75,7 +73,7 @@ export class Test {
     /**
      *
      * @param value
-     * @deprecated Use `isPromise`, etc instead from the modules/lodash.ts
+     * @deprecated Use `isPromise`
      */
     static isPromise (value: any) : value is Promise<any> {
         // @ts-ignore

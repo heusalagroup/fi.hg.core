@@ -2,10 +2,10 @@
 
 import { RequestClient } from "./RequestClient";
 import { LogService } from "./LogService";
-import { isString } from "./modules/lodash";
 import { RequestError } from "./request/types/RequestError";
 import { RequestStatus } from "./request/types/RequestStatus";
 import { AuthorizationUtils } from "./AuthorizationUtils";
+import { isString } from "./types/String";
 
 const LOG = LogService.createLogger('AuthorizationClientService');
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainString, isString } from "../../../modules/lodash";
+import { explainString, isString } from "../../../types/String";
 
 export type ProductId = string;
 

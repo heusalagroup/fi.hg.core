@@ -1,12 +1,18 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {BaseRoutes, GetRouteResultType, RouteParamValuesObject} from "./BaseRoutes";
-import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
-import {every, find, isString, keys, map, some, trim} from "../../modules/lodash";
-import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
+import { BaseRoutes, GetRouteResultType, RouteParamValuesObject } from "./BaseRoutes";
+import { RequestRouterMappingObject } from "./RequestRouterMappingObject";
+import { find } from "../../functions/find";
+import { map } from "../../functions/map";
+import { trim } from "../../functions/trim";
+import { RequestRouterMappingPropertyObject } from "./RequestRouterMappingPropertyObject";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
+import { isString } from "../../types/String";
+import { keys } from "../../functions/keys";
+import { every } from "../../functions/every";
+import { some } from "../../functions/some";
 
 const LOG = LogService.createLogger('ParamRoutes');
 

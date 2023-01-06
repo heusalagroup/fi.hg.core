@@ -2,7 +2,7 @@
 
 import { trim } from "lodash";
 import { LogService } from "./LogService";
-import { isString } from "./modules/lodash";
+import { isString } from "./types/String";
 
 const LOG = LogService.createLogger('NumberUtils');
 

@@ -10,19 +10,18 @@
  * @file
  */
 
-import {
-    endsWith,
-    get,
-    has,
-    isArray,
-    isArrayOf,
-    isString,
-    keys,
-    map, replaceAll,
-    split,
-    startsWith
-} from "./modules/lodash";
+import { endsWith} from "./functions/endsWith";
+import { get } from "./functions/get";
+import { has } from "./functions/has";
+import { map } from "./functions/map";
+import { split } from "./functions/split";
+import { startsWith } from "./functions/startsWith";
+
 import { ReadonlyJsonObject } from "./Json";
+import { isArray, isArrayOf } from "./types/Array";
+import { isString } from "./types/String";
+import { replaceAll } from "./functions/replaceAll";
+import { keys } from "./functions/keys";
 
 export const DEFAULT_CSV_SEPARATOR  = ',';
 export const DEFAULT_CSV_QUOTE      = '"';
@@ -140,7 +139,7 @@ export function getCsvFromJsonObjectList<T = ReadonlyJsonObject> (
         properties === undefined ? (
             list.length === 0 ? [] : keys(list[0])
         ) : (
-            map(properties, item => item)
+            map(properties, (item: string) : string => item)
         )
     );
 

@@ -1,8 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {isObject, isString} from "../../modules/lodash";
 import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
+import { isString } from "../../types/String";
+import { isObject } from "../../types/Object";
 
 export type DefaultPathVariableMapValuesType = { [key: string]: string };
 

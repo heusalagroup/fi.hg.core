@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isString, trim } from "./modules/lodash";
+import { trim } from "./functions/trim";
+import { isString } from "./types/String";
 
 export class EmailUtils {
 

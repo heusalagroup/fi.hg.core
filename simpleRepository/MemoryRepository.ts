@@ -2,12 +2,20 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { randomBytes } from "crypto";
-import { concat, explainNot, explainOk, filter, find, findIndex, get, map, remove, uniq } from "../modules/lodash";
+import { concat } from "../functions/concat";
+import { filter } from "../functions/filter";
+import { find } from "../functions/find";
+import { findIndex } from "../functions/findIndex";
+import { get } from "../functions/get";
+import { map } from "../functions/map";
+import { remove } from "../functions/remove";
+import { uniq } from "../functions/uniq";
 import { RepositoryEntry } from "./types/RepositoryEntry";
 import { Repository, REPOSITORY_NEW_IDENTIFIER } from "./types/Repository";
 import { StoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
 import { MemoryItem } from "./types/MemoryItem";
 import { RepositoryUtils } from "./RepositoryUtils";
+import { explainNot, explainOk } from "../types/explain";
 
 /**
  * Saves objects of type T in memory.

@@ -1,12 +1,18 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { CalendarDTO, createCalendarDTO } from "./types/CalendarDTO";
-import { endsWith, filter, find, isArray, map, reduce, split } from "./modules/lodash";
+import { endsWith } from "./functions/endsWith";
+import { filter } from "./functions/filter";
+import { find } from "./functions/find";
+import { map } from "./functions/map";
+import { reduce } from "./functions/reduce";
+import { split } from "./functions/split";
 import { LogService } from "./LogService";
 import { createInternetCalendarLine, InternetCalendarLine, isInternetCalendarLine } from "./types/InternetCalendarLine";
 import { createInternetCalendarParam, InternetCalendarParam } from "./types/InternetCalendarParam";
 import { CalendarEvent, createCalendarEvent } from "./types/CalendarEvent";
 import { momentTz, parseUtc } from "./modules/moment";
+import { isArray } from "./types/Array";
 
 const LOG = LogService.createLogger('CalendarUtils');
 

@@ -1,6 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeysInDevelopment, isNull, isRegularObject, isString } from "../../modules/lodash";
+import { isNull } from "../../types/Null";
+import { isString } from "../../types/String";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 
 export interface MailHogAddressDTO {
     readonly Domain : string;

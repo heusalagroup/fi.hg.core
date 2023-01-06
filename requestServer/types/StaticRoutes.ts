@@ -1,12 +1,13 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {BaseRoutes, GetRouteResultType} from "./BaseRoutes";
-import {RequestRouterMappingObject} from "./RequestRouterMappingObject";
-import {keys, map} from "../../modules/lodash";
-import {RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
+import { BaseRoutes, GetRouteResultType } from "./BaseRoutes";
+import { RequestRouterMappingObject } from "./RequestRouterMappingObject";
+import { map } from "../../functions/map";
+import { RequestRouterMappingPropertyObject} from "./RequestRouterMappingPropertyObject";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
+import { keys } from "../../functions/keys";
 
 const LOG = LogService.createLogger('StaticRoutes');
 

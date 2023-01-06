@@ -1,19 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainBooleanOrUndefined,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    explainStringOrUndefined,
-    hasNoOtherKeys,
-    isBooleanOrUndefined,
-    isRegularObject,
-    isString,
-    isStringOrUndefined
-} from "../../../../modules/lodash";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../../../types/Boolean";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface JokerDomainResult {
     readonly domain      : string;

@@ -1,3 +1,4 @@
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import {
@@ -8,7 +9,9 @@ import {
 } from "./types/RequestController";
 import { RequestMappingObject } from "./types/RequestMappingObject";
 import { isRequestMethod} from "./types/RequestMethod";
-import { concat, filter, has, isFunction, isObject, isString } from "../modules/lodash";
+import { concat } from "../functions/concat";
+import { filter } from "../functions/filter";
+import { has } from "../functions/has";
 import { RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 import { RequestParamValueType } from "./types/RequestParamValueType";
 import { RequestParamObject } from "./types/RequestParamObject";
@@ -26,6 +29,9 @@ import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
 import { RequestMapping } from "./types/RequestMapping";
 import { OpenAPIV3 } from "../types/openapi";
+import { isString } from "../types/String";
+import { isFunction } from "../types/Function";
+import { isObject } from "../types/Object";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 

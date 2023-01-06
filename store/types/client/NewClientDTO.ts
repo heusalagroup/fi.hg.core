@@ -1,11 +1,9 @@
 // Copyright (c) 2020-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    isArrayOrUndefinedOf,
-    isBoolean, isBooleanOrUndefined, isRegularObject,
-    isString,
-    isStringOrUndefined
-} from "../../../modules/lodash";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
+import { isString, isStringOrUndefined } from "../../../types/String";
+import { isRegularObject } from "../../../types/RegularObject";
+import { isArrayOrUndefinedOf } from "../../../types/Array";
 
 /**
  * The client object used in the REST API communication when creating a new client record

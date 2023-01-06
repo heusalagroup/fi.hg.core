@@ -6,17 +6,11 @@ import {
     JokerComDomainStatus,
     parseJokerComDomainStatus
 } from "./JokerComDomainStatus";
-import {
-    explain,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    hasNoOtherKeys,
-    isRegularObject,
-    isString,
-    startsWith
-} from "../../../../modules/lodash";
+import { startsWith } from "../../../../functions/startsWith";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, isString } from "../../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface JokerComWhoisDTO {
     readonly name   : string;

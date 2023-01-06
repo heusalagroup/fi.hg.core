@@ -1,20 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainNumber,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    explainStringArray,
-    hasNoOtherKeys,
-    isNumber,
-    isRegularObject,
-    isString,
-    isStringArray
-} from "../../../../modules/lodash";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, isString } from "../../../../types/String";
+import { explainNumber, isNumber } from "../../../../types/Number";
+import { explainStringArray, isStringArray } from "../../../../types/StringArray";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface JokerComApiProfileDTO {
     readonly body         : JokerStringObject;

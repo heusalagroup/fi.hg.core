@@ -10,9 +10,11 @@ import {
     join as pathJoin,
     resolve as pathResolve
 } from 'path';
-import { forEach, isPromise, map } from "../modules/lodash";
+import { forEach } from "../functions/forEach";
+import { map } from "../functions/map";
 import { TestResultState } from "./types/TestResultState";
 import { TestResult } from "./types/TestResult";
+import { isPromise } from "../types/Promise";
 
 export class TestRunner {
 

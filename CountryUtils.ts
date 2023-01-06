@@ -3,9 +3,10 @@
 import { Country, createCountry } from "./types/Country";
 import { Sovereignty } from "./types/Sovereignty";
 import { CountryCode } from "./types/CountryCode";
-import { keys, map } from "./modules/lodash";
+import { map } from "./functions/map";
 import { getCountryNameTranslationKey } from "./translations/country-translation";
 import { TranslationFunction } from "./types/TranslationFunction";
+import { keys } from "./functions/keys";
 
 export type CountryAutoCompleteMapping = [CountryCode, string[]][];
 

@@ -1,12 +1,9 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {
-    explain, explainNoOtherKeys, explainProperty, explainRegularObject, explainString, explainStringOrUndefined,
-    hasNoOtherKeys,
-    isRegularObject,
-    isString,
-    isStringOrUndefined
-} from "../../modules/lodash";
+import { explain, explainProperty } from "../../types/explain";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
+import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 
 export interface RepositoryMember {
     readonly id           : string;

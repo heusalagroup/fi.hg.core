@@ -1,10 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    isRegularObject,
-    isString,
-    TestCallbackNonStandard
-} from "../../modules/lodash";
+import { TestCallbackNonStandard } from "../../types/TestCallback";
+import { isString } from "../../types/String";
+import { isRegularObject } from "../../types/RegularObject";
 
 export interface RepositoryItem<T> {
     readonly id: string;

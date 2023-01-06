@@ -1,7 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isMailHogContentDTO, MailHogContentDTO } from "./MailHogContentDTO";
-import { hasNoOtherKeysInDevelopment, isArrayOf, isRegularObject } from "../../modules/lodash";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { isArrayOf } from "../../types/Array";
 
 export interface MailHogMimeDTO {
     readonly Parts : MailHogContentDTO[];

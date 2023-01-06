@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isArrayOf } from "../../modules/lodash";
 import { isMailHogMessageDTO, MailHogMessageDTO } from "./MailHogMessageDTO";
+import { isArrayOf } from "../../types/Array";
 
 export type MailHogMessageListDTO = MailHogMessageDTO[];
 

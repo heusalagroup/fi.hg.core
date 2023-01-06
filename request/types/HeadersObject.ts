@@ -1,7 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {every, isArray, isObject, isString, keys} from "../../modules/lodash";
+import { isArray } from "../../types/Array";
+import { isString } from "../../types/String";
+import { isObject } from "../../types/Object";
+import { keys } from "../../functions/keys";
+import { every } from "../../functions/every";
 
 export interface HeadersObject {
     readonly [key: string]: string | readonly string[] | undefined;

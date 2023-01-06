@@ -1,6 +1,9 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
-import {isBoolean, isString} from "../../modules/lodash";
+import { isBoolean } from "../../types/Boolean";
 import { RequestParamObjectType } from "./RequestParamObjectType";
+import { isString } from "../../types/String";
 
 export interface RequestPathVariableParamObject {
 

@@ -1,16 +1,14 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeys,
-    isBoolean,
-    isNumber,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
+import { isBoolean } from "../../../types/Boolean";
 import { isProductType, ProductType } from "../product/ProductType";
 import { isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
 import { isInventoryState, InventoryState } from "./InventoryState";
 import { isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
+import { isString } from "../../../types/String";
+import { isNumber } from "../../../types/Number";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface NewInventoryItemDTO {
     readonly clientId            : string;

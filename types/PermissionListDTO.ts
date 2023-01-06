@@ -1,16 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainPermissionList, isPermissionList, PermissionList } from "../PermissionUtils";
-import {
-    explain,
-    ExplainCallback,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    hasNoOtherKeys,
-    isRegularObject,
-    TestCallback
-} from "../modules/lodash";
+import { TestCallback } from "./TestCallback";
+import { ExplainCallback } from "./ExplainCallback";
+import { explain, explainProperty } from "./explain";
+import { explainRegularObject, isRegularObject } from "./RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "./OtherKeys";
 
 export interface PermissionListDTO<T extends string> {
     readonly permissions : PermissionList<T>;

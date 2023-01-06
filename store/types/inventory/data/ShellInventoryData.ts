@@ -1,18 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainNumber, explainNumberOrUndefined,
-    explainProperty,
-    explainRegularObject,
-    explainString, explainStringOrUndefined,
-    hasNoOtherKeys,
-    isNumber, isNumberOrUndefined,
-    isRegularObject,
-    isString, isStringOrUndefined
-} from "../../../../modules/lodash";
 import { InventoryData } from "./InventoryData";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../../types/String";
+import { explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface ShellInventoryData extends InventoryData {
 

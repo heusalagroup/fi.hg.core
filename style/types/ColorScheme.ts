@@ -1,6 +1,7 @@
 // Copyright (c) 2021-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {isString, trim} from "../../modules/lodash";
+import { trim } from "../../functions/trim";
+import { isString } from "../../types/String";
 
 export enum ColorScheme {
     DARK,

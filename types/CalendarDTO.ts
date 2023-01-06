@@ -1,7 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { CalendarEvent, isCalendarEvent } from "./CalendarEvent";
-import { hasNoOtherKeys, isArrayOf, isRegularObject, map } from "../modules/lodash";
+import { map } from "../functions/map";
+import { isRegularObject } from "./RegularObject";
+import { hasNoOtherKeys } from "./OtherKeys";
+import { isArrayOf } from "./Array";
 
 export interface CalendarDTO {
     readonly events : readonly CalendarEvent[];

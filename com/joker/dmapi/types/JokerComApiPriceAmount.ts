@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined, trim } from "../../../../modules/lodash";
+import { trim } from "../../../../functions/trim";
+import { explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../../../types/Number";
 
 export type JokerComApiPriceAmount = number;
 

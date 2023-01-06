@@ -1,6 +1,8 @@
 // Copyright (c) 2020 Sendanor. All rights reserved.
 
-import { filter, forEach, has } from "./modules/lodash";
+import { filter } from "./functions/filter";
+import { forEach } from "./functions/forEach";
+import { has } from "./functions/has";
 
 // NOTICE! THIS LIBRARY INTENTIONALLY DOES NOT USE HG LOGGER BECAUSE IT IS USED
 // IN LOWER LEVEL CALLS
@@ -153,7 +155,7 @@ export class Observer<EventName extends keyof any> {
 
         const callbacks = this._callbacks[eventName];
 
-        forEach(callbacks, callback => {
+        forEach(callbacks, (callback: any) => {
             try {
                 callback(eventName, ...args);
             } catch( e ) {
@@ -198,13 +200,11 @@ export class Observer<EventName extends keyof any> {
 
         let removedOnce = false;
 
-        this._callbacks[eventName] = filter(this._callbacks[eventName], item => {
-
+        this._callbacks[eventName] = filter(this._callbacks[eventName], (item: any) => {
             if ( !removedOnce && item === callback ) {
                 removedOnce = true;
                 return false;
             }
-
             return true;
 
         });

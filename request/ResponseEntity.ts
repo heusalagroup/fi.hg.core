@@ -2,12 +2,14 @@
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { RequestStatus, stringifyRequestStatus} from "./types/RequestStatus";
-import { isNumber, map, TestCallbackNonStandard } from "../modules/lodash";
+import { map } from "../functions/map";
 import { Headers, isHeaders} from "./Headers";
 import { HeadersObject } from "./types/HeadersObject";
 import { isReadonlyJsonAny} from "../Json";
 import { StringUtils } from "../StringUtils";
 import { parseRequestMethod, RequestMethod, stringifyRequestMethod} from "./types/RequestMethod";
+import { TestCallbackNonStandard } from "../types/TestCallback";
+import { isNumber } from "../types/Number";
 
 export type EntityStatusTypes = RequestStatus | number;
 

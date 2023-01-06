@@ -1,10 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isRegularObject, isUndefined } from "../../modules/lodash";
 import { TextStyle, isTextStyle } from "./TextStyle";
 import { BorderStyle, isBorderStyle } from "./BorderStyle";
 import { BackgroundStyle, isBackgroundStyle } from "./BackgroundStyle";
 import { Size, isSize } from "../types/Size";
+import { isUndefined } from "../../types/undefined";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeys } from "../../types/OtherKeys";
 
 export interface ComponentStyle {
     readonly text       ?: TextStyle;

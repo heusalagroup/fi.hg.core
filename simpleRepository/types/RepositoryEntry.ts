@@ -1,24 +1,15 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import {
-    explain,
-    explainArrayOrUndefinedOf,
-    explainBooleanOrUndefined,
-    ExplainCallback,
-    explainNoOtherKeys,
-    explainNumber,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    hasNoOtherKeys,
-    isArrayOrUndefinedOf,
-    isBooleanOrUndefined,
-    isNumber,
-    isRegularObject,
-    isString,
-    TestCallbackNonStandard
-} from "../../modules/lodash";
 import { explainRepositoryMember, isRepositoryMember, RepositoryMember } from "./RepositoryMember";
+import { ExplainCallback } from "../../types/ExplainCallback";
+import { TestCallbackNonStandard } from "../../types/TestCallback";
+import { explain, explainProperty } from "../../types/explain";
+import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../types/Boolean";
+import { explainString, isString } from "../../types/String";
+import { explainNumber, isNumber } from "../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
+import { explainArrayOrUndefinedOf, isArrayOrUndefinedOf } from "../../types/Array";
 
 export interface RepositoryEntry<T> {
 

@@ -1,7 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { ProductTableItemDataModel } from "../types/product/ProductTableItemDataModel";
-import { filter, find, has, isNumber, map, reduce, uniq } from "../../modules/lodash";
+import { filter } from "../../functions/filter";
+import { find } from "../../functions/find";
+import { has } from "../../functions/has";
+import { map } from "../../functions/map";
+import { reduce } from "../../functions/reduce";
+import { uniq } from "../../functions/uniq";
 import { ProductFeatureCategory } from "../types/product/features/ProductFeatureCategory";
 import { ProductFeatureId } from "../types/product/features/ProductFeatureId";
 import { Product } from "../types/product/Product";
@@ -14,6 +19,7 @@ import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
 import { CompositeProductSelection } from "../types/product/CompositeProductSelection";
 import { CompositeProductOption } from "../types/product/CompositeProductOption";
+import { isNumber } from "../../types/Number";
 
 const LOG = LogService.createLogger('ProductUtils');
 
@@ -87,7 +93,7 @@ export class ProductUtils {
                         productList,
                         (item: Product) : readonly any[] => {
                             return map(featureIdList, (featureId: ProductFeatureId) => {
-                                return find(item.features, f => f?.id === featureId) ?? '';
+                                return find(item.features, (f: any) => f?.id === featureId) ?? '';
                             });
                         }
                     )

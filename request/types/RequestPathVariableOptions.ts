@@ -1,7 +1,7 @@
-import {
-    isBooleanOrUndefined,
-    isStringOrUndefined
-} from "../../modules/lodash";
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
+import { isBooleanOrUndefined } from "../../types/Boolean";
+import { isStringOrUndefined } from "../../types/String";
 
 export interface RequestPathVariableOptions {
 

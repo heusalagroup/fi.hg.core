@@ -2,10 +2,11 @@
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { RequestRouterMappingObject } from "./types/RequestRouterMappingObject";
-import { keys, some } from "../modules/lodash";
 import { BaseRoutes } from "./types/BaseRoutes";
 import { ParamRoutes } from "./types/ParamRoutes";
 import { StaticRoutes } from "./types/StaticRoutes";
+import { keys } from "../functions/keys";
+import { some } from "../functions/some";
 
 export class RouteUtils {
 

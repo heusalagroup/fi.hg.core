@@ -1,14 +1,11 @@
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { explainRepositoryEntry, isRepositoryEntry, RepositoryEntry } from "./types/RepositoryEntry";
-
-import {
-    explainArrayOf,
-    has, isArrayOf,
-    reduce,
-    values
-} from "../modules/lodash";
+import { has } from "../functions/has";
+import { reduce } from "../functions/reduce";
+import { values } from "../functions/values";
 import { StoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "./types/StoredRepositoryItem";
+import { explainArrayOf, isArrayOf } from "../types/Array";
 
 export class RepositoryUtils {
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { reduce } from "./modules/lodash";
+import { reduce } from "./functions/reduce";
 
 export interface InitCallback {
     () : Promise<void> | void;

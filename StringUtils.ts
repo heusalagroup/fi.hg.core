@@ -9,19 +9,17 @@ import {
     ReadonlyJsonAny
 } from "./Json";
 
-import {
-    get,
-    isFunction,
-    isString,
-    endsWith,
-    startsWith,
-    trim,
-    map,
-    keys,
-    reduce,
-    isNull,
-    every
-} from "./modules/lodash";
+import { get } from "./functions/get";
+import { endsWith } from "./functions/endsWith";
+import { startsWith } from "./functions/startsWith";
+import { trim } from "./functions/trim";
+import { map } from "./functions/map";
+import { reduce } from "./functions/reduce";
+import { isNull } from "./types/Null";
+import { isString } from "./types/String";
+import { isFunction } from "./types/Function";
+import { keys } from "./functions/keys";
+import { every } from "./functions/every";
 
 const ACCEPTED_KEYWORD_CHARACTERS = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm._1234567890';
 const ACCEPTED_START_KEYWORD_CHARACTERS = 'QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm._';

@@ -1,22 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainNumber,
-    explainNumberOrStringOrBooleanOrUndefined,
-    explainNumberOrUndefined,
-    explainProperty,
-    explainRegularObject,
-    explainStringOrUndefined,
-    hasNoOtherKeys,
-    isNumber,
-    isNumberOrStringOrBooleanOrUndefined,
-    isNumberOrUndefined,
-    isRegularObject,
-    isStringOrUndefined
-} from "../../../modules/lodash";
 import { explainProductIdListWithAmount, isProductIdListWithAmount, ProductIdListWithAmount } from "./ProductIdList";
+import { explain, explainProperty } from "../../../types/explain";
+import { explainStringOrUndefined, isStringOrUndefined } from "../../../types/String";
+import { explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../../types/Number";
+import { explainNumberOrStringOrBooleanOrUndefined, isNumberOrStringOrBooleanOrUndefined } from "../../../types/NumberOrStringOrBooleanOrUndefined";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface CompositeProductOption {
 

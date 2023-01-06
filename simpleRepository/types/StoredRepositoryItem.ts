@@ -1,9 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    isRegularObject,
-    isString
-} from "../../modules/lodash";
+import { isString } from "../../types/String";
+import { isRegularObject } from "../../types/RegularObject";
 
 /**
  * This is the stored item in the repository.

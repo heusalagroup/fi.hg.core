@@ -1,6 +1,6 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { trim } from "../modules/lodash";
+import { trim } from "../functions/trim";
 
 export enum CountryCode {
     AF = "AF",

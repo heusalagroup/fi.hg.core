@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { Currency } from "./types/Currency";
-import { get } from "./modules/lodash";
+import { get } from "./functions/get";
 import { CurrencyRates } from "./types/CurrencyRates";
 
 export class CurrencyUtils {

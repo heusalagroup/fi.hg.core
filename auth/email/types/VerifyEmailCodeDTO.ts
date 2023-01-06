@@ -2,14 +2,12 @@
 //
 
 import {
-    hasNoOtherKeys,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
-import {
     EmailTokenDTO,
     isEmailTokenDTO
 } from "./EmailTokenDTO";
+import { isString } from "../../../types/String";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface VerifyEmailCodeDTO {
     readonly token : EmailTokenDTO;

@@ -2,8 +2,8 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
-import { isString } from "../../modules/lodash";
 import { RequestParamObjectType } from "./RequestParamObjectType";
+import { isString } from "../../types/String";
 
 export interface RequestQueryParamObject {
     objectType : RequestParamObjectType.QUERY_PARAM;

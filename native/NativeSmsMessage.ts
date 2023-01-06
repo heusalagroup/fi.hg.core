@@ -1,18 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    isString,
-    explain,
-    explainNoOtherKeys,
-    explainRegularObject,
-    hasNoOtherKeys,
-    isRegularObject,
-    explainProperty,
-    explainString,
-    explainOk,
-    explainNot
-} from "../modules/lodash";
 import { NativeMessageType } from "./NativeMessageType";
+import { explain, explainNot, explainOk, explainProperty } from "../types/explain";
+import { explainString, isString } from "../types/String";
+import { explainRegularObject, isRegularObject } from "../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../types/OtherKeys";
 
 /**
  * Intended to be sent from webview to the native application to send a text

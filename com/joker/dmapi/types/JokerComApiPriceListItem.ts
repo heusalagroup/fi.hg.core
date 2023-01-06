@@ -1,25 +1,17 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    explainStringOrUndefined,
-    filter,
-    hasNoOtherKeys,
-    isRegularObject,
-    isString,
-    isStringOrUndefined,
-    map,
-    reduce,
-    trim
-} from "../../../../modules/lodash";
+import { filter } from "../../../../functions/filter";
+import { map } from "../../../../functions/map";
+import { reduce } from "../../../../functions/reduce";
+import { trim } from "../../../../functions/trim";
 import { explainJokerComApiPriceListItemType, isJokerComApiPriceListItemType, JokerComApiPriceListItemType, parseJokerComApiPriceListItemType } from "./JokerComApiPriceListItemType";
 import { explainJokerComApiPriceListItemOperation, isJokerComApiPriceListItemOperation, JokerComApiPriceListItemOperation, parseJokerComApiPriceListItemOperation } from "./JokerComApiPriceListItemOperation";
 import { explainJokerStringObject, isJokerStringObject, JokerStringObject } from "./JokerStringObject";
 import { explainJokerComApiPriceAmountOrUndefined, isJokerComApiPriceAmountOrUndefined, JokerComApiPriceAmount, parseJokerComApiPriceAmount } from "./JokerComApiPriceAmount";
+import { explain, explainProperty } from "../../../../types/explain";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface JokerComApiPriceListItem {
     readonly type         : JokerComApiPriceListItemType;

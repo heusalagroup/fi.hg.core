@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isProduct, Product } from "./Product";
-import { isArrayOf } from "../../../modules/lodash";
+import { isArrayOf } from "../../../types/Array";
 
 export interface ProductListDTO {
     readonly items : readonly Product[];

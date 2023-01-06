@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainEnum, trim } from "../../../../modules/lodash";
+import { trim } from "../../../../functions/trim";
+import { explainEnum } from "../../../../types/Enum";
 
 /**
  * Joker.com whois domain status

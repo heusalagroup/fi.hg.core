@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { LogService } from "../../../LogService";
-import { first } from "../../../modules/lodash";
+import { first } from "../../../functions/first";
 import { WhoisService } from "../../../whois/WhoisService";
 import { WhoisLookupResult } from "../../../whois/types/WhoisLookupResult";
 import { createWhoisServerOptions, WhoisServerOptions } from "../../../whois/types/WhoisServerOptions";

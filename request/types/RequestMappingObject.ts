@@ -3,7 +3,9 @@
 
 import { RequestMethod, isRequestMethod} from "./RequestMethod";
 import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
-import {every, isArray, isString} from "../../modules/lodash";
+import { isArray } from "../../types/Array";
+import { isString } from "../../types/String";
+import { every } from "../../functions/every";
 
 export interface RequestMappingObject {
     readonly methods  : readonly RequestMethod[];

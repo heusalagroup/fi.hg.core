@@ -2,9 +2,14 @@
 
 import { explainProductType, isProductType, ProductType } from "./ProductType";
 import { explainProductFeature, isProductFeature, ProductFeature } from "./features/ProductFeature";
-import { explain, explainArrayOf, explainNoOtherKeys, explainNumberOrUndefined, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isArrayOf, isNumberOrUndefined, isRegularObject, isString } from "../../../modules/lodash";
 import { ProductPrice, isProductPrice, explainProductPrice } from "./ProductPrice";
 import { CompositeProductSelection } from "./CompositeProductSelection";
+import { explain, explainProperty } from "../../../types/explain";
+import { explainString, isString } from "../../../types/String";
+import { explainNumberOrUndefined, isNumberOrUndefined } from "../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
+import { explainArrayOf, isArrayOf } from "../../../types/Array";
 
 export interface Product {
     readonly id           : string;

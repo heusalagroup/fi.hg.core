@@ -2,7 +2,7 @@
 
 import { ProductId } from "./ProductId";
 import { explainProductIdOrProductIdWithAmount, isProductIdOrProductIdWithAmount, ProductIdWithAmount } from "./ProductIdWithAmount";
-import { explainArrayOf, isArrayOf } from "../../../modules/lodash";
+import { explainArrayOf, isArrayOf } from "../../../types/Array";
 
 export type ProductIdListWithAmount = readonly (ProductId | ProductIdWithAmount)[];
 

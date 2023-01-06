@@ -8,7 +8,7 @@ import {
     getOpenApiDocumentFromRequestControllerMappingObject,
     InternalRequestControllerMappingObject
 } from "./RequestControllerMappingObject";
-import {has} from "../../modules/lodash";
+import { has } from "../../functions/has";
 import { LogService } from "../../LogService";
 import { OpenAPIV3 } from "../../types/openapi";
 

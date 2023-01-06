@@ -1,14 +1,10 @@
 // Copyright (c) 2020-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeys,
-    isArray,
-    isArrayOrUndefinedOf,
-    isBooleanOrUndefined,
-    isRegularObject,
-    isString,
-    isStringOrUndefined
-} from "../../../modules/lodash";
+import { isArray, isArrayOrUndefinedOf } from "../../../types/Array";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
+import { isString, isStringOrUndefined } from "../../../types/String";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 /**
  * The client object used in the REST API communication

@@ -1,14 +1,13 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeysInDevelopment,
-    isArrayOfOrUndefined,
-    isBoolean, isBooleanOrUndefined,
-    isNumber,
-    isRegularObject,
-    isString
-} from "../../../modules/lodash";
+import { isBoolean } from "../../../types/Boolean";
 import { isInvoiceRowDTO, InvoiceRowDTO } from "./InvoiceRowDTO";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
+import { isString } from "../../../types/String";
+import { isNumber } from "../../../types/Number";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
+import { isArrayOfOrUndefined } from "../../../types/Array";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;

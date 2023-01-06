@@ -1,5 +1,9 @@
-import {hasNoOtherKeysInDevelopment, isRegularObject, isString} from "../../modules/lodash";
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { WordpressEnum } from "./WordpressTypesDTO";
+import { isString } from "../../types/String";
+import { isRegularObject } from "../../types/RegularObject";
+import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 
 export interface WordpressUserProfileDTO {
     title:{rendered:string, protected:boolean};

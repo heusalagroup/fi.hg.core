@@ -1,16 +1,14 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import {
-    every,
-    keys,
-    has,
-    isFunction,
-    isObject,
-    some,
-    map,
-    filter,
-    TestCallback
-} from "../modules/lodash";
+import { has } from "../functions/has";
+import { map } from "../functions/map";
+import { filter } from "../functions/filter";
+import { TestCallback } from "../types/TestCallback";
+import { isFunction } from "../types/Function";
+import { isObject } from "../types/Object";
+import { keys } from "../functions/keys";
+import { every } from "../functions/every";
+import { some } from "../functions/some";
 
 export class RequestInterfaceUtils {
 
@@ -94,15 +92,18 @@ export class RequestInterfaceUtils {
         test : Function,
         explain : Function
     ) : Array<string> {
-
-        return filter(map(map(keys(value), (key : string) : any => value[key]), (item, index) => {
-            if (!test(item)) {
-                return `#${index}: ${explain(item)}`;
-            } else {
-                return "";
-            }
-        }), item => !!item);
-
+        return filter(
+            map(
+                map(keys(value), (key : string) : any => value[key]),
+                (item: any, index: number) => {
+                if (!test(item)) {
+                    return `#${index}: ${explain(item)}`;
+                } else {
+                    return "";
+                }
+            }),
+            (item: any) => !!item
+        );
     }
 
 }

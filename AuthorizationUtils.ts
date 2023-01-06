@@ -1,7 +1,8 @@
 // Copyright (c) 2022. Heusala Group. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor. All rights reserved.
 
-import { startsWith, trim } from "./modules/lodash";
+import { startsWith } from "./functions/startsWith";
+import { trim } from "./functions/trim";
 
 export class AuthorizationUtils {
 

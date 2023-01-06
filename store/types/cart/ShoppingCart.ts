@@ -1,7 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { hasNoOtherKeys, isArrayOf, isRegularObject } from "../../../modules/lodash";
 import { isShoppingCartItem, ShoppingCartItem } from "./ShoppingCartItem";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { isArrayOf } from "../../../types/Array";
 
 export interface ShoppingCart {
     readonly items : readonly ShoppingCartItem[];

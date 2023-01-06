@@ -4,8 +4,11 @@ import { Color, isColor } from "./types/Color";
 import { Font, isFont } from "./types/Font";
 import { ColorScheme, isColorScheme } from "./types/ColorScheme";
 import { ComponentStyleLayout, isComponentStyleLayout } from "./layout/ComponentStyleLayout";
-import { hasNoOtherKeys, isObjectOf, isRegularObject, isString } from "../modules/lodash";
 import { isSize, Size } from "./types/Size";
+import { isString } from "../types/String";
+import { isRegularObject } from "../types/RegularObject";
+import { isObjectOf } from "../types/Object";
+import { hasNoOtherKeys } from "../types/OtherKeys";
 
 export interface ColorMapping {
     readonly [key: string]: Color;

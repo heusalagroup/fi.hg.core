@@ -1,16 +1,13 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    hasNoOtherKeys,
-    isBooleanOrUndefined,
-    isRegularObject,
-    isString,
-    isStringOrUndefined,
-    isUndefined
-} from "../../../modules/lodash";
 import { isShoppingCart, ShoppingCart } from "../cart/ShoppingCart";
 import { isReadonlyJsonAny, parseJson, ReadonlyJsonAny } from "../../../Json";
 import { isOrderStatus, OrderStatus } from "./OrderStatus";
+import { isUndefined } from "../../../types/undefined";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
+import { isString, isStringOrUndefined } from "../../../types/String";
+import { isRegularObject } from "../../../types/RegularObject";
+import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
 export interface NewOrderDTO {
     readonly clientId       : string;

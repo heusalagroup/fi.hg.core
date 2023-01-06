@@ -1,16 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { Currency } from "./Currency";
-import {
-    explain,
-    explainNoOtherKeys,
-    explainNumber,
-    explainProperty,
-    explainRegularObject,
-    hasNoOtherKeys,
-    isNumber,
-    isRegularObject
-} from "../modules/lodash";
+import { explain, explainProperty } from "./explain";
+import { explainNumber, isNumber } from "./Number";
+import { explainRegularObject, isRegularObject } from "./RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "./OtherKeys";
 
 export interface CurrencyRates {
     readonly [Currency.EUR]: number;

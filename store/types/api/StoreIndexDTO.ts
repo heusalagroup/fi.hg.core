@@ -1,7 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isProductListDTO, ProductListDTO } from "../product/ProductListDTO";
-import { isUndefined } from "../../../modules/lodash";
+import { isUndefined } from "../../../types/undefined";
 
 export interface StoreIndexDTO {
     readonly products ?: ProductListDTO;

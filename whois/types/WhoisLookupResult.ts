@@ -1,15 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {
-    explain,
-    explainNoOtherKeys,
-    explainProperty,
-    explainRegularObject,
-    explainString,
-    hasNoOtherKeys,
-    isRegularObject,
-    isString
-} from "../../modules/lodash";
+import { explain, explainProperty } from "../../types/explain";
+import { explainString, isString } from "../../types/String";
+import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 
 export interface WhoisLookupResult {
     readonly server: string;

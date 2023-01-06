@@ -26,8 +26,8 @@
  */
 
 import { refNumParse } from './refNum';
-import { isString } from "../modules/lodash";
 import { moment } from "../modules/moment";
+import { isString } from "../types/String";
 
 export interface PankkiViivakoodi {
     readonly iban: string;

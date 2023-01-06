@@ -2,7 +2,10 @@
 
 import { Product } from "../types/product/Product";
 import { createShoppingCartItem, ShoppingCartItem } from "../types/cart/ShoppingCartItem";
-import { filter, find, map, reduce } from "../../modules/lodash";
+import { filter } from "../../functions/filter";
+import { find } from "../../functions/find";
+import { map } from "../../functions/map";
+import { reduce } from "../../functions/reduce";
 import { ProductPrice } from "../types/product/ProductPrice";
 import { createShoppingCart, ShoppingCart } from "../types/cart/ShoppingCart";
 import { CurrencyUtils } from "../../CurrencyUtils";

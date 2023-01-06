@@ -2,7 +2,12 @@
 
 import { explainProductFeatureCategory, isProductFeatureCategory, ProductFeatureCategory } from "./ProductFeatureCategory";
 import { explainProductFeatureId, isProductFeatureId, ProductFeatureId } from "./ProductFeatureId";
-import { explain, explainBoolean, explainNoOtherKeys, explainNumber, explainOr, explainProperty, explainRegularObject, explainString, hasNoOtherKeys, isBoolean, isNumber, isRegularObject, isString } from "../../../../modules/lodash";
+import { explain, explainOr, explainProperty } from "../../../../types/explain";
+import { isBoolean, explainBoolean } from "../../../../types/Boolean";
+import { explainString, isString } from "../../../../types/String";
+import { explainNumber, isNumber } from "../../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
 
 export interface ProductFeature {
     readonly id       : ProductFeatureId;

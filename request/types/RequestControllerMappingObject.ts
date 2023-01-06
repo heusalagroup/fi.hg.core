@@ -3,7 +3,9 @@
 
 import { RequestMappingObject, isRequestMappingObject} from "./RequestMappingObject";
 import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
-import { every, forEach, has, isArray, isObject, reduce } from "../../modules/lodash";
+import { forEach } from "../../functions/forEach";
+import { has } from "../../functions/has";
+import { reduce } from "../../functions/reduce";
 import {
     explainRequestControllerMethodObject,
     isRequestControllerMethodObject,
@@ -12,6 +14,9 @@ import {
 import { OpenAPIV3 } from "../../types/openapi";
 import { LogService } from "../../LogService";
 import { getOpenApiMethodFromRequestMethod, RequestMethod } from "./RequestMethod";
+import { isArray } from "../../types/Array";
+import { isObject } from "../../types/Object";
+import { every } from "../../functions/every";
 
 const LOG = LogService.createLogger('RequestControllerMappingObject');
 
