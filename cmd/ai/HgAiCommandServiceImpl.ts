@@ -10,6 +10,7 @@ import { OpenAiEditResponseDTO } from "../../openai/dto/OpenAiEditResponseDTO";
 import { OpenAiEditResponseChoice } from "../../openai/dto/OpenAiEditResponseChoice";
 import { OpenAiCompletionResponseDTO } from "../../openai/dto/OpenAiCompletionResponseDTO";
 import { OpenAiCompletionResponseChoice } from "../../openai/dto/OpenAiCompletionResponseChoice";
+import { readFileSync, existsSync } from "fs";
 
 export class HgAiCommandServiceImpl implements HgAiCommandService {
 
@@ -54,7 +55,16 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             return CommandExitStatus.USAGE;
         }
         const [instruction, ...freeArgs] = args;
-        const input : string = freeArgs.join(' ');
+        const input : string = map(
+            freeArgs,
+            (arg: string) : string => {
+                if (existsSync(arg)) {
+                    return readFileSync(arg, {encoding: 'utf8'}).toString();
+                } else {
+                    return arg;
+                }
+            }
+        ).join('\n');
         const result : OpenAiEditResponseDTO = await this._client.getEdit(instruction, input);
         const output = map(
             result.choices,
