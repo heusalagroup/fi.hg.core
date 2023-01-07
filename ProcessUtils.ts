@@ -4,10 +4,15 @@ import FS     from 'fs';
 import PATH   from 'path';
 import { trim } from "./functions/trim";
 import { LogService } from './LogService';
+import { LogLevel } from "./types/LogLevel";
 
 const LOG = LogService.createLogger('ProcessUtils');
 
 export class ProcessUtils {
+
+    static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     static getArguments () : Array<string> {
         return process.argv.slice(2);
@@ -103,14 +108,16 @@ export class ProcessUtils {
 
     private static _printErrors (reason: string, err ?: any) {
         try {
-            if (err) {
-                LOG.error(`Closing process because "${reason}" event: `, err);
-            } else {
-                if (reason === "exit") {
-                    LOG.debug(`Closing process because "${reason}" event`);
+            if (reason === "exit") {
+                if (err) {
+                    LOG.debug(`DEBUG: Closing process because "${reason}" event: `, err);
                 } else {
-                    LOG.info(`Closing process because "${reason}" event`);
+                    LOG.debug(`DEBUG: Closing process because "${reason}" event`);
                 }
+            } else if (err) {
+                LOG.error(`ERROR: Closing process because "${reason}" event: `, err);
+            } else {
+                LOG.info(`INFO: Closing process because "${reason}" event`);
             }
         } catch (err2) {
             console.error('Error while printing errors: ', err2);
