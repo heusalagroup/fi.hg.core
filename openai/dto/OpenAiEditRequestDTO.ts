@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel } from "../types/OpenAiApiModel";
+import { explainOpenAiModel, isOpenAiModel, OpenAiModel } from "../types/OpenAiModel";
 import { explain, explainProperty } from "../../types/explain";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../types/Number";
@@ -27,7 +27,7 @@ export interface OpenAiEditRequestDTO {
      *
      * @see https://beta.openai.com/docs/api-reference/edits/create#edits/create-model
      */
-    readonly model : OpenAiApiModel;
+    readonly model : OpenAiModel | string;
 
     /**
      * The input text to use as the starting point for the edit.
@@ -72,7 +72,7 @@ export interface OpenAiEditRequestDTO {
  *
  * @param {string} instruction - How to edit the text
  * @param {string} input - Input text as the starting point for edit
- * @param {OpenAiApiModel} model - The model to use for edit.
+ * @param {OpenAiModel} model - The model to use for edit.
  * @param {number} n - How many edits
  * @param {number} temperature - The temperature to use for sampling.
  * @param {number} top_p - The top probability to use for sampling.
@@ -81,19 +81,19 @@ export interface OpenAiEditRequestDTO {
 export function createOpenAiEditRequestDTO (
     instruction  : string,
     input       ?: string,
-    model       ?: OpenAiApiModel,
+    model       ?: OpenAiModel | string,
     n           ?: number,
     temperature ?: number,
     top_p       ?: number
 ) : OpenAiEditRequestDTO {
     if (!isString(instruction)) throw new TypeError(`Invalid OpenAiEditRequestDTO.instruction: ${instruction}`);
     if (!isStringOrUndefined(input)) throw new TypeError(`Invalid OpenAiEditRequestDTO.input: ${input}`);
-    if (!(isOpenApiModel(model) || isUndefined(model))) throw new TypeError(`Invalid OpenAiEditRequestDTO.model: ${model}`);
+    if (!isStringOrUndefined(model)) throw new TypeError(`Invalid OpenAiEditRequestDTO.model: ${model}`);
     if (!isNumberOrUndefined(n)) throw new TypeError(`Invalid OpenAiEditRequestDTO.n: ${n}`);
     if (!isNumberOrUndefined(temperature)) throw new TypeError(`Invalid OpenAiEditRequestDTO.temperature: ${temperature}`);
     if (!isNumberOrUndefined(top_p)) throw new TypeError(`Invalid OpenAiEditRequestDTO.top_p: ${top_p}`);
     return {
-        model : model ?? OpenAiApiModel.DAVINCI_EDIT_TEXT,
+        model : model ?? OpenAiModel.DAVINCI_EDIT_TEXT,
         instruction,
         ...(isString(input) ? {input} : {}),
         ...(isNumber(n) ? {n} : {}),
@@ -119,7 +119,7 @@ export function isOpenAiEditRequestDTO (value: any) : value is OpenAiEditRequest
             'temperature',
             'top_p'
         ])
-        && isOpenApiModel(value?.model)
+        && isOpenAiModel(value?.model)
         && isString(value?.instruction)
         && isStringOrUndefined(value?.input)
         && isNumberOrUndefined(value?.n)
@@ -148,7 +148,7 @@ export function explainOpenAiEditRequestDTO (value: unknown) : string {
             ])
             , explainProperty("instruction", explainString((value as any)?.instruction))
             , explainProperty("input", explainStringOrUndefined((value as any)?.input))
-            , explainProperty("model", explainOpenApiModel((value as any)?.model))
+            , explainProperty("model", explainOpenAiModel((value as any)?.model))
             , explainProperty("n", explainNumberOrUndefined((value as any)?.n))
             , explainProperty("temperature", explainNumberOrUndefined((value as any)?.temperature))
             , explainProperty("top_p", explainNumberOrUndefined((value as any)?.top_p))

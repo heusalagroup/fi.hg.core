@@ -2,7 +2,7 @@
 
 import { createOpenAiCompletionResponseChoice } from "./OpenAiCompletionResponseChoice";
 import { createOpenAiCompletionResponseDTO, isOpenAiCompletionResponseDTO } from "./OpenAiCompletionResponseDTO";
-import { OpenAiApiModel } from "../types/OpenAiApiModel";
+import { OpenAiModel } from "../types/OpenAiModel";
 import { createOpenAiCompletionResponseUsage } from "./OpenAiCompletionResponseUsage";
 
 describe("OpenAiCompletionResponseDTO", () => {
@@ -12,7 +12,7 @@ describe("OpenAiCompletionResponseDTO", () => {
             const id = 'abc123';
             const object = 'text_completion';
             const created = 1589478378;
-            const model = OpenAiApiModel.DAVINCI;
+            const model = OpenAiModel.DAVINCI;
             const choices = [
                 createOpenAiCompletionResponseChoice('It', 0, null, 'length'),
                 createOpenAiCompletionResponseChoice('is', 1, null, 'length'),
@@ -52,7 +52,7 @@ describe("OpenAiCompletionResponseDTO", () => {
                 "response-id",
                 "text_completion",
                 1589478378,
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 [
                     createOpenAiCompletionResponseChoice("It's raining today", 0, null, 'length')
                 ],

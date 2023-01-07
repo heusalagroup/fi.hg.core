@@ -5,8 +5,8 @@ import {
     isOpenAiEditResponseChoice,
     OpenAiEditResponseChoice
 } from "./OpenAiEditResponseChoice";
-import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel
-} from "../types/OpenAiApiModel";
+import { explainOpenAiModel, isOpenAiModel, OpenAiModel
+} from "../types/OpenAiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainString, isString } from "../../types/String";
@@ -51,7 +51,7 @@ export interface OpenAiEditResponseDTO {
  * @param {string} id - The ID of the response.
  * @param {string} object -
  * @param {number} created -
- * @param {OpenAiApiModel} model - The name of the model used to generate the response.
+ * @param {OpenAiModel} model - The name of the model used to generate the response.
  * @param {readonly OpenAiEditResponseChoice[]} choices -
  * @param {OpenAiEditResponseUsage} usage -
  * @returns {OpenAiEditResponseDTO} The new `OpenAiEditResponseDTO` object.

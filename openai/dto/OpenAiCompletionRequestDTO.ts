@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel } from "../types/OpenAiApiModel";
+import { explainOpenAiModel, isOpenAiModel, OpenAiModel } from "../types/OpenAiModel";
 import { explain, explainProperty } from "../../types/explain";
 import { explainString, isString } from "../../types/String";
 import { explainNumber, isNumber, isNumberOrUndefined } from "../../types/Number";
@@ -22,7 +22,7 @@ export interface OpenAiCompletionRequestDTO {
      *
      * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-model
      */
-    readonly model: OpenAiApiModel;
+    readonly model: OpenAiModel | string;
 
     /**
      * The prompt to complete.
@@ -145,7 +145,7 @@ export interface OpenAiCompletionRequestDTO {
  * Create an `OpenAiCompletionRequestDTO` object with the given properties.
  *
  * @param {string} prompt - The prompt to complete.
- * @param {OpenAiApiModel} model - The model to use for completion.
+ * @param {OpenAiModel} model - The model to use for completion.
  * @param {number} max_tokens - The maximum number of tokens to generate in the completion.
  * @param {number} temperature - The temperature to use for sampling.
  * @param {number} top_p - The top probability to use for sampling.
@@ -155,7 +155,7 @@ export interface OpenAiCompletionRequestDTO {
  */
 export function createOpenAiCompletionRequestDTO (
     prompt            : string,
-    model             ?: OpenAiApiModel,
+    model             ?: OpenAiModel | string,
     max_tokens        ?: number,
     temperature       ?: number,
     top_p             ?: number,
@@ -163,7 +163,7 @@ export function createOpenAiCompletionRequestDTO (
     presence_penalty  ?: number,
 ) : OpenAiCompletionRequestDTO {
     if (!isString(prompt)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.prompt: ${prompt}`);
-    if (!(isOpenApiModel(model) || isUndefined(model))) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.model: ${model}`);
+    if (!(isString(model) || isUndefined(model))) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.model: ${model}`);
     if (!isNumberOrUndefined(max_tokens)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.max_tokens: ${max_tokens}`);
     if (!isNumberOrUndefined(temperature)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.temperature: ${temperature}`);
     if (!isNumberOrUndefined(top_p)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.top_p: ${top_p}`);
@@ -171,7 +171,7 @@ export function createOpenAiCompletionRequestDTO (
     if (!isNumberOrUndefined(presence_penalty)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.presence_penalty: ${presence_penalty}`);
     return {
         prompt,
-        model: model ?? OpenAiApiModel.DAVINCI,
+        model: model ?? OpenAiModel.DAVINCI,
         ...(isNumber(max_tokens) ? {max_tokens} : {}),
         ...(isNumber(temperature) ? {temperature} : {}),
         ...(isNumber(top_p) ? {top_p} : {}),
@@ -199,7 +199,7 @@ export function isOpenAiCompletionRequestDTO (value: any) : value is OpenAiCompl
             'presence_penalty'
         ])
         && isString(value?.prompt)
-        && isOpenApiModel(value?.model)
+        && isOpenAiModel(value?.model)
         && isNumber(value?.max_tokens)
         && isNumber(value?.temperature)
         && isNumber(value?.top_p)
@@ -228,7 +228,7 @@ export function explainOpenAiCompletionRequestDTO (value: unknown) : string {
                 'presence_penalty',
             ])
             , explainProperty("prompt", explainString((value as any)?.prompt))
-            , explainProperty("model", explainOpenApiModel((value as any)?.model))
+            , explainProperty("model", explainOpenAiModel((value as any)?.model))
             , explainProperty("max_tokens", explainNumber((value as any)?.max_tokens))
             , explainProperty("temperature", explainNumber((value as any)?.temperature))
             , explainProperty("top_p", explainNumber((value as any)?.top_p))

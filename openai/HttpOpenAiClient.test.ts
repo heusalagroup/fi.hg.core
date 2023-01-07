@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { HttpOpenAiClient, OPENAI_API_POST_COMPLETIONS_PATH, OPENAI_API_POST_EDITS_PATH } from './HttpOpenAiClient';
-import { OpenAiApiModel } from "./types/OpenAiApiModel";
+import { OpenAiModel } from "./types/OpenAiModel";
 import { HttpService } from "../HttpService";
 import { createOpenAiCompletionResponseDTO } from "./dto/OpenAiCompletionResponseDTO";
 import { createOpenAiCompletionResponseChoice } from "./dto/OpenAiCompletionResponseChoice";
@@ -24,7 +24,7 @@ describe('HttpOpenAiClient', () => {
                 "response-id",
                 "text",
                 12345678,
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 [
                     createOpenAiCompletionResponseChoice('hello world', 0, null, 'length')
                 ],
@@ -97,7 +97,7 @@ describe('HttpOpenAiClient', () => {
             // Set up test data
             const input = "This is some text.";
             const instruction = "Change 'some' to 'an'.";
-            const model: OpenAiApiModel = OpenAiApiModel.DAVINCI;
+            const model: OpenAiModel = OpenAiModel.DAVINCI;
             const n = 1;
             const temperature = 0.5;
             const topP = 1;

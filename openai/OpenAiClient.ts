@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { OpenAiApiModel } from "./types/OpenAiApiModel";
+import { OpenAiModel } from "./types/OpenAiModel";
 import { OpenAiCompletionResponseDTO } from "./dto/OpenAiCompletionResponseDTO";
 import { OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 
@@ -45,7 +45,7 @@ export interface OpenAiClient {
      * Default values for the optional parameters are selected based on the model.
      *
      * @param {string} prompt - The prompt to use for text completion.
-     * @param {OpenAiApiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
+     * @param {OpenAiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
      *                                         model to use for text completion.
      * @param {number} [max_tokens] - The maximum number of tokens (words and
      *                                punctuation) to generate in the completion.
@@ -71,7 +71,7 @@ export interface OpenAiClient {
      */
     getCompletion (
         prompt             : string,
-        model             ?: OpenAiApiModel,
+        model             ?: OpenAiModel | string,
         max_tokens        ?: number,
         temperature       ?: number,
         top_p             ?: number,
@@ -87,7 +87,7 @@ export interface OpenAiClient {
      *
      * @param {string} input - The input to use for text editing.
      * @param {string} instruction - The instruction to use for text editing.
-     * @param {OpenAiApiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
+     * @param {OpenAiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
      *                                         model to use for text completion.
      * @param {number} [n] -
      * @param {number} [temperature] - Controls the "creativity" of the
@@ -105,7 +105,7 @@ export interface OpenAiClient {
     getEdit (
         instruction        : string,
         input             ?: string,
-        model             ?: OpenAiApiModel,
+        model             ?: OpenAiModel | string,
         n                 ?: number,
         temperature       ?: number,
         top_p             ?: number

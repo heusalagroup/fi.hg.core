@@ -5,8 +5,8 @@ import {
     isOpenAiCompletionResponseChoice,
     OpenAiCompletionResponseChoice
 } from "./OpenAiCompletionResponseChoice";
-import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel
-} from "../types/OpenAiApiModel";
+import { explainOpenAiModel, isOpenAiModel, OpenAiModel
+} from "../types/OpenAiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 import { explainString, isString } from "../../types/String";
@@ -44,7 +44,7 @@ export interface OpenAiCompletionResponseDTO {
      *
      * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-model
      */
-    readonly model: OpenAiApiModel;
+    readonly model: OpenAiModel;
 
     /**
      */
@@ -63,7 +63,7 @@ export interface OpenAiCompletionResponseDTO {
  * @param {string} id - The ID of the response.
  * @param {string} object -
  * @param {number} created -
- * @param {OpenAiApiModel} model - The name of the model used to generate the response.
+ * @param {OpenAiModel} model - The name of the model used to generate the response.
  * @param {readonly OpenAiCompletionResponseChoice[]} choices -
  * @param {OpenAiCompletionResponseUsage} usage -
  * @returns {OpenAiCompletionResponseDTO} The new `OpenAiCompletionResponseDTO` object.
@@ -72,7 +72,7 @@ export function createOpenAiCompletionResponseDTO (
     id: string,
     object: string,
     created: number,
-    model: OpenAiApiModel,
+    model: OpenAiModel,
     choices: readonly OpenAiCompletionResponseChoice[],
     usage: OpenAiCompletionResponseUsage
 ) : OpenAiCompletionResponseDTO {
@@ -106,7 +106,7 @@ export function isOpenAiCompletionResponseDTO (value: unknown) : value is OpenAi
         && isString(value?.id)
         && isString(value?.object)
         && isNumber(value?.created)
-        && isOpenApiModel(value?.model)
+        && isOpenAiModel(value?.model)
         && isArrayOf<OpenAiCompletionResponseChoice>(value?.choices, isOpenAiCompletionResponseChoice)
         && isOpenAiCompletionResponseUsage(value?.usage)
     );
@@ -133,7 +133,7 @@ export function explainOpenAiCompletionResponseDTO (value: any) : string {
             , explainProperty("id", explainString(value?.id))
             , explainProperty("object", explainString(value?.object))
             , explainProperty("created", explainNumber(value?.created))
-            , explainProperty("model", explainOpenApiModel(value?.model))
+            , explainProperty("model", explainOpenAiModel(value?.model))
             , explainProperty("choices", explainArrayOf<OpenAiCompletionResponseChoice>(
                 "OpenAiCompletionResponseChoice",
                 explainOpenAiCompletionResponseChoice,

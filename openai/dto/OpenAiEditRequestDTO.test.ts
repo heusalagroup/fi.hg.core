@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { OpenAiEditRequestDTO, createOpenAiEditRequestDTO, isOpenAiEditRequestDTO, explainOpenAiEditRequestDTO, stringifyOpenAiEditRequestDTO, parseOpenAiEditRequestDTO } from "./OpenAiEditRequestDTO";
-import { OpenAiApiModel } from "../types/OpenAiApiModel";
+import { OpenAiModel } from "../types/OpenAiModel";
 
 describe("OpenAiEditRequestDTO", () => {
 
@@ -11,7 +11,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request1: OpenAiEditRequestDTO = createOpenAiEditRequestDTO(
                 "Fix the spelling mistakes",
                 "What day of the wek is it?",
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 1,
                 2,
                 3
@@ -19,7 +19,7 @@ describe("OpenAiEditRequestDTO", () => {
             expect(request1).toEqual({
                                          instruction: "Fix the spelling mistakes",
                                          input: "What day of the wek is it?",
-                                         model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                                         model: OpenAiModel.DAVINCI_EDIT_TEXT,
                                          n: 1,
                                          temperature: 2,
                                          top_p: 3
@@ -28,7 +28,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request2: OpenAiEditRequestDTO = createOpenAiEditRequestDTO(
                 "What is the capital city of France?",
                 "",
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 1,
                 0.5,
                 0.7
@@ -36,7 +36,7 @@ describe("OpenAiEditRequestDTO", () => {
             expect(request2).toEqual({
                                          instruction: "What is the capital city of France?",
                                          input: "",
-                                         model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                                         model: OpenAiModel.DAVINCI_EDIT_TEXT,
                                          n: 1,
                                          temperature: 0.5,
                                          top_p: 0.7
@@ -48,7 +48,7 @@ describe("OpenAiEditRequestDTO", () => {
                 // @ts-ignore
                 undefined, // this should throw an error
                 '',
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 10,
                 0.5,
                 0.9
@@ -58,7 +58,7 @@ describe("OpenAiEditRequestDTO", () => {
                 // @ts-ignore
                 123, // this should throw an error
                 '',
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 10,
                 0.5,
                 0.9
@@ -69,7 +69,7 @@ describe("OpenAiEditRequestDTO", () => {
             expect(() => createOpenAiEditRequestDTO(
                 "What is the weather like today?",
                 '',
-                "invalid-model" as OpenAiApiModel, // this should throw an error
+                "invalid-model" as OpenAiModel, // this should throw an error
                 10,
                 0.5,
                 0.9
@@ -80,7 +80,7 @@ describe("OpenAiEditRequestDTO", () => {
             expect(() => createOpenAiEditRequestDTO(
                 "What is the weather like today?",
                 "",
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 "10" as any, // this should throw an error
                 0.5,
                 0.9
@@ -91,7 +91,7 @@ describe("OpenAiEditRequestDTO", () => {
             expect(() => createOpenAiEditRequestDTO(
                 "What is the weather like today?",
                 "",
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 10,
                 "0.5" as any, // this should throw an error
                 0.9
@@ -102,7 +102,7 @@ describe("OpenAiEditRequestDTO", () => {
             expect(() => createOpenAiEditRequestDTO(
                 "What is the weather like today?",
                 "",
-                OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                OpenAiModel.DAVINCI_EDIT_TEXT,
                 10,
                 0.5,
                 "0.9" as any // this should throw an error
@@ -117,7 +117,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request1: OpenAiEditRequestDTO = {
                 instruction: "What is the weather like today?",
                 input: "",
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 10,
                 temperature: 0.5,
                 top_p: 0.9
@@ -127,7 +127,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request2: OpenAiEditRequestDTO = {
                 instruction: "What is the capital city of France?",
                 input: '',
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 15,
                 temperature: 0.7,
                 top_p: 0.8
@@ -174,7 +174,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: "What is the weather like today?",
                     input: "",
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 10,
                     temperature: 0.5,
                     top_p: 0.9,
@@ -188,7 +188,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: 123,
                     input: '',
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 10,
                     temperature: 0.5,
                     top_p: 0.9
@@ -198,7 +198,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: null,
                     input: "",
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 10,
                     temperature: 0.5,
                     top_p: 0.9
@@ -208,7 +208,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: undefined,
                     input: "",
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 10,
                     temperature: 0.5,
                     top_p: 0.9
@@ -235,7 +235,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: "What is the weather like today?",
                     input: '',
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: "10", // invalid value
                     temperature: 0.5,
                     top_p: 0.9
@@ -248,7 +248,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: "What is the weather like today?",
                     input: '',
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 10,
                     temperature: "0.5",
                     top_p: 0.9
@@ -260,7 +260,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: "What is the capital city of France?",
                     input: '',
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 15,
                     temperature: 0.7,
                     top_p: "0.8"
@@ -291,7 +291,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: "What is the capital city of France?",
                     input: "",
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 15,
                     temperature: 0.7,
                     top_p: 0.8,
@@ -304,7 +304,7 @@ describe("OpenAiEditRequestDTO", () => {
                 {
                     instruction: 12345,
                     input: "",
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: 10,
                     temperature: 0.5,
                     top_p: 0.9
@@ -328,7 +328,7 @@ describe("OpenAiEditRequestDTO", () => {
                 const value = {
                     instruction: 'What is the weather like today?',
                     input: "",
-                    model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                    model: OpenAiModel.DAVINCI_EDIT_TEXT,
                     n: nonNumberMaxTokensValue,
                     temperature: 0.5,
                     top_p: 0.9
@@ -341,7 +341,7 @@ describe("OpenAiEditRequestDTO", () => {
             const value = {
                 instruction: "What is the capital city of France?",
                 input: "",
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 15,
                 temperature: "0.7", // This value is a string, not a number
                 top_p: 0.8
@@ -357,7 +357,7 @@ describe("OpenAiEditRequestDTO", () => {
             const value = {
                 instruction: "What is the weather like today?",
                 input: "",
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 10,
                 temperature: 0.5,
                 top_p: "0.9" // top_p is a string, not a number
@@ -376,7 +376,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request: OpenAiEditRequestDTO = {
                 instruction: "What is the weather like today?",
                 input: "",
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 10,
                 temperature: 0.5,
                 top_p: 0.9
@@ -392,7 +392,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request: OpenAiEditRequestDTO = {
                 instruction: "What is the weather like today?",
                 input: "",
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 10,
                 temperature: 0.5,
                 top_p: 0.9
@@ -405,7 +405,7 @@ describe("OpenAiEditRequestDTO", () => {
             const request: OpenAiEditRequestDTO = {
                 instruction: "What is the weather like today?",
                 input: "",
-                model: OpenAiApiModel.DAVINCI_EDIT_TEXT,
+                model: OpenAiModel.DAVINCI_EDIT_TEXT,
                 n: 10,
                 temperature: 0.5,
                 top_p: 0.9

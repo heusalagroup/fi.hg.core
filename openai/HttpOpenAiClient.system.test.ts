@@ -10,7 +10,7 @@ import { HgNode } from "../../node/HgNode";
 import { LogLevel } from "../types/LogLevel";
 import { RequestClient } from "../RequestClient";
 import { HttpService } from "../HttpService";
-import { OpenAiApiModel } from "./types/OpenAiApiModel";
+import { OpenAiModel } from "./types/OpenAiModel";
 import { isNumber } from "../types/Number";
 import { isArray } from "../types/Array";
 
@@ -82,7 +82,7 @@ HttpService.setLogLevel(LogLevel.NONE);
                 // Set up test data
                 const input = "What day of the wek is it?";
                 const instruction = "Fix the spelling mistakes";
-                const model: OpenAiApiModel = OpenAiApiModel.DAVINCI_EDIT_TEXT;
+                const model: OpenAiModel = OpenAiModel.DAVINCI_EDIT_TEXT;
 
                 // Call the getEdit method
                 const response = await client.getEdit(instruction, input, model);

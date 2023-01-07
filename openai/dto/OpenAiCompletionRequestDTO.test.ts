@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { OpenAiCompletionRequestDTO, createOpenAiCompletionRequestDTO, isOpenAiCompletionRequestDTO, explainOpenAiCompletionRequestDTO, stringifyOpenAiCompletionRequestDTO, parseOpenAiCompletionRequestDTO } from "./OpenAiCompletionRequestDTO";
-import { OpenAiApiModel } from "../types/OpenAiApiModel";
+import { OpenAiModel } from "../types/OpenAiModel";
 
 describe("OpenAiCompletionRequestDTO", () => {
 
@@ -10,7 +10,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("creates valid OpenAiCompletionRequestDTO objects", () => {
             const request1: OpenAiCompletionRequestDTO = createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 0.5,
                 0.9,
@@ -19,7 +19,7 @@ describe("OpenAiCompletionRequestDTO", () => {
             );
             expect(request1).toEqual({
                                          prompt: "What is the weather like today?",
-                                         model: OpenAiApiModel.DAVINCI,
+                                         model: OpenAiModel.DAVINCI,
                                          max_tokens: 10,
                                          temperature: 0.5,
                                          top_p: 0.9,
@@ -29,7 +29,7 @@ describe("OpenAiCompletionRequestDTO", () => {
 
             const request2: OpenAiCompletionRequestDTO = createOpenAiCompletionRequestDTO(
                 "What is the capital city of France?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 15,
                 0.7,
                 0.8,
@@ -38,7 +38,7 @@ describe("OpenAiCompletionRequestDTO", () => {
             );
             expect(request2).toEqual({
                                          prompt: "What is the capital city of France?",
-                                         model: OpenAiApiModel.DAVINCI,
+                                         model: OpenAiModel.DAVINCI,
                                          max_tokens: 15,
                                          temperature: 0.7,
                                          top_p: 0.8,
@@ -51,7 +51,7 @@ describe("OpenAiCompletionRequestDTO", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 // @ts-ignore
                 undefined, // this should throw an error
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 0.5,
                 0.9,
@@ -62,7 +62,7 @@ describe("OpenAiCompletionRequestDTO", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 // @ts-ignore
                 123, // this should throw an error
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 0.5,
                 0.9,
@@ -74,7 +74,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("throws an error if model is not a valid OpenAiApiModel", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                "invalid-model" as OpenAiApiModel, // this should throw an error
+                "invalid-model" as OpenAiModel, // this should throw an error
                 10,
                 0.5,
                 0.9,
@@ -86,7 +86,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("throws an error if max_tokens is not a number", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 "10" as any, // this should throw an error
                 0.5,
                 0.9,
@@ -98,7 +98,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("throws an error if temperature is not a number", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 "0.5" as any, // this should throw an error
                 0.9,
@@ -110,7 +110,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("throws an error if top_p is not a number", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 0.5,
                 "0.9" as any, // this should throw an error
@@ -122,7 +122,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("createOpenAiCompletionRequestDTO throws an error if frequency_penalty is not a number", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 0.5,
                 0.9,
@@ -135,7 +135,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("createOpenAiCompletionRequestDTO throws an error if presence_penalty is not a number", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                OpenAiApiModel.DAVINCI,
+                OpenAiModel.DAVINCI,
                 10,
                 0.5,
                 0.9,
@@ -152,7 +152,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns true for valid OpenAiCompletionRequestDTO objects", () => {
             const request1: OpenAiCompletionRequestDTO = {
                 prompt: "What is the weather like today?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 10,
                 temperature: 0.5,
                 top_p: 0.9,
@@ -163,7 +163,7 @@ describe("OpenAiCompletionRequestDTO", () => {
 
             const request2: OpenAiCompletionRequestDTO = {
                 prompt: "What is the capital city of France?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 15,
                 temperature: 0.7,
                 top_p: 0.8,
@@ -204,7 +204,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with extra keys", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: "What is the weather like today?",
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 10,
                                                     temperature: 0.5,
                                                     top_p: 0.9,
@@ -217,7 +217,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-string prompt value", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: 123,
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 10,
                                                     temperature: 0.5,
                                                     top_p: 0.9,
@@ -226,7 +226,7 @@ describe("OpenAiCompletionRequestDTO", () => {
                                                 })).toBe(false);
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: null,
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 10,
                                                     temperature: 0.5,
                                                     top_p: 0.9,
@@ -235,7 +235,7 @@ describe("OpenAiCompletionRequestDTO", () => {
                                                 })).toBe(false);
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: undefined,
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 10,
                                                     temperature: 0.5,
                                                     top_p: 0.9,
@@ -260,7 +260,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-number max_tokens value", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: "What is the weather like today?",
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: "10", // invalid value
                                                     temperature: 0.5,
                                                     top_p: 0.9,
@@ -272,7 +272,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-number temperature value", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: "What is the weather like today?",
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 10,
                                                     temperature: "0.5",
                                                     top_p: 0.9,
@@ -284,7 +284,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-number top_p value", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: "What is the capital city of France?",
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 15,
                                                     temperature: 0.7,
                                                     top_p: "0.8",
@@ -296,7 +296,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-number frequency_penalty value", () => {
             const request: any = {
                 prompt: "What is the weather like today?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 10,
                 temperature: 0.5,
                 top_p: 0.9,
@@ -309,7 +309,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns false for objects with non-number presence_penalty value", () => {
             expect(isOpenAiCompletionRequestDTO({
                                                     prompt: "What is the weather like today?",
-                                                    model: OpenAiApiModel.DAVINCI,
+                                                    model: OpenAiModel.DAVINCI,
                                                     max_tokens: 10,
                                                     temperature: 0.5,
                                                     top_p: 0.9,
@@ -339,7 +339,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has extra keys", () => {
             expect(explainOpenAiCompletionRequestDTO({
                                                          prompt: "What is the capital city of France?",
-                                                         model: OpenAiApiModel.DAVINCI,
+                                                         model: OpenAiModel.DAVINCI,
                                                          max_tokens: 15,
                                                          temperature: 0.7,
                                                          top_p: 0.8,
@@ -352,7 +352,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has a non-string prompt property", () => {
             expect(explainOpenAiCompletionRequestDTO({
                                                          prompt: 12345,
-                                                         model: OpenAiApiModel.DAVINCI,
+                                                         model: OpenAiModel.DAVINCI,
                                                          max_tokens: 10,
                                                          temperature: 0.5,
                                                          top_p: 0.9,
@@ -376,7 +376,7 @@ describe("OpenAiCompletionRequestDTO", () => {
             for (const nonNumberMaxTokensValue of nonNumberMaxTokensValues) {
                 const value = {
                     prompt: 'What is the weather like today?',
-                    model: OpenAiApiModel.DAVINCI,
+                    model: OpenAiModel.DAVINCI,
                     max_tokens: nonNumberMaxTokensValue,
                     temperature: 0.5,
                     top_p: 0.9,
@@ -390,7 +390,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has a non-number temperature property", () => {
             const value = {
                 prompt: "What is the capital city of France?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 15,
                 temperature: "0.7", // This value is a string, not a number
                 top_p: 0.8,
@@ -407,7 +407,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has a non-number top_p property", () => {
             const value = {
                 prompt: "What is the weather like today?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 10,
                 temperature: 0.5,
                 top_p: "0.9", // top_p is a string, not a number
@@ -423,7 +423,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a human-readable string explaining why the value has a non-number frequency_penalty property", () => {
             const invalidValue = {
                 prompt: "What is the capital city of France?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 15,
                 temperature: 0.7,
                 top_p: 0.8,
@@ -439,7 +439,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it('returns a human-readable string explaining why the value has a non-number presence_penalty property', () => {
             expect(explainOpenAiCompletionRequestDTO({
                                                          prompt: 'What is the weather like today?',
-                                                         model: OpenAiApiModel.DAVINCI,
+                                                         model: OpenAiModel.DAVINCI,
                                                          max_tokens: 10,
                                                          temperature: 0.5,
                                                          top_p: 0.9,
@@ -458,7 +458,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("returns a string representation of the OpenAiCompletionRequestDTO object", () => {
             const request: OpenAiCompletionRequestDTO = {
                 prompt: "What is the weather like today?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 10,
                 temperature: 0.5,
                 top_p: 0.9,
@@ -475,7 +475,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("parses a valid OpenAiCompletionRequestDTO string as an OpenAiCompletionRequestDTO object", () => {
             const request: OpenAiCompletionRequestDTO = {
                 prompt: "What is the weather like today?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 10,
                 temperature: 0.5,
                 top_p: 0.9,
@@ -489,7 +489,7 @@ describe("OpenAiCompletionRequestDTO", () => {
         it("parses a valid JSON string as an OpenAiCompletionRequestDTO object", () => {
             const request: OpenAiCompletionRequestDTO = {
                 prompt: "What is the weather like today?",
-                model: OpenAiApiModel.DAVINCI,
+                model: OpenAiModel.DAVINCI,
                 max_tokens: 10,
                 temperature: 0.5,
                 top_p: 0.9,

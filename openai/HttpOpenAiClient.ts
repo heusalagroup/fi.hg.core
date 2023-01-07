@@ -37,7 +37,7 @@ import { createOpenAiCompletionRequestDTO } from "./dto/OpenAiCompletionRequestD
 import { explainOpenAiCompletionResponseDTO, isOpenAiCompletionResponseDTO, OpenAiCompletionResponseDTO } from "./dto/OpenAiCompletionResponseDTO";
 import { AuthorizationUtils } from "../AuthorizationUtils";
 import { ReadonlyJsonAny } from "../Json";
-import { OpenAiApiModel } from "./types/OpenAiApiModel";
+import { OpenAiModel } from "./types/OpenAiModel";
 import { OpenAiClient } from "./OpenAiClient";
 import { explainOpenAiEditResponseDTO, isOpenAiEditResponseDTO, OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
@@ -191,7 +191,7 @@ export class HttpOpenAiClient implements OpenAiClient {
      * Default values for the optional parameters are selected based on the model.
      *
      * @param {string} prompt - The prompt to use for text completion.
-     * @param {OpenAiApiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
+     * @param {OpenAiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
      *                                         model to use for text completion.
      * @param {number} [max_tokens] - The maximum number of tokens (words and
      *                                punctuation) to generate in the completion.
@@ -217,7 +217,7 @@ export class HttpOpenAiClient implements OpenAiClient {
      */
     public async getCompletion (
         prompt             : string,
-        model             ?: OpenAiApiModel,
+        model             ?: OpenAiModel | string,
         max_tokens        ?: number,
         temperature       ?: number,
         top_p             ?: number,
@@ -254,7 +254,7 @@ export class HttpOpenAiClient implements OpenAiClient {
      *
      * @param {string} instruction - The instruction to use for text editing.
      * @param {string} input - The input to use for text editing.
-     * @param {OpenAiApiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
+     * @param {OpenAiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
      *                                         model to use for text completion.
      * @param {number} [n] - The maximum number of tokens (words and
      *                                punctuation) to generate in the completion.
@@ -273,7 +273,7 @@ export class HttpOpenAiClient implements OpenAiClient {
     public async getEdit (
         instruction        : string,
         input             ?: string,
-        model             ?: OpenAiApiModel,
+        model             ?: OpenAiModel | string,
         n                 ?: number,
         temperature       ?: number,
         top_p             ?: number
