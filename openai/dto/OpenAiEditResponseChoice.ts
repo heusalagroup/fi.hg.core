@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
+import { explainNoOtherKeys, explainNoOtherKeysInDevelopment, hasNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import {
     explainNumber,
     explainNumberOrNullOrUndefined,
@@ -62,7 +62,7 @@ export function createOpenAiEditResponseChoice (
 export function isOpenAiEditResponseChoice (value: unknown) : value is OpenAiEditResponseChoice {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'text',
             'index',
             'logprobs',
@@ -85,7 +85,7 @@ export function explainOpenAiEditResponseChoice (value: any) : string {
     return explain(
         [
             explainRegularObject(value),
-            explainNoOtherKeys(value, [
+            explainNoOtherKeysInDevelopment(value, [
                 'text',
                 'index',
                 'logprobs',

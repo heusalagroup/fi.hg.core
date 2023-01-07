@@ -71,16 +71,16 @@ describe("OpenAiCompletionRequestDTO", () => {
             )).toThrowError();
         });
 
-        it("throws an error if model is not a valid OpenAiApiModel", () => {
+        it("does not throw an error if model is not a valid OpenAiApiModel", () => {
             expect(() => createOpenAiCompletionRequestDTO(
                 "What is the weather like today?",
-                "invalid-model" as OpenAiModel, // this should throw an error
+                "invalid-model" as OpenAiModel, // this should not throw an error
                 10,
                 0.5,
                 0.9,
                 0.5,
                 0.5
-            )).toThrowError();
+            )).not.toThrowError();
         });
 
         it("throws an error if max_tokens is not a number", () => {

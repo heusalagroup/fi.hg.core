@@ -65,15 +65,15 @@ describe("OpenAiEditRequestDTO", () => {
             )).toThrowError();
         });
 
-        it("throws an error if model is not a valid OpenAiApiModel", () => {
+        it("can have models which are not a valid OpenAiApiModel", () => {
             expect(() => createOpenAiEditRequestDTO(
                 "What is the weather like today?",
                 '',
-                "invalid-model" as OpenAiModel, // this should throw an error
+                "invalid-model" as OpenAiModel, // this should work
                 10,
                 0.5,
                 0.9
-            )).toThrowError();
+            )).not.toThrowError();
         });
 
         it("throws an error if n is not a number", () => {
