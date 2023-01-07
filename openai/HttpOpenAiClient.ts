@@ -38,12 +38,16 @@ import { explainOpenAiCompletionResponseDTO, isOpenAiCompletionResponseDTO, Open
 import { AuthorizationUtils } from "../AuthorizationUtils";
 import { ReadonlyJsonAny } from "../Json";
 import { OpenAiApiModel } from "./types/OpenAiApiModel";
-import { OpenAiModelUtils } from "./OpenAiModelUtils";
 import { OpenAiClient } from "./OpenAiClient";
 import { explainOpenAiEditResponseDTO, isOpenAiEditResponseDTO, OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
 
 const LOG = LogService.createLogger('HttpOpenAiClient');
+
+/**
+ * The HTTP header name for authorization
+ */
+export const OPENAPI_AUTHORIZATION_HEADER = "Authorization";
 
 /**
  * The base URL of the OpenAI API (`https://api.openai.com`).
@@ -213,30 +217,23 @@ export class HttpOpenAiClient implements OpenAiClient {
      */
     public async getCompletion (
         prompt             : string,
-        model              : OpenAiApiModel = OpenAiApiModel.DAVINCI,
+        model             ?: OpenAiApiModel,
         max_tokens        ?: number,
         temperature       ?: number,
         top_p             ?: number,
         frequency_penalty ?: number,
         presence_penalty  ?: number
     ) : Promise<OpenAiCompletionResponseDTO> {
-        const parsedMaxTokens        = max_tokens        ?? OpenAiModelUtils.getDefaultMaxTokensForModel(model);
-        const parsedTemperature      = temperature       ?? OpenAiModelUtils.getDefaultTemperatureForModel(model);
-        const parsedTopP             = top_p             ?? OpenAiModelUtils.getDefaultTopPForModel(model);
-        const parsedFrequencyPenalty = frequency_penalty ?? OpenAiModelUtils.getDefaultFrequencyPenaltyForModel(model);
-        const parsedPresencePenalty  = presence_penalty  ?? OpenAiModelUtils.getDefaultPresencePenaltyForModel(model);
         const body = createOpenAiCompletionRequestDTO(
             prompt,
             model,
-            parsedMaxTokens,
-            parsedTemperature,
-            parsedTopP,
-            parsedFrequencyPenalty,
-            parsedPresencePenalty,
+            max_tokens,
+            temperature,
+            top_p,
+            frequency_penalty,
+            presence_penalty
         );
-        const headers = {
-            ["Authorization"]: AuthorizationUtils.createBearerHeader(this._apiKey)
-        };
+        const headers = HttpOpenAiClient._getHeaders(this._apiKey);
         const result = await HttpService.postJson(
             `${this._url}${OPENAI_API_POST_COMPLETIONS_PATH}`,
             body as unknown as ReadonlyJsonAny,
@@ -276,7 +273,7 @@ export class HttpOpenAiClient implements OpenAiClient {
     public async getEdit (
         instruction        : string,
         input             ?: string,
-        model              : OpenAiApiModel = OpenAiApiModel.DAVINCI,
+        model             ?: OpenAiApiModel,
         n                 ?: number,
         temperature       ?: number,
         top_p             ?: number
@@ -289,9 +286,7 @@ export class HttpOpenAiClient implements OpenAiClient {
             temperature,
             top_p
         );
-        const headers = {
-            ["Authorization"]: AuthorizationUtils.createBearerHeader(this._apiKey)
-        };
+        const headers = HttpOpenAiClient._getHeaders(this._apiKey);
         const result = await HttpService.postJson(
             `${this._url}${OPENAI_API_POST_EDITS_PATH}`,
             body as unknown as ReadonlyJsonAny,
@@ -302,6 +297,17 @@ export class HttpOpenAiClient implements OpenAiClient {
             throw new TypeError(`Result was not OpenAiEditResponseDTO: ` + explainOpenAiEditResponseDTO(result));
         }
         return result;
+    }
+
+    /**
+     *
+     * @param apiKey
+     * @private
+     */
+    private static _getHeaders (apiKey: string) {
+        return {
+            [OPENAPI_AUTHORIZATION_HEADER]: AuthorizationUtils.createBearerHeader(apiKey)
+        }
     }
 
 }

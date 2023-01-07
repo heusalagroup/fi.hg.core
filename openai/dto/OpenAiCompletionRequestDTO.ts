@@ -3,11 +3,12 @@
 import { explainOpenApiModel, isOpenApiModel, OpenAiApiModel } from "../types/OpenAiApiModel";
 import { explain, explainProperty } from "../../types/explain";
 import { explainString, isString } from "../../types/String";
-import { explainNumber, isNumber } from "../../types/Number";
+import { explainNumber, isNumber, isNumberOrUndefined } from "../../types/Number";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 import { startsWith } from "../../functions/startsWith";
 import { parseJson, ReadonlyJsonObject } from "../../Json";
+import { isUndefined } from "../../types/undefined";
 
 /**
  * Data Transfer Object for requesting a completion from the OpenAI API.
@@ -153,29 +154,29 @@ export interface OpenAiCompletionRequestDTO {
  * @returns {OpenAiCompletionRequestDTO} An `OpenAiCompletionRequestDTO` object with the given properties.
  */
 export function createOpenAiCompletionRequestDTO (
-    prompt: string,
-    model: OpenAiApiModel,
-    max_tokens: number,
-    temperature: number,
-    top_p: number,
-    frequency_penalty: number,
-    presence_penalty: number,
+    prompt            : string,
+    model             ?: OpenAiApiModel,
+    max_tokens        ?: number,
+    temperature       ?: number,
+    top_p             ?: number,
+    frequency_penalty ?: number,
+    presence_penalty  ?: number,
 ) : OpenAiCompletionRequestDTO {
     if (!isString(prompt)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.prompt: ${prompt}`);
-    if (!isOpenApiModel(model)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.model: ${model}`);
-    if (!isNumber(max_tokens)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.max_tokens: ${max_tokens}`);
-    if (!isNumber(temperature)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.temperature: ${temperature}`);
-    if (!isNumber(top_p)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.top_p: ${top_p}`);
-    if (!isNumber(frequency_penalty)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.frequency_penalty: ${frequency_penalty}`);
-    if (!isNumber(presence_penalty)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.presence_penalty: ${presence_penalty}`);
+    if (!(isOpenApiModel(model) || isUndefined(model))) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.model: ${model}`);
+    if (!isNumberOrUndefined(max_tokens)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.max_tokens: ${max_tokens}`);
+    if (!isNumberOrUndefined(temperature)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.temperature: ${temperature}`);
+    if (!isNumberOrUndefined(top_p)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.top_p: ${top_p}`);
+    if (!isNumberOrUndefined(frequency_penalty)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.frequency_penalty: ${frequency_penalty}`);
+    if (!isNumberOrUndefined(presence_penalty)) throw new TypeError(`Invalid OpenAiCompletionRequestDTO.presence_penalty: ${presence_penalty}`);
     return {
         prompt,
-        model,
-        max_tokens,
-        temperature,
-        top_p,
-        frequency_penalty,
-        presence_penalty,
+        model: model ?? OpenAiApiModel.DAVINCI,
+        ...(isNumber(max_tokens) ? {max_tokens} : {}),
+        ...(isNumber(temperature) ? {temperature} : {}),
+        ...(isNumber(top_p) ? {top_p} : {}),
+        ...(isNumber(frequency_penalty) ? {frequency_penalty} : {}),
+        ...(isNumber(presence_penalty) ? {presence_penalty} : {}),
     };
 }
 

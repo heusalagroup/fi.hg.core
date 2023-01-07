@@ -93,7 +93,7 @@ export function createOpenAiEditRequestDTO (
     if (!isNumberOrUndefined(temperature)) throw new TypeError(`Invalid OpenAiEditRequestDTO.temperature: ${temperature}`);
     if (!isNumberOrUndefined(top_p)) throw new TypeError(`Invalid OpenAiEditRequestDTO.top_p: ${top_p}`);
     return {
-        model : model ?? OpenAiApiModel.DAVINCI,
+        model : model ?? OpenAiApiModel.DAVINCI_EDIT_TEXT,
         instruction,
         ...(isString(input) ? {input} : {}),
         ...(isNumber(n) ? {n} : {}),
