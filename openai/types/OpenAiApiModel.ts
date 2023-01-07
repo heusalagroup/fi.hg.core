@@ -37,6 +37,10 @@ export enum OpenAiApiModel {
      */
     DAVINCI = 'text-davinci-003',
 
+
+    DAVINCI_EDIT_TEXT = 'text-davinci-edit-001',
+    DAVINCI_EDIT_CODE = 'code-davinci-edit-001',
+
     /**
      * Very capable GPT-3 model, but faster and lower cost than Davinci.
      *
@@ -159,6 +163,8 @@ export enum OpenAiApiModel {
 export function isOpenApiModel (value: unknown) : value is OpenAiApiModel {
     switch (value) {
         case OpenAiApiModel.DAVINCI:
+        case OpenAiApiModel.DAVINCI_EDIT_TEXT:
+        case OpenAiApiModel.DAVINCI_EDIT_CODE:
         case OpenAiApiModel.CURIE:
         case OpenAiApiModel.BABBAGE:
         case OpenAiApiModel.ADA:
@@ -189,7 +195,9 @@ export function explainOpenApiModel (value : unknown) : string {
  */
 export function stringifyOpenApiModel (value : OpenAiApiModel) : string {
     switch (value) {
-        case OpenAiApiModel.DAVINCI        : return 'text-davinci-003';
+        case OpenAiApiModel.DAVINCI           : return 'text-davinci-003';
+        case OpenAiApiModel.DAVINCI_EDIT_TEXT : return 'text-davinci-edit-001';
+        case OpenAiApiModel.DAVINCI_EDIT_CODE : return 'code-davinci-edit-001';
         case OpenAiApiModel.CURIE          : return 'text-curie-001';
         case OpenAiApiModel.BABBAGE        : return 'text-babbage-001';
         case OpenAiApiModel.ADA            : return 'text-ada-001';
@@ -209,6 +217,20 @@ export function parseOpenApiModel (value: any) : OpenAiApiModel | undefined {
     if (value === undefined) return undefined;
     switch(`${value}`.toLowerCase()) {
 
+        case 'edit' :
+        case 'text-edit' :
+        case 'text_edit' :
+        case 'text_davinci_edit' :
+        case 'text-davinci-edit-001' : return OpenAiApiModel.DAVINCI_EDIT_TEXT;
+
+        case 'code_edit' :
+        case 'code-edit' :
+        case 'code_davinci_edit_003' :
+        case 'code-davinci-edit-001' : return OpenAiApiModel.DAVINCI_EDIT_CODE;
+
+        case 'text' :
+        case 'text_davinci' :
+        case 'text-davinci' :
         case 'text_davinci_003' :
         case 'text-davinci-003' :
         case 'davinci'          : return OpenAiApiModel.DAVINCI;

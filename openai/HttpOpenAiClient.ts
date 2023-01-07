@@ -40,6 +40,8 @@ import { ReadonlyJsonAny } from "../Json";
 import { OpenAiApiModel } from "./types/OpenAiApiModel";
 import { OpenAiModelUtils } from "./OpenAiModelUtils";
 import { OpenAiClient } from "./OpenAiClient";
+import { explainOpenAiEditResponseDTO, isOpenAiEditResponseDTO, OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
+import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
 
 const LOG = LogService.createLogger('HttpOpenAiClient');
 
@@ -50,6 +52,14 @@ const LOG = LogService.createLogger('HttpOpenAiClient');
  * @default
  */
 export const OPENAPI_API_URL = 'https://api.openai.com';
+
+/**
+ * @constant {string}
+ * @default '/v1/edits'
+ *
+ * The path for the OpenAI API's `GET /v1/edits` endpoint.
+ */
+export const OPENAI_API_POST_EDITS_PATH = '/v1/edits';
 
 /**
  * @constant {string}
@@ -235,6 +245,61 @@ export class HttpOpenAiClient implements OpenAiClient {
         if (!isOpenAiCompletionResponseDTO(result)) {
             LOG.debug(`getCompletion: result = `, result);
             throw new TypeError(`Result was not OpenAiCompletionResponseDTO: ` + explainOpenAiCompletionResponseDTO(result));
+        }
+        return result;
+    }
+
+    /**
+     * Calls the OpenAI APIs text edit endpoint to generate text based on
+     * the given input and instruction.
+     *
+     * Default values for the optional parameters are selected based on the model.
+     *
+     * @param {string} instruction - The instruction to use for text editing.
+     * @param {string} input - The input to use for text editing.
+     * @param {OpenAiApiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
+     *                                         model to use for text completion.
+     * @param {number} [n] - The maximum number of tokens (words and
+     *                                punctuation) to generate in the completion.
+     * @param {number} [temperature] - Controls the "creativity" of the
+     *                                 completion. A higher value means the model
+     *                                 will take more risks.
+     * @param {number} [top_p] - Controls the "confidence" of the completion.
+     *                           A lower value means the model will be more
+     *                           confident in its words.
+     * @returns {Promise<OpenAiCompletionResponseDTO>} - A promise that resolves
+     *                                      to the response from the OpenAI API.
+     * @throws {HttpError} - If the OpenAI API returns an error.
+     * @throws {TypeError} - If the OpenAI API returns a response in an
+     *                       unexpected format.
+     */
+    public async getEdit (
+        instruction        : string,
+        input             ?: string,
+        model              : OpenAiApiModel = OpenAiApiModel.DAVINCI,
+        n                 ?: number,
+        temperature       ?: number,
+        top_p             ?: number
+    ) : Promise<OpenAiEditResponseDTO> {
+        const body = createOpenAiEditRequestDTO(
+            instruction,
+            input,
+            model,
+            n,
+            temperature,
+            top_p
+        );
+        const headers = {
+            ["Authorization"]: AuthorizationUtils.createBearerHeader(this._apiKey)
+        };
+        const result = await HttpService.postJson(
+            `${this._url}${OPENAI_API_POST_EDITS_PATH}`,
+            body as unknown as ReadonlyJsonAny,
+            headers
+        );
+        if (!isOpenAiEditResponseDTO(result)) {
+            LOG.debug(`getEdit: result = `, result);
+            throw new TypeError(`Result was not OpenAiEditResponseDTO: ` + explainOpenAiEditResponseDTO(result));
         }
         return result;
     }

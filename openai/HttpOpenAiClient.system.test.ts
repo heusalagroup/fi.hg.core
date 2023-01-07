@@ -2,7 +2,7 @@
 
 // NOTE!
 //
-// This test calls the real OpenAI API if the `OPENAI_API_KEY` is provided.
+// These tests calls the real OpenAI API if the `OPENAI_API_KEY` is provided.
 //
 
 import { HttpOpenAiClient } from './HttpOpenAiClient';
@@ -10,6 +10,9 @@ import { HgNode } from "../../node/HgNode";
 import { LogLevel } from "../types/LogLevel";
 import { RequestClient } from "../RequestClient";
 import { HttpService } from "../HttpService";
+import { OpenAiApiModel } from "./types/OpenAiApiModel";
+import { isNumber } from "../types/Number";
+import { isArray } from "../types/Array";
 
 const OPENAI_API_KEY  = process?.env?.OPENAI_API_KEY  ?? '';
 const OPENAI_BASE_URL = process?.env?.OPENAI_BASE_URL ?? 'https://api.openai.com';
@@ -71,6 +74,49 @@ HttpService.setLogLevel(LogLevel.NONE);
                 expect(response.choices).toBeInstanceOf(Array);
             });
 
+        });
+
+        describe("getEdit", () => {
+            it("should make a request to the OpenAI API's text edit endpoint and return the response", async () => {
+
+                // Set up test data
+                const input = "What day of the wek is it?";
+                const instruction = "Fix the spelling mistakes";
+                const model: OpenAiApiModel = OpenAiApiModel.DAVINCI_EDIT_TEXT;
+
+                // Call the getEdit method
+                const response = await client.getEdit(instruction, input, model);
+
+                console.log(`response = ${JSON.stringify(response)}`);
+
+                /**
+                 * {
+                 *   "object": "edit",
+                 *   "created": 1589478378,
+                 *   "choices": [
+                 *     {
+                 *       "text": "What day of the week is it?",
+                 *       "index": 0,
+                 *     }
+                 *   ],
+                 *   "usage": {
+                 *     "prompt_tokens": 25,
+                 *     "completion_tokens": 32,
+                 *     "total_tokens": 57
+                 *   }
+                 * }
+                 */
+
+                // Verify that the response is correct
+                expect(response?.object).toStrictEqual("edit");
+                expect(isNumber( response?.created )).toBe(true);
+                expect(isArray(response?.choices)).toBe(true);
+                expect(response?.choices[0]?.text).toMatch(/What day of the week is it?/);
+                expect(isNumber(response?.usage?.prompt_tokens)).toBe(true);
+                expect(isNumber(response?.usage?.completion_tokens)).toBe(true);
+                expect(isNumber(response?.usage?.total_tokens)).toBe(true);
+
+            });
         });
 
     });

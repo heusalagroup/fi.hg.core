@@ -2,6 +2,7 @@
 
 import { OpenAiApiModel } from "./types/OpenAiApiModel";
 import { OpenAiCompletionResponseDTO } from "./dto/OpenAiCompletionResponseDTO";
+import { OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 
 /**
  * A client for interacting with the OpenAI API.
@@ -70,13 +71,45 @@ export interface OpenAiClient {
      */
     getCompletion (
         prompt             : string,
-        model              : OpenAiApiModel,
+        model             ?: OpenAiApiModel,
         max_tokens        ?: number,
         temperature       ?: number,
         top_p             ?: number,
         frequency_penalty ?: number,
         presence_penalty  ?: number
     ) : Promise<OpenAiCompletionResponseDTO>;
+
+    /**
+     * Calls the OpenAI APIs text edit endpoint to generate text based on
+     * the given input and instruction.
+     *
+     * Default values for the optional parameters are selected based on the model.
+     *
+     * @param {string} input - The input to use for text editing.
+     * @param {string} instruction - The instruction to use for text editing.
+     * @param {OpenAiApiModel} [model=OpenAiApiModel.DAVINCI] - The OpenAI API
+     *                                         model to use for text completion.
+     * @param {number} [n] -
+     * @param {number} [temperature] - Controls the "creativity" of the
+     *                                 completion. A higher value means the model
+     *                                 will take more risks.
+     * @param {number} [top_p] - Controls the "confidence" of the completion.
+     *                           A lower value means the model will be more
+     *                           confident in its words.
+     * @returns {Promise<OpenAiCompletionResponseDTO>} - A promise that resolves
+     *                                      to the response from the OpenAI API.
+     * @throws {HttpError} - If the OpenAI API returns an error.
+     * @throws {TypeError} - If the OpenAI API returns a response in an
+     *                       unexpected format.
+     */
+    getEdit (
+        instruction        : string,
+        input             ?: string,
+        model             ?: OpenAiApiModel,
+        n                 ?: number,
+        temperature       ?: number,
+        top_p             ?: number
+    ) : Promise<OpenAiEditResponseDTO>;
 
 }
 

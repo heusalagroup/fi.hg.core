@@ -1,12 +1,14 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { OPENAI_API_POST_COMPLETIONS_PATH, HttpOpenAiClient } from './HttpOpenAiClient';
+import { HttpOpenAiClient, OPENAI_API_POST_COMPLETIONS_PATH, OPENAI_API_POST_EDITS_PATH } from './HttpOpenAiClient';
 import { OpenAiApiModel } from "./types/OpenAiApiModel";
 import { HttpService } from "../HttpService";
 import { createOpenAiCompletionResponseDTO } from "./dto/OpenAiCompletionResponseDTO";
 import { createOpenAiCompletionResponseChoice } from "./dto/OpenAiCompletionResponseChoice";
 import { ReadonlyJsonAny } from "../Json";
 import { createOpenAiCompletionResponseUsage } from "./dto/OpenAiCompletionResponseUsage";
+import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
+import { OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 
 describe('HttpOpenAiClient', () => {
 
@@ -46,6 +48,7 @@ describe('HttpOpenAiClient', () => {
 
     afterEach(() => {
         HttpOpenAiClient.setDefaultUrl(prevDefaultUrl);
+        postJsonSpy.mockClear();
     });
 
     describe('create', () => {
@@ -93,5 +96,64 @@ describe('HttpOpenAiClient', () => {
             expect(response.choices).toBeInstanceOf(Array);
         });
     });
+
+    describe("getEdit", () => {
+        it("should make a request to the OpenAI API's text edit endpoint and return the response", async () => {
+            // Set up test data
+            const input = "This is some text.";
+            const instruction = "Change 'some' to 'an'.";
+            const model: OpenAiApiModel = OpenAiApiModel.DAVINCI;
+            const n = 1;
+            const temperature = 0.5;
+            const topP = 1;
+
+            // Mock the response from the OpenAI API
+            const mockResponse: ReadonlyJsonAny = {
+                "object": "edit",
+                "created": 1589478378,
+                "choices": [
+                    {
+                        "text": "What day of the week is it?",
+                        "index": 0,
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 25,
+                    "completion_tokens": 32,
+                    "total_tokens": 57
+                }
+            };
+
+            // Set up the mock for HttpService.post
+            jest.spyOn(HttpService, "postJson").mockImplementation(
+                (_url: string, _body?: ReadonlyJsonAny | undefined, _headers?: ReadonlyJsonAny | undefined) : Promise<ReadonlyJsonAny|undefined> => {
+                    return Promise.resolve(mockResponse);
+                }
+            );
+
+            // Call the getEdit method
+            const response = await client.getEdit(instruction, input, model, n, temperature, topP);
+
+            // Verify that the response is correct
+            expect(response).toEqual(mockResponse);
+
+            // Verify that HttpService.post was called with the correct arguments
+            expect(HttpService.postJson).toHaveBeenCalledWith(
+                `${client.getUrl()}${OPENAI_API_POST_EDITS_PATH}`,
+                createOpenAiEditRequestDTO(
+                     instruction,
+                     input,
+                     model,
+                     n,
+                     temperature,
+                     topP
+                ),
+                {
+                    "Authorization": `Bearer ${apiKey}`
+                }
+            );
+        });
+    });
+
 
 });
