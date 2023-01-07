@@ -87,7 +87,7 @@ HttpService.setLogLevel(LogLevel.NONE);
                 // Call the getEdit method
                 const response = await client.getEdit(instruction, input, model);
 
-                console.log(`response = ${JSON.stringify(response)}`);
+                // console.log(`response = ${JSON.stringify(response)}`);
 
                 /**
                  * {
