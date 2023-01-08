@@ -488,19 +488,31 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             return CommandExitStatus.USAGE;
         }
 
+        LOG.debug(`describe: args: `, args);
+
         if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI);
         if (this._maxTokens   === undefined) this.setN(3600);
         if (this._temperature === undefined) this.setTemperature(0.1);
         if (this._topP        === undefined) this.setTopP(0.9);
 
+        const language = this._language ?? 'TypeScript';
+        LOG.debug(`describe: language: `, language);
+
+        let verbose = false;
         if (args[0] === 'verbose') {
-            const instruction = describeCodeInstruction('TypeScript', true);
-            return this.completion([ instruction, ...args ]);
-        } else {
             const [arg1, ...restArgs] = args;
-            const instruction = describeCodeInstruction('TypeScript', false);
-            return this.completion([ instruction, ...restArgs ]);
+            args = restArgs;
+            verbose = true;
+            if (args.length === 0) {
+                return CommandExitStatus.USAGE;
+            }
+            LOG.debug(`describe: params: `, args, verbose);
         }
+
+        const instruction = describeCodeInstruction(language, verbose);
+        LOG.debug(`describe: instruction: `, instruction);
+
+        return this.completion([ instruction, ...args ]);
 
     }
 
