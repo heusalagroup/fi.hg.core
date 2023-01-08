@@ -7,14 +7,12 @@ describe("exampleTypeScriptTest", () => {
         const className = "MyClass";
         const methodName = "myMethod";
         const testName = "can do something";
-        const expectedTest = `\`\`\`typescript
-describe("MyClass", () => {
+        const expectedTest = `describe("MyClass", () => {
     describe("myMethod", () => {
         it("can do something", () => {
         });
     });
 });
-\`\`\`
 `;
         expect(exampleTypeScriptTest(className, methodName, testName)).toBe(expectedTest);
     });

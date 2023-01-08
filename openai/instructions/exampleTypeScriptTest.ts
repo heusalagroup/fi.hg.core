@@ -12,14 +12,12 @@ import { replaceTemplate } from "../../functions/replaceTemplate";
  *   * `{{TEST_NAME}}` - The test name, e.g. `can ...`.
  * @type {string}
  */
-export const EXAMPLE_TESTS_FOR_TYPESCRIPT_JEST = `\`\`\`typescript
-describe("{{CLASS_NAME}}", () => {
+export const EXAMPLE_TESTS_FOR_TYPESCRIPT_JEST = `describe("{{CLASS_NAME}}", () => {
     describe("{{METHOD_NAME}}", () => {
         it("{{TEST_NAME}}", () => {
         });
     });
 });
-\`\`\`
 `;
 
 /**

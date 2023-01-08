@@ -7,9 +7,10 @@ describe("writeTestsInstruction", () => {
         const language = "JavaScript";
         const framework = "Mocha";
         const examples = "Some example tests\n";
-        const expectedInstruction = `Write JavaScript tests.
-Framework: Mocha
-Examples:
+        const expectedInstruction = `// JavaScript
+// Write test cases.
+// Framework: Mocha
+
 Some example tests
 `;
 
