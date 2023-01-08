@@ -17,9 +17,11 @@ import { OpenAiError } from "../../openai/dto/OpenAiError";
 import { writeTestsInstruction } from "../../openai/instructions/writeTestsInstruction";
 import { exampleTypeScriptTest } from "../../openai/instructions/exampleTypeScriptTest";
 import { documentCodeInstruction } from "../../openai/instructions/documentCodeInstruction";
+import { describeCodeInstruction } from "../../openai/instructions/describeCodeInstruction";
 
 export class HgAiCommandServiceImpl implements HgAiCommandService {
 
+    private _iterations : number | undefined;
     private _client: OpenAiClient;
     private _model: OpenAiModel | string | undefined;
     private _echo: boolean | undefined;
@@ -45,11 +47,15 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         this._client = client;
     }
 
+    public setIterations (value : number | undefined) : void {
+        this._iterations = value;
+    }
+
     /**
      * Sets the model to use for the next call to OpenAI API
      * @param value
      */
-    public setModel (value: string): void {
+    public setModel (value: string|undefined): void {
         this._model = value;
     }
 
@@ -57,7 +63,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the stop option for the next call to OpenAI API
      * @param value
      */
-    public setStop (value: string): void {
+    public setStop (value: string|undefined): void {
         this._stop = value;
     }
 
@@ -65,7 +71,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the user option for the next call to OpenAI API
      * @param value
      */
-    public setUser (value: string): void {
+    public setUser (value: string|undefined): void {
         this._user = value;
     }
 
@@ -73,7 +79,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the logProbs option for the next call to OpenAI API
      * @param value
      */
-    public setLogProbs (value: number): void {
+    public setLogProbs (value: number | undefined): void {
         this._logProbs = value;
     }
 
@@ -81,7 +87,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the best of option for the next call to OpenAI API
      * @param value
      */
-    public setBestOf (value: number): void {
+    public setBestOf (value: number | undefined): void {
         this._bestOf = value;
     }
 
@@ -89,7 +95,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the presence penalty option for the next call to OpenAI API
      * @param value
      */
-    public setPresencePenalty (value: number): void {
+    public setPresencePenalty (value: number | undefined): void {
         this._presencePenalty = value;
     }
 
@@ -97,7 +103,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the frequency penalty property for the next call to OpenAI API
      * @param value
      */
-    public setFrequencyPenalty (value: number): void {
+    public setFrequencyPenalty (value: number | undefined): void {
         this._frequencyPenalty = value;
     }
 
@@ -113,7 +119,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the n property for the next call to OpenAI API
      * @param value
      */
-    public setN (value: number): void {
+    public setN (value: number | undefined): void {
         this._n = value;
     }
 
@@ -122,7 +128,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      *
      * @param value
      */
-    public setTopP (value: number): void {
+    public setTopP (value: number | undefined): void {
         this._topP = value;
     }
 
@@ -130,7 +136,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * Sets the temperature property for next call to OpenAI API
      * @param value
      */
-    public setTemperature (value: number): void {
+    public setTemperature (value: number | undefined): void {
         this._temperature = value;
     }
 
@@ -139,7 +145,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      *
      * @param value
      */
-    public setMaxTokens (value: number): void {
+    public setMaxTokens (value: number | undefined): void {
         this._maxTokens = value;
     }
 
@@ -184,6 +190,11 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
                 case 'doc':
                 case 'document':
                     return await this.document(freeArgs);
+
+                case 'dd':
+                case 'desc':
+                case 'describe':
+                    return await this.describe(freeArgs);
 
             }
             console.error(`Unknown command: ${arg}`);
@@ -411,12 +422,71 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * @param args
      */
     public async document (args: readonly string[]): Promise<CommandExitStatus> {
+
+        if (args.length === 0) {
+            return CommandExitStatus.USAGE;
+        }
+
         if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_CODE);
         if (this._n           === undefined) this.setN(1);
-        if (this._temperature === undefined) this.setTemperature(0);
+        if (this._temperature === undefined) this.setTemperature(0.1);
+        if (this._topP        === undefined) this.setTopP(0.9);
+        if (this._iterations  === undefined) this.setIterations(4);
         const instruction = documentCodeInstruction('TypeScript', 'JSDoc');
         return this.edit([ instruction, ...args ]);
     }
+
+    /**
+     * Writes descriptions about code.
+     *
+     * Example `describe('./keys.ts')` will print out description about the code:
+     *
+     * ```
+     * This TypeScript code is an exported function called "keys" that takes two
+     * parameters, "value" and "isKey". The "value" parameter is of type "any"
+     * and the "isKey" parameter is of type "TestCallbackNonStandard". The
+     * function returns an array of type "T" which is a generic type that extends
+     * the type "keyof any".
+     *
+     * The function starts by checking if the "value" parameter is an array. If
+     * it is, it uses the "map" function to create an array of indexes from the
+     * "value" array. It then uses the "filter" function to filter out the
+     * indexes that pass the "isKey" test. The filtered indexes are then
+     * returned as an array of type "T".
+     *
+     * If the "value" parameter is an object, the function uses the
+     * "Reflect.ownKeys" function to get an array of all the keys of the object.
+     * It then uses the "filter" function to filter out the keys that pass the
+     * "isKey" test. The filtered keys are then returned as an array of type "T".
+     *
+     * If the "value" parameter is neither an array nor an object, the function
+     * returns an empty array of type "T".
+     * ```
+     *
+     * @param args
+     */
+    public async describe (args: readonly string[]) : Promise<CommandExitStatus> {
+
+        if (args.length === 0) {
+            return CommandExitStatus.USAGE;
+        }
+
+        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_TEXT);
+        if (this._maxTokens   === undefined) this.setN(3600);
+        if (this._temperature === undefined) this.setTemperature(0.1);
+        if (this._topP        === undefined) this.setTopP(0.9);
+
+        if (args[0] === 'verbose') {
+            const instruction = describeCodeInstruction('TypeScript', true);
+            return this.completion([ instruction, ...args ]);
+        } else {
+            const [arg1, ...restArgs] = args;
+            const instruction = describeCodeInstruction('TypeScript', false);
+            return this.completion([ instruction, ...restArgs ]);
+        }
+
+    }
+
 
     /**
      * Loop through arguments and if the argument exists on the file system,
@@ -438,5 +508,6 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             }
         );
     }
+
 
 }

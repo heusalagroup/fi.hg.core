@@ -12,18 +12,19 @@ import { CommandExitStatus } from "../types/CommandExitStatus";
  */
 export interface HgAiCommandService {
 
-    setModel(value: string) : void;
-    setStop(value: string) : void;
-    setUser(value: string) : void;
-    setLogProbs(value: number) : void;
-    setBestOf(value: number) : void;
-    setPresencePenalty(value: number) : void;
-    setFrequencyPenalty(value: number) : void;
-    setEcho(value: boolean) : void;
-    setN(value: number) : void;
-    setTopP(value: number) : void;
-    setTemperature(value: number) : void;
-    setMaxTokens(value: number) : void;
+    setIterations(value: number | undefined) : void;
+    setModel(value: string | undefined) : void;
+    setStop(value: string | undefined) : void;
+    setUser(value: string | undefined) : void;
+    setLogProbs(value: number | undefined) : void;
+    setBestOf(value: number | undefined) : void;
+    setPresencePenalty(value: number | undefined) : void;
+    setFrequencyPenalty(value: number | undefined) : void;
+    setEcho(value: boolean | undefined) : void;
+    setN(value: number | undefined) : void;
+    setTopP(value: number | undefined) : void;
+    setTemperature(value: number | undefined) : void;
+    setMaxTokens(value: number | undefined) : void;
 
     /**
      * The main command line handler
@@ -102,5 +103,36 @@ export interface HgAiCommandService {
      * @param args
      */
     test (args: readonly string[]) : Promise<CommandExitStatus>;
+
+    /**
+     * Writes descriptions about code.
+     *
+     * Example `describe('./keys.ts')` will print out description about the code:
+     *
+     * ```
+     * This TypeScript code is an exported function called "keys" that takes two
+     * parameters, "value" and "isKey". The "value" parameter is of type "any"
+     * and the "isKey" parameter is of type "TestCallbackNonStandard". The
+     * function returns an array of type "T" which is a generic type that extends
+     * the type "keyof any".
+     *
+     * The function starts by checking if the "value" parameter is an array. If
+     * it is, it uses the "map" function to create an array of indexes from the
+     * "value" array. It then uses the "filter" function to filter out the
+     * indexes that pass the "isKey" test. The filtered indexes are then
+     * returned as an array of type "T".
+     *
+     * If the "value" parameter is an object, the function uses the
+     * "Reflect.ownKeys" function to get an array of all the keys of the object.
+     * It then uses the "filter" function to filter out the keys that pass the
+     * "isKey" test. The filtered keys are then returned as an array of type "T".
+     *
+     * If the "value" parameter is neither an array nor an object, the function
+     * returns an empty array of type "T".
+     * ```
+     *
+     * @param args
+     */
+    describe (args: readonly string[]) : Promise<CommandExitStatus>;
 
 }
