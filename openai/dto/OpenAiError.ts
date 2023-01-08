@@ -2,10 +2,12 @@
 
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explain, explainProperty } from "../../types/explain";
+import { explain, explainOk, explainProperty } from "../../types/explain";
 import { explainString, isString } from "../../types/String";
 import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";
+import { isUndefined } from "../../types/undefined";
+import { isBooleanOrUndefined } from "../../types/Boolean";
 
 export interface OpenAiError {
     readonly message : string;
@@ -46,6 +48,14 @@ export function explainOpenAiError (value: any) : string {
             , explainProperty("type", explainString(value?.type))
         ]
     );
+}
+
+export function isOpenAiErrorOrUndefined (value : unknown) : value is undefined | OpenAiError {
+    return isUndefined(value) || isOpenAiError(value);
+}
+
+export function explainOpenAiErrorOrUndefined (value: unknown): string {
+    return isOpenAiErrorOrUndefined(value) ? explainOk() : `not OpenAiError or undefined`;
 }
 
 export function stringifyOpenAiError (value : OpenAiError) : string {
