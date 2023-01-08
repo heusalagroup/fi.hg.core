@@ -429,8 +429,12 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if (this._n           === undefined) this.setN(1);
         if (this._temperature === undefined) this.setTemperature(0);
         // TODO: Add automatic detection for class names, etc.
+
+        const language = this._language ?? 'TypeScript';
+        LOG.debug(`test: language: `, language);
+
         const examples = exampleTypeScriptTest('ExampleClassName', 'exampleMethodName', 'should ...');
-        const instruction = writeTestsInstruction('TypeScript', 'Jest', examples);
+        const instruction = writeTestsInstruction(language, 'Jest', examples);
         return this.edit([ instruction, ...args ]);
     }
 
@@ -444,12 +448,15 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             return CommandExitStatus.USAGE;
         }
 
+        const language = this._language ?? 'TypeScript';
+        LOG.debug(`document: language: `, language);
+
         if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_CODE);
         if (this._n           === undefined) this.setN(1);
         if (this._temperature === undefined) this.setTemperature(0.1);
         if (this._topP        === undefined) this.setTopP(0.9);
         if (this._iterations  === undefined) this.setIterations(4);
-        const instruction = documentCodeInstruction('TypeScript', 'JSDoc');
+        const instruction = documentCodeInstruction(language, 'JSDoc');
         return this.edit([ instruction, ...args ]);
     }
 
@@ -491,7 +498,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         LOG.debug(`describe: args: `, args);
 
         if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI);
-        if (this._maxTokens   === undefined) this.setN(3600);
+        if (this._maxTokens   === undefined) this.setMaxTokens(3600);
         if (this._temperature === undefined) this.setTemperature(0.1);
         if (this._topP        === undefined) this.setTopP(0.9);
 
