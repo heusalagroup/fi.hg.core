@@ -481,7 +481,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             return CommandExitStatus.USAGE;
         }
 
-        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_TEXT);
+        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI);
         if (this._maxTokens   === undefined) this.setN(3600);
         if (this._temperature === undefined) this.setTemperature(0.1);
         if (this._topP        === undefined) this.setTopP(0.9);
