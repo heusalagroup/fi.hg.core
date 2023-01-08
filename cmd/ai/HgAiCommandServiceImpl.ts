@@ -391,7 +391,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      * @param args
      */
     public async test (args: readonly string[]): Promise<CommandExitStatus> {
-        if (this._model       === undefined) this.setModel("code-davinci-002");
+        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_CODE);
         if (this._n           === undefined) this.setN(1);
         if (this._temperature === undefined) this.setTemperature(0);
         // TODO: Add automatic detection for class names, etc.

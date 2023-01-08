@@ -309,7 +309,7 @@ describe("HgAiCommandServiceImpl", () => {
             expect(spyGetEdit).toHaveBeenCalledWith(
                 instruction,
                 input,
-                "code-davinci-002",
+                "code-davinci-edit-001",
                 1,
                 0
             );

@@ -12,31 +12,12 @@ import { replaceTemplate } from "../../functions/replaceTemplate";
  *   * `{{TEST_NAME}}` - The test name, e.g. `can ...`.
  * @type {string}
  */
-export const EXAMPLE_TESTS_FOR_TYPESCRIPT_JEST = `### {{CLASS_NAME}}.ts
-
-\`\`\`typescript
-export class {{CLASS_NAME}} {
-    // ...
-    public {{METHOD_NAME}} ( ... ) {
-        // ...
-    }
-    // ...
-}
-\`\`\`
-
-### {{CLASS_NAME}}.test.ts
-
-\`\`\`typescript
-import { {{CLASS_NAME}} } from "./{{CLASS_NAME}}";
-
+export const EXAMPLE_TESTS_FOR_TYPESCRIPT_JEST = `\`\`\`typescript
 describe("{{CLASS_NAME}}", () => {
-    // ...
     describe("{{METHOD_NAME}}", () => {
         it("{{TEST_NAME}}", () => {
-            // Implement test
         });
     });
-    // ...
 });
 \`\`\`
 `;

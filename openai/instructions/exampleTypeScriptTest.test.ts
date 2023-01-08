@@ -7,31 +7,12 @@ describe("exampleTypeScriptTest", () => {
         const className = "MyClass";
         const methodName = "myMethod";
         const testName = "can do something";
-        const expectedTest = `### MyClass.ts
-
-\`\`\`typescript
-export class MyClass {
-    // ...
-    public myMethod ( ... ) {
-        // ...
-    }
-    // ...
-}
-\`\`\`
-
-### MyClass.test.ts
-
-\`\`\`typescript
-import { MyClass } from "./MyClass";
-
+        const expectedTest = `\`\`\`typescript
 describe("MyClass", () => {
-    // ...
     describe("myMethod", () => {
         it("can do something", () => {
-            // Implement test
         });
     });
-    // ...
 });
 \`\`\`
 `;

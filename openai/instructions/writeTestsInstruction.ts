@@ -14,17 +14,10 @@ import { exampleTypeScriptTest } from "./exampleTypeScriptTest";
  *                      See `EXAMPLE_TESTS_FOR_TYPESCRIPT_JEST` below.
  * @type {string}
  */
-export const WRITE_TESTS_INSTRUCTION = `Write tests for the provided source code.
-
-Programming language: {{LANG}}
-
-Testing framework: {{FRAMEWORK}}
-
+export const WRITE_TESTS_INSTRUCTION = `Write {{LANG}} tests.
+Framework: {{FRAMEWORK}}
 Examples:
-
-{{EXAMPLES}}
-
-`;
+{{EXAMPLES}}`;
 
 /**
  * Generates instructions on how to write tests for the provided source code.
