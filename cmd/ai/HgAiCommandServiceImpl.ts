@@ -18,6 +18,9 @@ import { writeTestsInstruction } from "../../openai/instructions/writeTestsInstr
 import { exampleTypeScriptTest } from "../../openai/instructions/exampleTypeScriptTest";
 import { documentCodeInstruction } from "../../openai/instructions/documentCodeInstruction";
 import { describeCodeInstruction } from "../../openai/instructions/describeCodeInstruction";
+import { LogService } from "../../LogService";
+
+const LOG = LogService.createLogger('HgAiCommandServiceImpl');
 
 export class HgAiCommandServiceImpl implements HgAiCommandService {
 
@@ -336,7 +339,10 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if ( args.length === 0 ) {
             return CommandExitStatus.USAGE;
         }
+        LOG.debug(`args = `, args);
+
         const prompt: string = (await this._populateFiles(args)).join('\n\n');
+        LOG.debug(`prompt = "${prompt}"`);
 
         try {
 
@@ -349,6 +355,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
                 this._frequencyPenalty,
                 this._presencePenalty
             );
+            LOG.debug(`result = `, result);
 
             const errorChoices = filter(
                 result.choices,
