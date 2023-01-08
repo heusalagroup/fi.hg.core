@@ -1,12 +1,11 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
-    explainOpenAiCompletionResponseChoice,
-    isOpenAiCompletionResponseChoice,
+    explainOpenAiCompletionResponseChoice, explainOpenAiCompletionResponseChoiceOrError,
+    isOpenAiCompletionResponseChoice, isOpenAiCompletionResponseChoiceOrError,
     OpenAiCompletionResponseChoice
 } from "./OpenAiCompletionResponseChoice";
-import { explainOpenAiModel, isOpenAiModel, OpenAiModel
-} from "../types/OpenAiModel";
+import { OpenAiModel } from "../types/OpenAiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 import { explainString, isString } from "../../types/String";
@@ -16,6 +15,7 @@ import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";
 import { explainOpenAiCompletionResponseUsage, isOpenAiCompletionResponseUsage, OpenAiCompletionResponseUsage } from "./OpenAiCompletionResponseUsage";
 import { explainNumber, isNumber } from "../../types/Number";
+import { OpenAiError } from "./OpenAiError";
 
 /**
  * @typedef {Object} OpenAiCompletionResponseDTO
@@ -44,11 +44,11 @@ export interface OpenAiCompletionResponseDTO {
      *
      * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-model
      */
-    readonly model: OpenAiModel;
+    readonly model: OpenAiModel | string;
 
     /**
      */
-    readonly choices: readonly OpenAiCompletionResponseChoice[];
+    readonly choices: readonly (OpenAiCompletionResponseChoice| OpenAiError)[];
 
     /**
      *
@@ -72,8 +72,8 @@ export function createOpenAiCompletionResponseDTO (
     id: string,
     object: string,
     created: number,
-    model: OpenAiModel,
-    choices: readonly OpenAiCompletionResponseChoice[],
+    model: OpenAiModel | string,
+    choices: readonly (OpenAiCompletionResponseChoice | OpenAiError)[],
     usage: OpenAiCompletionResponseUsage
 ) : OpenAiCompletionResponseDTO {
     return {
@@ -106,8 +106,8 @@ export function isOpenAiCompletionResponseDTO (value: unknown) : value is OpenAi
         && isString(value?.id)
         && isString(value?.object)
         && isNumber(value?.created)
-        && isOpenAiModel(value?.model)
-        && isArrayOf<OpenAiCompletionResponseChoice>(value?.choices, isOpenAiCompletionResponseChoice)
+        && isString(value?.model)
+        && isArrayOf<OpenAiCompletionResponseChoice|OpenAiError>(value?.choices, isOpenAiCompletionResponseChoiceOrError)
         && isOpenAiCompletionResponseUsage(value?.usage)
     );
 }
@@ -133,12 +133,12 @@ export function explainOpenAiCompletionResponseDTO (value: any) : string {
             , explainProperty("id", explainString(value?.id))
             , explainProperty("object", explainString(value?.object))
             , explainProperty("created", explainNumber(value?.created))
-            , explainProperty("model", explainOpenAiModel(value?.model))
-            , explainProperty("choices", explainArrayOf<OpenAiCompletionResponseChoice>(
-                "OpenAiCompletionResponseChoice",
-                explainOpenAiCompletionResponseChoice,
-                value?.responses,
-                isOpenAiCompletionResponseChoice
+            , explainProperty("model", explainString(value?.model))
+            , explainProperty("choices", explainArrayOf<OpenAiCompletionResponseChoice|OpenAiError>(
+                "OpenAiCompletionResponseChoice|OpenAiError",
+                explainOpenAiCompletionResponseChoiceOrError,
+                value?.choices,
+                isOpenAiCompletionResponseChoiceOrError
             ))
             , explainProperty("usage", explainOpenAiCompletionResponseUsage(value?.usage))
         ]

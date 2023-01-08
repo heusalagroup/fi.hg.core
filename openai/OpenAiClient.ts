@@ -71,12 +71,12 @@ export interface OpenAiClient {
      */
     getCompletion (
         prompt             : string,
-        model             ?: OpenAiModel | string,
-        max_tokens        ?: number,
-        temperature       ?: number,
-        top_p             ?: number,
-        frequency_penalty ?: number,
-        presence_penalty  ?: number
+        model             ?: OpenAiModel | string | undefined,
+        max_tokens        ?: number | undefined,
+        temperature       ?: number | undefined,
+        top_p             ?: number | undefined,
+        frequency_penalty ?: number | undefined,
+        presence_penalty  ?: number | undefined
     ) : Promise<OpenAiCompletionResponseDTO>;
 
     /**
@@ -104,11 +104,11 @@ export interface OpenAiClient {
      */
     getEdit (
         instruction        : string,
-        input             ?: string,
-        model             ?: OpenAiModel | string,
-        n                 ?: number,
-        temperature       ?: number,
-        top_p             ?: number
+        input             ?: string | undefined,
+        model             ?: OpenAiModel | string | undefined,
+        n                 ?: number | undefined,
+        temperature       ?: number | undefined,
+        top_p             ?: number | undefined
     ) : Promise<OpenAiEditResponseDTO>;
 
 }

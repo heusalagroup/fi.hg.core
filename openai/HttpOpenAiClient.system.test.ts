@@ -111,7 +111,7 @@ HttpService.setLogLevel(LogLevel.NONE);
                 expect(response?.object).toStrictEqual("edit");
                 expect(isNumber( response?.created )).toBe(true);
                 expect(isArray(response?.choices)).toBe(true);
-                expect(response?.choices[0]?.text).toMatch(/What day of the week is it?/);
+                expect((response?.choices[0] as any)?.text).toMatch(/What day of the week is it?/);
                 expect(isNumber(response?.usage?.prompt_tokens)).toBe(true);
                 expect(isNumber(response?.usage?.completion_tokens)).toBe(true);
                 expect(isNumber(response?.usage?.total_tokens)).toBe(true);

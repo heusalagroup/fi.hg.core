@@ -6,6 +6,7 @@ import { LogService } from "./LogService";
 import { ReadonlyJsonAny } from "./Json";
 import { replaceAll } from "./functions/replaceAll";
 import { keys } from "./functions/keys";
+import { replaceTemplate } from "./functions/replaceTemplate";
 
 const LOG = LogService.createLogger('SyncFileUtils');
 
@@ -76,16 +77,9 @@ export class SyncFileUtils {
         toFile: string,
         replacements: {readonly [name: string]: string}
     ) {
-
-        let fileContentString = SyncFileUtils.readTextFile(sourceFile);
-
-        keys(replacements).forEach((key: string) => {
-            const value = replacements[key];
-            fileContentString = replaceAll(fileContentString, key, value);
-        });
-
-        SyncFileUtils.writeTextFile(toFile, fileContentString);
-
+        const fileContentString = SyncFileUtils.readTextFile(sourceFile);
+        const contentString = replaceTemplate(fileContentString, replacements);
+        SyncFileUtils.writeTextFile(toFile, contentString);
     }
 
     static copyTextFileWithReplacementsIfMissing (

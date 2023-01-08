@@ -16,6 +16,7 @@ import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";
 import { explainOpenAiEditResponseUsage, isOpenAiEditResponseUsage, OpenAiEditResponseUsage } from "./OpenAiEditResponseUsage";
 import { explainNumber, isNumber } from "../../types/Number";
+import { OpenAiError } from "./OpenAiError";
 
 /**
  * @typedef {Object} OpenAiEditResponseDTO
@@ -36,7 +37,7 @@ export interface OpenAiEditResponseDTO {
 
     /**
      */
-    readonly choices: readonly OpenAiEditResponseChoice[];
+    readonly choices: readonly (OpenAiEditResponseChoice | OpenAiError)[];
 
     /**
      *
@@ -113,7 +114,7 @@ export function explainOpenAiEditResponseDTO (value: any) : string {
             , explainProperty("choices", explainArrayOf<OpenAiEditResponseChoice>(
                 "OpenAiEditResponseChoice",
                 explainOpenAiEditResponseChoice,
-                value?.responses,
+                value?.choices,
                 isOpenAiEditResponseChoice
             ))
             , explainProperty("usage", explainOpenAiEditResponseUsage(value?.usage))

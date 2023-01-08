@@ -3,7 +3,7 @@
 import { isString } from "../types/String";
 
 /**
- * Replaces all occurrences of a string.
+ * Replaces all occurrences of a string in the input string.
  *
  * @param {string} value - The input string.
  * @param {string} from - The string to be replaced.
