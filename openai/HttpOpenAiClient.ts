@@ -234,15 +234,17 @@ export class HttpOpenAiClient implements OpenAiClient {
             presence_penalty
         );
         const headers = HttpOpenAiClient._getHeaders(this._apiKey);
+        LOG.debug(`getCompletion: body = `, body);
         const result = await HttpService.postJson(
             `${this._url}${OPENAI_API_POST_COMPLETIONS_PATH}`,
             body as unknown as ReadonlyJsonAny,
             headers
         );
         if (!isOpenAiCompletionResponseDTO(result)) {
-            LOG.debug(`getCompletion: result = `, result);
+            LOG.error(`getCompletion: result = `, result);
             throw new TypeError(`Result was not OpenAiCompletionResponseDTO: ` + explainOpenAiCompletionResponseDTO(result));
         }
+        LOG.debug(`getCompletion: result = `, result);
         return result;
     }
 
@@ -286,6 +288,7 @@ export class HttpOpenAiClient implements OpenAiClient {
             temperature,
             top_p
         );
+        LOG.debug(`getEdit: body = `, body);
         const headers = HttpOpenAiClient._getHeaders(this._apiKey);
         const result = await HttpService.postJson(
             `${this._url}${OPENAI_API_POST_EDITS_PATH}`,
@@ -293,9 +296,10 @@ export class HttpOpenAiClient implements OpenAiClient {
             headers
         );
         if (!isOpenAiEditResponseDTO(result)) {
-            LOG.debug(`getEdit: result = `, result);
+            LOG.error(`getEdit: result = `, result);
             throw new TypeError(`Result was not OpenAiEditResponseDTO: ` + explainOpenAiEditResponseDTO(result));
         }
+        LOG.debug(`getEdit: result = `, result);
         return result;
     }
 
