@@ -23,6 +23,8 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
 
     private _iterations : number | undefined;
     private _client: OpenAiClient;
+    private _suffix: string | undefined;
+    private _language: string | undefined;
     private _model: OpenAiModel | string | undefined;
     private _echo: boolean | undefined;
     private _user: string | undefined;
@@ -49,6 +51,14 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
 
     public setIterations (value : number | undefined) : void {
         this._iterations = value;
+    }
+
+    public setLanguage (value: string|undefined): void {
+        this._language = value;
+    }
+
+    public setSuffix (value: string|undefined): void {
+        this._suffix = value;
     }
 
     /**

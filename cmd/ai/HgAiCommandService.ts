@@ -13,6 +13,8 @@ import { CommandExitStatus } from "../types/CommandExitStatus";
 export interface HgAiCommandService {
 
     setIterations(value: number | undefined) : void;
+    setLanguage(value: string | undefined) : void;
+    setSuffix(value: string | undefined) : void;
     setModel(value: string | undefined) : void;
     setStop(value: string | undefined) : void;
     setUser(value: string | undefined) : void;
