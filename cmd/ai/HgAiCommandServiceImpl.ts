@@ -16,6 +16,7 @@ import { filter } from "../../functions/filter";
 import { OpenAiError } from "../../openai/dto/OpenAiError";
 import { writeTestsInstruction } from "../../openai/instructions/writeTestsInstruction";
 import { exampleTypeScriptTest } from "../../openai/instructions/exampleTypeScriptTest";
+import { documentCodeInstruction } from "../../openai/instructions/documentCodeInstruction";
 
 export class HgAiCommandServiceImpl implements HgAiCommandService {
 
@@ -178,6 +179,11 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
                 case 't':
                 case 'test':
                     return await this.test(freeArgs);
+
+                case 'd':
+                case 'doc':
+                case 'document':
+                    return await this.document(freeArgs);
 
             }
             console.error(`Unknown command: ${arg}`);
@@ -397,6 +403,18 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         // TODO: Add automatic detection for class names, etc.
         const examples = exampleTypeScriptTest('ExampleClassName', 'exampleMethodName', 'should ...');
         const instruction = writeTestsInstruction('TypeScript', 'Jest', examples);
+        return this.edit([ instruction, ...args ]);
+    }
+
+    /**
+     * Documents TypeScript code using JSDoc
+     * @param args
+     */
+    public async document (args: readonly string[]): Promise<CommandExitStatus> {
+        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_CODE);
+        if (this._n           === undefined) this.setN(1);
+        if (this._temperature === undefined) this.setTemperature(0);
+        const instruction = documentCodeInstruction('TypeScript', 'JSDoc');
         return this.edit([ instruction, ...args ]);
     }
 
