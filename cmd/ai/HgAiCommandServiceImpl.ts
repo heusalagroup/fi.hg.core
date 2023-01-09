@@ -299,6 +299,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if (args.length === 0) {
             return CommandExitStatus.USAGE;
         }
+        LOG.debug(`document: args: `, args);
 
         const language = this._language ?? DEFAULT_LANGUAGE;
         LOG.debug(`document: language: `, language);
@@ -312,7 +313,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if (this._topP        === undefined) this.setTopP(DEFAULT_DOC_TOP_P);
         if (this._iterations  === undefined) this.setIterations(DEFAULT_DOC_ITERATIONS);
 
-        const describePrompt = aiDocumentCodeInstruction(language, framework, false);
+        const describePrompt = aiDocumentCodeInstruction(language, framework, false, args.join('\n\n'));
         LOG.debug(`document: aiDocumentPrompt: `, describePrompt);
 
         const result: OpenAiCompletionResponseDTO = await this._client.getCompletion(
@@ -332,6 +333,10 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         } = this._parseCompletionResponse(result);
 
         const instruction = documentCodeInstruction(language, framework);
+
+        if (args.length === 0) {
+            throw new TypeError('No args detected anymore');
+        }
 
         if (hasText) {
             return this.edit(

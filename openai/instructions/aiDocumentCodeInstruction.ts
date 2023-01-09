@@ -12,7 +12,10 @@ import { replaceTemplate } from "../../functions/replaceTemplate";
  */
 export const AI_DOCUMENT_IN_DETAIL_CODE_INSTRUCTION = `Let's go step by step.
 Document the public interface from the following {{LANGUAGE}} code in detail using {{FRAMEWORK}}.
-Include the source code.`;
+Include the source code.
+
+{{EXAMPLES}}
+`;
 
 /**
  * A template for instruction to describe the provided source code.
@@ -24,7 +27,10 @@ Include the source code.`;
  */
 export const AI_DOCUMENT_CODE_INSTRUCTION = `Let's go step by step.
 Document the public interface from the following {{LANGUAGE}} code using {{FRAMEWORK}}.
-Include the source code.`;
+Include the source code.
+
+{{EXAMPLES}}
+`;
 
 /**
  * Generates instruction for AI to document in JSDoc the provided source code.
@@ -35,19 +41,23 @@ Include the source code.`;
  *                              not provided, defaults to `JSDoc`.
  * @param {boolean} [inDetail] - Detailed or short mode. If
  *                              not provided, defaults to `false`.
+ * @param {string} [examples] - The examples. If
+ *                               not provided, defaults to `""`.
  * @returns {string} Instruction to describe code for the provided source
  *                   code.
  */
 export function aiDocumentCodeInstruction (
     language    ?: string,
     framework   ?: string,
-    inDetail    ?: boolean
+    inDetail    ?: boolean,
+    examples    ?: string,
 ) : string {
     return replaceTemplate(
         inDetail ? AI_DOCUMENT_IN_DETAIL_CODE_INSTRUCTION : AI_DOCUMENT_CODE_INSTRUCTION,
         {
-            '{{LANGUAGE}}' : language  ?? 'TypeScript',
-            '{{FRAMEWORK}}' : framework  ?? 'JSDoc'
+            '{{LANGUAGE}}'  : language  ?? 'TypeScript',
+            '{{FRAMEWORK}}' : framework ?? 'JSDoc',
+            '{{EXAMPLES}}'  : examples  ?? ''
         }
     );
 }
