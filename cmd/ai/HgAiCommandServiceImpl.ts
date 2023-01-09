@@ -20,6 +20,28 @@ import { documentCodeInstruction } from "../../openai/instructions/documentCodeI
 import { describeCodeInstruction } from "../../openai/instructions/describeCodeInstruction";
 import { LogService } from "../../LogService";
 
+const DEFAULT_LANGUAGE         = 'TypeScript';
+
+const DEFAULT_DESC_MODEL       = OpenAiModel.DAVINCI;
+const DEFAULT_DESC_MAX_TOKENS  = 3600;
+const DEFAULT_DESC_TEMPERATURE = 0.1;
+const DEFAULT_DESC_TOP_P       = 0.9;
+
+const DEFAULT_TEST_FRAMEWORK   = 'Jest';
+const DEFAULT_TEST_CLASS_NAME  = 'ExampleClassName';
+const DEFAULT_TEST_METHOD_NAME = 'exampleMethodName';
+const DEFAULT_TEST_TEST_NAME   = 'should ...';
+const DEFAULT_TEST_MODEL       = OpenAiModel.DAVINCI_EDIT_CODE;
+const DEFAULT_TEST_N           = 1;
+const DEFAULT_TEST_TEMPERATURE = 0;
+
+const DEFAULT_DOC_FRAMEWORK    = 'JSDoc';
+const DEFAULT_DOC_MODEL        = OpenAiModel.DAVINCI_EDIT_CODE;
+const DEFAULT_DOC_N            = 1;
+const DEFAULT_DOC_TEMPERATURE  = 0.1;
+const DEFAULT_DOC_TOP_P        = 0.9;
+const DEFAULT_DOC_ITERATIONS   = 4;
+
 const LOG = LogService.createLogger('HgAiCommandServiceImpl');
 
 export class HgAiCommandServiceImpl implements HgAiCommandService {
@@ -224,6 +246,165 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Write test cases
+     *
+     * Example `writeTests('./FooService.ts')` will print out unit tests for the
+     * `FooService` written in TypeScript and Jest framework.
+     *
+     * Tests should look like:
+     *
+     * ```typescript
+     * describe("Class", () => {
+     *
+     *     describe("Method", () => {
+     *
+     *         it('should ...', () => {
+     *             // ... here test implementation ...
+     *         });
+     *
+     *     });
+     *
+     * });
+     * ```
+     *
+     * @param args
+     */
+    public async test (args: readonly string[]): Promise<CommandExitStatus> {
+
+        if (this._model       === undefined) this.setModel(DEFAULT_TEST_MODEL);
+        if (this._n           === undefined) this.setN(DEFAULT_TEST_N);
+        if (this._temperature === undefined) this.setTemperature(DEFAULT_TEST_TEMPERATURE);
+
+        // TODO: Add automatic detection for class names, etc.
+
+        const language = this._language ?? DEFAULT_LANGUAGE;
+        LOG.debug(`test: language: `, language);
+
+        const examples = exampleTypeScriptTest(
+            DEFAULT_TEST_CLASS_NAME,
+            DEFAULT_TEST_METHOD_NAME,
+            DEFAULT_TEST_TEST_NAME
+        );
+        const instruction = writeTestsInstruction(language, DEFAULT_TEST_FRAMEWORK, examples);
+        return this.edit([ instruction, ...args ]);
+    }
+
+    /**
+     * Documents TypeScript code using JSDoc
+     * @param args
+     */
+    public async document (args: readonly string[]): Promise<CommandExitStatus> {
+
+        if (args.length === 0) {
+            return CommandExitStatus.USAGE;
+        }
+
+        const language = this._language ?? DEFAULT_LANGUAGE;
+        LOG.debug(`document: language: `, language);
+
+        if (this._model       === undefined) this.setModel(DEFAULT_DOC_MODEL);
+        if (this._n           === undefined) this.setN(DEFAULT_DOC_N);
+        if (this._temperature === undefined) this.setTemperature(DEFAULT_DOC_TEMPERATURE);
+        if (this._topP        === undefined) this.setTopP(DEFAULT_DOC_TOP_P);
+        if (this._iterations  === undefined) this.setIterations(DEFAULT_DOC_ITERATIONS);
+
+        const describePrompt = describeCodeInstruction(language, false);
+        LOG.debug(`document: describePrompt: `, describePrompt);
+
+        const result: OpenAiCompletionResponseDTO = await this._client.getCompletion(
+            describePrompt,
+            DEFAULT_DESC_MODEL,
+            DEFAULT_DESC_MAX_TOKENS,
+            DEFAULT_DESC_TEMPERATURE,
+            DEFAULT_DESC_TOP_P,
+            this._frequencyPenalty,
+            this._presencePenalty
+        );
+        LOG.debug(`result = `, result);
+
+        const {
+            textChoice,
+            hasText
+        } = this._parseCompletionResponse(result);
+
+        const instruction = documentCodeInstruction(language, DEFAULT_DOC_FRAMEWORK);
+
+        if (hasText) {
+            return this.edit(
+                [
+                    instruction + (textChoice?.text ? '\n\nDetails: ' + textChoice?.text : ''),
+                    ...args
+                ]
+            );
+        }
+
+        return this.edit([ instruction, ...args ]);
+    }
+
+    /**
+     * Writes descriptions about code.
+     *
+     * Example `describe('./keys.ts')` will print out description about the code:
+     *
+     * ```
+     * This TypeScript code is an exported function called "keys" that takes two
+     * parameters, "value" and "isKey". The "value" parameter is of type "any"
+     * and the "isKey" parameter is of type "TestCallbackNonStandard". The
+     * function returns an array of type "T" which is a generic type that extends
+     * the type "keyof any".
+     *
+     * The function starts by checking if the "value" parameter is an array. If
+     * it is, it uses the "map" function to create an array of indexes from the
+     * "value" array. It then uses the "filter" function to filter out the
+     * indexes that pass the "isKey" test. The filtered indexes are then
+     * returned as an array of type "T".
+     *
+     * If the "value" parameter is an object, the function uses the
+     * "Reflect.ownKeys" function to get an array of all the keys of the object.
+     * It then uses the "filter" function to filter out the keys that pass the
+     * "isKey" test. The filtered keys are then returned as an array of type "T".
+     *
+     * If the "value" parameter is neither an array nor an object, the function
+     * returns an empty array of type "T".
+     * ```
+     *
+     * @param args
+     */
+    public async describe (args: readonly string[]) : Promise<CommandExitStatus> {
+
+        if (args.length === 0) {
+            return CommandExitStatus.USAGE;
+        }
+
+        LOG.debug(`describe: args: `, args);
+
+        if (this._model       === undefined) this.setModel(DEFAULT_DESC_MODEL);
+        if (this._maxTokens   === undefined) this.setMaxTokens(DEFAULT_DESC_MAX_TOKENS);
+        if (this._temperature === undefined) this.setTemperature(DEFAULT_DESC_TEMPERATURE);
+        if (this._topP        === undefined) this.setTopP(DEFAULT_DESC_TOP_P);
+
+        const language = this._language ?? DEFAULT_LANGUAGE;
+        LOG.debug(`describe: language: `, language);
+
+        let verbose = false;
+        if (args[0] === 'verbose') {
+            const [arg1, ...restArgs] = args;
+            args = restArgs;
+            verbose = true;
+            if (args.length === 0) {
+                return CommandExitStatus.USAGE;
+            }
+            LOG.debug(`describe: params: `, args, verbose);
+        }
+
+        const instruction = describeCodeInstruction(language, verbose);
+        LOG.debug(`describe: instruction: `, instruction);
+
+        return this.completion([ instruction, ...args ]);
+
+    }
+
+    /**
      * OpenAI edit action
      *
      * Example 1: `edit(['Fix the spelling mistakes', 'What day of the wek is it?'])`
@@ -357,31 +538,27 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             );
             LOG.debug(`result = `, result);
 
-            const errorChoices = filter(
-                result.choices,
-                (result: OpenAiCompletionResponseChoice | OpenAiError): boolean => {
-                    return !isOpenAiCompletionResponseChoice(result);
-                }
-            );
-
-            const textChoices: OpenAiCompletionResponseChoice[] = filter(
-                result.choices,
-                (item: OpenAiCompletionResponseChoice | OpenAiError): boolean => {
-                    return isOpenAiCompletionResponseChoice(item);
-                }
-            ) as OpenAiCompletionResponseChoice[];
-
-            const firstText = textChoices.shift();
-            const hasText = firstText !== undefined;
-            const hasErrors = !!errorChoices.length;
-            const hasAlternativeTexts = !!textChoices.length;
+            const {
+                errorChoices,
+                alternativeTexts,
+                textChoice,
+                hasText,
+                hasErrors,
+                hasAlternativeTexts
+            } = this._parseCompletionResponse(result);
 
             if ( hasText ) {
-                console.log(firstText?.text ?? '');
+                if (textChoice?.finish_reason === 'stop') {
+                    console.log(textChoice?.text ?? '');
+                } else {
+                    console.warn(`Warning! Partial response: "${textChoice?.text ?? ''}"`);
+                    console.error(`Error: Please increase "maxTokens" property to get complete response.`);
+                    return CommandExitStatus.GENERAL_ERRORS;
+                }
             }
 
             if ( hasAlternativeTexts ) {
-                console.warn(`Alternative choices: ${JSON.stringify(textChoices, null, 2)}`);
+                console.warn(`Alternative choices: ${JSON.stringify(alternativeTexts, null, 2)}`);
             }
 
             if ( hasErrors ) {
@@ -398,129 +575,6 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
                 throw err;
             }
         }
-    }
-
-    /**
-     * Write test cases
-     *
-     * Example `writeTests('./FooService.ts')` will print out unit tests for the
-     * `FooService` written in TypeScript and Jest framework.
-     *
-     * Tests should look like:
-     *
-     * ```typescript
-     * describe("Class", () => {
-     *
-     *     describe("Method", () => {
-     *
-     *         it('should ...', () => {
-     *             // ... here test implementation ...
-     *         });
-     *
-     *     });
-     *
-     * });
-     * ```
-     *
-     * @param args
-     */
-    public async test (args: readonly string[]): Promise<CommandExitStatus> {
-        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_CODE);
-        if (this._n           === undefined) this.setN(1);
-        if (this._temperature === undefined) this.setTemperature(0);
-        // TODO: Add automatic detection for class names, etc.
-
-        const language = this._language ?? 'TypeScript';
-        LOG.debug(`test: language: `, language);
-
-        const examples = exampleTypeScriptTest('ExampleClassName', 'exampleMethodName', 'should ...');
-        const instruction = writeTestsInstruction(language, 'Jest', examples);
-        return this.edit([ instruction, ...args ]);
-    }
-
-    /**
-     * Documents TypeScript code using JSDoc
-     * @param args
-     */
-    public async document (args: readonly string[]): Promise<CommandExitStatus> {
-
-        if (args.length === 0) {
-            return CommandExitStatus.USAGE;
-        }
-
-        const language = this._language ?? 'TypeScript';
-        LOG.debug(`document: language: `, language);
-
-        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI_EDIT_CODE);
-        if (this._n           === undefined) this.setN(1);
-        if (this._temperature === undefined) this.setTemperature(0.1);
-        if (this._topP        === undefined) this.setTopP(0.9);
-        if (this._iterations  === undefined) this.setIterations(4);
-        const instruction = documentCodeInstruction(language, 'JSDoc');
-        return this.edit([ instruction, ...args ]);
-    }
-
-    /**
-     * Writes descriptions about code.
-     *
-     * Example `describe('./keys.ts')` will print out description about the code:
-     *
-     * ```
-     * This TypeScript code is an exported function called "keys" that takes two
-     * parameters, "value" and "isKey". The "value" parameter is of type "any"
-     * and the "isKey" parameter is of type "TestCallbackNonStandard". The
-     * function returns an array of type "T" which is a generic type that extends
-     * the type "keyof any".
-     *
-     * The function starts by checking if the "value" parameter is an array. If
-     * it is, it uses the "map" function to create an array of indexes from the
-     * "value" array. It then uses the "filter" function to filter out the
-     * indexes that pass the "isKey" test. The filtered indexes are then
-     * returned as an array of type "T".
-     *
-     * If the "value" parameter is an object, the function uses the
-     * "Reflect.ownKeys" function to get an array of all the keys of the object.
-     * It then uses the "filter" function to filter out the keys that pass the
-     * "isKey" test. The filtered keys are then returned as an array of type "T".
-     *
-     * If the "value" parameter is neither an array nor an object, the function
-     * returns an empty array of type "T".
-     * ```
-     *
-     * @param args
-     */
-    public async describe (args: readonly string[]) : Promise<CommandExitStatus> {
-
-        if (args.length === 0) {
-            return CommandExitStatus.USAGE;
-        }
-
-        LOG.debug(`describe: args: `, args);
-
-        if (this._model       === undefined) this.setModel(OpenAiModel.DAVINCI);
-        if (this._maxTokens   === undefined) this.setMaxTokens(3600);
-        if (this._temperature === undefined) this.setTemperature(0.1);
-        if (this._topP        === undefined) this.setTopP(0.9);
-
-        const language = this._language ?? 'TypeScript';
-        LOG.debug(`describe: language: `, language);
-
-        let verbose = false;
-        if (args[0] === 'verbose') {
-            const [arg1, ...restArgs] = args;
-            args = restArgs;
-            verbose = true;
-            if (args.length === 0) {
-                return CommandExitStatus.USAGE;
-            }
-            LOG.debug(`describe: params: `, args, verbose);
-        }
-
-        const instruction = describeCodeInstruction(language, verbose);
-        LOG.debug(`describe: instruction: `, instruction);
-
-        return this.completion([ instruction, ...args ]);
-
     }
 
 
@@ -545,5 +599,49 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         );
     }
 
+    /**
+     *
+     * @param result
+     * @private
+     */
+    private _parseCompletionResponse (
+        result: OpenAiCompletionResponseDTO
+    ) : {
+        errorChoices        : OpenAiError[],
+        alternativeTexts    : OpenAiCompletionResponseChoice[],
+        textChoice          : OpenAiCompletionResponseChoice | undefined,
+        hasText             : boolean,
+        hasErrors           : boolean,
+        hasAlternativeTexts : boolean
+    } {
+        const errorChoices : OpenAiError[] = filter(
+            result.choices,
+            (result: OpenAiCompletionResponseChoice | OpenAiError): boolean => {
+                return !isOpenAiCompletionResponseChoice(result);
+            }
+        ) as OpenAiError[];
+
+        const alternativeTexts: OpenAiCompletionResponseChoice[] = filter(
+            result.choices,
+            (item: OpenAiCompletionResponseChoice | OpenAiError): boolean => {
+                return isOpenAiCompletionResponseChoice(item);
+            }
+        ) as OpenAiCompletionResponseChoice[];
+
+        const textChoice : OpenAiCompletionResponseChoice | undefined = alternativeTexts.shift();
+        const hasText = textChoice !== undefined;
+        const hasErrors = !!errorChoices.length;
+        const hasAlternativeTexts = !!alternativeTexts.length;
+
+        return {
+            errorChoices,
+            alternativeTexts,
+            textChoice,
+            hasText,
+            hasErrors,
+            hasAlternativeTexts
+        }
+
+    }
 
 }
