@@ -313,7 +313,12 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if (this._topP        === undefined) this.setTopP(DEFAULT_DOC_TOP_P);
         if (this._iterations  === undefined) this.setIterations(DEFAULT_DOC_ITERATIONS);
 
-        const describePrompt = aiDocumentCodeInstruction(language, framework, false, args.join('\n\n'));
+        const describePrompt = aiDocumentCodeInstruction(
+            language,
+            framework,
+            false,
+            (await this._populateFiles(args)).join('\n\n')
+        );
         LOG.debug(`document: aiDocumentPrompt: `, describePrompt);
 
         const result: OpenAiCompletionResponseDTO = await this._client.getCompletion(
