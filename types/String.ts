@@ -20,8 +20,28 @@ export function isString (value: unknown): value is string {
  * @__PURE__
  * @nosideeffects
  */
+export function isNonEmptyString (value: unknown): value is string {
+    return _isString(value) && !!value;
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function explainString (value: any): string {
     return isString(value) ? explainOk() : explainNot('string');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNonEmptyString (value: any): string {
+    return isNonEmptyString(value) ? explainOk() : explainNot('non-empty string');
 }
 
 /**
