@@ -336,7 +336,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if (hasText) {
             return this.edit(
                 [
-                    instruction + (textChoice?.text ? '\n\nDetails: ' + textChoice?.text : ''),
+                    instruction + (textChoice?.text ? '\n\n' + textChoice?.text : ''),
                     ...args
                 ]
             );

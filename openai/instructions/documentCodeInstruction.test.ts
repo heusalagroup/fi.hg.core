@@ -6,9 +6,7 @@ describe("documentCodeInstruction", () => {
     it("generates instructions on how to write tests for the provided source code", () => {
         const language = "JavaScript";
         const framework = "JSDoc";
-        const expectedInstruction = `// JavaScript
-// Document using JSDoc
-`;
+        const expectedInstruction = `Document ${language} code using ${framework} by following instructions:`;
 
         expect(documentCodeInstruction(language, framework)).toBe(expectedInstruction);
     });
