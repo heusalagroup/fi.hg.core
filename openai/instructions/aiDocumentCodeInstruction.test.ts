@@ -9,8 +9,8 @@ describe("aiDocumentCodeInstruction", () => {
         const framework = "JSDoc";
         const inDetail = false;
         const expectedInstruction = `Let's go step by step.
-Write instructions to AI how to document the public interface from this ${language} code in ${framework}.
-`;
+Document the public interface from the following ${language} code using ${framework}.
+Include the source code.`;
         expect(aiDocumentCodeInstruction(language, framework, inDetail)).toBe(expectedInstruction);
     });
 
@@ -19,8 +19,8 @@ Write instructions to AI how to document the public interface from this ${langua
         const framework = "JSDoc";
         const inDetail = true;
         const expectedInstruction = `Let's go step by step.
-Write instructions to AI how to document the public interface from this ${language} code in ${framework}.
-`;
+Document the public interface from the following ${language} code in detail using ${framework}.
+Include the source code.`;
         expect(aiDocumentCodeInstruction(language, framework, inDetail)).toBe(expectedInstruction);
     });
 

@@ -12,7 +12,7 @@ import { exampleTypeScriptTest } from "./exampleTypeScriptTest";
  * @type {string}
  */
 export const DOCUMENT_CODE_INSTRUCTION = `Let's go step by step.
-Document {{LANG}} code using {{FRAMEWORK}} by following instructions:`;
+Improve the {{FRAMEWORK}} documentations from the following {{LANG}} code:`;
 
 /**
  * Generates instruction on to document code for the provided source code.

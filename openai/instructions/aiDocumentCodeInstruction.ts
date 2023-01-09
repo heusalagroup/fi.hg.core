@@ -11,20 +11,20 @@ import { replaceTemplate } from "../../functions/replaceTemplate";
  * @type {string}
  */
 export const AI_DOCUMENT_IN_DETAIL_CODE_INSTRUCTION = `Let's go step by step.
-Write instructions to AI how to document the public interface from this {{LANG}} code in {{FRAMEWORK}}.
-`;
+Document the public interface from the following {{LANGUAGE}} code in detail using {{FRAMEWORK}}.
+Include the source code.`;
 
 /**
  * A template for instruction to describe the provided source code.
  *
  * This template requires the following placeholder parameters to be replaced:
- *   * `{{LANG}}` - The programming language, e.g. `TypeScript`.
+ *   * `{{LANGUAGE}}` - The programming language, e.g. `TypeScript`.
  *   * `{{FRAMEWORK}}` - The testing framework, e.g. `JSDoc`.
  * @type {string}
  */
 export const AI_DOCUMENT_CODE_INSTRUCTION = `Let's go step by step.
-Write instructions to AI how to document the public interface from this {{LANG}} code in {{FRAMEWORK}}.
-`;
+Document the public interface from the following {{LANGUAGE}} code using {{FRAMEWORK}}.
+Include the source code.`;
 
 /**
  * Generates instruction for AI to document in JSDoc the provided source code.
@@ -46,7 +46,7 @@ export function aiDocumentCodeInstruction (
     return replaceTemplate(
         inDetail ? AI_DOCUMENT_IN_DETAIL_CODE_INSTRUCTION : AI_DOCUMENT_CODE_INSTRUCTION,
         {
-            '{{LANG}}' : language  ?? 'TypeScript',
+            '{{LANGUAGE}}' : language  ?? 'TypeScript',
             '{{FRAMEWORK}}' : framework  ?? 'JSDoc'
         }
     );

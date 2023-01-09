@@ -7,7 +7,7 @@ describe("documentCodeInstruction", () => {
         const language = "JavaScript";
         const framework = "JSDoc";
         const expectedInstruction = `Let's go step by step.
-Document ${language} code using ${framework} by following instructions:`;
+Improve the ${framework} documentations from the following ${language} code:`;
 
         expect(documentCodeInstruction(language, framework)).toBe(expectedInstruction);
     });
