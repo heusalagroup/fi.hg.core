@@ -19,6 +19,7 @@ import { exampleTypeScriptTest } from "../../openai/instructions/exampleTypeScri
 import { documentCodeInstruction } from "../../openai/instructions/documentCodeInstruction";
 import { describeCodeInstruction } from "../../openai/instructions/describeCodeInstruction";
 import { LogService } from "../../LogService";
+import { aiDocumentCodeInstruction } from "../../openai/instructions/aiDocumentCodeInstruction";
 
 const DEFAULT_LANGUAGE         = 'TypeScript';
 
@@ -302,14 +303,17 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         const language = this._language ?? DEFAULT_LANGUAGE;
         LOG.debug(`document: language: `, language);
 
+        const framework = DEFAULT_DOC_FRAMEWORK;
+        LOG.debug(`document: framework: `, framework);
+
         if (this._model       === undefined) this.setModel(DEFAULT_DOC_MODEL);
         if (this._n           === undefined) this.setN(DEFAULT_DOC_N);
         if (this._temperature === undefined) this.setTemperature(DEFAULT_DOC_TEMPERATURE);
         if (this._topP        === undefined) this.setTopP(DEFAULT_DOC_TOP_P);
         if (this._iterations  === undefined) this.setIterations(DEFAULT_DOC_ITERATIONS);
 
-        const describePrompt = describeCodeInstruction(language, false);
-        LOG.debug(`document: describePrompt: `, describePrompt);
+        const describePrompt = aiDocumentCodeInstruction(language, framework, false);
+        LOG.debug(`document: aiDocumentPrompt: `, describePrompt);
 
         const result: OpenAiCompletionResponseDTO = await this._client.getCompletion(
             describePrompt,
@@ -327,7 +331,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             hasText
         } = this._parseCompletionResponse(result);
 
-        const instruction = documentCodeInstruction(language, DEFAULT_DOC_FRAMEWORK);
+        const instruction = documentCodeInstruction(language, framework);
 
         if (hasText) {
             return this.edit(
