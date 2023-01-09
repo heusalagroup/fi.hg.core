@@ -11,7 +11,7 @@ describe("aiDocumentCodeInstruction", () => {
         const examples = "...";
         const expectedInstruction = `Let's go step by step.
 Document the public interface from the following ${language} code using ${framework}.
-Include the source code.
+Include the source code unmodified.
 
 ${examples}
 `;
@@ -26,7 +26,7 @@ ${examples}
         const inDetail = true;
         const expectedInstruction = `Let's go step by step.
 Document the public interface from the following ${language} code in detail using ${framework}.
-Include the source code.
+Include the source code unmodified.
 
 ${examples}
 `;

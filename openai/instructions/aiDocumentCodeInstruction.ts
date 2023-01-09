@@ -12,7 +12,7 @@ import { replaceTemplate } from "../../functions/replaceTemplate";
  */
 export const AI_DOCUMENT_IN_DETAIL_CODE_INSTRUCTION = `Let's go step by step.
 Document the public interface from the following {{LANGUAGE}} code in detail using {{FRAMEWORK}}.
-Include the source code.
+Include the source code unmodified.
 
 {{EXAMPLES}}
 `;
@@ -27,7 +27,7 @@ Include the source code.
  */
 export const AI_DOCUMENT_CODE_INSTRUCTION = `Let's go step by step.
 Document the public interface from the following {{LANGUAGE}} code using {{FRAMEWORK}}.
-Include the source code.
+Include the source code unmodified.
 
 {{EXAMPLES}}
 `;
