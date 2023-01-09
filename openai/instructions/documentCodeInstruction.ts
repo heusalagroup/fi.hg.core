@@ -11,7 +11,8 @@ import { exampleTypeScriptTest } from "./exampleTypeScriptTest";
  *   * `{{FRAMEWORK}}` - The testing framework, e.g. `JSDoc`.
  * @type {string}
  */
-export const DOCUMENT_CODE_INSTRUCTION = `Document {{LANG}} code using {{FRAMEWORK}} by following instructions:`;
+export const DOCUMENT_CODE_INSTRUCTION = `Let's go step by step.
+Document {{LANG}} code using {{FRAMEWORK}} by following instructions:`;
 
 /**
  * Generates instruction on to document code for the provided source code.
