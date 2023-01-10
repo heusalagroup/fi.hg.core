@@ -22,6 +22,7 @@ import { LogService } from "../../LogService";
 import { aiDocumentCodeInstruction } from "../../openai/instructions/aiDocumentCodeInstruction";
 import { changelogInstruction } from "../../openai/instructions/changelogInstruction";
 import { diffReader } from "../../functions/diffReader";
+import { reduce } from "../../functions/reduce";
 
 const DEFAULT_LANGUAGE         = 'TypeScript';
 
@@ -457,9 +458,22 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         let nextAiChunk = '';
         const diffString = (await this._populateFiles(args)).join('\n');
         LOG.debug(`changelog: diff size of "${diffString.length}"`);
-
         if (diffString.length === 0) return CommandExitStatus.OK;
-        const diffChunks = diffReader( diffString );
+
+        // FIXME: Add this as it's own function and unit test
+        const diffChunks = reduce(
+            diffReader( diffString ),
+            (chunks: string[], chunk: string) => {
+                if (chunk.length > aiChunkSize) {
+                    return [
+                        ...chunks,
+                        ...splitString(chunk, aiChunkSize)
+                    ];
+                }
+                return [...chunks, chunk];
+            },
+            []
+        );
         LOG.debug(`changelog: chunks size of "${diffChunks.length}"`);
 
         if (diffChunks.length === 0) return CommandExitStatus.OK;
@@ -726,4 +740,13 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
 
     }
 
+}
+
+// FIXME: Add it's own function and unit test
+function splitString(str: string, chunkLength: number): string[] {
+    let result = [];
+    for (let i = 0; i < str.length; i += chunkLength) {
+        result.push(str.slice(i, i + chunkLength));
+    }
+    return result;
 }
