@@ -448,20 +448,28 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         if (this._topP        === undefined) this.setTopP(DEFAULT_CHANGELOG_TOP_P);
 
         const instruction = changelogInstruction();
-        LOG.debug(`changelog: instruction: `, instruction);
+        LOG.debug(`changelog: instruction: "${instruction}"`);
 
         // FIXME: Write a buffering function to do this
         const aiChunkSize = 2500; // 4097 max tokens (prompt + completion)
+        LOG.debug(`changelog: aiChunkSize size of "${aiChunkSize}"`);
+
         let nextAiChunk = '';
         const diffString = (await this._populateFiles(args)).join('\n');
+        LOG.debug(`changelog: diff size of "${diffString.length}"`);
+
         if (diffString.length === 0) return CommandExitStatus.OK;
         const diffChunks = diffReader( diffString );
+        LOG.debug(`changelog: chunks size of "${diffChunks.length}"`);
+
         if (diffChunks.length === 0) return CommandExitStatus.OK;
+
         do {
             const chunk : string | undefined = diffChunks.shift();
             if (chunk !== undefined) {
+                LOG.debug(`changelog: processing chunk size of "${chunk.length}"`);
                 if ( (nextAiChunk.length !== 0) && (nextAiChunk.length + chunk.length > aiChunkSize) ) {
-                    LOG.debug(`changelog: Sending ${nextAiChunk.length} characters to completion`);
+                    LOG.debug(`changelog: Sending "${nextAiChunk.length}" characters to completion`);
                     await this.completion([ instruction, nextAiChunk ]);
                     nextAiChunk = '';
                 }
