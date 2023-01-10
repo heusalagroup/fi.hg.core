@@ -8,8 +8,7 @@
  *   * `{{FRAMEWORK}}` - The testing framework, e.g. `JSDoc`.
  * @type {string}
  */
-export const CHANGELOG_INSTRUCTION = `Let's go step by step.
-Write a change log for the following commit diff:`;
+export const CHANGELOG_INSTRUCTION = `Write a change log for the following commit diff:`;
 
 /**
  * Generates instruction on to write change log code for the provided diff string.
