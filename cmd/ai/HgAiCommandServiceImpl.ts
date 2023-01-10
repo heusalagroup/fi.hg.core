@@ -20,6 +20,8 @@ import { documentCodeInstruction } from "../../openai/instructions/documentCodeI
 import { describeCodeInstruction } from "../../openai/instructions/describeCodeInstruction";
 import { LogService } from "../../LogService";
 import { aiDocumentCodeInstruction } from "../../openai/instructions/aiDocumentCodeInstruction";
+import { changelogInstruction } from "../../openai/instructions/changelogInstruction";
+import { diffReader } from "../../functions/diffReader";
 
 const DEFAULT_LANGUAGE         = 'TypeScript';
 
@@ -27,6 +29,11 @@ const DEFAULT_DESC_MODEL       = OpenAiModel.DAVINCI;
 const DEFAULT_DESC_MAX_TOKENS  = 3600;
 const DEFAULT_DESC_TEMPERATURE = 0.1;
 const DEFAULT_DESC_TOP_P       = 0.9;
+
+const DEFAULT_CHANGELOG_MODEL       = OpenAiModel.DAVINCI;
+const DEFAULT_CHANGELOG_MAX_TOKENS  = 3600;
+const DEFAULT_CHANGELOG_TEMPERATURE = 0.1;
+const DEFAULT_CHANGELOG_TOP_P       = 0.9;
 
 const DEFAULT_TEST_FRAMEWORK   = 'Jest';
 const DEFAULT_TEST_CLASS_NAME  = 'ExampleClassName';
@@ -232,6 +239,10 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
                 case 'describe':
                     return await this.describe(freeArgs);
 
+                case 'cl':
+                case 'changelog':
+                    return await this.changelog(freeArgs);
+
             }
             console.error(`Unknown command: ${arg}`);
             return CommandExitStatus.COMMAND_NOT_FOUND;
@@ -402,7 +413,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
 
         let verbose = false;
         if (args[0] === 'verbose') {
-            const [arg1, ...restArgs] = args;
+            const [, ...restArgs] = args;
             args = restArgs;
             verbose = true;
             if (args.length === 0) {
@@ -415,6 +426,53 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         LOG.debug(`describe: instruction: `, instruction);
 
         return this.completion([ instruction, ...args ]);
+
+    }
+
+    /**
+     * Write changelog based on git diff output
+     *
+     * @param args
+     */
+    public async changelog (args: readonly string[]) : Promise<CommandExitStatus> {
+
+        if (args.length === 0) {
+            return CommandExitStatus.USAGE;
+        }
+
+        LOG.debug(`changelog: args: `, args);
+
+        if (this._model       === undefined) this.setModel(DEFAULT_CHANGELOG_MODEL);
+        if (this._maxTokens   === undefined) this.setMaxTokens(DEFAULT_CHANGELOG_MAX_TOKENS);
+        if (this._temperature === undefined) this.setTemperature(DEFAULT_CHANGELOG_TEMPERATURE);
+        if (this._topP        === undefined) this.setTopP(DEFAULT_CHANGELOG_TOP_P);
+
+        const instruction = changelogInstruction();
+        LOG.debug(`changelog: instruction: `, instruction);
+
+        // FIXME: Write a buffering function to do this
+        const aiChunkSize = 3600*3;
+        let nextAiChunk = '';
+        const diffString = (await this._populateFiles(args)).join('\n');
+        if (diffString.length === 0) return CommandExitStatus.OK;
+        const diffChunks = diffReader( diffString );
+        if (diffChunks.length === 0) return CommandExitStatus.OK;
+        do {
+            const chunk : string | undefined = diffChunks.shift();
+            if (chunk !== undefined) {
+                if ( (nextAiChunk.length !== 0) && (nextAiChunk.length + chunk.length > aiChunkSize) ) {
+                    await this.completion([ instruction, nextAiChunk ]);
+                    nextAiChunk = '';
+                }
+                nextAiChunk += chunk;
+            }
+            if (nextAiChunk.length >= aiChunkSize) {
+                await this.completion([ instruction, nextAiChunk ]);
+                nextAiChunk = '';
+            }
+        } while (diffChunks.length);
+
+        return CommandExitStatus.OK;
 
     }
 

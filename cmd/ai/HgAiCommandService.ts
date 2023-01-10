@@ -137,4 +137,12 @@ export interface HgAiCommandService {
      */
     describe (args: readonly string[]) : Promise<CommandExitStatus>;
 
+
+    /**
+     * Write changelog based on git diff output
+     *
+     * @param args
+     */
+    changelog (args: readonly string[]) : Promise<CommandExitStatus>;
+
 }
