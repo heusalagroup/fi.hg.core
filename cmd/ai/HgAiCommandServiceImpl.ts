@@ -452,7 +452,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         LOG.debug(`changelog: instruction: "${instruction}"`);
 
         // FIXME: Write a buffering function to do this
-        const aiChunkSize = 7000; // 4097 max tokens (prompt + completion)
+        const aiChunkSize = 6000; // 4097 max tokens (prompt + completion)
         LOG.debug(`changelog: aiChunkSize size of "${aiChunkSize}"`);
 
         let nextAiChunk = '';
