@@ -461,12 +461,14 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
             const chunk : string | undefined = diffChunks.shift();
             if (chunk !== undefined) {
                 if ( (nextAiChunk.length !== 0) && (nextAiChunk.length + chunk.length > aiChunkSize) ) {
+                    LOG.debug(`changelog: Sending ${nextAiChunk.length} characters to completion`);
                     await this.completion([ instruction, nextAiChunk ]);
                     nextAiChunk = '';
                 }
                 nextAiChunk += chunk;
             }
             if (nextAiChunk.length >= aiChunkSize) {
+                LOG.debug(`changelog: Sending ${nextAiChunk.length} characters to completion`);
                 await this.completion([ instruction, nextAiChunk ]);
                 nextAiChunk = '';
             }
