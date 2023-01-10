@@ -2,6 +2,7 @@
 
 import { split } from "./split";
 import { startsWith } from "./startsWith";
+import { parseInteger } from "../types/Number";
 
 /**
  * Splits a diff string into an array of chunks, where each chunk represents a
@@ -53,14 +54,24 @@ export function diffReader (diffString: string) : string[] {
             currentChunk = line + '\n';
             currentHunk = null;
         } else if (startsWith(line, '@@')) {
-            currentHunk = {
-                oldStart: parseInt(/^@@ -(\d+),\d+ \+\d+,\d+ @@/.exec(line)![1], 10),
-                oldLines: 0,
-                newStart: parseInt(/^@@ -\d+,\d+ \+(\d+),\d+ @@/.exec(line)![1], 10),
-                newLines: 0,
-            };
+
+            // FIXME: Create parsing function for hunks (and unit test it)
+            const res = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
+            if (res && res.length >= 3) {
+                const [, oldStartString, newStartString] = res;
+                const oldStart = parseInteger(oldStartString);
+                const newStart = parseInteger(newStartString);
+                if ( oldStart !== undefined && newStart !== undefined ) {
+                    currentHunk = {
+                        oldStart,
+                        oldLines: 0,
+                        newStart,
+                        newLines: 0,
+                    };
+                }
+            }
             currentChunk += line + '\n';
-        } else if (currentHunk || startsWith(line, '-')) {
+        } else if ( currentHunk || startsWith(line, '-') ) {
             currentChunk += line + '\n';
             if (currentHunk) {
                 if (startsWith(line, '-')) {
