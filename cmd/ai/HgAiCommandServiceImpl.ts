@@ -31,7 +31,7 @@ const DEFAULT_DESC_TEMPERATURE = 0.1;
 const DEFAULT_DESC_TOP_P       = 0.9;
 
 const DEFAULT_CHANGELOG_MODEL       = OpenAiModel.DAVINCI;
-const DEFAULT_CHANGELOG_MAX_TOKENS  = 3600;
+const DEFAULT_CHANGELOG_MAX_TOKENS  = 2000;
 const DEFAULT_CHANGELOG_TEMPERATURE = 0.1;
 const DEFAULT_CHANGELOG_TOP_P       = 0.9;
 
@@ -451,7 +451,7 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         LOG.debug(`changelog: instruction: "${instruction}"`);
 
         // FIXME: Write a buffering function to do this
-        const aiChunkSize = 2500; // 4097 max tokens (prompt + completion)
+        const aiChunkSize = 5000; // 4097 max tokens (prompt + completion)
         LOG.debug(`changelog: aiChunkSize size of "${aiChunkSize}"`);
 
         let nextAiChunk = '';
