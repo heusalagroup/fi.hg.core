@@ -146,17 +146,23 @@ export class CommandArgumentUtils {
                                     const [argKey, ...lastParts] = argName.split('=');
                                     const argValue = lastParts.join('=');
 
-                                    if ( has(userLongArgs, argKey) ) {
+                                    if ( has(userLongArgs, argKey)  ) {
                                         const key = userLongArgs[argKey];
-                                        const [type] = configurationMap[key];
+                                        if (configurationMap) {
+                                            const [type] = configurationMap[key];
+
                                         userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue);
+                                    }
                                         break;
                                     }
 
                                     if ( has(userShortArgs, argKey) ) {
                                         const key = userShortArgs[argKey];
-                                        const [type] = configurationMap[key];
+                                        if (configurationMap) {
+                                            const [type] = configurationMap[key];
+
                                         userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue);
+                                        }
                                         break;
                                     }
 
@@ -164,17 +170,30 @@ export class CommandArgumentUtils {
 
                                     if ( has(userLongArgs, argName) ) {
                                         const key = userLongArgs[argName];
-                                        const [type] = configurationMap[key];
+                                        if (configurationMap) {
+                                            const [type] = configurationMap[key];
+
                                         userArgs[key] = parseSingleArgument(argName, type);
+                                        }
                                         break;
                                     }
 
                                     if ( has(userShortArgs, argName) ) {
                                         const key = userShortArgs[argName];
+                                        if (configurationMap) {
+                                            const [type] = configurationMap[key];
+
+                                        userArgs[key] = parseSingleArgument(argName, type);
+                                        }
+                                        break;
+                                    }
+
+                                    /*  if ( has(userShortArgs, argName) ) {
+                                        const key = userShortArgs[argName];
                                         const [type] = configurationMap[key];
                                         userArgs[key] = parseSingleArgument(argName, type);
                                         break;
-                                    }
+                                    }*/
 
                                 }
 
