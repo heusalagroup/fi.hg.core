@@ -53,6 +53,8 @@ export class CommandArgumentUtils {
         configurationMap ?: ArgumentConfigurationMap
     ) : ParsedCommandArgumentObject {
 
+        const argConfigurationMap = configurationMap ? configurationMap : {};
+
         const nodePath : string = args.shift() ?? '';
 
         const scriptNameFromArgs : string = args.shift() ?? '';
@@ -88,16 +90,14 @@ export class CommandArgumentUtils {
 
         let userLongArgs  : {[key: string]: string} = {};
         let userShortArgs : {[key: string]: string} = {};
-        if (configurationMap) {
-            forEach(
-                keys(configurationMap),
-                (key: string) => {
-                    const [type, long, short] = configurationMap[key];
-                    userLongArgs[long] = key;
-                    userShortArgs[short] = key;
-                }
-            );
-        }
+        forEach(
+            keys(argConfigurationMap),
+            (key: string) => {
+                const [, long, short] = argConfigurationMap[key];
+                userLongArgs[long]   = key;
+                userShortArgs[short] = key;
+            }
+        );
 
         do {
 
@@ -148,14 +148,14 @@ export class CommandArgumentUtils {
 
                                     if ( has(userLongArgs, argKey) ) {
                                         const key = userLongArgs[argKey];
-                                        const [type] = configurationMap[key];
+                                        const [type] = argConfigurationMap[key];
                                         userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue);
                                         break;
                                     }
 
                                     if ( has(userShortArgs, argKey) ) {
                                         const key = userShortArgs[argKey];
-                                        const [type] = configurationMap[key];
+                                        const [type] = argConfigurationMap[key];
                                         userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue);
                                         break;
                                     }
@@ -164,14 +164,14 @@ export class CommandArgumentUtils {
 
                                     if ( has(userLongArgs, argName) ) {
                                         const key = userLongArgs[argName];
-                                        const [type] = configurationMap[key];
+                                        const [type] = argConfigurationMap[key];
                                         userArgs[key] = parseSingleArgument(argName, type);
                                         break;
                                     }
 
                                     if ( has(userShortArgs, argName) ) {
                                         const key = userShortArgs[argName];
-                                        const [type] = configurationMap[key];
+                                        const [type] = argConfigurationMap[key];
                                         userArgs[key] = parseSingleArgument(argName, type);
                                         break;
                                     }
