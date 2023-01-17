@@ -4,6 +4,13 @@ import { split } from "./split";
 import { startsWith } from "./startsWith";
 import { parseInteger } from "../types/Number";
 
+export interface DiffHunk {
+    oldStart: number;
+    newStart: number;
+    oldLines: number;
+    newLines: number;
+}
+
 /**
  * Splits a diff string into an array of chunks, where each chunk represents a
  * single file.
@@ -45,8 +52,9 @@ import { parseInteger } from "../types/Number";
 export function diffReader (diffString: string) : string[] {
     const chunks: string[] = [];
     let currentChunk = '';
-    let currentHunk: { oldStart: number, newStart: number, oldLines: number, newLines: number } | null = null;
+    let currentHunk: DiffHunk | null = null;
     for (const line of split(diffString, '\n')) {
+
         if (startsWith(line, 'diff --git')) {
             if (currentChunk) {
                 chunks.push(currentChunk);
@@ -54,21 +62,9 @@ export function diffReader (diffString: string) : string[] {
             currentChunk = line + '\n';
             currentHunk = null;
         } else if (startsWith(line, '@@')) {
-
-            // FIXME: Create parsing function for hunks (and unit test it)
-            const res = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-            if (res && res.length >= 3) {
-                const [, oldStartString, newStartString] = res;
-                const oldStart = parseInteger(oldStartString);
-                const newStart = parseInteger(newStartString);
-                if ( oldStart !== undefined && newStart !== undefined ) {
-                    currentHunk = {
-                        oldStart,
-                        oldLines: 0,
-                        newStart,
-                        newLines: 0,
-                    };
-                }
+            const hunk = parseDiffHunk(line);
+            if (hunk) {
+                currentHunk = hunk;
             }
             currentChunk += line + '\n';
         } else if ( currentHunk || startsWith(line, '-') ) {
@@ -91,4 +87,40 @@ export function diffReader (diffString: string) : string[] {
         chunks.push(currentChunk.substring(0, currentChunk.length-1));
     }
     return chunks;
+}
+
+/**
+ *
+ * @param line
+ */
+export function parseDiffHunk (line: string) : DiffHunk | null {
+    let res = /^@@ -(\d+),\d+ \+(\d+)(,\d+)? @@/.exec(line);
+    if (res && res.length >= 3) {
+        const [, oldStartString, newStartString] = res;
+        const oldStart = parseInteger(oldStartString);
+        const newStart = parseInteger(newStartString);
+        if ( oldStart !== undefined && newStart !== undefined ) {
+            return {
+                oldStart,
+                oldLines: 0,
+                newStart,
+                newLines: 0,
+            };
+        }
+    }
+    res = /^@@ -(\d+) \+(\d+)(,\d+)? @@/.exec(line);
+    if (res && res.length >= 3) {
+        const [, oldStartString, newStartString] = res;
+        const oldStart = parseInteger(oldStartString);
+        const newStart = parseInteger(newStartString);
+        if ( oldStart !== undefined && newStart !== undefined ) {
+            return {
+                oldStart,
+                oldLines: 0,
+                newStart,
+                newLines: 0,
+            };
+        }
+    }
+    return null;
 }
