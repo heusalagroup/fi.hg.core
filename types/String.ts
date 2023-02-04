@@ -3,6 +3,7 @@
 import { default as _isString } from "lodash/isString";
 import { isUndefined } from "./undefined";
 import { explainNot, explainOk, explainOr } from "./explain";
+import { isNull } from "lodash";
 
 /**
  *
@@ -90,8 +91,28 @@ export function isStringOrUndefined (value: unknown): value is string | undefine
  * @__PURE__
  * @nosideeffects
  */
+export function isStringOrNull (value: unknown): value is string | null {
+    return isNull(value) || isString(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function explainStringOrUndefined (value: any): string {
     return isStringOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string', 'undefined' ]));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringOrNull (value: any): string {
+    return isStringOrNull(value) ? explainOk() : explainNot(explainOr([ 'string', 'null' ]));
 }
 
 /**
