@@ -91,8 +91,8 @@ export function isStringOrUndefined (value: unknown): value is string | undefine
  * @__PURE__
  * @nosideeffects
  */
-export function isStringOrNull (value: unknown): value is string | null {
-    return isNull(value) || isString(value);
+export function explainStringOrUndefined (value: any): string {
+    return isStringOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string', 'undefined' ]));
 }
 
 /**
@@ -101,8 +101,28 @@ export function isStringOrNull (value: unknown): value is string | null {
  * @__PURE__
  * @nosideeffects
  */
-export function explainStringOrUndefined (value: any): string {
-    return isStringOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string', 'undefined' ]));
+export function isStringOrNullOrUndefined (value: unknown): value is string | undefined | null {
+    return isNull(value) || isUndefined(value) || isString(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringOrNullOrUndefined (value: any): string {
+    return isStringOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string', 'null', 'undefined' ]));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isStringOrNull (value: unknown): value is string | null {
+    return isNull(value) || isString(value);
 }
 
 /**
