@@ -2,9 +2,9 @@
 /**
  * `V2 Endpoints /wordpress/v2`
  */
-//TODO The "per_page" is just a TEMPORARY FIX to retrieve more than 10 pages from the CMS.
-export const WORD_PRESS_API_V2_PAGES = '/wp-json/wp/v2/pages?per_page=40';
+export const WORD_PRESS_API_V2_PAGES = '/wp-json/wp/v2/pages';
 
+export const WORD_PRESS_API_V2_POSTS = '/wp-json/wp/v2/posts';
 
 /**
  * `V3 Endpoints /wordpress/v3`
