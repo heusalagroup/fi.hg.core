@@ -24,7 +24,7 @@ export interface WordpressPageDTO {
     meta?:object;
     template?:string;
     password?:string;
-    date_gtm?: string | null;
+    date_gmt?: string | null;
     slug?: string;
 }
 
@@ -50,7 +50,7 @@ export function isWordpressPageDTO (value:any): value is WordpressPageDTO {
             'meta',
             'template',
             'password',
-            'date_gtm',
+            'date_gmt',
             'slug'
         ])
         && isString(value?.id)
