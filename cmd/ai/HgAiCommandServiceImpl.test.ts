@@ -12,6 +12,7 @@ import { createOpenAiEditResponseUsage } from "../../openai/dto/OpenAiEditRespon
 import { OpenAiErrorDTO } from "../../openai/dto/OpenAiErrorDTO";
 import { writeTestsInstruction } from "../../openai/instructions/writeTestsInstruction";
 import { exampleTypeScriptTest } from "../../openai/instructions/exampleTypeScriptTest";
+import { LogLevel } from "../../types/LogLevel";
 
 describe("HgAiCommandServiceImpl", () => {
     let service: HgAiCommandServiceImpl;
@@ -21,6 +22,7 @@ describe("HgAiCommandServiceImpl", () => {
     let errorConsoleSpy : jest.SpyInstance;
 
     beforeEach(() => {
+        HgAiCommandServiceImpl.setLogLevel(LogLevel.NONE);
         client = new MockOpenAiClient();
         service = new HgAiCommandServiceImpl(client);
         consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});

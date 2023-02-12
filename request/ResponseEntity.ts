@@ -189,7 +189,9 @@ export class ResponseEntity<T> {
     public static methodNotAllowed<T>           () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.MethodNotAllowed); }
     public static unprocessableEntity<T>        () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.UnprocessableEntity); }
 
-    public static ok<T> (body?: T) : ResponseEntity<T> { return body ? new ResponseEntity<T>(body, RequestStatus.OK) : new ResponseEntity<T>(RequestStatus.OK); }
+    public static ok<T> (body?: T) : ResponseEntity<T> {
+        return body !== undefined ? new ResponseEntity<T>(body, RequestStatus.OK) : new ResponseEntity<T>(RequestStatus.OK);
+    }
 
 }
 

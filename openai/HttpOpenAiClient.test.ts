@@ -8,7 +8,7 @@ import { createOpenAiCompletionResponseChoice } from "./dto/OpenAiCompletionResp
 import { ReadonlyJsonAny } from "../Json";
 import { createOpenAiCompletionResponseUsage } from "./dto/OpenAiCompletionResponseUsage";
 import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
-import { OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
+import { LogLevel } from "../types/LogLevel";
 
 describe('HttpOpenAiClient', () => {
 
@@ -19,6 +19,9 @@ describe('HttpOpenAiClient', () => {
     let postJsonSpy: jest.SpyInstance;
 
     beforeAll(() => {
+
+        HttpOpenAiClient.setLogLevel(LogLevel.NONE);
+
         postJsonSpy = jest.spyOn(HttpService, 'postJson').mockResolvedValue(
             createOpenAiCompletionResponseDTO(
                 "response-id",
