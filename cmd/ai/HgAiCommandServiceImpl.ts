@@ -23,6 +23,7 @@ import { aiDocumentCodeInstruction } from "../../openai/instructions/aiDocumentC
 import { changelogInstruction } from "../../openai/instructions/changelogInstruction";
 import { diffReader } from "../../functions/diffReader";
 import { reduce } from "../../functions/reduce";
+import { LogLevel } from "../../types/LogLevel";
 
 const DEFAULT_LANGUAGE         = 'TypeScript';
 
@@ -54,6 +55,10 @@ const DEFAULT_DOC_ITERATIONS   = 4;
 const LOG = LogService.createLogger('HgAiCommandServiceImpl');
 
 export class HgAiCommandServiceImpl implements HgAiCommandService {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     private _iterations : number | undefined;
     private _client: OpenAiClient;

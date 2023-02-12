@@ -3,8 +3,23 @@
 
 import { RequestMethod } from "../request/types/RequestMethod";
 import { JsonAny } from "../Json";
+import { ResponseEntity } from "../request/ResponseEntity";
 
 export interface RequestClientInterface {
+
+    jsonEntityRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: JsonAny
+    ) : Promise<ResponseEntity<JsonAny|undefined>>;
+
+    textEntityRequest (
+        method   : RequestMethod,
+        url      : string,
+        headers ?: {[key: string]: string},
+        data    ?: JsonAny
+    ) : Promise<ResponseEntity<string|undefined>>;
 
     jsonRequest (
         method   : RequestMethod,
