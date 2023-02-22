@@ -6,18 +6,20 @@ import { isRegularObject } from "../../types/RegularObject";
 import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 
 export interface WordpressUserProfileDTO {
-    title:{rendered:string, protected:boolean};
-    content:{rendered:string, protected:boolean};
-    id?:string;
-    slug?: string;
-    description?:string;
-    date?:string;
-    "extra Information"?: string[];
-    status?: WordpressEnum;
+    id: number;
+    author: string;
+    date: string;
+    excerpt: string;
+    title: string;
+    content: string;
+    slug: string;
+    status: WordpressEnum;
+    description: string[];
+    "extra Information": string[];
     featured_image?: {
-        thumbnail : string;
-        medium :string;
-        large : string;
+        thumbnail: string;
+        medium: string;
+        large: string;
     }
 }
 
