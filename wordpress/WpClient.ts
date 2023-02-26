@@ -14,9 +14,9 @@ import {
     WORD_PRESS_API_V3_USERPROFILES
 } from "./wordpress-api";
 
-const LOG = LogService.createLogger('WordpressClient');
+const LOG = LogService.createLogger('WpClient');
 
-export class WordpressClient {
+export class WpClient {
 
     public static setLogLevel(level: LogLevel) {
         LOG.setLogLevel(level);
@@ -38,13 +38,13 @@ export class WordpressClient {
     }
 
     public static create(
-        url: string = WordpressClient._defaultUrl
-    ): WordpressClient {
-        return new WordpressClient(url);
+        url: string = WpClient._defaultUrl
+    ): WpClient {
+        return new WpClient(url);
     }
 
     public constructor(
-        url: string = WordpressClient._defaultUrl,
+        url: string = WpClient._defaultUrl,
     ) {
         this._url = url;
     }
