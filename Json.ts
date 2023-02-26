@@ -165,6 +165,10 @@ export function explainReadonlyJsonObject (value: any) : string {
     return isReadonlyJsonObject(value) ? explainOk() : explainNot('ReadonlyJsonObject');
 }
 
+export function explainReadonlyJsonArray (value: any) : string {
+    return isReadonlyJsonArray(value) ? explainOk() : explainNot('ReadonlyJsonArray');
+}
+
 export function parseReadonlyJsonObject (value : any) : ReadonlyJsonObject | undefined {
     return isReadonlyJsonObject(value) ? value : undefined;
 }

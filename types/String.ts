@@ -21,6 +21,16 @@ export function isString (value: unknown): value is string {
  * @__PURE__
  * @nosideeffects
  */
+export function isStringOrFalse (value: unknown): value is string | false {
+    return isString(value) || (value === false);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
 export function isNonEmptyString (value: unknown): value is string {
     return _isString(value) && !!value;
 }
@@ -33,6 +43,16 @@ export function isNonEmptyString (value: unknown): value is string {
  */
 export function explainString (value: any): string {
     return isString(value) ? explainOk() : explainNot('string');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringOrFalse (value: any): string {
+    return isStringOrFalse(value) ? explainOk() : explainNot(explainOr(['string', 'false']));
 }
 
 /**

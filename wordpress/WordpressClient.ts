@@ -3,10 +3,10 @@
 import { LogLevel } from "../types/LogLevel";
 import { LogService } from "../LogService";
 import { HttpService } from "../HttpService";
-import { isWordpressPagesDTO, WordpressPageListDTO } from "./dto/WordpressPageListDTO";
-import { isWordpressPostsDTO, WordpressPostListDTO } from "./dto/WordpressPostListDTO";
-import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
-import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
+import { explainWpPageListDTO, isWpPageListDTO, WpPageListDTO } from "./dto/WpPageListDTO";
+import { explainWpPostListDTO, isWpPostListDTO, WpPostListDTO } from "./dto/WpPostListDTO";
+import { explainWpReferenceListDTO, isWpReferenceListDTO, WpReferenceListDTO } from "./dto/WpReferenceListDTO";
+import { explainWpUserProfileListDTO, isWpUserProfileListDTO, WpUserProfileListDTO } from "./dto/WpUserProfileListDTO";
 import {
     WORD_PRESS_API_V2_PAGES,
     WORD_PRESS_API_V2_POSTS,
@@ -14,9 +14,7 @@ import {
     WORD_PRESS_API_V3_USERPROFILES
 } from "./wordpress-api";
 
-
 const LOG = LogService.createLogger('WordpressClient');
-
 
 export class WordpressClient {
 
@@ -25,7 +23,7 @@ export class WordpressClient {
         HttpService.setLogLevel(level);
     }
 
-
+    
     private static _defaultUrl: string = '/';
 
     private readonly _url: string;
@@ -51,42 +49,54 @@ export class WordpressClient {
         this._url = url;
     }
 
-    public async getPages(): Promise<WordpressPageListDTO> {
+    /**
+     * Fetches 100 pages from /wp-json/wp/v2/pages?per_page=100
+     */
+    public async getPages (): Promise<WpPageListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V2_PAGES}`);
-        if (!isWordpressPagesDTO(result)) {
+        if (!isWpPageListDTO(result)) {
             LOG.debug(`getPages: result = `, result);
-            throw new TypeError(`Result was not WordpressPageListDTO: ` + result);
+            throw new TypeError(`Result was not WpPageListDTO: ${explainWpPageListDTO(result)}`);
         }
         return result;
     }
 
-    public async getPosts(): Promise<WordpressPostListDTO> {
+    /**
+     * Fetches 100 posts from /wp-json/wp/v2/posts?per_page=100
+     */
+    public async getPosts (): Promise<WpPostListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V2_POSTS}`);
-        if (!isWordpressPostsDTO(result)) {
+        if (!isWpPostListDTO(result)) {
             LOG.debug(`getPosts: result = `, result);
-            throw new TypeError(`Result was not WordpressPostListDTO: ` + result);
+            throw new TypeError(`Result was not WpPostListDTO: ${explainWpPostListDTO(result)}`);
         }
         return result;
     }
 
-    public async getReferences(): Promise<WordpressReferenceListDTO> {
+    /**
+     * Fetches references from /wp-json/wp/v3/references
+     */
+    public async getReferences (): Promise<WpReferenceListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_REFERENCES}`);
-        if (!isWordpressReferencesDTO(result)) {
-            LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
+        if (!isWpReferenceListDTO(result)) {
+            LOG.debug(`getReferences: result = `, result);
+            throw new TypeError(`Result was not WpReferenceListDTO: ${explainWpReferenceListDTO(result)}`);
         }
         return result;
     }
 
-    public async getUserProfiles(): Promise<WordpressUserProfileListDTO> {
+    /**
+     * Fetches user profiles from /wp-json/wp/v3/userprofiles
+     */
+    public async getUserProfiles (): Promise<WpUserProfileListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_USERPROFILES}`);
-        if (!isWordpressUserProfilesDTO(result)) {
-            LOG.debug(`getIndex: result = `, result);
-            throw new TypeError(`Result was not WordpressUserProfilesDTO: ` + result);
+        if (!isWpUserProfileListDTO(result)) {
+            LOG.debug(`getUserProfiles: result = `, result);
+            throw new TypeError(`Result was not WpUserProfileListDTO: ${explainWpUserProfileListDTO(result)}`);
         }
         return result;
     }
