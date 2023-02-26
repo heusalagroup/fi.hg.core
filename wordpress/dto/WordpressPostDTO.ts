@@ -5,7 +5,7 @@ import { isString } from "../../types/String";
 import { isRegularObject } from "../../types/RegularObject";
 import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 
-export interface WordpressPageDTO {
+export interface WordpressPostDTO {
     title:{rendered:string, protected:boolean};
     content:{rendered:string, protected:boolean};
     excerpt?:{rendered?:string, protected?:boolean};
@@ -28,7 +28,7 @@ export interface WordpressPageDTO {
     slug?: string;
 }
 
-export function isWordpressPageDTO (value:any): value is WordpressPageDTO {
+export function isWordpressPostDTO (value:any): value is WordpressPostDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
