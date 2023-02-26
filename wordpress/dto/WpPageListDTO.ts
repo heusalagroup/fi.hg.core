@@ -3,8 +3,14 @@
 import { explainWpPageDTO, isWpPageDTO, WpPageDTO } from "./WpPageDTO";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 
-export type WpPageListDTO = WpPageDTO[];
+/**
+ * Wordpress API page object for /wp-json/wp/v2/pages
+ */
+export type WpPageListDTO = readonly WpPageDTO[];
 
+/**
+ * Tests that the value is DTO for /wp-json/wp/v2/pages
+ */
 export function isWpPageListDTO (value: unknown): value is WpPageListDTO {
     return isArrayOf<WpPageDTO>(value, isWpPageDTO);
 }

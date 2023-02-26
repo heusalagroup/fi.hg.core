@@ -8,6 +8,9 @@ import { explain, explainProperty } from "../../types/explain";
 import { explainWpImageDTO, isWpImageDTO, WpImageDTO } from "./WpImageDTO";
 import { explainNumber, isNumber } from "../../types/Number";
 
+/**
+ * The DTO for single item in /wp-json/wp/v3/references
+ */
 export interface WpReferenceDTO {
     readonly title : string;
     readonly content : string;
