@@ -4,7 +4,6 @@ import { explainWpPageStatus, isWpPageStatus, WpPageStatus } from "./WpPageStatu
 import { explainString, isString } from "../../types/String";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainWpRenderedDTO, isWpRenderedDTO, WpRenderedDTO } from "./WpRenderedDTO";
 import { explain, explainProperty } from "../../types/explain";
 import { explainWpImageDTO, isWpImageDTO, WpImageDTO } from "./WpImageDTO";
 import { explainStringArray, isStringArray } from "../../types/StringArray";
