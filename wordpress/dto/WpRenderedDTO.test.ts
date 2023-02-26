@@ -2,9 +2,9 @@
 
 import { createWpRenderedDTO, isWpRenderedDTO } from "./WpRenderedDTO";
 
-describe('WordpressRenderedDTO', () => {
+describe('WpRenderedDTO', () => {
 
-    describe('createWordpressRenderedDTO', () => {
+    describe('createWpRenderedDTO', () => {
 
         it('can create DTO with false protected', () => {
             const test = createWpRenderedDTO('<h1>Contact Us</h1>\n', false);
@@ -32,7 +32,7 @@ describe('WordpressRenderedDTO', () => {
 
     });
 
-    describe('isWordpressRenderedDTO', () => {
+    describe('isWpRenderedDTO', () => {
 
         it('can test DTO with protected as false', () => {
             const test = {rendered: '<h1>Contact Us</h1>\n', protected: false};

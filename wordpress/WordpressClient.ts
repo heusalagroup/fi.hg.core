@@ -3,7 +3,7 @@
 import { LogLevel } from "../types/LogLevel";
 import { LogService } from "../LogService";
 import { HttpService } from "../HttpService";
-import { isWordpressPagesDTO, WordpressPageListDTO } from "./dto/WordpressPageListDTO";
+import { isWpPageListDTO, WpPageListDTO } from "./dto/WpPageListDTO";
 import { isWordpressPostsDTO, WordpressPostListDTO } from "./dto/WordpressPostListDTO";
 import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
 import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
@@ -51,10 +51,10 @@ export class WordpressClient {
         this._url = url;
     }
 
-    public async getPages(): Promise<WordpressPageListDTO> {
+    public async getPages(): Promise<WpPageListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V2_PAGES}`);
-        if (!isWordpressPagesDTO(result)) {
+        if (!isWpPageListDTO(result)) {
             LOG.debug(`getPages: result = `, result);
             throw new TypeError(`Result was not WordpressPageListDTO: ` + result);
         }
