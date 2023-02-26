@@ -1,8 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { WordpressPostDTO } from "./WordpressPostDTO";
+import { WpPostDTO } from "./WpPostDTO";
 
-export type WordpressPostListDTO = WordpressPostDTO[];
+export type WordpressPostListDTO = WpPostDTO[];
 
 export function isWordpressPostsDTO (value: any): value is WordpressPostListDTO {
     return true

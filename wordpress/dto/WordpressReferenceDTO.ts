@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { WordpressEnum } from "./WordpressTypesDTO";
+import { WpPageStatus } from "./WpPageStatus";
 import { isString } from "../../types/String";
 import { isRegularObject } from "../../types/RegularObject";
 import { hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
@@ -11,7 +11,7 @@ export interface WordpressReferenceDTO {
     id?:string;
     type?:string;
     date?: string | null;
-    status?: WordpressEnum;
+    status?: WpPageStatus;
     generated_slug?:string;
     permalink_template?:string;
     parent?:number;
