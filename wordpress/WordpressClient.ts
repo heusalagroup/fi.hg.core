@@ -14,9 +14,7 @@ import {
     WORD_PRESS_API_V3_USERPROFILES
 } from "./wordpress-api";
 
-
 const LOG = LogService.createLogger('WordpressClient');
-
 
 export class WordpressClient {
 
@@ -25,7 +23,7 @@ export class WordpressClient {
         HttpService.setLogLevel(level);
     }
 
-
+    
     private static _defaultUrl: string = '/';
 
     private readonly _url: string;
