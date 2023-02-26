@@ -4,9 +4,9 @@ import { LogLevel } from "../types/LogLevel";
 import { LogService } from "../LogService";
 import { HttpService } from "../HttpService";
 import { isWpPageListDTO, WpPageListDTO } from "./dto/WpPageListDTO";
-import { isWordpressPostsDTO, WordpressPostListDTO } from "./dto/WordpressPostListDTO";
-import { isWordpressReferencesDTO, WordpressReferenceListDTO } from "./dto/WordpressReferenceListDTO";
-import { isWordpressUserProfilesDTO, WordpressUserProfileListDTO } from "./dto/WordpressUserProfileListDTO";
+import { isWpPostListDTO, WpPostListDTO } from "./dto/WpPostListDTO";
+import { isWpReferenceListDTO, WpReferenceListDTO } from "./dto/WpReferenceListDTO";
+import { isWpUserProfileListDTO, WpUserProfileListDTO } from "./dto/WpUserProfileListDTO";
 import {
     WORD_PRESS_API_V2_PAGES,
     WORD_PRESS_API_V2_POSTS,
@@ -61,30 +61,30 @@ export class WordpressClient {
         return result;
     }
 
-    public async getPosts(): Promise<WordpressPostListDTO> {
+    public async getPosts(): Promise<WpPostListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V2_POSTS}`);
-        if (!isWordpressPostsDTO(result)) {
+        if (!isWpPostListDTO(result)) {
             LOG.debug(`getPosts: result = `, result);
             throw new TypeError(`Result was not WordpressPostListDTO: ` + result);
         }
         return result;
     }
 
-    public async getReferences(): Promise<WordpressReferenceListDTO> {
+    public async getReferences(): Promise<WpReferenceListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_REFERENCES}`);
-        if (!isWordpressReferencesDTO(result)) {
+        if (!isWpReferenceListDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressReferencesDTO: ` + result);
         }
         return result;
     }
 
-    public async getUserProfiles(): Promise<WordpressUserProfileListDTO> {
+    public async getUserProfiles(): Promise<WpUserProfileListDTO> {
         if (this._url.length < 1) return [];
         const result = await HttpService.getJson(`${this._url}${WORD_PRESS_API_V3_USERPROFILES}`);
-        if (!isWordpressUserProfilesDTO(result)) {
+        if (!isWpUserProfileListDTO(result)) {
             LOG.debug(`getIndex: result = `, result);
             throw new TypeError(`Result was not WordpressUserProfilesDTO: ` + result);
         }
