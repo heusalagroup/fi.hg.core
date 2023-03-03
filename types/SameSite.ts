@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainEnum } from "../types/Enum";
+import { isUndefined } from "./undefined";
+import { explainNot, explainOk, explainOr } from "./explain";
 
 export enum SameSite {
     LAX = "LAX",
@@ -19,8 +21,16 @@ export function isSameSite (value: unknown) : value is SameSite {
     }
 }
 
+export function isSameSiteOrUndefined (value: unknown) : value is SameSite | undefined {
+    return isSameSite(value) || isUndefined(value);
+}
+
 export function explainSameSite (value : unknown) : string {
     return explainEnum("SameSite", SameSite, isSameSite, value);
+}
+
+export function explainSameSiteOrUndefined (value: unknown) : string {
+    return isSameSite(value) || isUndefined(value) ? explainOk() : explainNot(explainOr(['SameSite', 'undefined']));
 }
 
 export function stringifySameSite (value : SameSite) : string {
