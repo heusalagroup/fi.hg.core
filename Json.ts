@@ -161,6 +161,14 @@ export function isReadonlyJsonObject (value : any) : value is ReadonlyJsonObject
     return isRegularObject(value) && everyProperty<string, ReadonlyJsonAny>(value, isString, createOr(isReadonlyJsonAny, isUndefined));
 }
 
+export function isReadonlyJsonObjectOrUndefined (value : any) : value is ReadonlyJsonObjectOf<ReadonlyJsonAny> | undefined {
+    return isUndefined(value) || isReadonlyJsonObject(value);
+}
+
+export function explainReadonlyJsonObjectOrUndefined (value: any) : string {
+    return isReadonlyJsonObjectOrUndefined(value) ? explainOk() : explainNot(explainOr(['undefined', 'ReadonlyJsonObject']));
+}
+
 export function explainReadonlyJsonObject (value: any) : string {
     return isReadonlyJsonObject(value) ? explainOk() : explainNot('ReadonlyJsonObject');
 }
