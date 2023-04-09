@@ -1,8 +1,10 @@
 // Copyright (c) 2020-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+// We're using directly lodash here to overcome circular dependencies
+import { default as _isString } from "lodash/isString";
+import { default as _every } from "lodash/every";
+
 import { filter } from "../functions/filter";
-import { isString } from "./String";
-import { every } from "../functions/every";
 
 /**
  * Returned from explain functions when the value is OK.
@@ -28,8 +30,8 @@ export function isExplainOk (value: unknown): boolean {
 export function explain (
     values: readonly string[] | string
 ): string {
-    if ( isString(values) ) return values;
-    if ( every(values, (item: string): boolean => isExplainOk(item)) ) {
+    if ( _isString(values) ) return values;
+    if ( _every(values, (item: string): boolean => isExplainOk(item)) ) {
         return explainOk();
     }
     return filter(values, (item: string): boolean => !isExplainOk(item) && !!item).join(', ');

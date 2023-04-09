@@ -4,8 +4,7 @@ import { TestCallback, TestCallbackOf } from "../types/TestCallback";
 import { default as _isObject } from "lodash/isObject";
 import { every, explainEvery } from "./every";
 import { keys } from "./keys";
-import { explain } from "../types/explain";
-import { explainObject } from "../types/Object";
+import { explain, explainNot, explainOk } from "../types/explain";
 
 /**
  *
@@ -36,7 +35,8 @@ export function explainEveryKey<T extends keyof any = string> (
 ): string {
     return explain(
         [
-            explainObject(value),
+            // We're implementing this inline to overcome circular dependency
+            _isObject(value) ? explainOk() : explainNot('object'),
             explainEvery(keys(value), isKey, keyTypeName)
         ]
     );
