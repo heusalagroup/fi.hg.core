@@ -3,7 +3,8 @@
 import { isArray } from "./Array";
 import { isNumber } from "./Number";
 import { every } from "../functions/every";
-import { explainNot, explainOk } from "./explain";
+import { explainNot, explainOk, explainOr } from "./explain";
+import { isUndefined } from "./undefined";
 
 /**
  *
@@ -28,4 +29,26 @@ export function isNumberArray (value: unknown): value is number[] {
  */
 export function explainNumberArray (value: any): string {
     return isNumberArray(value) ? explainOk() : explainNot('number[]');
+}
+
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isNumberArrayOrUndefined (value: unknown): value is number[] | undefined {
+    return isUndefined(value) || isNumberArray(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNumberArrayOrUndefined (value: any): string {
+    return isNumberArrayOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'number[]', 'undefined' ]));
+
 }
