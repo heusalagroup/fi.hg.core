@@ -1,14 +1,16 @@
 // Copyright (c) 2020-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainNot, explainOk, explainOr } from "./explain";
-import { isString } from "./String";
 import { trim } from "../functions/trim";
 import { default as _isSafeInteger } from "lodash/isSafeInteger";
 import { isUndefined } from "./undefined";
+import { isNull } from "./Null";
+
+// These are required to overcome circular references
+import _isString from "lodash/isString";
 import _isInteger from "lodash/isInteger";
 import _isNumber from "lodash/isNumber";
 import _toSafeInteger from "lodash/toSafeInteger";
-import { isNull } from "./Null";
 
 /**
  *
@@ -96,7 +98,7 @@ export function parseInteger (value: any): number | undefined {
         return value;
     }
 
-    if ( isString(value) ) {
+    if ( _isString(value) ) {
         value = trim(value);
         if ( value.length === 0 ) return undefined;
     }
