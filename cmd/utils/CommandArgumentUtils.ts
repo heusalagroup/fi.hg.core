@@ -11,6 +11,9 @@ import { indexOf } from "../../functions/indexOf";
 import { explainBoolean, parseBoolean } from "../../types/Boolean";
 import { explainString, parseString } from "../../types/String";
 import { explainInteger, parseInteger } from "../../types/Number";
+import { LogService } from "../../LogService";
+
+const LOG = LogService.createLogger('CommandArgumentUtils');
 
 export enum ArgumentType {
     "BOOLEAN" = "b",
@@ -49,15 +52,18 @@ export class CommandArgumentUtils {
 
     public static parseArguments (
         defaultScriptName: string,
-        args: string[] = [],
+        args: readonly string[] = [],
         configurationMap ?: ArgumentConfigurationMap
     ) : ParsedCommandArgumentObject {
 
+        const myArgs = [...args];
+        LOG.debug(`myArgs = `, myArgs);
+        const nodePath : string = myArgs.shift() ?? '';
+        LOG.debug(`nodePath = `, nodePath);
+        const scriptNameFromArgs : string = myArgs.shift() ?? '';
+        LOG.debug(`scriptNameFromArgs = `, scriptNameFromArgs);
+
         const argConfigurationMap = configurationMap ? configurationMap : {};
-
-        const nodePath : string = args.shift() ?? '';
-
-        const scriptNameFromArgs : string = args.shift() ?? '';
 
         if (!scriptNameFromArgs) {
             return {
@@ -71,7 +77,7 @@ export class CommandArgumentUtils {
             };
         }
 
-        if (args.length === 0) {
+        if (myArgs.length === 0) {
             return {
                 parseStatus: ParsedCommandArgumentStatus.ERROR,
                 exitStatus: CommandExitStatus.ARGUMENT_PARSE_ERROR,
@@ -101,7 +107,7 @@ export class CommandArgumentUtils {
 
         do {
 
-            const argName : string = args.shift() ?? '';
+            const argName : string = myArgs.shift() ?? '';
 
             if (parsingArgs) {
 
@@ -201,7 +207,7 @@ export class CommandArgumentUtils {
 
             }
 
-        } while( args.length >= 1 );
+        } while( myArgs.length >= 1 );
 
         return {
             parseStatus: ParsedCommandArgumentStatus.OK,
