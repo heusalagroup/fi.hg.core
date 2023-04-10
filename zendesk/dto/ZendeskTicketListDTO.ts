@@ -4,14 +4,14 @@ import { explainRegularObject, isRegularObject } from "../../types/RegularObject
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explain, explainProperty } from "../../types/explain";
 import { explainZendeskTicket, isZendeskTicket, ZendeskTicket } from "./ZendeskTicket";
-import { explainString, explainStringOrNullOrUndefined, isString, isStringOrNullOrUndefined } from "../../types/String";
+import { explainStringOrNullOrUndefined, isStringOrNullOrUndefined } from "../../types/String";
 import { explainBoolean, isBoolean } from "../../types/Boolean";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 
 export interface ZendeskTicketListDTO {
 
-    readonly after_cursor : string;
-    readonly after_url : string;
+    readonly after_cursor ?: string | null | undefined;
+    readonly after_url ?: string | null | undefined;
     readonly before_cursor ?: string | null | undefined;
     readonly before_url ?: string | null | undefined;
     readonly end_of_stream : boolean;
@@ -21,8 +21,8 @@ export interface ZendeskTicketListDTO {
 }
 
 export function createZendeskTicketListDTO (
-    after_cursor : string,
-    after_url : string,
+    after_cursor : string | null | undefined,
+    after_url : string | null | undefined,
     before_cursor : string | null | undefined,
     before_url : string | null | undefined,
     end_of_stream : boolean,
@@ -49,8 +49,8 @@ export function isZendeskTicketListDTO (value: unknown) : value is ZendeskTicket
             'end_of_stream',
             'tickets'
         ])
-        && isString(value?.after_cursor)
-        && isString(value?.after_url)
+        && isStringOrNullOrUndefined(value?.after_cursor)
+        && isStringOrNullOrUndefined(value?.after_url)
         && isStringOrNullOrUndefined(value?.before_cursor)
         && isStringOrNullOrUndefined(value?.before_url)
         && isBoolean(value?.end_of_stream)
@@ -70,8 +70,8 @@ export function explainZendeskTicketListDTO (value: any) : string {
                 'end_of_stream',
                 'tickets'
             ])
-            , explainProperty("after_cursor", explainString(value?.after_cursor))
-            , explainProperty("after_url", explainString(value?.after_url))
+            , explainProperty("after_cursor", explainStringOrNullOrUndefined(value?.after_cursor))
+            , explainProperty("after_url", explainStringOrNullOrUndefined(value?.after_url))
             , explainProperty("before_cursor", explainStringOrNullOrUndefined(value?.before_cursor))
             , explainProperty("before_url", explainStringOrNullOrUndefined(value?.before_url))
             , explainProperty("end_of_stream", explainBoolean(value?.end_of_stream))
