@@ -2,11 +2,13 @@
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explain, explainProperty } from "../../types/explain";
+import { explain, explainNot, explainOk, explainProperty } from "../../types/explain";
 import { explainStringOrNullOrUndefined, explainStringOrNumberOrNullOrUndefined, isStringOrNullOrUndefined, isStringOrNumberOrNullOrUndefined } from "../../types/String";
 import { explainBooleanOrNullOrUndefined, isBooleanOrNullOrUndefined } from "../../types/Boolean";
 import { explainNumber, explainNumberOrNullOrUndefined, isNumber, isNumberOrNullOrUndefined } from "../../types/Number";
-import { explainArrayOf, explainArrayOfOrUndefined, isArrayOf, isArrayOfOrUndefined } from "../../types/Array";
+import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../types/Array";
+import { isUndefined } from "../../types/undefined";
+import { isNull } from "../../types/Null";
 
 export interface ZendeskAttachment {
     readonly content_type ?: string | null | undefined;
@@ -141,4 +143,45 @@ export function stringifyZendeskAttachment (value : ZendeskAttachment) : string 
 export function parseZendeskAttachment (value: unknown) : ZendeskAttachment | undefined {
     if (isZendeskAttachment(value)) return value;
     return undefined;
+}
+
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isZendeskAttachmentOrUndefined (value: unknown): value is ZendeskAttachment | undefined {
+    return isZendeskAttachment(value) || isUndefined(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainZendeskAttachmentOrUndefined (value: any): string {
+    return isZendeskAttachmentOrUndefined(value) ? explainOk() : explainNot('ZendeskAttachment or undefined');
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isZendeskAttachmentOrNullOrUndefined (value: unknown): value is ZendeskAttachment | undefined | null {
+    return isZendeskAttachment(value) || isUndefined(value) || isNull(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainZendeskAttachmentOrNullOrUndefined (value: any): string {
+    return isZendeskAttachmentOrNullOrUndefined(value) ? explainOk() : explainNot('ZendeskAttachment or undefined or null');
 }
