@@ -123,6 +123,7 @@ export class ZendeskClient {
             LOG.debug(`processTickets: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processTickets (
@@ -215,6 +216,7 @@ export class ZendeskClient {
             LOG.debug(`processTicketComments: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processTicketComments (
@@ -354,6 +356,7 @@ export class ZendeskClient {
             LOG.debug(`processUsers: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processUsers (
@@ -467,6 +470,7 @@ export class ZendeskClient {
             LOG.debug(`processOrganizations: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processOrganizations (
@@ -580,6 +584,7 @@ export class ZendeskClient {
             LOG.debug(`processGroups: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processGroups (
@@ -694,6 +699,7 @@ export class ZendeskClient {
             LOG.debug(`processOrganizationMemberships: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processOrganizationMemberships (
@@ -789,6 +795,7 @@ export class ZendeskClient {
             LOG.debug(`processUserIdentities: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processUserIdentities (
@@ -902,6 +909,7 @@ export class ZendeskClient {
             LOG.debug(`processGroupMemberships: Ending since no after_cursor detected`);
         }
 
+        return true;
     }
 
     private async _processGroupMemberships (
