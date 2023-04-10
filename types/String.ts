@@ -4,6 +4,7 @@ import { default as _isString } from "lodash/isString";
 import { isUndefined } from "./undefined";
 import { explainNot, explainOk, explainOr } from "./explain";
 import { isNull } from "lodash";
+import { isNumber } from "./Number";
 
 /**
  *
@@ -133,6 +134,26 @@ export function isStringOrNullOrUndefined (value: unknown): value is string | un
  */
 export function explainStringOrNullOrUndefined (value: any): string {
     return isStringOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string', 'null', 'undefined' ]));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isStringOrNumberOrNullOrUndefined (value: unknown): value is string | undefined | null {
+    return isNumber(value) || isNull(value) || isUndefined(value) || isString(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringOrNumberOrNullOrUndefined (value: any): string {
+    return isStringOrNumberOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string', 'number', 'null', 'undefined' ]));
 }
 
 /**
