@@ -169,6 +169,14 @@ export function explainReadonlyJsonObjectOrUndefined (value: any) : string {
     return isReadonlyJsonObjectOrUndefined(value) ? explainOk() : explainNot(explainOr(['undefined', 'ReadonlyJsonObject']));
 }
 
+export function isReadonlyJsonObjectOrNullOrUndefined (value : any) : value is ReadonlyJsonObjectOf<ReadonlyJsonAny> | undefined | null {
+    return isUndefined(value) || isNull(value) || isReadonlyJsonObject(value);
+}
+
+export function explainReadonlyJsonObjectOrNullOrUndefined (value: any) : string {
+    return isReadonlyJsonObjectOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr(['undefined', 'null', 'ReadonlyJsonObject']));
+}
+
 export function explainReadonlyJsonObject (value: any) : string {
     return isReadonlyJsonObject(value) ? explainOk() : explainNot('ReadonlyJsonObject');
 }
