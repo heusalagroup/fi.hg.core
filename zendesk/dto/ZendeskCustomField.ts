@@ -4,7 +4,8 @@ import { explainRegularObject, isRegularObject } from "../../types/RegularObject
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainNumber, isNumber } from "../../types/Number";
 import { explainString, isString } from "../../types/String";
-import { explain, explainProperty } from "../../types/explain";
+import { explain, explainNot, explainOk, explainProperty } from "../../types/explain";
+import { isUndefined } from "../../types/undefined";
 
 export interface ZendeskCustomField {
     readonly id: number;
@@ -54,4 +55,25 @@ export function stringifyZendeskCustomField (value : ZendeskCustomField) : strin
 export function parseZendeskCustomField (value: unknown) : ZendeskCustomField | undefined {
     if (isZendeskCustomField(value)) return value;
     return undefined;
+}
+
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isZendeskCustomFieldOrUndefined (value: unknown): value is ZendeskCustomField | undefined {
+    return isZendeskCustomField(value) || isUndefined(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainZendeskCustomFieldOrUndefined (value: any): string {
+    return isZendeskCustomFieldOrUndefined(value) ? explainOk() : explainNot('ZendeskCustomField or undefined');
 }

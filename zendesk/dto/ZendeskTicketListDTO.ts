@@ -3,8 +3,8 @@
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explain, explainProperty } from "../../types/explain";
-import { explainZendeskTicketDTO, isZendeskTicketDTO, ZendeskTicketDTO } from "./ZendeskTicketDTO";
-import { explainString, isString } from "../../types/String";
+import { explainZendeskTicket, isZendeskTicket, ZendeskTicket } from "./ZendeskTicket";
+import { explainString, explainStringOrNullOrUndefined, isString, isStringOrNullOrUndefined } from "../../types/String";
 import { explainBoolean, isBoolean } from "../../types/Boolean";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 
@@ -12,10 +12,10 @@ export interface ZendeskTicketListDTO {
 
     readonly after_cursor : string;
     readonly after_url : string;
-    readonly before_cursor : string;
-    readonly before_url : string;
+    readonly before_cursor ?: string | null | undefined;
+    readonly before_url ?: string | null | undefined;
     readonly end_of_stream : boolean;
-    readonly tickets : readonly ZendeskTicketDTO[];
+    readonly tickets : readonly ZendeskTicket[];
 
 
 }
@@ -23,10 +23,10 @@ export interface ZendeskTicketListDTO {
 export function createZendeskTicketListDTO (
     after_cursor : string,
     after_url : string,
-    before_cursor : string,
-    before_url : string,
+    before_cursor : string | null | undefined,
+    before_url : string | null | undefined,
     end_of_stream : boolean,
-    tickets : readonly ZendeskTicketDTO[],
+    tickets : readonly ZendeskTicket[],
 ) : ZendeskTicketListDTO {
     return {
         after_cursor,
@@ -51,10 +51,10 @@ export function isZendeskTicketListDTO (value: unknown) : value is ZendeskTicket
         ])
         && isString(value?.after_cursor)
         && isString(value?.after_url)
-        && isString(value?.before_cursor)
-        && isString(value?.before_url)
+        && isStringOrNullOrUndefined(value?.before_cursor)
+        && isStringOrNullOrUndefined(value?.before_url)
         && isBoolean(value?.end_of_stream)
-        && isArrayOf<ZendeskTicketDTO>(value?.tickets, isZendeskTicketDTO)
+        && isArrayOf<ZendeskTicket>(value?.tickets, isZendeskTicket)
     );
 }
 
@@ -72,10 +72,10 @@ export function explainZendeskTicketListDTO (value: any) : string {
             ])
             , explainProperty("after_cursor", explainString(value?.after_cursor))
             , explainProperty("after_url", explainString(value?.after_url))
-            , explainProperty("before_cursor", explainString(value?.before_cursor))
-            , explainProperty("before_url", explainString(value?.before_url))
+            , explainProperty("before_cursor", explainStringOrNullOrUndefined(value?.before_cursor))
+            , explainProperty("before_url", explainStringOrNullOrUndefined(value?.before_url))
             , explainProperty("end_of_stream", explainBoolean(value?.end_of_stream))
-            , explainProperty("tickets", explainArrayOf<ZendeskTicketDTO>("ZendeskTicketDTO", explainZendeskTicketDTO, value?.tickets, isZendeskTicketDTO))
+            , explainProperty("tickets", explainArrayOf<ZendeskTicket>("ZendeskTicketDTO", explainZendeskTicket, value?.tickets, isZendeskTicket))
         ]
     );
 }
