@@ -6,6 +6,18 @@ import { trim } from "./functions/trim";
 
 export class AuthorizationUtils {
 
+    public static createBasicHeader (token: string) : string {
+        return `Basic ${token}`;
+    }
+
+    public static parseBasicToken (header : string) : string | undefined {
+        const BasicPrefix = 'Basic ';
+        if (!startsWith(header, BasicPrefix)) {
+            return undefined;
+        }
+        return trim(header.substring(BasicPrefix.length));
+    }
+
     public static createBearerHeader (token: string) : string {
         return `Bearer ${token}`;
     }
