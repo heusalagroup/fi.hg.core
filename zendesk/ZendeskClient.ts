@@ -14,7 +14,16 @@ import {
     ZENDESK_API_GET_ORGANIZATION_LIST_CURSOR_NEXT_PATH,
     ZENDESK_API_GET_GROUP_PATH,
     ZENDESK_API_GET_GROUP_LIST_CURSOR_START_PATH,
-    ZENDESK_API_GET_GROUP_LIST_CURSOR_NEXT_PATH, ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_LIST_CURSOR_NEXT_PATH, ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_LIST_CURSOR_START_PATH, ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_PATH, ZENDESK_API_GET_USER_IDENTITY_LIST_CURSOR_NEXT_PATH, ZENDESK_API_GET_USER_IDENTITY_LIST_CURSOR_START_PATH, ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_NEXT_PATH, ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_START_PATH, ZENDESK_API_GET_GROUP_MEMBERSHIP_PATH
+    ZENDESK_API_GET_GROUP_LIST_CURSOR_NEXT_PATH,
+    ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_LIST_CURSOR_NEXT_PATH,
+    ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_LIST_CURSOR_START_PATH,
+    ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_PATH,
+    ZENDESK_API_GET_USER_IDENTITY_LIST_CURSOR_NEXT_PATH,
+    ZENDESK_API_GET_USER_IDENTITY_LIST_CURSOR_START_PATH,
+    ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_NEXT_PATH,
+    ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_START_PATH,
+    ZENDESK_API_GET_GROUP_MEMBERSHIP_PATH,
+    ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_NEXT_PATH, ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_START_PATH, ZENDESK_API_GET_SUSPENDED_TICKETS_PATH
 } from "./zendesk-api";
 import { LogLevel } from "../types/LogLevel";
 import { LogService } from "../LogService";
@@ -45,6 +54,9 @@ import { explainZendeskUserIdentityListDTO, isZendeskUserIdentityListDTO, Zendes
 import { isZendeskGroupMembership, ZendeskGroupMembership } from "./dto/ZendeskGroupMembership";
 import { explainZendeskGroupMembershipDTO, isZendeskGroupMembershipDTO } from "./dto/ZendeskGroupMembershipDTO";
 import { explainZendeskGroupMembershipListDTO, isZendeskGroupMembershipListDTO, ZendeskGroupMembershipListDTO } from "./dto/ZendeskGroupMembershipListDTO";
+import { isZendeskSuspendedTicket, ZendeskSuspendedTicket } from "./dto/ZendeskSuspendedTicket";
+import { explainZendeskSuspendedTicketListDTO, isZendeskSuspendedTicketListDTO, ZendeskSuspendedTicketListDTO } from "./dto/ZendeskSuspendedTicketListDTO";
+import { explainZendeskSuspendedTicketDTO, isZendeskSuspendedTicketDTO } from "./dto/ZendeskSuspendedTicketDTO";
 
 const LOG = LogService.createLogger('ZendeskClient');
 
@@ -975,6 +987,119 @@ export class ZendeskClient {
             );
             LOG.debug(`_continueGroupMembershipExport: incorrect groups = `, list);
             throw new TypeError(`Result was not ZendeskGroupMembershipListDTO`);
+        }
+        return result;
+    }
+
+
+    public async getSuspendedTicket (
+        suspendedTicketId : number
+    ) : Promise<ZendeskSuspendedTicket> {
+        const result = await HttpService.getJson(
+            `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_PATH(`${suspendedTicketId}`)}`,
+            {
+                'Authorization': this._authorization
+            }
+        );
+        if (!isZendeskSuspendedTicketDTO(result)) {
+            LOG.debug(`getSuspendedTicket: Not ZendeskSuspendedTicketDTO: ${explainZendeskSuspendedTicketDTO(result)}`);
+            LOG.debug(`getSuspendedTicket: incorrect suspended_ticket = `, result);
+            throw new TypeError(`Result was not ZendeskSuspendedTicketDTO`);
+        }
+        return result.suspended_ticket;
+    }
+
+    public async processSuspendedTickets (
+        size: number,
+        callback: (ticket: ZendeskSuspendedTicket) => false | undefined | void | Promise<false | undefined | void>,
+    ) : Promise<boolean> {
+
+        let response = await this._startSuspendedTicketExport(size);
+        if (await this._processSuspendedTickets(response.suspended_tickets, callback) === false) {
+            LOG.debug(`processSuspendedTickets: Ending because callback requested it`);
+            return false;
+        }
+
+        while ( response?.meta?.has_more && response?.meta?.after_cursor ) {
+            response = await this._continueSuspendedTicketExport(size, response?.meta?.after_cursor);
+            if (await this._processSuspendedTickets(response.suspended_tickets, callback) === false) {
+                LOG.debug(`processSuspendedTickets: Ending because callback requested it`);
+                return false;
+            }
+        }
+
+        if (!response?.meta?.has_more) {
+            LOG.debug(`processSuspendedTickets: Ending since has no more data`);
+        } else if( response?.meta?.after_cursor ) {
+            LOG.debug(`processSuspendedTickets: Ending since no after_cursor detected`);
+        }
+
+        return true;
+    }
+
+    private async _processSuspendedTickets (
+        list: readonly ZendeskSuspendedTicket[],
+        callback: (ticket: ZendeskSuspendedTicket) => false | undefined | void | Promise<false | undefined | void>
+    ) : Promise<false | undefined | void> {
+
+        const response = await reduce(
+            list,
+            async (
+                prev : Promise<false | undefined | void>,
+                item : ZendeskSuspendedTicket
+            ) : Promise<false | undefined | void> => {
+                const prevRet = await prev;
+                if (prevRet === false) return false;
+                return callback(item);
+            },
+            Promise.resolve()
+        );
+
+        if (response === false) return false;
+
+    }
+
+    private async _startSuspendedTicketExport (
+        size: number
+    ) : Promise<ZendeskSuspendedTicketListDTO> {
+        const result = await HttpService.getJson(
+            `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_START_PATH(`${size}`)}`,
+            {
+                'Authorization': this._authorization
+            }
+        );
+        if (!isZendeskSuspendedTicketListDTO(result)) {
+
+            LOG.debug(`_startSuspendedTicketExport: Not ZendeskSuspendedTicketListDTO: ${explainZendeskSuspendedTicketListDTO(result)}`);
+            const list = filter(
+                (result as any)?.suspended_tickets ?? [],
+                (item: any) : boolean => !isZendeskSuspendedTicket(item)
+            );
+            LOG.debug(`_startSuspendedTicketExport: incorrect suspended_tickets = `, list);
+
+            throw new TypeError(`Result was not ZendeskSuspendedTicketListDTO`);
+        }
+        return result;
+    }
+
+    private async _continueSuspendedTicketExport (
+        size: number,
+        cursor: string
+    ) : Promise<ZendeskSuspendedTicketListDTO> {
+        const result = await HttpService.getJson(
+            `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
+            {
+                'Authorization': this._authorization
+            }
+        );
+        if (!isZendeskSuspendedTicketListDTO(result)) {
+            LOG.debug(`_continueSuspendedTicketExport: Not ZendeskSuspendedTicketListDTO: ${explainZendeskSuspendedTicketListDTO(result)}`);
+            const list = filter(
+                (result as any)?.groups ?? [],
+                (item: any) : boolean => !isZendeskSuspendedTicket(item)
+            );
+            LOG.debug(`_continueSuspendedTicketExport: incorrect groups = `, list);
+            throw new TypeError(`Result was not ZendeskSuspendedTicketListDTO`);
         }
         return result;
     }

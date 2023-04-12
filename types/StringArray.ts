@@ -5,6 +5,7 @@ import { isString } from "./String";
 import { explainNot, explainOk, explainOr } from "./explain";
 import { isUndefined } from "./undefined";
 import { every } from "../functions/every";
+import { isNull } from "./Null";
 
 /**
  *
@@ -48,5 +49,24 @@ export function isStringArrayOrUndefined (value: unknown): value is string[] | u
  */
 export function explainStringArrayOrUndefined (value: any): string {
     return isStringArrayOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string[]', 'undefined' ]));
+}
 
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isStringArrayOrNullOrUndefined (value: unknown): value is string[] | undefined {
+    return isNull(value) || isUndefined(value) || isStringArray(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringArrayOrNullOrUndefined (value: any): string {
+    return isStringArrayOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'string[]', 'null', 'undefined' ]));
 }

@@ -62,6 +62,21 @@ export const ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_START_PATH = (size: st
  */
 export const ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_NEXT_PATH = (size: string, cursor: string) => `/api/v2/group_memberships?page[size]=${q(size)}&page[after]=${q(cursor)}`;
 
+/**
+ * `GET /api/v2/suspended_tickets/{ID}`
+ */
+export const ZENDESK_API_GET_SUSPENDED_TICKETS_PATH = (id: string) => `/api/v2/suspended_tickets/${id}`;
+
+/**
+ * `GET /api/v2/suspended_tickets?page[size]={SIZE}`
+ */
+export const ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_START_PATH = (size: string) => `/api/v2/suspended_tickets?page[size]=${q(size)}`;
+
+/**
+ * `GET /api/v2/suspended_tickets?page[size]={SIZE}&page[after]={CURSOR}`
+ */
+export const ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_NEXT_PATH = (size: string, cursor: string) => `/api/v2/suspended_tickets?page[size]=${q(size)}&page[after]=${q(cursor)}`;
+
 
 /**
  * `GET /api/v2/groups/{ID}`
