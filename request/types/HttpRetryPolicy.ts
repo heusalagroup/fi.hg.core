@@ -117,6 +117,7 @@ export function createHttpRetryPolicy (
     increasingDelayStep ?: number,
     maxDelay            ?: number | undefined
 ) : HttpRetryPolicy {
+    retryFor = retryFor ?? [];
     const onStatus = filterRetryForStatusRange(retryFor);
     const onMethod = filterRetryForMethod(retryFor);
     const onCode   = filterRetryForCode(retryFor);
@@ -206,26 +207,30 @@ export function shouldRetry (value : HttpRetryPolicy, attempt: number, method: s
     );
 }
 
+export function getDefaultRetryFor () : RetryForAny {
+    return [
+        Method.GET,
+        ErrorCode.ETIMEDOUT,
+        ErrorCode.ENOTFOUND,
+        ErrorCode.ECONNRESET,
+        ErrorCode.ECONNABORTED,
+        ErrorCode.EHOSTUNREACH,
+        ErrorCode.ESOCKETTIMEDOUT,
+        ErrorCode.EAI_AGAIN,
+        ErrorCode.EPIPE,
+        ErrorCode.ECONNREFUSED,
+        ErrorCode.EADDRINUSE,
+        ErrorCode.ENETUNREACH,
+        ErrorCode.ENETRESET,
+        ErrorCode.EPROTO,
+        ErrorCode.EHOSTDOWN,
+        [500, 599]
+    ];
+}
+
 export function createDefaultHttpRetryPolicy () : HttpRetryPolicy {
     return createHttpRetryPolicy(
-        [
-            Method.GET,
-            ErrorCode.ETIMEDOUT,
-            ErrorCode.ENOTFOUND,
-            ErrorCode.ECONNRESET,
-            ErrorCode.ECONNABORTED,
-            ErrorCode.EHOSTUNREACH,
-            ErrorCode.ESOCKETTIMEDOUT,
-            ErrorCode.EAI_AGAIN,
-            ErrorCode.EPIPE,
-            ErrorCode.ECONNREFUSED,
-            ErrorCode.EADDRINUSE,
-            ErrorCode.ENETUNREACH,
-            ErrorCode.ENETRESET,
-            ErrorCode.EPROTO,
-            ErrorCode.EHOSTDOWN,
-            [500, 599]
-        ],
+        getDefaultRetryFor(),
         10,
         1000,
         2500
