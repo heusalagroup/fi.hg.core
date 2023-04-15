@@ -23,7 +23,9 @@ import {
     ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_NEXT_PATH,
     ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_START_PATH,
     ZENDESK_API_GET_GROUP_MEMBERSHIP_PATH,
-    ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_NEXT_PATH, ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_START_PATH, ZENDESK_API_GET_SUSPENDED_TICKETS_PATH
+    ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_NEXT_PATH,
+    ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_START_PATH,
+    ZENDESK_API_GET_SUSPENDED_TICKETS_PATH
 } from "./zendesk-api";
 import { LogLevel } from "../types/LogLevel";
 import { LogService } from "../LogService";
@@ -57,6 +59,7 @@ import { explainZendeskGroupMembershipListDTO, isZendeskGroupMembershipListDTO, 
 import { isZendeskSuspendedTicket, ZendeskSuspendedTicket } from "./dto/ZendeskSuspendedTicket";
 import { explainZendeskSuspendedTicketListDTO, isZendeskSuspendedTicketListDTO, ZendeskSuspendedTicketListDTO } from "./dto/ZendeskSuspendedTicketListDTO";
 import { explainZendeskSuspendedTicketDTO, isZendeskSuspendedTicketDTO } from "./dto/ZendeskSuspendedTicketDTO";
+import { createDefaultHttpRetryPolicy, HttpRetryPolicy } from "../request/types/HttpRetryPolicy";
 
 const LOG = LogService.createLogger('ZendeskClient');
 
@@ -72,6 +75,7 @@ export class ZendeskClient {
 
     private readonly _url : string;
     private readonly _authorization : string;
+    private readonly _getRetryPolicy : HttpRetryPolicy;
 
     public static create (
         url           : string,
@@ -81,17 +85,22 @@ export class ZendeskClient {
     }
 
     public constructor (
-        url           : string,
-        authorization : string
+        url            : string,
+        authorization  : string,
+        retryPolicy   ?: HttpRetryPolicy
     ) {
         this._url = url;
         this._authorization = authorization;
+        this._getRetryPolicy = retryPolicy ?? createDefaultHttpRetryPolicy();
     }
 
     public getUrl () : string {
         return this._url;
     }
 
+    public getRetryPolicy () : HttpRetryPolicy {
+        return this._getRetryPolicy;
+    }
 
     public async getTicket (
         ticketId : number
@@ -100,7 +109,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_TICKET_PATH(`${ticketId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskTicketDTO(result)) {
             LOG.debug(`getTicket: Not ZendeskTicketDTO: ${explainZendeskTicketDTO(result)}`);
@@ -167,7 +177,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_INCREMENTAL_TICKET_CURSOR_EXPORT_START_PATH(`${startTime}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskTicketListDTO(result)) {
             LOG.debug(`_startIncrementalTicketExport: Not ZendeskTicketListDTO: ${explainZendeskTicketListDTO(result)}`);
@@ -188,7 +199,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_INCREMENTAL_TICKET_CURSOR_EXPORT_NEXT_PATH(cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskTicketListDTO(result)) {
             LOG.debug(`_continueIncrementalTicketExport: Not ZendeskTicketListDTO: ${explainZendeskTicketListDTO(result)}`);
@@ -261,7 +273,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_COMMENT_LIST_CURSOR_START_PATH(`${ticketId}`, `${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskCommentListDTO(result)) {
             LOG.debug(`_startCommentExport: Not ZendeskCommentListDTO: ${explainZendeskCommentListDTO(result)}`);
@@ -311,7 +324,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_COMMENT_LIST_CURSOR_NEXT_PATH(`${ticketId}`, `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskCommentListDTO(result)) {
             LOG.debug(`_continueCommentExport: Not ZendeskCommentListDTO: ${explainZendeskCommentListDTO(result)}`);
@@ -333,7 +347,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_USER_PATH(`${userId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskUserDTO(result)) {
             LOG.debug(`getUser: Not ZendeskUserDTO: ${explainZendeskUserDTO(result)}`);
@@ -400,7 +415,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_USER_LIST_CURSOR_START_PATH(`${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskUserListDTO(result)) {
             LOG.debug(`_startUserExport: Not ZendeskUserListDTO: ${explainZendeskUserListDTO(result)}`);
@@ -423,7 +439,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_USER_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskUserListDTO(result)) {
             LOG.debug(`_continueUserExport: Not ZendeskUserListDTO: ${explainZendeskUserListDTO(result)}`);
@@ -447,7 +464,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_PATH(`${orgId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskOrganizationDTO(result)) {
             LOG.debug(`getOrganization: Not ZendeskOrganizationDTO: ${explainZendeskOrganizationDTO(result)}`);
@@ -514,7 +532,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_LIST_CURSOR_START_PATH(`${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskOrganizationListDTO(result)) {
 
@@ -538,7 +557,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskOrganizationListDTO(result)) {
             LOG.debug(`_continueOrganizationExport: Not ZendeskOrganizationListDTO: ${explainZendeskOrganizationListDTO(result)}`);
@@ -561,7 +581,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_GROUP_PATH(`${groupId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskGroupDTO(result)) {
             LOG.debug(`getGroup: Not ZendeskGroupDTO: ${explainZendeskGroupDTO(result)}`);
@@ -628,7 +649,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_GROUP_LIST_CURSOR_START_PATH(`${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskGroupListDTO(result)) {
 
@@ -652,7 +674,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_GROUP_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskGroupListDTO(result)) {
             LOG.debug(`_continueGroupExport: Not ZendeskGroupListDTO: ${explainZendeskGroupListDTO(result)}`);
@@ -676,7 +699,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_PATH(`${organizationMembershipId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskOrganizationMembershipDTO(result)) {
             LOG.debug(`getOrganizationMembership: Not ZendeskOrganizationMembershipDTO: ${explainZendeskOrganizationMembershipDTO(result)}`);
@@ -743,7 +767,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_LIST_CURSOR_START_PATH(`${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskOrganizationMembershipListDTO(result)) {
 
@@ -767,7 +792,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskOrganizationMembershipListDTO(result)) {
             LOG.debug(`_continueOrganizationMembershipExport: Not ZendeskOrganizationMembershipListDTO: ${explainZendeskOrganizationMembershipListDTO(result)}`);
@@ -840,7 +866,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_USER_IDENTITY_LIST_CURSOR_START_PATH(`${ticketId}`, `${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskUserIdentityListDTO(result)) {
             LOG.debug(`_startUserIdentityExport: Not ZendeskUserIdentityListDTO: ${explainZendeskUserIdentityListDTO(result)}`);
@@ -864,7 +891,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_USER_IDENTITY_LIST_CURSOR_NEXT_PATH(`${ticketId}`, `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskUserIdentityListDTO(result)) {
             LOG.debug(`_continueUserIdentityExport: Not ZendeskUserIdentityListDTO: ${explainZendeskUserIdentityListDTO(result)}`);
@@ -886,7 +914,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_GROUP_MEMBERSHIP_PATH(`${groupMembershipId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskGroupMembershipDTO(result)) {
             LOG.debug(`getGroupMembership: Not ZendeskGroupMembershipDTO: ${explainZendeskGroupMembershipDTO(result)}`);
@@ -953,7 +982,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_START_PATH(`${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskGroupMembershipListDTO(result)) {
 
@@ -977,7 +1007,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_GROUP_MEMBERSHIP_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskGroupMembershipListDTO(result)) {
             LOG.debug(`_continueGroupMembershipExport: Not ZendeskGroupMembershipListDTO: ${explainZendeskGroupMembershipListDTO(result)}`);
@@ -999,7 +1030,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_PATH(`${suspendedTicketId}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskSuspendedTicketDTO(result)) {
             LOG.debug(`getSuspendedTicket: Not ZendeskSuspendedTicketDTO: ${explainZendeskSuspendedTicketDTO(result)}`);
@@ -1066,7 +1098,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_START_PATH(`${size}`)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskSuspendedTicketListDTO(result)) {
 
@@ -1090,7 +1123,8 @@ export class ZendeskClient {
             `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_LIST_CURSOR_NEXT_PATH( `${size}`, cursor)}`,
             {
                 'Authorization': this._authorization
-            }
+            },
+            this._getRetryPolicy
         );
         if (!isZendeskSuspendedTicketListDTO(result)) {
             LOG.debug(`_continueSuspendedTicketExport: Not ZendeskSuspendedTicketListDTO: ${explainZendeskSuspendedTicketListDTO(result)}`);
