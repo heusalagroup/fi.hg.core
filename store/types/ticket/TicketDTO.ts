@@ -18,8 +18,8 @@ export interface TicketDTO {
     readonly purchaseCompanyId ?: string;
     readonly purchaseInvoiceId ?: string;
     readonly inventoryItemId   ?: string;
-    readonly updated         : string;
-    readonly created         : string;
+    readonly updated           ?: string;
+    readonly created           ?: string;
     readonly date              ?: string;
     readonly dueDate           ?: string;
     readonly state             ?: string;
@@ -118,8 +118,8 @@ export function isTicketDTO (value: any): value is TicketDTO {
         && isStringOrUndefined(value?.purchaseCompanyId)
         && isStringOrUndefined(value?.purchaseInvoiceId)
         && isStringOrUndefined(value?.inventoryItemId)
-        && isString(value?.updated)
-        && isString(value?.created)
+        && isStringOrUndefined(value?.updated)
+        && isStringOrUndefined(value?.created)
         && isStringOrUndefined(value?.date)
         && isStringOrUndefined(value?.dueDate)
         && isStringOrUndefined(value?.state)
