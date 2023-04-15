@@ -6,14 +6,13 @@ import { Observer,  ObserverCallback, ObserverDestructor } from "./Observer";
 import { LogService } from "./LogService";
 import { LogLevel } from "./types/LogLevel";
 import { ResponseEntity } from "./request/ResponseEntity";
+import { isRequestError } from "./request/types/RequestError";
+import { getNextRetryDelay, HttpRetryPolicy, shouldRetry } from "./request/types/HttpRetryPolicy";
+import { Method } from "./types/Method";
+
+export { Method };
 
 const LOG = LogService.createLogger('HttpService');
-
-export enum Method {
-    GET = "GET",
-    POST = "POST",
-    DELETE = "DELETE"
-}
 
 export enum HttpServiceEvent {
     REQUEST_STARTED = "HttpService:requestStarted",
@@ -116,33 +115,77 @@ export class HttpService {
     }
 
     private static async _request<T> (
-        context  : string,
-        method   : Method,
-        url      : string,
-        callback : () => T
+        context      : string,
+        method       : Method,
+        url          : string,
+        callback     : () => T,
+        retryPolicy ?: HttpRetryPolicy,
+        attempt     ?: number,
+        retryDelay  ?: number
     ) : Promise<T | undefined> {
-        if (this._requestCount >= this._requestLimit) {
+        attempt = attempt ?? 0;
+        retryDelay = retryDelay ?? retryPolicy?.baseDelay ?? 1000;
+        if (attempt === 0 && this._requestCount >= this._requestLimit) {
             throw new TypeError(`${context}: Too many requests: ${this._requestCount}`);
         }
         try {
-            this._requestCount += 1;
-            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED)) {
-                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, method);
+            if (attempt === 0) {
+                this._requestCount += 1;
+                if ( this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STARTED) ) {
+                    this._observer.triggerEvent(HttpServiceEvent.REQUEST_STARTED, url, method);
+                }
+                LOG.debug(`Started ${method} request to "${url} "(${this._requestCount} requests)`);
+            } else {
+                LOG.debug(`Started attempt ${attempt} for ${method} request to "${url} "(${this._requestCount} requests)`);
             }
-            LOG.debug(`Started ${method} request to "${url} "(${this._requestCount} requests)`);
             return await callback();
-        } finally {
-            this._requestCount -= 1;
-            if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
-                this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, method);
+        } catch (e) {
+            const code : any = (e as any)?.code;
+            const status = isRequestError(e) ? e.status : 0;
+            if (retryPolicy) {
+                if (shouldRetry(retryPolicy, attempt, method, status, code)) {
+                    LOG.warn(`Error in ${method} "${url}": ${e} ${code} ${status}`);
+                    LOG.debug(`Waiting next attempt for ${method} request to "${url} "(${this._requestCount} requests)`);
+                    await this._waitForRetry(retryDelay);
+                    retryDelay = getNextRetryDelay(retryDelay, retryPolicy);
+                    return await this._request(context, method, url, callback, retryPolicy, attempt + 1, retryDelay);
+                } else {
+                    throw e;
+                }
+            } else {
+                throw e;
             }
-            LOG.debug(`Stopped ${method} request to "${url}" (${this._requestCount} requests)`);
+        } finally {
+            if (attempt === 0) {
+                this._requestCount -= 1;
+                if (this._observer.hasCallbacks(HttpServiceEvent.REQUEST_STOPPED)) {
+                    this._observer.triggerEvent(HttpServiceEvent.REQUEST_STOPPED, url, method);
+                }
+                LOG.debug(`Stopped ${method} request to "${url}" (${this._requestCount} requests)`);
+            }
         }
+    }
+
+    private static async _waitForRetry (time: number) : Promise<void> {
+        LOG.debug(`Waiting for retry time: `, time);
+        return new Promise( (resolve, reject) => {
+            try {
+                setTimeout(
+                    () => {
+                        resolve();
+                    },
+                    time
+                );
+            } catch (err) {
+                reject(err);
+            }
+        });
     }
 
     public static async getJson (
         url : string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ReadonlyJsonAny | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -152,14 +195,16 @@ export class HttpService {
             async () => {
                 const response : JsonAny | undefined = await RequestClient.getJson(url, headers);
                 return response as ReadonlyJsonAny | undefined;
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async postJson (
         url      : string,
         data    ?: ReadonlyJsonAny,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ReadonlyJsonAny | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -169,13 +214,15 @@ export class HttpService {
             async () => {
                 const response : JsonAny | undefined = await RequestClient.postJson(url, data as JsonAny, headers);
                 return response as ReadonlyJsonAny | undefined;
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async deleteJson (
         url      : string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ReadonlyJsonAny | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -185,14 +232,16 @@ export class HttpService {
             async () => {
                 const response : JsonAny | undefined = await RequestClient.deleteJson(url, headers);
                 return response as ReadonlyJsonAny | undefined;
-            }
+            },
+            retryPolicy
         );
     }
 
 
     public static async getText (
         url : string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<string | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -202,14 +251,16 @@ export class HttpService {
             async () => {
                 const response : string | undefined = await RequestClient.getText(url, headers);
                 return response as string | undefined;
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async postText (
         url      : string,
         data    ?: string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<string | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -219,14 +270,16 @@ export class HttpService {
             async () => {
                 const response : string | undefined = await RequestClient.postText(url, data, headers);
                 return response as string | undefined;
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async deleteText (
         url      : string,
         data    ?: string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<string | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -236,13 +289,15 @@ export class HttpService {
             async () => {
                 const response : string | undefined = await RequestClient.deleteText(url, headers);
                 return response as string | undefined;
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async getJsonEntity (
         url : string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<JsonAny|undefined> | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -251,14 +306,16 @@ export class HttpService {
             url,
             async () => {
                 return await RequestClient.getJsonEntity(url, headers);
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async postJsonEntity (
         url      : string,
         data    ?: ReadonlyJsonAny,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<JsonAny|undefined> | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -267,13 +324,15 @@ export class HttpService {
             url,
             async () => {
                 return await RequestClient.postJsonEntity(url, data as JsonAny, headers);
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async deleteJsonEntity (
         url      : string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<JsonAny|undefined> | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -282,14 +341,16 @@ export class HttpService {
             url,
             async () => {
                 return await RequestClient.deleteJsonEntity(url, headers);
-            }
+            },
+            retryPolicy
         );
     }
 
 
     public static async getTextEntity (
         url : string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<string|undefined> | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -298,14 +359,16 @@ export class HttpService {
             url,
             async () => {
                 return await RequestClient.getTextEntity(url, headers);
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async postTextEntity (
         url      : string,
         data    ?: string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<string|undefined> | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -314,14 +377,16 @@ export class HttpService {
             url,
             async () => {
                 return await RequestClient.postTextEntity(url, data, headers);
-            }
+            },
+            retryPolicy
         );
     }
 
     public static async deleteTextEntity (
         url      : string,
         data    ?: string,
-        headers ?: {[key: string]: string}
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<string|undefined> | undefined> {
         url = this._prepareUrl(url);
         return this._request(
@@ -330,7 +395,8 @@ export class HttpService {
             url,
             async () => {
                 return await RequestClient.deleteTextEntity(url, headers);
-            }
+            },
+            retryPolicy
         );
     }
 

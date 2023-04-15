@@ -4,6 +4,7 @@
 import { OpenAPIV3 } from "../../types/openapi";
 import { isString } from "../../types/String";
 import { isNumber } from "../../types/Number";
+import { explainNot, explainOk } from "../../types/explain";
 
 export enum RequestMethod {
     OPTIONS,
@@ -35,8 +36,12 @@ export function stringifyRequestMethod (value : RequestMethod) : string {
     throw new TypeError(`Unsupported value for stringifyRequestMethod(): ${value}`)
 }
 
-export function isRequestMethod (value: any) : value is RequestMethod {
+export function isRequestMethod (value: unknown) : value is RequestMethod {
     return isNumber(value) && value >= FIRST_REQUEST_METHOD_NUMBER && value <= LAST_REQUEST_METHOD_NUMBER;
+}
+
+export function explainRequestMethod (value: any) : string {
+    return isRequestMethod(value) ? explainOk() : explainNot('RequestMethod')
 }
 
 export function parseRequestMethod (value: any) : RequestMethod {
