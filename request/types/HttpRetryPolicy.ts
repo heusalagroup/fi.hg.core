@@ -224,7 +224,8 @@ export function getDefaultRetryFor () : RetryForAny {
         ErrorCode.ENETRESET,
         ErrorCode.EPROTO,
         ErrorCode.EHOSTDOWN,
-        [500, 599]
+        [500, 599],
+        429 // Too many requests
     ];
 }
 
