@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
     ZENDESK_API_GET_INCREMENTAL_TICKET_CURSOR_EXPORT_START_PATH,
@@ -60,6 +60,12 @@ import { isZendeskSuspendedTicket, ZendeskSuspendedTicket } from "./dto/ZendeskS
 import { explainZendeskSuspendedTicketListDTO, isZendeskSuspendedTicketListDTO, ZendeskSuspendedTicketListDTO } from "./dto/ZendeskSuspendedTicketListDTO";
 import { explainZendeskSuspendedTicketDTO, isZendeskSuspendedTicketDTO } from "./dto/ZendeskSuspendedTicketDTO";
 import { createDefaultHttpRetryPolicy, HttpRetryPolicy } from "../request/types/HttpRetryPolicy";
+import { isNumber, parseInteger } from "../types/Number";
+import { ResponseEntity } from "../request/ResponseEntity";
+import { JsonAny } from "../Json";
+import { Headers } from "../request/Headers";
+import { isRequestError } from "../request/types/RequestError";
+import { PromiseUtils } from "../PromiseUtils";
 
 const LOG = LogService.createLogger('ZendeskClient');
 
@@ -77,6 +83,34 @@ export class ZendeskClient {
     private readonly _authorization : string;
     private readonly _getRetryPolicy : HttpRetryPolicy;
 
+    private _rateLimit          : number | undefined;
+    private _rateLimitRemaining : number | undefined;
+    private _rateLimitReset     : number | undefined;
+
+    /**
+     * The amount of concurrent ticket fetches
+     * @private
+     */
+    private readonly _concurrentTicketsSize : number;
+
+    /**
+     * The amount of concurrent ticket comment fetches
+     * @private
+     */
+    private readonly _concurrentTicketCommentsSize : number;
+    private readonly _concurrentUsersSize : number;
+    private readonly _concurrentSuspendedTicketsSize : number;
+    private readonly _concurrentOrganizationsSize : number;
+    private readonly _concurrentGroupsSize : number;
+    private readonly _concurrentGroupMembershipsSize : number;
+    private readonly _concurrentUserIdentitiesSize : number;
+
+    /**
+     * The amount of requests to keep in reserve
+     * @private
+     */
+    private readonly _rateLimitReserve   : number;
+
     public static create (
         url           : string,
         authorization : string
@@ -92,6 +126,18 @@ export class ZendeskClient {
         this._url = url;
         this._authorization = authorization;
         this._getRetryPolicy = retryPolicy ?? createDefaultHttpRetryPolicy();
+        this._rateLimit = undefined;
+        this._rateLimitRemaining = undefined;
+        this._rateLimitReset = undefined;
+        this._rateLimitReserve = 50;
+        this._concurrentTicketsSize = 10;
+        this._concurrentTicketCommentsSize = 3;
+        this._concurrentUsersSize = 10;
+        this._concurrentSuspendedTicketsSize = 10;
+        this._concurrentOrganizationsSize = 10;
+        this._concurrentGroupsSize = 10;
+        this._concurrentGroupMembershipsSize = 10;
+        this._concurrentUserIdentitiesSize = 10;
     }
 
     public getUrl () : string {
@@ -101,17 +147,59 @@ export class ZendeskClient {
     public getRetryPolicy () : HttpRetryPolicy {
         return this._getRetryPolicy;
     }
+    public getRateLimit () : number {
+        return this._rateLimit;
+    }
+    public getRateLimitRemaining () : number {
+        return this._rateLimitRemaining;
+    }
+    public getRateLimitReset () : number {
+        return this._rateLimitReset;
+    }
+
+    private _updateRateLimit (headers : Headers) : void {
+
+        const rateLimit = parseInteger(headers.getFirst('X-Rate-Limit'));
+        const rateLimitRemaining = parseInteger(headers.getFirst('X-Rate-Limit-Remaining'));
+        const rateLimitResetInSec = parseInteger(headers.getFirst('Rate-Limit-Reset'));
+
+        if ( isNumber(rateLimit) && isNumber(rateLimitRemaining) && isNumber(rateLimitResetInSec) ) {
+            this._rateLimit = rateLimit;
+            this._rateLimitRemaining = rateLimitRemaining;
+            this._rateLimitReset = (new Date()).getTime() + rateLimitResetInSec * 1000;
+            LOG.info(`Current rate limit ${rateLimitRemaining} / ${rateLimit} and reset in ${rateLimitResetInSec} s`);
+        }
+
+    }
+
+    private async _rateLimitCheck () {
+
+        const rateLimit = this._rateLimit;
+        const rateLimitRemaining = this._rateLimitRemaining;
+        const rateLimitReset = this._rateLimitReset;
+
+        if ( isNumber(rateLimit) && isNumber(rateLimitRemaining) && isNumber(rateLimitReset) && rateLimitRemaining <= this._rateLimitReserve ) {
+            const now = (new Date()).getTime();
+            const rateLimitResetInMsec = rateLimitReset - now;
+            if (rateLimitResetInMsec >= 1) {
+                LOG.debug(`Waiting for rate limit time: `, rateLimitResetInMsec);
+                await PromiseUtils.waitTimeout(rateLimitResetInMsec);
+            }
+        }
+
+    }
 
     public async getTicket (
         ticketId : number
     ) : Promise<ZendeskTicket> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_TICKET_PATH(`${ticketId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskTicketDTO(result)) {
             LOG.debug(`getTicket: Not ZendeskTicketDTO: ${explainZendeskTicketDTO(result)}`);
             LOG.debug(`getTicket: incorrect ticket = `, result);
@@ -132,6 +220,7 @@ export class ZendeskClient {
         }
 
         while ( !response?.end_of_stream && response?.after_cursor ) {
+            LOG.info(`Current after cursor for recovery: "${response?.after_cursor}"`);
             response = await this._continueIncrementalTicketExport(response.after_cursor);
             if (await this._processTickets(response.tickets, callback) === false) {
                 LOG.debug(`processTickets: Ending because callback requested it`);
@@ -152,22 +241,11 @@ export class ZendeskClient {
         tickets: readonly ZendeskTicket[],
         callback: (ticket: ZendeskTicket) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently<ZendeskTicket>(
             tickets,
-            async (
-                prev : Promise<false | undefined | void>,
-                ticket : ZendeskTicket
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(ticket);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentTicketsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startIncrementalTicketExport (
@@ -247,22 +325,11 @@ export class ZendeskClient {
         list: readonly ZendeskComment[],
         callback: (ticket: ZendeskComment) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently<ZendeskComment>(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskComment
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentTicketCommentsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startCommentExport (
@@ -343,13 +410,14 @@ export class ZendeskClient {
     public async getUser (
         userId : number
     ) : Promise<ZendeskUser> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_USER_PATH(`${userId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskUserDTO(result)) {
             LOG.debug(`getUser: Not ZendeskUserDTO: ${explainZendeskUserDTO(result)}`);
             LOG.debug(`getUser: incorrect user = `, result);
@@ -390,22 +458,11 @@ export class ZendeskClient {
         list: readonly ZendeskUser[],
         callback: (ticket: ZendeskUser) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently<ZendeskUser>(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskUser
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentUsersSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startUserExport (
@@ -460,13 +517,14 @@ export class ZendeskClient {
     public async getOrganization (
         orgId : number
     ) : Promise<ZendeskOrganization> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_PATH(`${orgId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskOrganizationDTO(result)) {
             LOG.debug(`getOrganization: Not ZendeskOrganizationDTO: ${explainZendeskOrganizationDTO(result)}`);
             LOG.debug(`getOrganization: incorrect org = `, result);
@@ -507,22 +565,11 @@ export class ZendeskClient {
         list: readonly ZendeskOrganization[],
         callback: (ticket: ZendeskOrganization) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently<ZendeskOrganization>(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskOrganization
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentOrganizationsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startOrganizationExport (
@@ -577,13 +624,14 @@ export class ZendeskClient {
     public async getGroup (
         groupId : number
     ) : Promise<ZendeskGroup> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_GROUP_PATH(`${groupId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskGroupDTO(result)) {
             LOG.debug(`getGroup: Not ZendeskGroupDTO: ${explainZendeskGroupDTO(result)}`);
             LOG.debug(`getGroup: incorrect group = `, result);
@@ -624,22 +672,11 @@ export class ZendeskClient {
         list: readonly ZendeskGroup[],
         callback: (ticket: ZendeskGroup) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently<ZendeskGroup>(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskGroup
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentGroupsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startGroupExport (
@@ -695,13 +732,14 @@ export class ZendeskClient {
     public async getOrganizationMembership (
         organizationMembershipId : number
     ) : Promise<ZendeskOrganizationMembership> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_ORGANIZATION_MEMBERSHIP_PATH(`${organizationMembershipId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskOrganizationMembershipDTO(result)) {
             LOG.debug(`getOrganizationMembership: Not ZendeskOrganizationMembershipDTO: ${explainZendeskOrganizationMembershipDTO(result)}`);
             LOG.debug(`getOrganizationMembership: incorrect organization_membership = `, result);
@@ -742,22 +780,11 @@ export class ZendeskClient {
         list: readonly ZendeskOrganizationMembership[],
         callback: (ticket: ZendeskOrganizationMembership) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently<ZendeskOrganizationMembership>(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskOrganizationMembership
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentGroupMembershipsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startOrganizationMembershipExport (
@@ -840,22 +867,11 @@ export class ZendeskClient {
         list: readonly ZendeskUserIdentity[],
         callback: (ticket: ZendeskUserIdentity) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskUserIdentity
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentUserIdentitiesSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startUserIdentityExport (
@@ -910,13 +926,14 @@ export class ZendeskClient {
     public async getGroupMembership (
         groupMembershipId : number
     ) : Promise<ZendeskGroupMembership> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_GROUP_MEMBERSHIP_PATH(`${groupMembershipId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskGroupMembershipDTO(result)) {
             LOG.debug(`getGroupMembership: Not ZendeskGroupMembershipDTO: ${explainZendeskGroupMembershipDTO(result)}`);
             LOG.debug(`getGroupMembership: incorrect group_membership = `, result);
@@ -957,22 +974,11 @@ export class ZendeskClient {
         list: readonly ZendeskGroupMembership[],
         callback: (ticket: ZendeskGroupMembership) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskGroupMembership
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentGroupMembershipsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startGroupMembershipExport (
@@ -1026,13 +1032,14 @@ export class ZendeskClient {
     public async getSuspendedTicket (
         suspendedTicketId : number
     ) : Promise<ZendeskSuspendedTicket> {
-        const result = await HttpService.getJson(
+        const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_SUSPENDED_TICKETS_PATH(`${suspendedTicketId}`)}`,
             {
                 'Authorization': this._authorization
             },
             this._getRetryPolicy
         );
+        const result = entity.getBody();
         if (!isZendeskSuspendedTicketDTO(result)) {
             LOG.debug(`getSuspendedTicket: Not ZendeskSuspendedTicketDTO: ${explainZendeskSuspendedTicketDTO(result)}`);
             LOG.debug(`getSuspendedTicket: incorrect suspended_ticket = `, result);
@@ -1073,22 +1080,11 @@ export class ZendeskClient {
         list: readonly ZendeskSuspendedTicket[],
         callback: (ticket: ZendeskSuspendedTicket) => false | undefined | void | Promise<false | undefined | void>
     ) : Promise<false | undefined | void> {
-
-        const response = await reduce(
+        return await PromiseUtils.processConcurrently(
             list,
-            async (
-                prev : Promise<false | undefined | void>,
-                item : ZendeskSuspendedTicket
-            ) : Promise<false | undefined | void> => {
-                const prevRet = await prev;
-                if (prevRet === false) return false;
-                return callback(item);
-            },
-            Promise.resolve()
+            callback,
+            this._concurrentSuspendedTicketsSize
         );
-
-        if (response === false) return false;
-
     }
 
     private async _startSuspendedTicketExport (
@@ -1138,5 +1134,23 @@ export class ZendeskClient {
         return result;
     }
 
+    private async _getJsonEntityWithRateLimitCheck (
+        url: string,
+        headers ?: {[key: string]: string},
+        retryPolicy ?: HttpRetryPolicy
+    ) : Promise<ResponseEntity<JsonAny|undefined> | undefined> {
+        await this._rateLimitCheck();
+        let entity : ResponseEntity<JsonAny|undefined> | undefined;
+        try  {
+            entity = await HttpService.getJsonEntity(url, headers, retryPolicy);
+        } catch (err) {
+            if (isRequestError(err)) {
+                this._updateRateLimit(err.getHeaders());
+            }
+            throw err;
+        }
+        this._updateRateLimit(entity.getHeaders());
+        return entity;
+    }
 
 }
