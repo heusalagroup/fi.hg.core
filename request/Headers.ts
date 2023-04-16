@@ -6,7 +6,7 @@ import { forEach } from "../functions/forEach";
 import { has } from "../functions/has";
 import { map } from "../functions/map";
 import { LogService } from "../LogService";
-import { isReadonlyJsonArray } from "../Json";
+import { isReadonlyJsonArray, ReadonlyJsonObject } from "../Json";
 import { LogLevel } from "../types/LogLevel";
 import { isArray } from "../types/Array";
 import { isString } from "../types/String";
@@ -285,13 +285,14 @@ export class Headers {
     }
 
     public valueOf () : HeadersObject | undefined {
-
         if (this._uninitializedValue) {
             this._initializeValue();
         }
-
         return this._value ?? undefined;
+    }
 
+    public toJSON () : ReadonlyJsonObject {
+        return this.valueOf();
     }
 
     public toString () : string {
