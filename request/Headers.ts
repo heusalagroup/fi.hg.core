@@ -291,7 +291,7 @@ export class Headers {
         return this._value ?? undefined;
     }
 
-    public toJSON () : ReadonlyJsonObject {
+    public toJSON () : HeadersObject | undefined {
         return this.valueOf();
     }
 
