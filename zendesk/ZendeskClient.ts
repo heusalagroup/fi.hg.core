@@ -191,7 +191,7 @@ export class ZendeskClient {
 
     public async getTicket (
         ticketId : number
-    ) : Promise<ZendeskTicket> {
+    ) : Promise<ZendeskTicket|undefined> {
         const entity : ResponseEntity<JsonAny|undefined> | undefined = await this._getJsonEntityWithRateLimitCheck(
             `${this._url}${ZENDESK_API_GET_TICKET_PATH(`${ticketId}`)}`,
             {
@@ -199,6 +199,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskTicketDTO(result)) {
             LOG.debug(`getTicket: Not ZendeskTicketDTO: ${explainZendeskTicketDTO(result)}`);
@@ -417,6 +418,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskUserDTO(result)) {
             LOG.debug(`getUser: Not ZendeskUserDTO: ${explainZendeskUserDTO(result)}`);
@@ -524,6 +526,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskOrganizationDTO(result)) {
             LOG.debug(`getOrganization: Not ZendeskOrganizationDTO: ${explainZendeskOrganizationDTO(result)}`);
@@ -631,6 +634,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskGroupDTO(result)) {
             LOG.debug(`getGroup: Not ZendeskGroupDTO: ${explainZendeskGroupDTO(result)}`);
@@ -739,6 +743,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskOrganizationMembershipDTO(result)) {
             LOG.debug(`getOrganizationMembership: Not ZendeskOrganizationMembershipDTO: ${explainZendeskOrganizationMembershipDTO(result)}`);
@@ -933,6 +938,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskGroupMembershipDTO(result)) {
             LOG.debug(`getGroupMembership: Not ZendeskGroupMembershipDTO: ${explainZendeskGroupMembershipDTO(result)}`);
@@ -1039,6 +1045,7 @@ export class ZendeskClient {
             },
             this._getRetryPolicy
         );
+        if (!entity) throw new TypeError('entity not defined');
         const result = entity.getBody();
         if (!isZendeskSuspendedTicketDTO(result)) {
             LOG.debug(`getSuspendedTicket: Not ZendeskSuspendedTicketDTO: ${explainZendeskSuspendedTicketDTO(result)}`);
