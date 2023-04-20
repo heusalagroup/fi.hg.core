@@ -63,7 +63,7 @@ import { createDefaultHttpRetryPolicy, HttpRetryPolicy } from "../request/types/
 import { isNumber, parseInteger } from "../types/Number";
 import { ResponseEntity } from "../request/ResponseEntity";
 import { JsonAny } from "../Json";
-import {Headers, isHeaders} from "../request/Headers";
+import { Headers } from "../request/Headers";
 import { isRequestError } from "../request/types/RequestError";
 import { PromiseUtils } from "../PromiseUtils";
 
@@ -1152,15 +1152,18 @@ export class ZendeskClient {
             entity = await HttpService.getJsonEntity(url, headers, retryPolicy);
         } catch (err) {
             if (isRequestError(err)) {
-                const hd = err.getHeaders();
-                if (isHeaders(hd)) {
-                    this._updateRateLimit(hd);
+                const errHeaders = err.getHeaders();
+                if (errHeaders) {
+                    this._updateRateLimit(errHeaders);
                 }
             }
             throw err;
         }
-        if (!entity) throw new TypeError('Variable "entity" is undefined!');
-        this._updateRateLimit(entity.getHeaders());
+        if (!entity) return undefined;
+        const entityHeaders = entity.getHeaders();
+        if (entityHeaders) {
+            this._updateRateLimit(entityHeaders);
+        }
         return entity;
     }
 
