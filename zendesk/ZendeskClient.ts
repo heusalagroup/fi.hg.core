@@ -147,13 +147,13 @@ export class ZendeskClient {
     public getRetryPolicy () : HttpRetryPolicy {
         return this._getRetryPolicy;
     }
-    public getRateLimit () : number {
+    public getRateLimit () : number | undefined {
         return this._rateLimit;
     }
-    public getRateLimitRemaining () : number {
+    public getRateLimitRemaining () : number | undefined {
         return this._rateLimitRemaining;
     }
-    public getRateLimitReset () : number {
+    public getRateLimitReset () : number | undefined {
         return this._rateLimitReset;
     }
 
