@@ -1,14 +1,17 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Sendanor <info@sendanor.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { Product } from "./store/types/product/Product";
 import { ProductType } from "./store/types/product/ProductType";
 import { filter } from "./functions/filter";
 import { map } from "./functions/map";
 import { ReadonlyJsonAny } from "./Json";
-import { isStoreIndexDTO } from "./store/types/api/StoreIndexDTO";
+import { isStoreIndexDTO, StoreIndexDTO } from "./store/types/api/StoreIndexDTO";
 import { LogService } from "./LogService";
 import { Observer, ObserverCallback, ObserverDestructor } from "./Observer";
 import { HttpService } from "./HttpService";
+import { LogLevel } from "./types/LogLevel";
+import { StoreClientService } from "./StoreClientService";
 
 const DEFAULT_STORE_API_URL = '/api';
 const SERVICE_NAME = "StoreProductService";
@@ -29,6 +32,10 @@ const MY_PRODUCT_LIST_FETCH_RETRY_TIMEOUT_ON_ERROR = 3000;
  *         frontend use.
  */
 export class StoreProductService {
+
+    public static setLogLevel (level: LogLevel) {
+        LOG.setLogLevel(level);
+    }
 
     private static _updateTimeout : any = undefined;
     private static _apiUrl      : string = DEFAULT_STORE_API_URL;
@@ -90,15 +97,10 @@ export class StoreProductService {
     private static async _updateProducts () : Promise<void> {
         this._loading = true;
         try {
-            const response: ReadonlyJsonAny | undefined = await HttpService.getJson(`${this._apiUrl}`);
-            if ( isStoreIndexDTO(response) ) {
-                this._allProducts = response?.products?.items ?? [];
-                this._initialized = true;
-                this._observer.triggerEvent(StoreProductServiceEvent.UPDATED);
-            } else {
-                LOG.error(`The response was not StoreIndexDTO: `, response);
-                this._triggerUpdateLaterAfterError();
-            }
+            const response: StoreIndexDTO = await StoreClientService.getStoreIndex(this._apiUrl);
+            this._allProducts = response?.products?.items ?? [];
+            this._initialized = true;
+            this._observer.triggerEvent(StoreProductServiceEvent.UPDATED);
         } catch (err) {
             LOG.error(`Error: `, err);
             this._triggerUpdateLaterAfterError();

@@ -1,13 +1,16 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isBoolean } from "../../../types/Boolean";
-import { isInvoiceRowDTO, InvoiceRowDTO } from "./InvoiceRowDTO";
+import { explainBoolean, explainBooleanOrUndefined, isBoolean } from "../../../types/Boolean";
+import { isInvoiceRowDTO, InvoiceRowDTO, explainInvoiceRowDTO } from "./InvoiceRowDTO";
 import { isBooleanOrUndefined } from "../../../types/Boolean";
-import { isString } from "../../../types/String";
-import { isNumber } from "../../../types/Number";
-import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
-import { isArrayOfOrUndefined } from "../../../types/Array";
+import { explainString, isString } from "../../../types/String";
+import { explainNumber, isNumber } from "../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
+import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/Array";
+import { explain, explainNot, explainOk, explainProperty } from "../../../types/explain";
+import { isUndefined } from "../../../types/undefined";
+import { isReadonlyJsonAny } from "../../../Json";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;
@@ -154,6 +157,76 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
         && isNumber(value?.dueDays)
         && isArrayOfOrUndefined<InvoiceRowDTO>(value?.rows, isInvoiceRowDTO)
     );
+}
+
+export function explainInvoiceDTO (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'invoiceId',
+                'clientId',
+                'campaignId',
+                'groupId',
+                'bankAccountId',
+                'wcOrderId',
+                'updated',
+                'created',
+                'date',
+                'dueDate',
+                'remindDate',
+                'checkoutDate',
+                'referenceNumber',
+                'internalNote',
+                'extraNotice',
+                'webSecret',
+                'checkoutStamp',
+                'onHold',
+                'isReminded',
+                'onCollection',
+                'isTerminated',
+                'isPaid',
+                'buildDocuments',
+                'sendDocuments',
+                'dueDays',
+                'rows'
+            ])
+            , explainProperty("invoiceId", explainString(value?.invoiceId))
+            , explainProperty("clientId", explainString(value?.clientId))
+            , explainProperty("campaignId", explainString(value?.campaignId))
+            , explainProperty("groupId", explainString(value?.groupId))
+            , explainProperty("bankAccountId", explainString(value?.bankAccountId))
+            , explainProperty("wcOrderId", explainString(value?.wcOrderId))
+            , explainProperty("updated", explainString(value?.updated))
+            , explainProperty("created", explainString(value?.created))
+            , explainProperty("date", explainString(value?.date))
+            , explainProperty("dueDate", explainString(value?.dueDate))
+            , explainProperty("remindDate", explainString(value?.remindDate))
+            , explainProperty("checkoutDate", explainString(value?.checkoutDate))
+            , explainProperty("referenceNumber", explainString(value?.referenceNumber))
+            , explainProperty("internalNote", explainString(value?.internalNote))
+            , explainProperty("extraNotice", explainString(value?.extraNotice))
+            , explainProperty("webSecret", explainString(value?.webSecret))
+            , explainProperty("checkoutStamp", explainString(value?.checkoutStamp))
+            , explainProperty("onHold", explainBoolean(value?.onHold))
+            , explainProperty("isReminded", explainBoolean(value?.isReminded))
+            , explainProperty("onCollection", explainBoolean(value?.onCollection))
+            , explainProperty("isTerminated", explainBoolean(value?.isTerminated))
+            , explainProperty("isPaid", explainBooleanOrUndefined(value?.isPaid))
+            , explainProperty("buildDocuments", explainBoolean(value?.buildDocuments))
+            , explainProperty("sendDocuments", explainBoolean(value?.sendDocuments))
+            , explainProperty("dueDays", explainNumber(value?.dueDays))
+            , explainProperty("rows", explainArrayOfOrUndefined<InvoiceRowDTO>("InvoiceRowDTO", explainInvoiceRowDTO, value?.rows, isInvoiceRowDTO))
+        ]
+    );
+}
+
+export function isInvoiceDTOOrUndefined (value: unknown) : value is InvoiceDTO | undefined {
+    return isUndefined(value) || isInvoiceDTO(value);
+}
+
+export function explainInvoiceDTOOrUndefined (value: any) : string {
+    return isInvoiceDTOOrUndefined(value) ? explainOk() : explainNot('InvoiceDTO | undefined');
 }
 
 export function stringifyInvoiceDTO (value: InvoiceDTO): string {

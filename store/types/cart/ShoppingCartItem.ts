@@ -1,11 +1,12 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { ProductPrice, isProductPrice } from "../product/ProductPrice";
-import { Product, isProduct } from "../product/Product";
-import { isString } from "../../../types/String";
-import { isNumber } from "../../../types/Number";
-import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { ProductPrice, isProductPrice, explainProductPrice } from "../product/ProductPrice";
+import { Product, isProduct, explainProduct } from "../product/Product";
+import { explainString, isString } from "../../../types/String";
+import { explainNumber, isNumber } from "../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
+import { explain, explainProperty } from "../../../types/explain";
 
 export interface ShoppingCartItem {
     readonly id      : string;
@@ -28,10 +29,10 @@ export function createShoppingCartItem (
     };
 }
 
-export function isShoppingCartItem (value: any): value is ShoppingCartItem {
+export function isShoppingCartItem (value: unknown): value is ShoppingCartItem {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'id',
             'amount',
             'price',
@@ -43,6 +44,26 @@ export function isShoppingCartItem (value: any): value is ShoppingCartItem {
         && isProduct(value?.product)
     );
 }
+
+export function explainShoppingCartItem (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'id',
+                'amount',
+                'price',
+                'product'
+            ])
+            , explainProperty("id", explainString(value?.id))
+            , explainProperty("amount", explainNumber(value?.amount))
+            , explainProperty("price", explainProductPrice(value?.price))
+            , explainProperty("product", explainProduct(value?.product))
+        ]
+    );
+}
+
+
 
 export function stringifyShoppingCartItem (value: ShoppingCartItem): string {
     return `CartItem(${value})`;

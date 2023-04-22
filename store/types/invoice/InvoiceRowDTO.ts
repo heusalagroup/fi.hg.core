@@ -1,9 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isString } from "../../../types/String";
-import { isNumber } from "../../../types/Number";
-import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { explainString, isString } from "../../../types/String";
+import { explainNumber, isNumber } from "../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
+import { explain, explainProperty } from "../../../types/explain";
 
 export interface InvoiceRowDTO {
     readonly invoiceRowId       : string;
@@ -65,7 +66,7 @@ export function createInvoiceRowDTO (
 export function isInvoiceRowDTO (value: any): value is InvoiceRowDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'invoiceRowId',
             'invoiceId',
             'paymentId',
@@ -101,6 +102,49 @@ export function isInvoiceRowDTO (value: any): value is InvoiceRowDTO {
         && isNumber(value?.discountPercent)
     );
 }
+
+export function explainInvoiceRowDTO (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'invoiceRowId',
+                'invoiceId',
+                'paymentId',
+                'campaignId',
+                'campaignPaymentId',
+                'productId',
+                'updated',
+                'created',
+                'startDate',
+                'endDate',
+                'description',
+                'internalNote',
+                'amount',
+                'price',
+                'vatPercent',
+                'discountPercent'
+            ])
+            , explainProperty("invoiceRowId", explainString(value?.invoiceRowId))
+            , explainProperty("invoiceId", explainString(value?.invoiceId))
+            , explainProperty("paymentId", explainString(value?.paymentId))
+            , explainProperty("campaignId", explainString(value?.campaignId))
+            , explainProperty("campaignPaymentId", explainString(value?.campaignPaymentId))
+            , explainProperty("productId", explainString(value?.productId))
+            , explainProperty("updated", explainString(value?.updated))
+            , explainProperty("created", explainString(value?.created))
+            , explainProperty("startDate", explainString(value?.startDate))
+            , explainProperty("endDate", explainString(value?.endDate))
+            , explainProperty("description", explainString(value?.description))
+            , explainProperty("internalNote", explainString(value?.internalNote))
+            , explainProperty("amount", explainNumber(value?.amount))
+            , explainProperty("price", explainNumber(value?.price))
+            , explainProperty("vatPercent", explainNumber(value?.vatPercent))
+            , explainProperty("discountPercent", explainNumber(value?.discountPercent))
+        ]
+    );
+}
+
 
 export function stringifyInvoiceRowDTO (value: InvoiceRowDTO): string {
     return `InvoiceRowDTO(${value})`;

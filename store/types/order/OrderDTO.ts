@@ -1,20 +1,20 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isBoolean } from "../../../types/Boolean";
-import { isShoppingCart, ShoppingCart } from "../cart/ShoppingCart";
-import { isReadonlyJsonAny, parseJson, ReadonlyJsonAny } from "../../../Json";
-import { isInvoiceDTO, InvoiceDTO } from "../invoice/InvoiceDTO";
-import { isInventoryItemDTO, InventoryItemDTO } from "../inventory/InventoryItemDTO";
-import { isUndefined } from "../../../types/undefined";
-import { isString, isStringOrUndefined } from "../../../types/String";
-import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
-import { isArrayOfOrUndefined } from "../../../types/Array";
+import { explainBoolean, isBoolean } from "../../../types/Boolean";
+import { explainShoppingCart, isShoppingCart, ShoppingCart } from "../cart/ShoppingCart";
+import { explainReadonlyJsonAny, isReadonlyJsonAny, parseJson, ReadonlyJsonAny } from "../../../Json";
+import { isInvoiceDTOOrUndefined, InvoiceDTO, explainInvoiceDTOOrUndefined } from "../invoice/InvoiceDTO";
+import { isInventoryItemDTO, InventoryItemDTO, explainInventoryItemDTO } from "../inventory/InventoryItemDTO";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
+import { explainArrayOf, isArrayOfOrUndefined } from "../../../types/Array";
+import { explain, explainProperty } from "../../../types/explain";
 
 export interface OrderDTO {
     readonly orderId        : string;
     readonly clientId       : string;
-    readonly wcOrderId     ?: string;
+    readonly wcOrderId     ?: string | undefined;
     readonly updated        : string;
     readonly created        : string;
     readonly date           : string;
@@ -77,10 +77,10 @@ export function createOrderDTO (
     };
 }
 
-export function isOrderDTO (value: any): value is OrderDTO {
+export function isOrderDTO (value: unknown): value is OrderDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'orderId',
             'clientId',
             'wcOrderId',
@@ -118,8 +118,56 @@ export function isOrderDTO (value: any): value is OrderDTO {
         && isBoolean(value?.isTerminated)
         && isReadonlyJsonAny(value?.meta)
         && isShoppingCart(value?.cart)
-        && ( isUndefined(value?.invoice) || isInvoiceDTO(value?.invoice) )
+        && isInvoiceDTOOrUndefined(value?.invoice)
         && isArrayOfOrUndefined(value?.inventoryItems, isInventoryItemDTO)
+    );
+}
+
+export function explainOrderDTO (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'orderId',
+                'clientId',
+                'wcOrderId',
+                'updated',
+                'created',
+                'date',
+                'status',
+                'description',
+                'internalNote',
+                'viewUrl',
+                'adminUrl',
+                'onHold',
+                'isCompleted',
+                'isPaid',
+                'isTerminated',
+                'meta',
+                'invoice',
+                'inventoryItems',
+                'cart'
+            ])
+            , explainProperty("orderId", explainString(value?.orderId))
+            , explainProperty("clientId", explainString(value?.clientId))
+            , explainProperty("wcOrderId", explainStringOrUndefined(value?.wcOrderId))
+            , explainProperty("updated", explainString(value?.updated))
+            , explainProperty("created", explainString(value?.created))
+            , explainProperty("date", explainString(value?.date))
+            , explainProperty("status", explainString(value?.status))
+            , explainProperty("description", explainString(value?.description))
+            , explainProperty("internalNote", explainString(value?.internalNote))
+            , explainProperty("viewUrl", explainString(value?.viewUrl))
+            , explainProperty("adminUrl", explainString(value?.adminUrl))
+            , explainProperty("onHold", explainBoolean(value?.onHold))
+            , explainProperty("isCompleted", explainBoolean(value?.isCompleted))
+            , explainProperty("isPaid", explainBoolean(value?.isPaid))
+            , explainProperty("isTerminated", explainBoolean(value?.isTerminated))
+            , explainProperty("meta", explainReadonlyJsonAny(value?.meta))
+            , explainProperty("invoice", explainInvoiceDTOOrUndefined(value?.invoice))
+            , explainProperty("inventoryItems", explainArrayOf<InventoryItemDTO>("InventoryItemDTO", explainInventoryItemDTO, value?.inventoryItems, isInventoryItemDTO))
+            , explainProperty("cart", explainShoppingCart(value?.cart))
+        ]
     );
 }
 
