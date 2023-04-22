@@ -1,4 +1,5 @@
-// Copyright (c) 2020-2021 Sendanor. All rights reserved.
+// Copyright (c) 2023 Heusala Group. All rights reserved.
+// Copyright (c) 2020-2023 Sendanor. All rights reserved.
 
 import { HeadersObject, ChangeableHeadersObject } from "./types/HeadersObject";
 import { concat } from "../functions/concat";
@@ -6,7 +7,7 @@ import { forEach } from "../functions/forEach";
 import { has } from "../functions/has";
 import { map } from "../functions/map";
 import { LogService } from "../LogService";
-import { isReadonlyJsonArray, ReadonlyJsonObject } from "../Json";
+import { isReadonlyJsonArray } from "../Json";
 import { LogLevel } from "../types/LogLevel";
 import { isArray } from "../types/Array";
 import { isString } from "../types/String";
