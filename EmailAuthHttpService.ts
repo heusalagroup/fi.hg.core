@@ -15,6 +15,10 @@ import { createAuthenticateEmailDTO } from "./auth/email/types/AuthenticateEmail
 
 const LOG = LogService.createLogger('EmailAuthHttpService');
 
+/**
+ * This is a client service for email address based user authentication over
+ * HTTP protocol.
+ */
 export class EmailAuthHttpService {
 
     private static _authenticateEmailUrl : CallbackWithLanguage = AUTHENTICATE_EMAIL_URL;
