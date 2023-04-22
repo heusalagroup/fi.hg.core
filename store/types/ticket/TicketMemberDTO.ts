@@ -4,6 +4,7 @@ import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "..
 import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
 import { explain, explainProperty } from "../../../types/explain";
 import { explainString, isString } from "../../../types/String";
+import { explainBoolean, isBoolean } from "../../../types/Boolean";
 
 export interface TicketMemberDTO {
     readonly ticketMemberId : string;
@@ -11,7 +12,7 @@ export interface TicketMemberDTO {
     readonly ticketUserId   : string;
     readonly updated        : string;
     readonly created        : string;
-    readonly isTerminated  : boolean;
+    readonly isTerminated   : boolean;
 }
 
 export function createTicketMemberDTO (
@@ -20,7 +21,7 @@ export function createTicketMemberDTO (
     ticketUserId   : string,
     updated        : string,
     created        : string,
-    isTerminated  : boolean,
+    isTerminated   : boolean,
 ) : TicketMemberDTO {
     return {
         ticketMemberId,
@@ -48,7 +49,7 @@ export function isTicketMemberDTO (value: unknown) : value is TicketMemberDTO {
         && isString(value?.ticketUserId)
         && isString(value?.updated)
         && isString(value?.created)
-        && isString(value?.isTerminated)
+        && isBoolean(value?.isTerminated)
     );
 }
 
@@ -69,7 +70,7 @@ export function explainTicketMemberDTO (value: any) : string {
             , explainProperty("ticketUserId", explainString(value?.ticketUserId))
             , explainProperty("updated", explainString(value?.updated))
             , explainProperty("created", explainString(value?.created))
-            , explainProperty("isTerminated", explainString(value?.isTerminated))
+            , explainProperty("isTerminated", explainBoolean(value?.isTerminated))
         ]
     );
 }

@@ -7,7 +7,7 @@ import { explainString, isString } from "../../../types/String";
 import { explainBoolean, isBoolean } from "../../../types/Boolean";
 
 export interface TicketUserDTO {
-    readonly ticket_user_id  : string;
+    readonly ticketUserId  : string;
     readonly updated         : string;
     readonly created         : string;
     readonly name            : string;
@@ -18,7 +18,7 @@ export interface TicketUserDTO {
 }
 
 export function createTicketUserDTO (
-    ticket_user_id  : string,
+    ticketUserId  : string,
     updated         : string,
     created         : string,
     name            : string,
@@ -28,7 +28,7 @@ export function createTicketUserDTO (
     isTerminated    : boolean,
 ) : TicketUserDTO {
     return {
-        ticket_user_id,
+        ticketUserId,
         updated,
         created,
         name,
@@ -43,7 +43,7 @@ export function isTicketUserDTO (value: unknown) : value is TicketUserDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
-            'ticket_user_id',
+            'ticketUserId',
             'updated',
             'created',
             'name',
@@ -52,7 +52,7 @@ export function isTicketUserDTO (value: unknown) : value is TicketUserDTO {
             'dataJson',
             'isTerminated'
         ])
-        && isString(value?.ticket_user_id)
+        && isString(value?.ticketUserId)
         && isString(value?.updated)
         && isString(value?.created)
         && isString(value?.name)
@@ -68,7 +68,7 @@ export function explainTicketUserDTO (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeysInDevelopment(value, [
-                'ticket_user_id',
+                'ticketUserId',
                 'updated',
                 'created',
                 'name',
@@ -77,7 +77,7 @@ export function explainTicketUserDTO (value: any) : string {
                 'dataJson',
                 'isTerminated'
             ])
-            , explainProperty("ticket_user_id", explainString(value?.ticket_user_id))
+            , explainProperty("ticketUserId", explainString(value?.ticketUserId))
             , explainProperty("updated", explainString(value?.updated))
             , explainProperty("created", explainString(value?.created))
             , explainProperty("name", explainString(value?.name))

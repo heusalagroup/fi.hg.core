@@ -12,8 +12,8 @@ export interface NewTicketMemberDTO {
 }
 
 export function createNewTicketMemberDTO (
-    ticketId       : string,
-    ticketUserId   : string,
+    ticketId      : string,
+    ticketUserId  : string,
     isTerminated  : boolean,
 ) : NewTicketMemberDTO {
     return {

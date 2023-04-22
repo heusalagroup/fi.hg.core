@@ -43,8 +43,6 @@ export function createNewTicketDTO (
     tags              : readonly string[] | undefined,
     dataJson          : string | undefined,
     onHold            : boolean | undefined,
-    isReminded        : boolean | undefined,
-    onCollection      : boolean | undefined,
     isTerminated      : boolean | undefined,
 ): NewTicketDTO {
     return {
