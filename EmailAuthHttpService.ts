@@ -1,17 +1,17 @@
 // Copyright (c) 2021-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2021-2023. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import { EmailTokenDTO, isEmailTokenDTO } from "../../core/auth/email/types/EmailTokenDTO";
-import { Language } from "../../core/types/Language";
-import { LanguageService } from "../../core/LanguageService";
-import { HttpService } from "../../core/HttpService";
-import { LogService } from "../../core/LogService";
-import { createVerifyEmailCodeDTO, VerifyEmailCodeDTO } from "../../core/auth/email/types/VerifyEmailCodeDTO";
-import { ReadonlyJsonAny } from "../../core/Json";
-import { CallbackWithLanguage, AUTHENTICATE_EMAIL_URL, VERIFY_EMAIL_CODE_URL, VERIFY_EMAIL_TOKEN_URL } from "../../core/auth/email/constants";
-import { LogLevel } from "../../core/types/LogLevel";
-import { createVerifyEmailTokenDTO, VerifyEmailTokenDTO } from "../../core/auth/email/types/VerifyEmailTokenDTO";
-import { createAuthenticateEmailDTO } from "../../core/auth/email/types/AuthenticateEmailDTO";
+import { EmailTokenDTO, isEmailTokenDTO } from "./auth/email/types/EmailTokenDTO";
+import { Language } from "./types/Language";
+import { LanguageService } from "./LanguageService";
+import { HttpService } from "./HttpService";
+import { LogService } from "./LogService";
+import { createVerifyEmailCodeDTO, VerifyEmailCodeDTO } from "./auth/email/types/VerifyEmailCodeDTO";
+import { ReadonlyJsonAny } from "./Json";
+import { CallbackWithLanguage, AUTHENTICATE_EMAIL_URL, VERIFY_EMAIL_CODE_URL, VERIFY_EMAIL_TOKEN_URL } from "./auth/email/constants";
+import { LogLevel } from "./types/LogLevel";
+import { createVerifyEmailTokenDTO, VerifyEmailTokenDTO } from "./auth/email/types/VerifyEmailTokenDTO";
+import { createAuthenticateEmailDTO } from "./auth/email/types/AuthenticateEmailDTO";
 
 const LOG = LogService.createLogger('EmailAuthHttpService');
 
