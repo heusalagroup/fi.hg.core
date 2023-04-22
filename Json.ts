@@ -157,6 +157,10 @@ export function isReadonlyJsonAny (value: any) : value is ReadonlyJsonAny {
     return isFlatJsonValue(value) || isReadonlyJsonArray(value) || isReadonlyJsonObject(value);
 }
 
+export function explainReadonlyJsonAny (value: any) : string {
+    return isReadonlyJsonAny(value) ? explainOk() : explainNot('ReadonlyJsonAny');
+}
+
 export function isReadonlyJsonObject (value : any) : value is ReadonlyJsonObjectOf<ReadonlyJsonAny> {
     return isRegularObject(value) && everyProperty<string, ReadonlyJsonAny>(value, isString, createOr(isReadonlyJsonAny, isUndefined));
 }
