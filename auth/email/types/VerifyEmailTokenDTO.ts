@@ -1,11 +1,12 @@
-// Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. <info@sendanor.fi>. All rights reserved.
+// Copyright (c) 2022-2023. <info@heusalagroup.fi>. All rights reserved.
 
 import {
     EmailTokenDTO,
     isEmailTokenDTO
 } from "./EmailTokenDTO";
 import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 
 export interface VerifyEmailTokenDTO {
     readonly token : EmailTokenDTO;
@@ -17,10 +18,10 @@ export function createVerifyEmailTokenDTO (
     return {token};
 }
 
-export function isVerifyEmailTokenDTO (value: any): value is VerifyEmailTokenDTO {
+export function isVerifyEmailTokenDTO (value: unknown): value is VerifyEmailTokenDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'token'
         ])
         && isEmailTokenDTO(value?.token)

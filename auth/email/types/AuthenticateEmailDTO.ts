@@ -1,9 +1,9 @@
-// Copyright (c) 2022. <info@heusalagroup.fi>. All rights reserved.
-//
+// Copyright (c) 2022-2023. <info@sendanor.fi>. All rights reserved.
+// Copyright (c) 2022-2023. <info@heusalagroup.fi>. All rights reserved.
 
 import { isString } from "../../../types/String";
 import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 
 export interface AuthenticateEmailDTO {
     readonly email : string;
@@ -16,7 +16,7 @@ export function createAuthenticateEmailDTO (email: string) : AuthenticateEmailDT
 export function isAuthenticateEmailDTO (value: any): value is AuthenticateEmailDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'email'
         ])
         && isString(value?.email)
