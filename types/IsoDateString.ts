@@ -2,12 +2,12 @@
 
 import { isString } from "./String";
 import { explainNot, explainOk } from "./explain";
-import { createJestPassObject } from "../../jest/types/JestPassObject";
+import { isValidDate } from "./Date";
 
 export type IsoDateString = string;
 
 export function createIsoDateString (
-    value: string
+    value: string | Date
 ) : IsoDateString {
     const parsedValue = parseIsoDateString(value);
     if (!parsedValue) throw new TypeError(`Value is not ISO data string: '${value}'`);
@@ -15,7 +15,7 @@ export function createIsoDateString (
 }
 
 export function isIsoDateString (value: unknown) : value is IsoDateString {
-    if(!isString(value)) return false;
+    if (!isString(value)) return false;
     if ( !/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/.test(value) ) return false;
     const d = new Date(value);
     return d.toISOString() === value;
@@ -29,8 +29,8 @@ export function stringifyIsoDateString (value : IsoDateString) : string {
     return `IsoDateString(${value})`;
 }
 
-export function parseIsoDateString (value: unknown) : IsoDateString | undefined {
-    if (value instanceof Date) value = value.toISOString();
+export function parseIsoDateString (value: any) : IsoDateString | undefined {
+    if (isValidDate(value)) value = value.toISOString();
     if (isIsoDateString(value)) return value;
     return undefined;
 }
