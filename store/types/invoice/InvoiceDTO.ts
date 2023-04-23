@@ -10,7 +10,6 @@ import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "..
 import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/Array";
 import { explain, explainNot, explainOk, explainProperty } from "../../../types/explain";
 import { isUndefined } from "../../../types/undefined";
-import { isReadonlyJsonAny } from "../../../Json";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;

@@ -5,11 +5,9 @@ import { Product } from "./store/types/product/Product";
 import { ProductType } from "./store/types/product/ProductType";
 import { filter } from "./functions/filter";
 import { map } from "./functions/map";
-import { ReadonlyJsonAny } from "./Json";
-import { isStoreIndexDTO, StoreIndexDTO } from "./store/types/api/StoreIndexDTO";
+import { StoreIndexDTO } from "./store/types/api/StoreIndexDTO";
 import { LogService } from "./LogService";
 import { Observer, ObserverCallback, ObserverDestructor } from "./Observer";
-import { HttpService } from "./HttpService";
 import { LogLevel } from "./types/LogLevel";
 import { StoreClientService } from "./StoreClientService";
 
