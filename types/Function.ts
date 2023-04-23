@@ -3,6 +3,7 @@
 import { default as _isFunction } from "lodash/isFunction";
 import trim from "lodash/trim";
 import startsWith from "lodash/startsWith";
+import { explainOk } from "./explain";
 
 /**
  *
@@ -12,6 +13,16 @@ import startsWith from "lodash/startsWith";
  */
 export function isFunction (value: unknown): value is Function {
     return _isFunction(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainFunction (value: unknown): string {
+    return isFunction(value) ? explainOk() : 'not function';
 }
 
 /**
