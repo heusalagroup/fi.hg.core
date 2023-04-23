@@ -2,7 +2,8 @@
 
 import { isString } from "./String";
 import { explainNot, explainOk } from "./explain";
-import { isValidDate } from "./Date";
+import { isValidDate, parseValidDate } from "./Date";
+import { isNumber } from "./Number";
 
 export type IsoDateString = string;
 
@@ -30,7 +31,7 @@ export function stringifyIsoDateString (value : IsoDateString) : string {
 }
 
 export function parseIsoDateString (value: any) : IsoDateString | undefined {
-    if (isValidDate(value)) value = value.toISOString();
     if (isIsoDateString(value)) return value;
-    return undefined;
+    const date = parseValidDate(value);
+    return date ? date.toISOString() : undefined;
 }

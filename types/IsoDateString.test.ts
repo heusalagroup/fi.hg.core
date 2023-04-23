@@ -25,11 +25,13 @@ describe('IsoDateString', () => {
         it('can parse valid values', () => {
             expect( parseIsoDateString('2023-04-23T10:51:32.000Z') ).toBe('2023-04-23T10:51:32.000Z');
             expect( parseIsoDateString(new Date('2023-04-23T10:51:32.000Z')) ).toBe('2023-04-23T10:51:32.000Z');
+            expect( parseIsoDateString(1682247092000) ).toBe('2023-04-23T10:51:32.000Z');
         });
 
         it('can parse invalid values', () => {
             expect( parseIsoDateString('2023-04-99T10:51:32.000Z') ).toBeUndefined();
             expect( parseIsoDateString('') ).toBeUndefined();
+            expect( parseIsoDateString(undefined) ).toBeUndefined();
             expect( parseIsoDateString(false) ).toBeUndefined();
             expect( parseIsoDateString(true) ).toBeUndefined();
             expect( parseIsoDateString(null) ).toBeUndefined();

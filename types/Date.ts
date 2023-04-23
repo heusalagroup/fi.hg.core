@@ -1,10 +1,13 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isNumber } from "./Number";
+import { isString } from "./String";
+import { isIsoDateString } from "./IsoDateString";
 
-export function isValidDate (time: Date) : boolean {
+export function isValidDate (time: any) : time is Date {
     try {
         if (!time) return false;
+        if (!(time instanceof Date)) return false;
         const utcFullYear = time.getUTCFullYear();
         const utcMonth = time.getUTCMonth();
         const utcDate = time.getUTCDate();
@@ -22,4 +25,22 @@ export function isValidDate (time: Date) : boolean {
     } catch (err) {
         return false;
     }
+}
+
+export function parseValidDate (value : unknown) : Date | undefined {
+    if ( isValidDate(value) ) return value;
+    if ( isNumber(value) ) {
+        const date = new Date();
+        date.setTime(value);
+        return isValidDate(date) ? date : undefined;
+    }
+    if ( isIsoDateString(value) ) {
+        const date = new Date(value);
+        return isValidDate(date) ? date : undefined;
+    }
+    if ( isString(value) ) {
+        const date = new Date(value);
+        return isValidDate(date) ? date : undefined;
+    }
+    return undefined;
 }
