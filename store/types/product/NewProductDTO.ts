@@ -1,16 +1,14 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isBoolean } from "../../../types/Boolean";
 import { isString } from "../../../types/String";
 import { isNumber } from "../../../types/Number";
 import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 
 export interface NewProductDTO {
     readonly productGroupId    : string;
     readonly priceTypeId       : string;
-    readonly updated           : string;
-    readonly creation          : string;
     readonly number            : number;
     readonly name              : string;
     readonly description       : string;
@@ -26,8 +24,6 @@ export interface NewProductDTO {
 export function createNewProductDTO (
     productGroupId    : string,
     priceTypeId       : string,
-    updated           : string,
-    creation          : string,
     number            : number,
     name              : string,
     description       : string,
@@ -42,8 +38,6 @@ export function createNewProductDTO (
     return {
         productGroupId,
         priceTypeId,
-        updated,
-        creation,
         number,
         name,
         description,
@@ -60,11 +54,9 @@ export function createNewProductDTO (
 export function isNewProductDTO (value: any): value is NewProductDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'productGroupId',
             'priceTypeId',
-            'updated',
-            'creation',
             'number',
             'name',
             'description',
@@ -78,8 +70,6 @@ export function isNewProductDTO (value: any): value is NewProductDTO {
         ])
         && isString(value?.productGroupId)
         && isString(value?.priceTypeId)
-        && isString(value?.updated)
-        && isString(value?.creation)
         && isNumber(value?.number)
         && isString(value?.name)
         && isString(value?.description)
