@@ -23,6 +23,7 @@ export type HttpServiceDestructor = ObserverDestructor;
 
 export class HttpService {
 
+    private static _defaultRetryDelay : number = 1000;
     private static _requestLimit : number = 100;
     private static _baseApiUrl : string | undefined;
     private static _requestCount : number = 0;
@@ -38,6 +39,19 @@ export class HttpService {
 
     public static setRequestLimit (value : number ) {
         this._requestLimit = value;
+    }
+
+    /**
+     * How long we should wait after a recoverable error happens until trying
+     * the request again. This is the base delay.
+     *
+     * This is active only if the retry policy has been defined but it does not
+     * include a base delay.
+     *
+     * @param value The time to wait in milliseconds
+     */
+    public static setDefaultRetryLimit (value : number ) {
+        this._defaultRetryDelay = value;
     }
 
     /**
@@ -124,7 +138,7 @@ export class HttpService {
         retryDelay  ?: number
     ) : Promise<T | undefined> {
         attempt = attempt ?? 0;
-        retryDelay = retryDelay ?? retryPolicy?.baseDelay ?? 1000;
+        retryDelay = retryDelay ?? retryPolicy?.baseDelay ?? this._defaultRetryDelay;
         if (attempt === 0 && this._requestCount >= this._requestLimit) {
             throw new TypeError(`${context}: Too many requests: ${this._requestCount}`);
         }
