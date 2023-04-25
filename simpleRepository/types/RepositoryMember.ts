@@ -1,4 +1,5 @@
-// Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
+// Copyright (c) 2021-2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
+// Copyright (c) 2021-2023. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { explain, explainProperty } from "../../types/explain";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
@@ -9,6 +10,18 @@ export interface RepositoryMember {
     readonly id           : string;
     readonly displayName ?: string;
     readonly avatarUrl   ?: string;
+}
+
+export function createRepositoryMember (
+    id           : string,
+    displayName ?: string,
+    avatarUrl   ?: string,
+) : RepositoryMember {
+    return {
+        id,
+        displayName,
+        avatarUrl
+    };
 }
 
 export function isRepositoryMember (value: any): value is RepositoryMember {

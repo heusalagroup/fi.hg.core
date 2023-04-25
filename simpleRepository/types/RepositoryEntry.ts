@@ -1,4 +1,5 @@
-// Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2021-2023. Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { explainRepositoryMember, isRepositoryMember, RepositoryMember } from "./RepositoryMember";
 import { ExplainCallback } from "../../types/ExplainCallback";
@@ -8,7 +9,7 @@ import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../types/Boo
 import { explainString, isString } from "../../types/String";
 import { explainNumber, isNumber } from "../../types/Number";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainArrayOrUndefinedOf, isArrayOrUndefinedOf } from "../../types/Array";
 
 export interface RepositoryEntry<T> {
@@ -25,13 +26,29 @@ export interface RepositoryEntry<T> {
 
 }
 
+export function createRepositoryEntry<T> (
+    data     : T,
+    id       : string,
+    version  : number,
+    deleted ?: boolean,
+    members ?: readonly RepositoryMember[],
+) : RepositoryEntry<T> {
+    return {
+        data,
+        id,
+        version,
+        deleted,
+        members
+    };
+}
+
 export function isRepositoryEntry<T> (
     value : any,
     isT   : TestCallbackNonStandard
 ): value is RepositoryEntry<T> {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'data',
             'id',
             'version',
@@ -54,7 +71,7 @@ export function explainRepositoryEntry<T> (
     return explain(
         [
             explainRegularObject(value),
-            explainNoOtherKeys(value, [
+            explainNoOtherKeysInDevelopment(value, [
                 'data',
                 'id',
                 'version',
