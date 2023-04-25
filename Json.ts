@@ -190,6 +190,7 @@ export function explainReadonlyJsonArray (value: any) : string {
 }
 
 export function parseReadonlyJsonObject (value : any) : ReadonlyJsonObject | undefined {
+    if (isString(value)) value = parseJson(value);
     return isReadonlyJsonObject(value) ? value : undefined;
 }
 
