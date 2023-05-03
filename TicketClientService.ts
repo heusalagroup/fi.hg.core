@@ -18,7 +18,7 @@ export class TicketClientService {
     private static _authorizationHeaderName = 'Authorization';
     private static _addTicketPath = '/tickets';
     private static _ticketListPath = '/tickets';
-    private static _getTicketPath = (ticketId: string) : string => `${this._ticketListPath}/${encodeURIComponent(ticketId)}`;
+    private static _getTicketPath = (ticketId: string) : string => `${TicketClientService._ticketListPath}/${encodeURIComponent(ticketId)}`;
 
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
