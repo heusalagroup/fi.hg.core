@@ -8,7 +8,7 @@ export type SharedClientServiceDestructor = ObserverDestructor;
 
 export interface SharedClientService {
     destroy (): void;
-    getClient () : RepositoryClient;
+    getClient () : RepositoryClient | undefined;
     isInitializing () : boolean;
     on (
         name: SharedClientServiceEvent,
