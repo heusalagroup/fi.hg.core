@@ -9,16 +9,18 @@ export interface CommandEnvironment {
 export interface CommandOptions {
     readonly cwd ?: string;
     readonly env ?: CommandEnvironment;
-    readonly encoding ?: string;
+    readonly argv0 ?: string;
+    readonly serialization ?: string;
     readonly timeout ?: number;
     readonly uid ?: number;
     readonly gid ?: number;
     readonly killSignal ?: string | number;
     readonly maxBuffer ?: number;
+    readonly stdio ?: string | readonly string[];
+    readonly detached ?: boolean;
 }
 
 export interface CommandResponse {
-    readonly status : number;
     readonly output : string;
     readonly errors ?: string;
 }
