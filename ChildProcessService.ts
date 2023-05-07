@@ -45,6 +45,11 @@ export interface ChildProcessService {
     destroy () : void;
 
     /**
+     * Returns true if the service has been destroyed
+     */
+    isDestroyed () : boolean;
+
+    /**
      * Returns the amount of children running
      */
     countChildProcesses () : Promise<number>;
