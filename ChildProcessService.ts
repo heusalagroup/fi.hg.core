@@ -21,6 +21,8 @@ export interface CommandOptions {
 }
 
 export interface CommandResponse {
+    readonly name : string;
+    readonly args : readonly string[];
     readonly output : string;
     readonly errors ?: string;
 }
