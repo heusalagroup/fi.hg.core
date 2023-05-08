@@ -267,6 +267,21 @@ export class RequestClient {
         this._client = new RequestClient( client );
     }
 
+    public static hasClient () : boolean {
+        return !!this._client;
+    }
+
+    public static getClient () : RequestClientInterface {
+        if (!this._client) {
+            throw new TypeError('Client has not been initialized yet');
+        }
+        return this._client.getClient();
+    }
+
+    public getClient () : RequestClientInterface {
+        return this._client;
+    }
+
     public static async textRequest (
         method   : RequestMethod,
         url      : string,
