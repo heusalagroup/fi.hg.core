@@ -14,6 +14,8 @@ const TEST_DISCORD_URL = 'https://discord.com/api/webhooks/1234567890/ABCDEFG';
 
 describe('DiscordLogger', () => {
 
+    jest.useFakeTimers();
+
     let logger : Logger;
     let prevRequestClient : RequestClientInterface | undefined;
     let mockRequestClient : RequestClientInterface;
@@ -28,7 +30,13 @@ describe('DiscordLogger', () => {
         logger = new DiscordLogger(
             TEST_NAME,
             TEST_DISCORD_URL,
-            LogLevel.DEBUG
+            LogLevel.DEBUG,
+            undefined,
+            2000,
+            1000,
+            '>>>',
+            '...\n',
+            '\n'
         );
     });
 
@@ -44,36 +52,41 @@ describe('DiscordLogger', () => {
 
         it('should send message with level INFO to Discord when log level is DEBUG', async () => {
             logger.setLogLevel(LogLevel.DEBUG);
-            await logger.debug('test message');
+            logger.debug('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [DEBUG] test message' }),
+                expect.objectContaining({ content: '[test] [DEBUG] test message\n' }),
             );
         });
 
         it('should not send message with level INFO to Discord when log level is INFO', async () => {
             logger.setLogLevel(LogLevel.INFO);
-            await logger.debug('test message');
+            logger.debug('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
         it('should not send message with level INFO to Discord when log level is WARN', async () => {
             logger.setLogLevel(LogLevel.WARN);
-            await logger.debug('test message');
+            logger.debug('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
         it('should not send message with level INFO to Discord when log level is ERROR', async () => {
             logger.setLogLevel(LogLevel.ERROR);
-            await logger.debug('test message');
+            logger.debug('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
         it('should not send message with level INFO to Discord when log level is NONE', async () => {
             logger.setLogLevel(LogLevel.NONE);
-            await logger.debug('test message');
+            logger.debug('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
@@ -83,41 +96,46 @@ describe('DiscordLogger', () => {
 
         it('should send message with level INFO to Discord when log level is DEBUG', async () => {
             logger.setLogLevel(LogLevel.DEBUG);
-            await logger.info('test message');
+            logger.info('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [INFO] test message' }),
+                expect.objectContaining({ content: '[test] [INFO] test message\n' }),
             );
         });
 
         it('should send message with level INFO to Discord when log level is INFO', async () => {
             logger.setLogLevel(LogLevel.INFO);
-            await logger.info('test message');
+            logger.info('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [INFO] test message' }),
+                expect.objectContaining({ content: '[test] [INFO] test message\n' }),
             );
         });
 
         it('should not send message with level INFO to Discord when log level is WARN', async () => {
             logger.setLogLevel(LogLevel.WARN);
-            await logger.info('test message');
+            logger.info('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
         it('should not send message with level INFO to Discord when log level is ERROR', async () => {
             logger.setLogLevel(LogLevel.ERROR);
-            await logger.info('test message');
+            logger.info('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
         it('should not send message with level INFO to Discord when log level is NONE', async () => {
             logger.setLogLevel(LogLevel.NONE);
-            await logger.info('test message');
+            logger.info('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
@@ -127,46 +145,51 @@ describe('DiscordLogger', () => {
 
         it('should send message with level WARN to Discord when log level is DEBUG', async () => {
             logger.setLogLevel(LogLevel.DEBUG);
-            await logger.warn('test message');
+            logger.warn('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [WARN] test message' }),
+                expect.objectContaining({ content: '[test] [WARN] test message\n' }),
             );
         });
 
         it('should send message with level WARN to Discord when log level is INFO', async () => {
             logger.setLogLevel(LogLevel.INFO);
-            await logger.warn('test message');
+            logger.warn('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [WARN] test message' }),
+                expect.objectContaining({ content: '[test] [WARN] test message\n' }),
             );
         });
 
         it('should send message with level WARN to Discord when log level is WARN', async () => {
             logger.setLogLevel(LogLevel.WARN);
-            await logger.warn('test message');
+            logger.warn('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [WARN] test message' }),
+                expect.objectContaining({ content: '[test] [WARN] test message\n' }),
             );
         });
 
         it('should not send message with level WARN to Discord when log level is ERROR', async () => {
             logger.setLogLevel(LogLevel.ERROR);
-            await logger.warn('test message');
+            logger.warn('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
         it('should not send message with level WARN to Discord when log level is NONE', async () => {
             logger.setLogLevel(LogLevel.NONE);
-            await logger.warn('test message');
+            logger.warn('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 
@@ -176,51 +199,56 @@ describe('DiscordLogger', () => {
 
         it('should send message with level ERROR to Discord when log level is DEBUG', async () => {
             logger.setLogLevel(LogLevel.DEBUG);
-            await logger.error('test message');
+            logger.error('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [ERROR] test message' }),
+                expect.objectContaining({ content: '[test] [ERROR] test message\n' }),
             );
         });
 
         it('should send message with level ERROR to Discord when log level is INFO', async () => {
             logger.setLogLevel(LogLevel.INFO);
-            await logger.error('test message');
+            logger.error('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [ERROR] test message' }),
+                expect.objectContaining({ content: '[test] [ERROR] test message\n' }),
             );
         });
 
         it('should send message with level ERROR to Discord when log level is WARN', async () => {
             logger.setLogLevel(LogLevel.WARN);
-            await logger.error('test message');
+            logger.error('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [ERROR] test message' }),
+                expect.objectContaining({ content: '[test] [ERROR] test message\n' }),
             );
         });
 
         it('should send message with level ERROR to Discord when log level is ERROR', async () => {
             logger.setLogLevel(LogLevel.ERROR);
-            await logger.error('test message');
+            logger.error('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(
                 RequestMethod.POST,
                 TEST_DISCORD_URL,
                 undefined, // e.g. headers
-                expect.objectContaining({ content: '[test] [ERROR] test message' }),
+                expect.objectContaining({ content: '[test] [ERROR] test message\n' }),
             );
         });
 
         it('should not send message with level ERROR to Discord when log level is NONE', async () => {
             logger.setLogLevel(LogLevel.NONE);
-            await logger.error('test message');
+            logger.error('test message');
+            jest.advanceTimersByTime(1100);
             expect(mockRequestClient.jsonRequest).not.toHaveBeenCalled();
         });
 

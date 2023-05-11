@@ -1,12 +1,11 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { Logger } from "../../types/Logger";
-import { LogLevel, stringifyLogLevel } from "../../types/LogLevel";
+import { LogLevel } from "../../types/LogLevel";
 import { HttpService } from "../../HttpService";
-import { map } from "../../functions/map";
 import { createDefaultHttpRetryPolicy, HttpRetryPolicy } from "../../request/types/HttpRetryPolicy";
-import { isString } from "../../types/String";
 import { isNumber } from "../../types/Number";
+import { BufferedLogger } from "../buffered/BufferedLogger";
 
 /**
  * Maximum message size to send to Discord.
@@ -38,12 +37,6 @@ export class DiscordLogger implements Logger {
     private readonly _url : string;
 
     /**
-     * The log level for this logger. If undefined, the parent logger's log
-     * level will be used.
-     */
-    private _level : LogLevel;
-
-    /**
      *
      * @private
      */
@@ -51,35 +44,53 @@ export class DiscordLogger implements Logger {
 
     private readonly _maxMessageLength : number;
 
+    private readonly _bufferedLogger : Logger;
+
     /**
      * Constructs a new DiscordLogger instance.
      */
     public constructor (
-        name              : string,
-        url               : string,
-        level            ?: LogLevel | undefined,
-        retryPolicy      ?: HttpRetryPolicy | undefined,
-        maxMessageLength ?: number | undefined
+        name                : string,
+        url                 : string,
+        level              ?: LogLevel | undefined,
+        retryPolicy        ?: HttpRetryPolicy | undefined,
+        maxMessageLength   ?: number | undefined,
+        bufferDrainTimeout ?: number | undefined,
+        prefix             ?: string,
+        suffix             ?: string,
+        lineBreak          ?: string
     ) {
         this._name = name;
         this._url = url;
-        this._level = level ?? LogLevel.DEBUG;
         this._retryPolicy = retryPolicy ?? createDefaultHttpRetryPolicy();
         this._maxMessageLength = maxMessageLength !== undefined && isNumber(maxMessageLength) && maxMessageLength < MAX_DISCORD_MESSAGE_LENGTH ? maxMessageLength : MAX_DISCORD_MESSAGE_LENGTH;
+
+        this._bufferedLogger = new BufferedLogger(
+            (value: string) => {
+                this._sendMessageAsStringSync(value);
+            },
+            maxMessageLength ?? 2000,
+            bufferDrainTimeout ?? 1000,
+            prefix ?? '...',
+            suffix ?? '...\n',
+            lineBreak ?? '\n',
+            level ?? LogLevel.DEBUG
+        );
+
     }
 
     /**
      * @inheritDoc
      */
     public getLogLevel () : LogLevel {
-        return this._level ?? LogLevel.DEBUG;
+        return this._bufferedLogger.getLogLevel();
     }
 
     /**
      * @inheritDoc
      */
     public setLogLevel (level : LogLevel | undefined) : this {
-        this._level = level ?? LogLevel.DEBUG;
+        this._bufferedLogger.setLogLevel(level);
         return this;
     }
 
@@ -87,65 +98,47 @@ export class DiscordLogger implements Logger {
      * @inheritDoc
      */
     public debug (...args: readonly any[]) {
-        if (this.getLogLevel() <= LogLevel.DEBUG) {
-            this._sendMessageSync(LogLevel.DEBUG, args);
-        }
+        this._bufferedLogger.debug(...args);
     }
 
     /**
      * @inheritDoc
      */
     public info (...args: readonly any[]) {
-        if (this.getLogLevel() <= LogLevel.INFO) {
-            this._sendMessageSync(LogLevel.INFO, args);
-        }
+        this._bufferedLogger.info(...args);
     }
 
     /**
      * @inheritDoc
      */
     public warn (...args: readonly any[]) {
-        if (this.getLogLevel() <= LogLevel.WARN) {
-            this._sendMessageSync(LogLevel.WARN, args);
-        }
+        this._bufferedLogger.warn(...args);
     }
 
     /**
      * @inheritDoc
      */
     public error (...args: readonly any[]) {
-        if (this.getLogLevel() <= LogLevel.ERROR) {
-            this._sendMessageSync(LogLevel.ERROR, args);
-        }
+        this._bufferedLogger.error(...args);
     }
 
-    private _sendMessageSync (
-        level : LogLevel,
-        args  : readonly any[]
+    private _sendMessageAsStringSync (
+        content : string
     ) : void {
-        this._sendMessage(level, args).catch(
+        this._sendMessageAsString(`[${this._name}] ${content}`).catch(
             (err: any) => {
-                console.warn(`Warning! Error "${err}" while sending the log message: [${level}] `, ...args);
+                console.warn(`Warning! Error "${err}" while sending the log message: "${content}"`);
                 console.warn(`Error object: `, err);
             }
         );
     }
 
-    private async _sendMessage (
-        level : LogLevel,
-        args  : readonly any[]
+    private async _sendMessageAsString (
+        content : string
     ) : Promise<void> {
-        let content = `[${this._name}] [${stringifyLogLevel(level)}] ${map(args, (value: any) : string => stringifyLogValue(value)).join(' ')}`;
-        if ( content?.length >= this._maxMessageLength ) {
-            if (this._maxMessageLength >= 4) {
-                content = content.substring(0, this._maxMessageLength - 3) + '...';
-            } else {
-                content = content.substring(0, this._maxMessageLength);
-            }
-        }
         const body = {
             content,
-            "options": {}
+            options: {}
         };
         await HttpService.postJson(
             this._url,
@@ -155,14 +148,4 @@ export class DiscordLogger implements Logger {
         );
     }
 
-}
-
-function stringifyLogValue (value : any) : string {
-    try {
-        if (isString(value)) return value;
-        if (value === undefined) return 'undefined';
-        return JSON.stringify(value);
-    } catch (err) {
-        return `${value}`;
-    }
 }
