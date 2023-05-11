@@ -7,10 +7,6 @@ import { EntityUtils } from "./utils/EntityUtils";
 import { EntityMetadata } from "./types/EntityMetadata";
 import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
 
-export { Table } from "./Table";
-export { Column } from "./Column";
-export { Id } from "./Id";
-
 /**
  * Base type for all supported ID types
  */
