@@ -1,9 +1,7 @@
 MIT License
 
-Copyright (c) 2022 Heusala Group <info@hg.fi>
-
+Copyright (c) 2022-2023 Heusala Group Oy <info@hg.fi>
 Copyright (c) 2020-2021 Sendanor <info@sendanor.com>
-
 Copyright (c) 2020-2021 Jaakko-Heikki Heusala <jheusala@iki.fi>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
