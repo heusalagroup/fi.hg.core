@@ -2,9 +2,12 @@
 
 import { MemoryPersister } from "./MemoryPersister";
 import { createEntityMetadata, EntityMetadata } from "../../types/EntityMetadata";
-import { Column, Entity, Id, Table } from "../../Entity";
 import { createEntityField } from "../../types/EntityField";
 import { LogLevel } from "../../../types/LogLevel";
+import { Table } from "../../Table";
+import { Entity } from "../../Entity";
+import { Id } from "../../Id";
+import { Column } from "../../Column";
 
 describe('MemoryPersister', () => {
 

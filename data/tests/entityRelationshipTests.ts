@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
 import "../../../jest/matchers/index";
-import { Column, Entity, Id, Table } from "../Entity";
 import { OneToMany } from "../OneToMany";
 import { JoinColumn } from "../JoinColumn";
 import { RepositoryTestContext } from "./types/types/RepositoryTestContext";
@@ -13,6 +12,10 @@ import { find } from "../../functions/find";
 import { EntityUtils } from "../utils/EntityUtils";
 import { LogLevel } from "../../types/LogLevel";
 import { isString } from "../../types/String";
+import { Table } from "../Table";
+import { Entity } from "../Entity";
+import { Id } from "../Id";
+import { Column } from "../Column";
 
 export const entityRelationshipTests = (context : RepositoryTestContext) : void => {
 

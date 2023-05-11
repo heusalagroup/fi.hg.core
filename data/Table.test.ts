@@ -1,8 +1,11 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
 import "../../jest/matchers/index";
-import { Column, Entity, Id, Table } from "./Entity";
 import { EntityMetadata } from "./types/EntityMetadata";
+import { Table } from "./Table";
+import { Entity } from "./Entity";
+import { Id } from "./Id";
+import { Column } from "./Column";
 
 describe('Table', () => {
 

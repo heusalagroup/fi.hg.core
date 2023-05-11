@@ -3,13 +3,16 @@
 import { PersisterMetadataManagerImpl } from "./PersisterMetadataManagerImpl";
 import { PersisterMetadataManager } from "./PersisterMetadataManager";
 import { EntityMetadata } from "../../types/EntityMetadata";
-import { Column, Entity, Id, Table } from "../../Entity";
 import { OneToMany } from "../../OneToMany";
 import { JoinColumn } from "../../JoinColumn";
 import { createEntityRelationOneToMany } from "../../types/EntityRelationOneToMany";
 import { LogLevel } from "../../../types/LogLevel";
 import { ManyToOne } from "../../ManyToOne";
 import { createEntityRelationManyToOne } from "../../types/EntityRelationManyToOne";
+import { Table } from "../../Table";
+import { Entity } from "../../Entity";
+import { Column } from "../../Column";
+import { Id } from "../../Id";
 
 describe('PersisterMetadataManagerImpl', () => {
 

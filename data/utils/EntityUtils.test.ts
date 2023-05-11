@@ -2,9 +2,12 @@
 
 import "../../../jest/matchers/index";
 import { EntityUtils } from "./EntityUtils";
-import { Column, Entity, Id, Table } from "../Entity";
 import { createEntityMetadata, EntityMetadata } from "../types/EntityMetadata";
 import { createEntityField } from "../types/EntityField";
+import { Table } from "../Table";
+import { Entity } from "../Entity";
+import { Id } from "../Id";
+import { Column } from "../Column";
 
 describe('EntityUtils', () => {
 

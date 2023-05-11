@@ -2,12 +2,15 @@
 
 import "../../../jest/matchers/index";
 import { Repository } from "../types/Repository";
-import { Column, Entity, Id, Table } from "../Entity";
 import { RepositoryTestContext } from "./types/types/RepositoryTestContext";
 import { Persister } from "../types/Persister";
 import { createCrudRepositoryWithPersister } from "../types/CrudRepository";
 import { find } from "../../functions/find";
 import { Sort } from "../Sort";
+import { Table } from "../Table";
+import { Entity } from "../Entity";
+import { Id } from "../Id";
+import { Column } from "../Column";
 
 export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
