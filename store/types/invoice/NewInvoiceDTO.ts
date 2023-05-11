@@ -1,10 +1,10 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isBooleanOrUndefined } from "../../../types/Boolean";
 import { isString, isStringOrUndefined } from "../../../types/String";
 import { isNumberOrUndefined } from "../../../types/Number";
 import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 
 export interface NewInvoiceDTO {
     readonly clientId           : string;
@@ -81,7 +81,7 @@ export function createNewInvoiceDTO (
 export function isNewInvoiceDTO (value: any): value is NewInvoiceDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'clientId',
             'campaignId',
             'groupId',
