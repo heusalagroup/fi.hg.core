@@ -60,11 +60,17 @@ We also use the moment library for time:
 npm i 'moment-timezone' '@types/moment-timezone'
 ```
 
-If you're going to develop NodeJS app, you might want to install also types for NodeJS (this should be obvious though):
+If you're going to develop NodeJS app, you might want to install also types for 
+NodeJS (this should be obvious though):
 
 ```shell
 npm install --save-dev @types/node
 ```
+
+### TypeScript configurations
+
+The `"experimentalDecorators": true,` option must also be enabled in your 
+TypeScript configuration in your project's `./tsconfig.json`.
 
 ### Checking out a project with git submodules
 
