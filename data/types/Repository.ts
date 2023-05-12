@@ -4,6 +4,7 @@ import { Entity, EntityIdTypes } from "../Entity";
 import { Persister } from "./Persister";
 import { EntityMetadata } from "./EntityMetadata";
 import { Sort } from "../Sort";
+import { Where } from "../Where";
 
 export interface StaticRepository <T extends Entity, ID extends EntityIdTypes> {
 
@@ -18,28 +19,32 @@ export interface Repository<T extends Entity, ID extends EntityIdTypes> {
 
     setup () : Promise<void>;
 
-    count () : Promise<number>;
+    count (where ?: Where) : Promise<number>;
+
+    existsBy (where : Where) : Promise<boolean>;
 
     delete (entity: T): Promise<void>;
 
     deleteById (id : ID): Promise<void>;
 
-    deleteAll (): Promise<void>;
-    deleteAll (entities: readonly T[]): Promise<void>;
+    deleteAll (where ?: Where): Promise<void>;
+    deleteAll (entities ?: readonly T[]): Promise<void>;
 
     deleteAllById (ids: readonly ID[]): Promise<void>;
 
     existsById (id : ID): Promise<boolean>;
 
-    findAll (sort?: Sort): Promise<T[]>;
+    findAll (
+        where ?: Where | Sort | undefined,
+        sort  ?: Where | Sort | undefined,
+    ): Promise<T[]>;
 
-    findAllById (ids: readonly ID[], sort?: Sort): Promise<T[]>;
+    findAllById (ids: readonly ID[] | ID, sort?: Sort): Promise<T[]>;
 
     findById (id: ID, sort?: Sort): Promise<T | undefined>;
 
     /**
-     *
-     * @deprecated Use `Repository.findAllByPropertyName(value)` instead.
+     * @deprecated Use .findAll(Where.propertyExists(propertyName, value))
      * @param propertyName
      * @param value
      * @param sort

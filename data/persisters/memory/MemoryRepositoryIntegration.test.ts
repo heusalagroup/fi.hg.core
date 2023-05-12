@@ -21,9 +21,7 @@ describe('Repository integrations', () => {
 
     describe('Memory-based', () => {
         allRepositoryTests(
-            () => new MemoryPersister(),
-            true,
-            true
+            () => new MemoryPersister()
         );
     });
 

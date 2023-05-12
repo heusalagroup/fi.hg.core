@@ -6,7 +6,7 @@ import { EntityMetadata } from "../types/EntityMetadata";
 import { RepositoryError } from "../types/RepositoryError";
 import { trim } from "../../functions/trim";
 import { isString } from "../../types/String";
-import { MySqlDateTime } from "../mysql/types/types/MySqlDateTime";
+import { MySqlDateTime } from "../persisters/mysql/types/MySqlDateTime";
 import { isReadonlyJsonAny, parseJson, parseReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
 import { isNumber } from "../../types/Number";
 import { reduce } from "../../functions/reduce";

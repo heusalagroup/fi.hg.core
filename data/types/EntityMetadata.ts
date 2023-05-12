@@ -5,6 +5,7 @@ import { CreateEntityLikeCallback } from "./EntityLike";
 import { EntityField } from "./EntityField";
 import { EntityRelationOneToMany } from "./EntityRelationOneToMany";
 import { EntityRelationManyToOne } from "./EntityRelationManyToOne";
+import { TemporalProperty } from "./TemporalProperty";
 
 export interface EntityMetadata {
 
@@ -23,6 +24,11 @@ export interface EntityMetadata {
      */
     fields         : EntityField[];
 
+    /**
+     * Metadata for temporal annotation
+     */
+    temporalProperties : TemporalProperty[];
+
     oneToManyRelations : EntityRelationOneToMany[];
     manyToOneRelations : EntityRelationManyToOne[];
 
@@ -36,6 +42,7 @@ export function createEntityMetadata (
     fields             : EntityField[],
     oneToManyRelations : EntityRelationOneToMany[],
     manyToOneRelations : EntityRelationManyToOne[],
+    temporalProperties : TemporalProperty[],
     createEntity       : CreateEntityLikeCallback | undefined,
 ) : EntityMetadata {
     return {
@@ -44,6 +51,7 @@ export function createEntityMetadata (
         fields,
         oneToManyRelations,
         manyToOneRelations,
+        temporalProperties,
         createEntity
     };
 }

@@ -20,43 +20,13 @@ import { EntityUtils } from "../../utils/EntityUtils";
 import { EntityField } from "../../types/EntityField";
 import { EntityRelationManyToOne } from "../../types/EntityRelationManyToOne";
 import { Sort } from "../../Sort";
-import { SortOrder } from "../../types/SortOrder";
+import { Where } from "../../Where";
+import { createMemoryItem, MemoryItem } from "./types/MemoryItem";
+import { createMemoryTable, MemoryTable } from "./types/MemoryTable";
+import { MemoryIdType } from "./types/MemoryIdType";
+import { MemoryValueUtils } from "./utils/MemoryValueUtils";
 
 const LOG = LogService.createLogger('MemoryPersister');
-
-export interface MemoryItem {
-    readonly id    : string | number;
-    value : Entity;
-}
-
-export function createMemoryItem (
-    id : string | number,
-    value: Entity
-) : MemoryItem {
-    return {
-        id,
-        value
-    };
-}
-
-export interface MemoryTable {
-
-    items : MemoryItem[];
-
-}
-
-export function createMemoryTable (
-    items ?: MemoryItem[]
-) : MemoryTable {
-    return {
-        items: items ?? []
-    };
-}
-
-export enum MemoryIdType {
-    STRING = "STRING",
-    NUMBER = "NUMBER",
-}
 
 /**
  * Internal ID sequencer for memory items
@@ -98,170 +68,88 @@ export class MemoryPersister implements Persister {
     }
 
     public async count<T extends Entity, ID extends EntityIdTypes> (
-        metadata: EntityMetadata
+        metadata : EntityMetadata,
+        where    : Where | undefined,
     ): Promise<number> {
         const tableName = metadata.tableName;
         if (!has(this._data, tableName)) return 0;
+        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
+        if (matcher) {
+            return filter(
+                this._data[tableName].items,
+                (item: MemoryItem) : boolean => matcher(item.value)
+            ).length;
+        }
         return this._data[tableName].items.length;
     }
 
-    public async countByProperty<T extends Entity, ID extends EntityIdTypes> (
-        property: string,
-        value: any,
-        metadata: EntityMetadata
-    ): Promise<number> {
+    public async existsBy<T extends Entity, ID extends EntityIdTypes> (
+        metadata : EntityMetadata,
+        where    : Where,
+    ): Promise<boolean> {
         const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return 0;
-        return filter(
+        if (!has(this._data, tableName)) return false;
+        const matcher = MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where);
+        return some(
             this._data[tableName].items,
-            (item: MemoryItem) : boolean => has(item.value, property) && value === (item.value as any)[property]
-        ).length;
+            (item: MemoryItem) : boolean => matcher(item.value)
+        );
     }
 
     public async deleteAll<T extends Entity, ID extends EntityIdTypes> (
-        metadata: EntityMetadata
+        metadata : EntityMetadata,
+        where    : Where | undefined,
     ): Promise<void> {
         const tableName = metadata.tableName;
         if (!has(this._data, tableName)) return;
+        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
+        if ( matcher !== undefined ) {
+            this._data[tableName].items = filter(
+                this._data[tableName].items,
+                (item: MemoryItem) : boolean => !matcher(item.value)
+            );
+            return;
+        }
         delete this._data[tableName];
     }
 
-    public async deleteAllById<T extends Entity, ID extends EntityIdTypes> (
-        ids: readonly ID[],
-        metadata: EntityMetadata
-    ): Promise<void> {
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return;
-        this._data[tableName].items = filter(
-            this._data[tableName].items,
-            (item: MemoryItem) : boolean => !ids.includes(item.id as unknown as ID)
-        );
-    }
-
-    public async deleteAllByProperty<T extends Entity, ID extends EntityIdTypes> (
-        property: string,
-        value: any,
-        metadata: EntityMetadata
-    ): Promise<void> {
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return;
-        this._data[tableName].items = filter(
-            this._data[tableName].items,
-            (item: MemoryItem) : boolean => has(item.value, property) ? (item.value as any)[property] !== value : true
-        );
-    }
-
-    public async deleteById<T extends Entity, ID extends EntityIdTypes> (
-        id: ID,
-        metadata: EntityMetadata
-    ): Promise<void> {
-        return await this.deleteAllById([id], metadata);
-    }
-
-    public async existsByProperty<T extends Entity, ID extends EntityIdTypes> (
-        property: string,
-        value: any,
-        metadata: EntityMetadata
-    ): Promise<boolean> {
-        const tableName = metadata.tableName;
-        if(!has(this._data, tableName)) return false;
-        return some(
-            this._data[tableName].items,
-            (item: MemoryItem) : boolean => has(item.value, property) ? (item.value as any)[property] === value : false
-        );
-    }
-
     public async findAll<T extends Entity, ID extends EntityIdTypes> (
-        metadata: EntityMetadata,
+        metadata : EntityMetadata,
+        where    : Where | undefined,
         sort     : Sort | undefined
     ): Promise<T[]> {
         const tableName = metadata.tableName;
-        if(!has(this._data, tableName)) return [];
-        const items : T[] = this._prepareItemList(this._data[tableName].items, metadata, true, sort);
+        if (!has(this._data, tableName)) return [];
+
+        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
+
+        const allItems = this._data[tableName].items;
+        const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
+        const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
         const ret : T[] = this._populateRelationsToList(items, metadata);
         LOG.debug(`findAll: returns: items 2: ${ret.length}`);
         return ret;
     }
 
-    public async findAllById<T extends Entity, ID extends EntityIdTypes> (
-        ids: readonly ID[],
-        metadata: EntityMetadata,
-        sort     : Sort | undefined
-    ): Promise<T[]> {
-        return this._populateRelationsToList(
-            this._prepareItemList(
-                this._filterItems(
-                    (item: MemoryItem) : boolean => ids.includes( item.id as unknown as ID ),
-                    metadata.tableName
-                ),
-                metadata,
-                true,
-                sort
-            ),
-            metadata
-        );
-    }
-
-    public async findAllByProperty<T extends Entity, ID extends EntityIdTypes> (
-        property: string,
-        value: any,
-        metadata: EntityMetadata,
-        sort     : Sort | undefined
-    ): Promise<T[]> {
-        return this._populateRelationsToList(
-            this._prepareItemList(
-                this._filterItems(
-                    (item: MemoryItem) : boolean => has(item.value, property) ? (item.value as any)[property] === value : false,
-                    metadata.tableName
-                ),
-                metadata,
-                true,
-                sort
-            ),
-            metadata
-        );
-    }
-
-    /**
-     * Find entity using the primary ID.
-     *
-     * @param id The entity primary ID
-     * @param metadata The entity metadata
-     * @param sort
-     */
-    public async findById<T extends Entity, ID extends EntityIdTypes> (
-        id: ID,
-        metadata: EntityMetadata,
+    public async findBy<T extends Entity, ID extends EntityIdTypes> (
+        metadata : EntityMetadata,
+        where    : Where,
         sort     : Sort | undefined
     ): Promise<T | undefined> {
-        const item = this._findItem(
-            (item: MemoryItem) : boolean => item.id === id,
-            metadata.tableName
-        );
-        if (!item) return undefined;
-        return this._populateRelations(this._prepareItem<T>(item, metadata, true), metadata);
-    }
-
-    public async findByProperty<T extends Entity, ID extends EntityIdTypes> (
-        property: string,
-        value: any,
-        metadata: EntityMetadata,
-        sort     : Sort | undefined
-    ): Promise<T | undefined> {
-        const item = this._findItem(
-            (item: MemoryItem) : boolean => has(item.value, property) ? (item.value as any)[property] === value : false,
-            metadata.tableName
-        );
-        if (!item) return undefined;
-        return this._populateRelations(
-            this._prepareItem<T>(item, metadata, true),
-            metadata
-        );
+        const tableName = metadata.tableName;
+        if (!has(this._data, tableName)) return undefined;
+        const matcher = MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where);
+        const allItems = this._data[tableName].items;
+        const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
+        const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
+        const item : T | undefined = first(items);
+        if (item === undefined) return undefined;
+        return this._populateRelations( item, metadata );
     }
 
     public async insert<T extends Entity, ID extends EntityIdTypes> (
+        metadata: EntityMetadata,
         entity: T | readonly T[],
-        metadata: EntityMetadata
     ): Promise<T> {
 
         const list = map(
@@ -310,8 +198,8 @@ export class MemoryPersister implements Persister {
     }
 
     public async update<T extends Entity, ID extends EntityIdTypes> (
+        metadata: EntityMetadata,
         entity: T,
-        metadata: EntityMetadata
     ): Promise<T> {
         entity = entity.clone() as T;
         const tableName = metadata.tableName;
@@ -610,4 +498,3 @@ export class MemoryPersister implements Persister {
     }
 
 }
-

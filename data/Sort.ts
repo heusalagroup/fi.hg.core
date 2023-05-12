@@ -98,3 +98,7 @@ export class Sort {
     }
 
 }
+
+export function isSort (value: unknown): value is Sort {
+    return value instanceof Sort;
+}

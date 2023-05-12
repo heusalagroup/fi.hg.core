@@ -11,6 +11,10 @@ import { Table } from "../Table";
 import { Entity } from "../Entity";
 import { Id } from "../Id";
 import { Column } from "../Column";
+import { PgPersister } from "../../../pg/PgPersister";
+import { LogLevel } from "../../types/LogLevel";
+import { Temporal } from "../Temporal";
+import { TemporalType } from "../types/TemporalType";
 
 export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
@@ -19,14 +23,19 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
      */
     @Table('foos')
     class FooEntity extends Entity {
-        constructor (dto ?: {fooName: string}) {
+        constructor (dto ?: {fooName: string, fooDate: string}) {
             super()
             this.fooName = dto?.fooName;
+            this.fooDate = dto?.fooDate;
         }
 
         @Id()
         @Column('foo_id', 'BIGINT')
         public fooId ?: string;
+
+        @Column('foo_date', 'timestamp')
+        @Temporal(TemporalType.TIMESTAMP)
+        public fooDate ?: string;
 
         @Column('foo_name')
         public fooName ?: string;
@@ -38,14 +47,19 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
      */
     @Table('bars')
     class BarEntity extends Entity {
-        constructor (dto ?: {barName: string}) {
+        constructor (dto ?: {barName: string, barDate: string}) {
             super()
             this.barName = dto?.barName;
+            this.barDate = dto?.barDate;
         }
 
         @Id()
         @Column('bar_id', 'BIGINT')
         public barId ?: string;
+
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column('bar_date', 'timestamp')
+        public barDate ?: string;
 
         @Column('bar_name')
         public barName ?: string;
@@ -66,6 +80,12 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         existsByFooId (id : string): Promise<boolean>;
         countByFooId (id : string) : Promise<number>;
 
+        findAllByFooDateBetween (start: string, end: string, sort?: Sort) : Promise<FooEntity[]>;
+        findByFooDateBetween (start: string, end: string, sort?: Sort): Promise<FooEntity | undefined>;
+        deleteAllByFooDateBetween (start: string, end: string): Promise<void>;
+        existsByFooDateBetween (start: string, end: string): Promise<boolean>;
+        countByFooDateBetween (start: string, end: string) : Promise<number>;
+
     }
 
     interface BarRepository extends Repository<BarEntity, string> {
@@ -82,10 +102,36 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         existsByBarId (id : string) : Promise<boolean>;
         countByBarId (id : string) : Promise<number>;
 
+        findAllByBarDateBetween (start: string, end: string, sort?: Sort) : Promise<BarEntity[]>;
+        findByBarDateBetween (start: string, end: string, sort?: Sort): Promise<BarEntity | undefined>;
+        deleteAllByBarDateBetween (start: string, end: string): Promise<void>;
+        existsByBarDateBetween (start: string, end: string): Promise<boolean>;
+        countByBarDateBetween (start: string, end: string) : Promise<number>;
+
+        findAllByBarDateBefore (value: string, sort?: Sort) : Promise<BarEntity[]>;
+        findByBarDateBefore (value: string, sort?: Sort): Promise<BarEntity | undefined>;
+        deleteAllByBarDateBefore (value: string): Promise<void>;
+        existsByBarDateBefore (value: string): Promise<boolean>;
+        countByBarDateBefore (value: string) : Promise<number>;
+
+        findAllByBarDateAfter (value: string, sort?: Sort) : Promise<BarEntity[]>;
+        findByBarDateAfter (value: string, sort?: Sort): Promise<BarEntity | undefined>;
+        deleteAllByBarDateAfter (value: string): Promise<void>;
+        existsByBarDateAfter (value: string): Promise<boolean>;
+        countByBarDateAfter (value: string) : Promise<number>;
+
     }
 
     let persister : Persister;
+
+    /**
+     * This is an empty repository for testing
+     */
     let fooRepository : FooRepository;
+
+    /**
+     * This repository will have four items
+     */
     let barRepository : BarRepository;
     let barEntity1 : BarEntity;
     let barEntity2 : BarEntity;
@@ -101,49 +147,73 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
     let barEntityName3 : string = 'Bar 789';
     let barEntityName4 : string = 'Bar 123';
 
+    let dateBeforeEntity1       : string = '2023-04-04T14:58:59.000Z';
+    let barEntityDate1          : string = '2023-04-30T10:03:12.000Z';
+    let dateBetweenEntity1And2  : string = '2023-05-02T17:44:14.000Z';
+    let barEntityDate2          : string = '2023-05-11T17:12:03.000Z';
+    let dateBetweenEntity2And3  : string = '2023-05-11T17:57:00.000Z';
+    let barEntityDate3          : string = '2023-05-12T07:44:12.000Z';
+    let dateBetweenEntity3And4  : string = '2023-05-12T15:30:42.000Z';
+    let barEntityDate4          : string = '2023-05-12T15:55:39.000Z';
+    let dateAfterEntity4        : string = '2023-05-12T15:55:59.000Z';
+
     beforeEach( async () => {
+
+        PgPersister.setLogLevel(LogLevel.NONE);
 
         persister = context.getPersister();
 
+        // Will be initialized with no entities
         fooRepository = createCrudRepositoryWithPersister<FooEntity, string, FooRepository>(
             new FooEntity(),
             persister
         );
+        await fooRepository.deleteAll();
+
+        // Will be initialized with four entities
         barRepository = createCrudRepositoryWithPersister<BarEntity, string, BarRepository>(
             new BarEntity(),
             persister
         );
-
-        await fooRepository.deleteAll();
+        PgPersister.setLogLevel(LogLevel.DEBUG);
         await barRepository.deleteAll();
+        PgPersister.setLogLevel(LogLevel.NONE);
 
         barEntity1 = await persister.insert(
-            new BarEntity({barName: barEntityName1}),
-            new BarEntity().getMetadata()
+            new BarEntity().getMetadata(),
+            new BarEntity({barName: barEntityName1, barDate: barEntityDate1}),
         );
         barEntityId1 = barEntity1?.barId as string;
         if (!barEntityId1) throw new TypeError('barEntity1 failed to initialize');
 
         barEntity2 = await persister.insert(
-            new BarEntity({barName: barEntityName2}),
-            new BarEntity().getMetadata()
+            new BarEntity().getMetadata(),
+            new BarEntity({barName: barEntityName2, barDate: barEntityDate2}),
         );
         barEntityId2 = barEntity2?.barId as string;
         if (!barEntityId2) throw new TypeError('barEntity2 failed to initialize');
+        if (barEntityId1 === barEntityId2) throw new TypeError(`barEntity2 failed to initialize (not unique ID with barEntityId1 and barEntityId2): ${barEntityId1}`);
 
         barEntity3 = await persister.insert(
-            new BarEntity({barName: barEntityName3}),
-            new BarEntity().getMetadata()
+            new BarEntity().getMetadata(),
+            new BarEntity({barName: barEntityName3, barDate: barEntityDate3}),
         );
         barEntityId3 = barEntity3?.barId as string;
         if (!barEntityId3) throw new TypeError('barEntity3 failed to initialize');
+        if (barEntityId1 === barEntityId3) throw new TypeError(`barEntityId3 failed to initialize (not unique ID with entity 1): ${barEntityId1}`);
+        if (barEntityId2 === barEntityId3) throw new TypeError(`barEntityId3 failed to initialize (not unique ID with entity 2): ${barEntityId2}`);
 
         barEntity4 = await persister.insert(
-            new BarEntity({barName: barEntityName4}),
-            new BarEntity().getMetadata()
+            new BarEntity().getMetadata(),
+            new BarEntity({barName: barEntityName4, barDate: barEntityDate4}),
         );
         barEntityId4 = barEntity4?.barId as string;
         if (!barEntityId4) throw new TypeError('barEntity4 failed to initialize');
+        if (barEntityId1 === barEntityId4) throw new TypeError(`barEntityId4 failed to initialize (not unique ID with entity 1): ${barEntityId1}`);
+        if (barEntityId2 === barEntityId4) throw new TypeError(`barEntityId4 failed to initialize (not unique ID with entity 2): ${barEntityId2}`);
+        if (barEntityId3 === barEntityId4) throw new TypeError(`barEntityId4 failed to initialize (not unique ID with entity 3): ${barEntityId3}`);
+
+        PgPersister.setLogLevel(LogLevel.DEBUG);
 
     });
 
@@ -437,7 +507,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
             expect( await fooRepository.count() ).toBe(0);
 
-            const newEntity = new FooEntity({fooName: 'Hello world'});
+            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: '2023-05-12T15:42:09+03:00'});
 
             const savedItem = await fooRepository.save(newEntity);
             expect(savedItem).toBeDefined();
@@ -483,8 +553,8 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
             expect( await fooRepository.count() ).toBe(0);
 
-            const newEntity1 = new FooEntity({fooName: 'Hello world 1'});
-            const newEntity2 = new FooEntity({fooName: 'Hello world 2'});
+            const newEntity1 = new FooEntity({fooName: 'Hello world 1', fooDate: '2023-05-12T10:22:32+03:00'});
+            const newEntity2 = new FooEntity({fooName: 'Hello world 2', fooDate: '2023-05-12T15:42:09+03:00'});
 
             const savedItems = await fooRepository.saveAll([newEntity1, newEntity2]);
             expect(savedItems).toBeArray();
@@ -546,6 +616,8 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
 
     });
+
+
 
     describe('#findAllByBarName', () => {
 
@@ -675,6 +747,8 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
     });
 
+
+
     describe('#findAllByBarId', () => {
 
         it('can find all entities by barId unsorted', async () => {
@@ -754,5 +828,345 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         });
 
     });
+
+
+
+    describe('#findAllByBarDateBetween', () => {
+
+        it('can find all entities between values by date unordered', async () => {
+            const items = await barRepository.findAllByBarDateBetween(barEntityDate2, barEntityDate3);
+            expect(items).toHaveLength(2);
+
+            const item2 = find(items, (item) => item.barId === barEntityId2);
+            const item3 = find(items, (item) => item.barId === barEntityId3);
+
+            expect(item2).toBeDefined();
+            expect(item3).toBeDefined();
+
+            expect(item2?.barId).toBe(barEntityId2);
+            expect(item2?.barName).toBe(barEntityName2);
+            expect(item2?.barDate).toBe(barEntityDate2);
+
+            expect(item3?.barId).toBe(barEntityId3);
+            expect(item3?.barName).toBe(barEntityName3);
+            expect(item3?.barDate).toBe(barEntityDate3);
+
+        });
+
+        it('can find all entities by barId in asc order', async () => {
+            const items = await barRepository.findAllByBarDateBetween(barEntityDate2, barEntityDate3, Sort.by('barDate'));
+            expect(items).toHaveLength(2);
+            expect(items[0]?.barId).toBe(barEntityId2);
+            expect(items[0]?.barName).toBe(barEntityName2);
+            expect(items[0]?.barDate).toBe(barEntityDate2);
+            expect(items[1]?.barId).toBe(barEntityId3);
+            expect(items[1]?.barName).toBe(barEntityName3);
+            expect(items[1]?.barDate).toBe(barEntityDate3);
+        });
+
+        it('can find all entities by barId in desc order', async () => {
+            const items = await barRepository.findAllByBarDateBetween(barEntityDate2, barEntityDate3, Sort.by(Sort.Direction.DESC,'barDate'));
+            expect(items).toHaveLength(2);
+            expect(items[0]?.barId).toBe(barEntityId3);
+            expect(items[0]?.barName).toBe(barEntityName3);
+            expect(items[0]?.barDate).toBe(barEntityDate3);
+            expect(items[1]?.barId).toBe(barEntityId2);
+            expect(items[1]?.barName).toBe(barEntityName2);
+            expect(items[1]?.barDate).toBe(barEntityDate2);
+        });
+
+    });
+
+    describe('#findByBarDateBetween', () => {
+
+        it('can find an entity between times in unsorted order', async () => {
+            const item = await barRepository.findByBarDateBetween(dateBetweenEntity3And4, dateAfterEntity4);
+            expect(item?.barId).toBe(barEntityId4);
+            expect(item?.barName).toBe(barEntityName4);
+        });
+
+        it('can find an entity between times in asc order', async () => {
+            const item = await barRepository.findByBarDateBetween(dateBeforeEntity1, dateBetweenEntity1And2, Sort.by('barDate'));
+            expect(item?.barId).toBe(barEntityId1);
+            expect(item?.barName).toBe(barEntityName1);
+        });
+
+        it('can find an entity between times in desc order', async () => {
+            const item = await barRepository.findByBarDateBetween(dateBetweenEntity1And2, dateBetweenEntity2And3, Sort.by(Sort.Direction.DESC,'barDate'));
+            expect(item?.barId).toBe(barEntityId2);
+            expect(item?.barName).toBe(barEntityName2);
+        });
+
+    });
+
+    describe('#deleteAllByBarDateBetween', () => {
+
+        it('can delete all entities by barDate between range', async () => {
+            await barRepository.deleteAllByBarDateBetween(dateBeforeEntity1, dateBetweenEntity3And4);
+            const item = await barRepository.count();
+            expect(item).toBe(1);
+        });
+
+    });
+
+    describe('#existsByBarDateBetween', () => {
+
+        it('can find if entities exist between range', async () => {
+            expect( await barRepository.existsByBarDateBetween(dateBetweenEntity1And2, dateBetweenEntity3And4) ).toBe(true);
+            await barRepository.deleteAllByBarDateBetween(barEntityDate2, barEntityDate3);
+            expect( await barRepository.existsByBarDateBetween(dateBetweenEntity1And2, dateBetweenEntity3And4) ).toBe(false);
+        });
+
+    });
+
+    describe('#countByBarDateBetween', () => {
+
+        it('can count entities by barId', async () => {
+            expect( await barRepository.countByBarDateBetween(dateBetweenEntity1And2, dateAfterEntity4) ).toBe(3);
+            await barRepository.deleteAllByBarDateBetween(dateBetweenEntity1And2, dateAfterEntity4);
+            expect( await barRepository.countByBarDateBetween(dateBeforeEntity1, dateBetweenEntity3And4) ).toBe(1);
+        });
+
+    });
+
+
+
+    describe('#findAllByBarDateBefore', () => {
+
+        it('can find all entities before time, unordered', async () => {
+
+            // Matches 1 and 2 ...OR... 2 and 1 (because unordered)
+            const items = await barRepository.findAllByBarDateBefore(dateBetweenEntity2And3);
+            expect(items).toHaveLength(2);
+
+            const item1 = find(items, (item) => item.barId === barEntityId1);
+            const item2 = find(items, (item) => item.barId === barEntityId2);
+
+            expect(item1).toBeDefined();
+            expect(item2).toBeDefined();
+
+            expect(item1?.barId).toBe(barEntityId1);
+            expect(item1?.barName).toBe(barEntityName1);
+            expect(item1?.barDate).toBe(barEntityDate1);
+
+            expect(item2?.barId).toBe(barEntityId2);
+            expect(item2?.barName).toBe(barEntityName2);
+            expect(item2?.barDate).toBe(barEntityDate2);
+
+        });
+
+        it('can find all entities before time, in asc order', async () => {
+            // Matches 1 and 2, in asc order
+            const items = await barRepository.findAllByBarDateBefore(dateBetweenEntity2And3, Sort.by('barDate'));
+            expect(items).toHaveLength(2);
+
+            expect(items[0]?.barId).toBe(barEntityId1);
+            expect(items[0]?.barName).toBe(barEntityName1);
+            expect(items[0]?.barDate).toBe(barEntityDate1);
+
+            expect(items[1]?.barId).toBe(barEntityId2);
+            expect(items[1]?.barName).toBe(barEntityName2);
+            expect(items[1]?.barDate).toBe(barEntityDate2);
+
+        });
+
+        it('can find all entities before time, in desc order', async () => {
+
+            // Matches 2 and 1, in desc order
+            const items = await barRepository.findAllByBarDateBefore(dateBetweenEntity2And3, Sort.by(Sort.Direction.DESC,'barDate'));
+            expect(items).toHaveLength(2);
+
+            expect(items[0]?.barId).toBe(barEntityId2);
+            expect(items[0]?.barName).toBe(barEntityName2);
+            expect(items[0]?.barDate).toBe(barEntityDate2);
+
+            expect(items[1]?.barId).toBe(barEntityId1);
+            expect(items[1]?.barName).toBe(barEntityName1);
+            expect(items[1]?.barDate).toBe(barEntityDate1);
+        });
+
+    });
+
+    describe('#findByBarDateBefore', () => {
+
+        it('cannot find an entity before there was any', async () => {
+            const item = await barRepository.findByBarDateBefore(dateBeforeEntity1);
+            expect(item).toBeUndefined();
+        });
+
+        it('can find an entity before time in unsorted order', async () => {
+
+            // Matches entity 1, 2 or 3
+            const item = await barRepository.findByBarDateBefore(dateBetweenEntity3And4);
+            expect(item?.barId).toBe(barEntityId1);
+            expect(item?.barName).toBe(barEntityName1);
+
+        });
+
+        it('can find an entity before time in asc order', async () => {
+            // Matches entity 1
+            const item = await barRepository.findByBarDateBefore(dateBetweenEntity3And4, Sort.by('barDate'));
+            expect(item?.barId).toBe(barEntityId1);
+            expect(item?.barName).toBe(barEntityName1);
+        });
+
+        it('can find an entity before time in desc order', async () => {
+            // Matches entity 3
+            const item = await barRepository.findByBarDateBefore(dateBetweenEntity3And4, Sort.by(Sort.Direction.DESC,'barDate'));
+            expect(item?.barId).toBe(barEntityId3);
+            expect(item?.barName).toBe(barEntityName3);
+        });
+
+    });
+
+    describe('#deleteAllByBarDateBefore', () => {
+
+        it('can delete all entities before time', async () => {
+
+            // Deletes entities 1, 2 and 3
+            await barRepository.deleteAllByBarDateBefore(dateBetweenEntity3And4);
+
+            // Matches entity 4
+            expect( await barRepository.count() ).toBe(1);
+
+        });
+
+    });
+
+    describe('#existsByBarDateBefore', () => {
+
+        it('can find if entities exist before time', async () => {
+            expect( await barRepository.existsByBarDateBefore(dateBetweenEntity1And2) ).toBe(true);
+            await barRepository.deleteAllByBarDateBefore(barEntityDate2);
+            expect( await barRepository.existsByBarDateBefore(dateBetweenEntity1And2) ).toBe(false);
+        });
+
+    });
+
+    describe('#countByBarDateBefore', () => {
+
+        it('can count entities before time', async () => {
+
+            // Matches entities 1, 2 and 3
+            expect( await barRepository.countByBarDateBefore(dateBetweenEntity3And4) ).toBe(3);
+
+            // Deletes entity 1
+            await barRepository.deleteAllByBarDateBefore(dateBetweenEntity1And2);
+
+            // Matches entities 2 and 3
+            expect( await barRepository.countByBarDateBefore(dateBetweenEntity3And4) ).toBe(2);
+
+        });
+
+    });
+
+
+
+    describe('#findAllByBarDateAfter', () => {
+
+        it('can find all entities after time, unordered', async () => {
+
+            // Finds entities 3 and 4  ... OR .. 4 and 3
+            const items = await barRepository.findAllByBarDateAfter(dateBetweenEntity2And3);
+            expect(items).toHaveLength(2);
+
+            const item3 = find(items, (item) => item.barId === barEntityId3);
+            const item4 = find(items, (item) => item.barId === barEntityId4);
+
+            expect(item3).toBeDefined();
+            expect(item4).toBeDefined();
+
+            expect(item4?.barId).toBe(barEntityId4);
+            expect(item4?.barName).toBe(barEntityName4);
+            expect(item4?.barDate).toBe(barEntityDate4);
+
+            expect(item3?.barId).toBe(barEntityId3);
+            expect(item3?.barName).toBe(barEntityName3);
+            expect(item3?.barDate).toBe(barEntityDate3);
+
+        });
+
+        it('can find all entities after time in asc order', async () => {
+
+            // Finds entities 3 and 4 in asc order
+            const items = await barRepository.findAllByBarDateAfter(dateBetweenEntity2And3, Sort.by('barDate'));
+            expect(items).toHaveLength(2);
+            expect(items[0]?.barId).toBe(barEntityId3);
+            expect(items[0]?.barName).toBe(barEntityName3);
+            expect(items[0]?.barDate).toBe(barEntityDate3);
+            expect(items[1]?.barId).toBe(barEntityId4);
+            expect(items[1]?.barName).toBe(barEntityName4);
+            expect(items[1]?.barDate).toBe(barEntityDate4);
+        });
+
+        it('can find all entities after time in desc order', async () => {
+            // Finds entities 4 and 3
+            const items = await barRepository.findAllByBarDateAfter(dateBetweenEntity2And3, Sort.by(Sort.Direction.DESC,'barDate'));
+            expect(items).toHaveLength(2);
+            expect(items[0]?.barId).toBe(barEntityId4);
+            expect(items[0]?.barName).toBe(barEntityName4);
+            expect(items[0]?.barDate).toBe(barEntityDate4);
+            expect(items[1]?.barId).toBe(barEntityId3);
+            expect(items[1]?.barName).toBe(barEntityName3);
+            expect(items[1]?.barDate).toBe(barEntityDate3);
+        });
+
+    });
+
+    describe('#findByBarDateAfter', () => {
+
+        it('can find an entity after time in unsorted order', async () => {
+            // Matches 4
+            const item = await barRepository.findByBarDateAfter(dateBetweenEntity3And4);
+            expect(item?.barId).toBe(barEntityId4);
+            expect(item?.barName).toBe(barEntityName4);
+        });
+
+        it('can find an entity after time in asc order', async () => {
+            // Matches entities 2, 3 and 4, in asc order 2 will be first
+            const item = await barRepository.findByBarDateAfter(dateBetweenEntity1And2, Sort.by('barDate'));
+            expect(item?.barId).toBe(barEntityId2);
+            expect(item?.barName).toBe(barEntityName2);
+        });
+
+        it('can find an entity after time in DESC order', async () => {
+            // Matches entities 3 and 4, in desc order 4 fill be first one
+            const item = await barRepository.findByBarDateAfter(dateBetweenEntity1And2, Sort.by(Sort.Direction.DESC,'barDate'));
+            expect(item?.barId).toBe(barEntityId4);
+            expect(item?.barName).toBe(barEntityName4);
+        });
+
+    });
+
+    describe('#deleteAllByBarDateAfter', () => {
+
+        it('can delete all entities after barDate', async () => {
+            await barRepository.deleteAllByBarDateAfter(dateBetweenEntity3And4); // Deletes item 4
+            const item = await barRepository.count();
+            expect(item).toBe(3);
+        });
+
+    });
+
+    describe('#existsByBarDateAfter', () => {
+
+        it('can find if entities exist after barDate', async () => {
+            expect( await barRepository.existsByBarDateAfter(dateBetweenEntity1And2) ).toBe(true);
+            await barRepository.deleteAllByBarDateBetween(dateBetweenEntity1And2, dateAfterEntity4); // Deletes items 2, 3 and 4
+            expect( await barRepository.existsByBarDateAfter(dateBetweenEntity1And2) ).toBe(false);
+        });
+
+    });
+
+    describe('#countByBarDateAfter', () => {
+
+        it('can count entities after barDate', async () => {
+            expect( await barRepository.countByBarDateAfter(dateBetweenEntity1And2) ).toBe(3);
+            await barRepository.deleteAllByBarDateAfter(dateBetweenEntity1And2);
+            expect( await barRepository.countByBarDateAfter(dateBeforeEntity1) ).toBe(1);
+        });
+
+    });
+
 
 };

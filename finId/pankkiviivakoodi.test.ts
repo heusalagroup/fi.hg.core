@@ -13,7 +13,7 @@ import {
   viivakoodiParse
 } from './pankkiviivakoodi';
 
-xdescribe('pankkiviivakoodi', () => {
+describe.skip('pankkiviivakoodi', () => {
 
     test('can create viivakoodi', () => {
       expect(viivakoodiCreate(
