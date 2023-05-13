@@ -36,9 +36,15 @@ let ID_SEQUENCER = 0;
 /**
  * This persister stores everything in the process memory. It is useful for
  * development purposes.
+ *
+ * @see {@link Persister}
  */
 export class MemoryPersister implements Persister {
 
+    /**
+     * Set log level
+     * @param level
+     */
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
     }
@@ -60,13 +66,26 @@ export class MemoryPersister implements Persister {
         this._metadataManager = new PersisterMetadataManagerImpl();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.destroy}
+     */
     public destroy (): void {
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.setupEntityMetadata}
+     * @see {@link PersisterMetadataManager.setupEntityMetadata}
+     */
     public setupEntityMetadata (metadata: EntityMetadata) : void {
         this._metadataManager.setupEntityMetadata(metadata);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.count}
+     */
     public async count<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where | undefined,
@@ -83,6 +102,10 @@ export class MemoryPersister implements Persister {
         return this._data[tableName].items.length;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.existsBy}
+     */
     public async existsBy<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where,
@@ -96,6 +119,10 @@ export class MemoryPersister implements Persister {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.deleteAll}
+     */
     public async deleteAll<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where | undefined,
@@ -113,6 +140,10 @@ export class MemoryPersister implements Persister {
         delete this._data[tableName];
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.findAll}
+     */
     public async findAll<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where | undefined,
@@ -131,6 +162,10 @@ export class MemoryPersister implements Persister {
         return ret;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.findBy}
+     */
     public async findBy<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where,
@@ -147,6 +182,10 @@ export class MemoryPersister implements Persister {
         return this._populateRelations( item, metadata );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.insert}
+     */
     public async insert<T extends Entity, ID extends EntityIdTypes> (
         metadata: EntityMetadata,
         entity: T | readonly T[],
@@ -197,6 +236,10 @@ export class MemoryPersister implements Persister {
         return this._populateRelations( this._prepareItem<T>(firstItem, metadata, true), metadata);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link Persister.update}
+     */
     public async update<T extends Entity, ID extends EntityIdTypes> (
         metadata: EntityMetadata,
         entity: T,

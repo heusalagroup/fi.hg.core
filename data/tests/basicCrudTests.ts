@@ -833,7 +833,15 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
     describe('#findAllByBarDateBetween', () => {
 
-        it('can find all entities between values by date unordered', async () => {
+        beforeEach(() => {
+            PgPersister.setLogLevel(LogLevel.DEBUG);
+        });
+
+        afterEach(() => {
+            PgPersister.setLogLevel(LogLevel.NONE);
+        });
+
+        it.only('can find all entities between values by date unordered', async () => {
             const items = await barRepository.findAllByBarDateBetween(barEntityDate2, barEntityDate3);
             expect(items).toHaveLength(2);
 

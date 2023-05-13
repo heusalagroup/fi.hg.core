@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { MySqlSelectQueryBuilder } from "./MySqlSelectQueryBuilder";
-import { SelectQueryBuilder } from "../../../types/SelectQueryBuilder";
 import { QueryBuilder } from "../../../types/QueryBuilder";
 import { MySqlEntityJsonObjectBuilder } from "../formulas/MySqlEntityJsonObjectBuilder";
 import { MySqlJsonArrayAggBuilder } from "../formulas/MySqlJsonArrayAggBuilder";
@@ -19,63 +18,127 @@ import { ChainQueryBuilderUtils } from "../../../utils/ChainQueryBuilderUtils";
 import { MySqlOrChainBuilder } from "../formulas/MySqlOrChainBuilder";
 import { TemporalProperty } from "../../../../types/TemporalProperty";
 import { EntitySelectBuilderUtils } from "../../../utils/EntitySelectBuilderUtils";
+import { EntitySelectQueryBuilder } from "../../../types/EntitySelectQueryBuilder";
 
-export class MySqlEntitySelectQueryBuilder implements SelectQueryBuilder {
+/**
+ * Defines an interface for a builder of MySQL database read query from
+ * entity types.
+ */
+export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
 
-    private _builder : MySqlSelectQueryBuilder;
+    private readonly _builder : MySqlSelectQueryBuilder;
 
-    public constructor () {
-        this._builder = new MySqlSelectQueryBuilder();
+    protected constructor () {
+        this._builder = MySqlSelectQueryBuilder.create();
     }
 
+    /**
+     * Create select query builder for MySQL
+     */
+    public static create () : MySqlEntitySelectQueryBuilder {
+        return new MySqlEntitySelectQueryBuilder();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumn}
+     */
     public includeColumn (tableName: string, columnName: string): void {
         this._builder.includeColumn(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsText}
+     */
     public includeColumnAsText (tableName: string, columnName: string): void {
         this._builder.includeColumnAsText(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsTime}
+     */
     public includeColumnAsTime (tableName: string, columnName: string): void {
         this._builder.includeColumnAsTime(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsDate}
+     */
     public includeColumnAsDate (tableName: string, columnName: string): void {
         this._builder.includeColumnAsDate(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsTimestamp}
+     */
     public includeColumnAsTimestamp (tableName: string, columnName: string): void {
         this._builder.includeColumnAsTimestamp(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.valueOf}
+     */
     public valueOf () {
         return this.toString();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.toString}
+     */
     public toString () : string {
         return this._builder.toString();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.build}
+     */
     public build (): [ string, any[] ] {
         return this._builder.build();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.buildQueryString}
+     */
     public buildQueryString (): string {
         return this._builder.buildQueryString();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.buildQueryValues}
+     */
     public buildQueryValues (): any[] {
         return this._builder.buildQueryValues();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getQueryValueFactories}
+     */
     public getQueryValueFactories (): (() => any)[] {
         return this._builder.getQueryValueFactories();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeAllColumnsFromTable}
+     */
     public includeAllColumnsFromTable (tableName: string): void {
         return this._builder.includeAllColumnsFromTable(tableName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
+     */
     public includeEntityFields (
         tableName           : string,
         fields              : readonly EntityField[],
@@ -89,34 +152,66 @@ export class MySqlEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnFromQueryBuilder}
+     */
     public includeColumnFromQueryBuilder (builder: QueryBuilder, asColumnName: string): void {
         return this._builder.includeColumnFromQueryBuilder(builder, asColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeFormulaByString}
+     */
     public includeFormulaByString (formula: string, asColumnName: string): void {
         return this._builder.includeFormulaByString(formula, asColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.leftJoinTable}
+     */
     public leftJoinTable (fromTableName: string, fromColumnName: string, sourceTableName: string, sourceColumnName: string): void {
         return this._builder.leftJoinTable(fromTableName, fromColumnName, sourceTableName, sourceColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setFromTable}
+     */
     public setFromTable (tableName: string): void {
         return this._builder.setFromTable(tableName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getShortFromTable}
+     */
     public getShortFromTable (): string {
         return this._builder.getShortFromTable();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getCompleteFromTable}
+     */
     public getCompleteFromTable (): string {
         return this._builder.getCompleteFromTable();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setGroupByColumn}
+     */
     public setGroupByColumn (columnName: string): void {
         return this._builder.setGroupByColumn(columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setOrderBy}
+     */
     public setOrderBy (
         sort      : Sort,
         tableName : string,
@@ -125,22 +220,42 @@ export class MySqlEntitySelectQueryBuilder implements SelectQueryBuilder {
         return this._builder.setOrderByTableFields(sort, tableName, fields);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getGroupByColumn}
+     */
     public getGroupByColumn (): string {
         return this._builder.getGroupByColumn();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setTablePrefix}
+     */
     public setTablePrefix (prefix: string): void {
         return this._builder.setTablePrefix(prefix);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getTablePrefix}
+     */
     public getTablePrefix (): string {
         return this._builder.getTablePrefix();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getCompleteTableName}
+     */
     public getCompleteTableName (tableName: string): string {
         return this._builder.getCompleteTableName(tableName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setWhereFromQueryBuilder}
+     */
     public setWhereFromQueryBuilder (builder: QueryBuilder): void {
         return this._builder.setWhereFromQueryBuilder(builder);
     }
@@ -240,6 +355,10 @@ export class MySqlEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setOneToManyRelations}
+     */
     public setOneToManyRelations (
         relations: readonly EntityRelationOneToMany[],
         metadataManager: PersisterMetadataManager,
@@ -263,6 +382,10 @@ export class MySqlEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setManyToOneRelations}
+     */
     public setManyToOneRelations (
         relations: readonly EntityRelationManyToOne[],
         metadataManager: PersisterMetadataManager,
@@ -291,6 +414,10 @@ export class MySqlEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.buildAnd}
+     */
     public buildAnd (
         where     : Where,
         tableName : string,

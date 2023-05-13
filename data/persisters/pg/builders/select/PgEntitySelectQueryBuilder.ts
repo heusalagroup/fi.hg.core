@@ -1,14 +1,13 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { forEach } from "../../../../../functions/forEach";
+import { find } from "../../../../../functions/find";
 import { PgSelectQueryBuilder } from "./PgSelectQueryBuilder";
-import { SelectQueryBuilder } from "../../../types/SelectQueryBuilder";
 import { QueryBuilder } from "../../../types/QueryBuilder";
 import { EntityField } from "../../../../types/EntityField";
 import { EntityRelationOneToMany } from "../../../../types/EntityRelationOneToMany";
 import { PersisterMetadataManager } from "../../../types/PersisterMetadataManager";
-import { forEach } from "../../../../../functions/forEach";
 import { EntityRelationManyToOne } from "../../../../types/EntityRelationManyToOne";
-import { find } from "../../../../../functions/find";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
 import { PgJsonAggBuilder } from "../formulas/PgJsonAggBuilder";
 import { PgJsonBuildObjectEntityBuilder } from "../formulas/PgJsonBuildObjectEntityBuilder";
@@ -19,71 +18,204 @@ import { Where } from "../../../../Where";
 import { ChainQueryBuilderUtils } from "../../../utils/ChainQueryBuilderUtils";
 import { PgOrChainBuilder } from "../formulas/PgOrChainBuilder";
 import { TemporalProperty } from "../../../../types/TemporalProperty";
+import { EntitySelectBuilderUtils } from "../../../utils/EntitySelectBuilderUtils";
+import { EntitySelectQueryBuilder } from "../../../types/EntitySelectQueryBuilder";
 
-export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
+/**
+ * Defines an interface for a builder of PostgreSQL database read query from
+ * entity types.
+ */
+export class PgEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
 
-    private _builder : PgSelectQueryBuilder;
+    private readonly _builder : PgSelectQueryBuilder;
 
-    public constructor () {
-        this._builder = new PgSelectQueryBuilder();
+    protected constructor () {
+        this._builder = PgSelectQueryBuilder.create();
     }
 
+    public static create () {
+        return new PgEntitySelectQueryBuilder();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.valueOf}
+     */
     public valueOf () {
         return this.toString();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.toString}
+     */
     public toString () : string {
         return `PgEntitySelectQueryBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.build}
+     */
     public build (): [ string, any[] ] {
         return this._builder.build();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.buildQueryString}
+     */
     public buildQueryString (): string {
         return this._builder.buildQueryString();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.buildQueryValues}
+     */
     public buildQueryValues (): any[] {
         return this._builder.buildQueryValues();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getQueryValueFactories}
+     */
     public getQueryValueFactories (): (() => any)[] {
         return this._builder.getQueryValueFactories();
     }
 
+    /**
+     * @deprecated Use EntitySelectQueryBuilder.includeEntityFields instead of
+     * this method.
+     *
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
+     * @see {@link SelectQueryBuilder.includeAllColumnsFromTable}
+     * @see {@link EntitySelectQueryBuilder.includeAllColumnsFromTable}
+     */
     public includeAllColumnsFromTable (tableName: string): void {
         return this._builder.includeAllColumnsFromTable(tableName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnFromQueryBuilder}
+     */
     public includeColumnFromQueryBuilder (builder: QueryBuilder, asColumnName: string): void {
         return this._builder.includeColumnFromQueryBuilder(builder, asColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeFormulaByString}
+     */
     public includeFormulaByString (formula: string, asColumnName: string): void {
         return this._builder.includeFormulaByString(formula, asColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.leftJoinTable}
+     */
     public leftJoinTable (fromTableName: string, fromColumnName: string, sourceTableName: string, sourceColumnName: string): void {
         return this._builder.leftJoinTable(fromTableName, fromColumnName, sourceTableName, sourceColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setFromTable}
+     */
     public setFromTable (tableName: string): void {
         return this._builder.setFromTable(tableName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getShortFromTable}
+     */
     public getShortFromTable (): string {
         return this._builder.getShortFromTable();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getCompleteFromTable}
+     */
     public getCompleteFromTable (): string {
         return this._builder.getCompleteFromTable();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setGroupByColumn}
+     */
     public setGroupByColumn (columnName: string): void {
         return this._builder.setGroupByColumn(columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getGroupByColumn}
+     */
+    public getGroupByColumn (): string {
+        return this._builder.getGroupByColumn();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setTablePrefix}
+     */
+    public setTablePrefix (prefix: string): void {
+        return this._builder.setTablePrefix(prefix);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getTablePrefix}
+     */
+    public getTablePrefix (): string {
+        return this._builder.getTablePrefix();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getCompleteTableName}
+     */
+    public getCompleteTableName (tableName: string): string {
+        return this._builder.getCompleteTableName(tableName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setWhereFromQueryBuilder}
+     */
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        return this._builder.setWhereFromQueryBuilder(builder);
+    }
+
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
+     */
+    public includeEntityFields (
+        tableName           : string,
+        fields              : readonly EntityField[],
+        temporalProperties  : readonly TemporalProperty[]
+    ): void {
+        EntitySelectBuilderUtils.includeEntityFields(
+            this._builder,
+            tableName,
+            fields,
+            temporalProperties
+        );
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setOrderBy}
+     */
     public setOrderBy (
         sort      : Sort,
         tableName : string,
@@ -92,47 +224,9 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         return this._builder.setOrderByTableFields(sort, tableName, fields);
     }
 
-    public getGroupByColumn (): string {
-        return this._builder.getGroupByColumn();
-    }
-
-    public setTablePrefix (prefix: string): void {
-        return this._builder.setTablePrefix(prefix);
-    }
-
-    public getTablePrefix (): string {
-        return this._builder.getTablePrefix();
-    }
-
-    public getCompleteTableName (tableName: string): string {
-        return this._builder.getCompleteTableName(tableName);
-    }
-
-    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
-        return this._builder.setWhereFromQueryBuilder(builder);
-    }
-
     /**
-     * Append a relation from one entity to many, e.g. the property will be an
-     * array.
-     *
-     * The PostgreSQL query will look like this:
-     *
-     * ```
-     * SELECT
-     *   "carts".*,
-     *   array_agg(ROW("cart_items"."cart_item_id", "cart_items"."cart_id", "cart_items"."cart_item_name")) AS "cartItems"
-     * FROM carts
-     * LEFT JOIN "cart_items" ON "carts"."cart_id" = "cart_items"."cart_id"
-     * GROUP BY "carts"."cart_id";
-     * ```
-     *
-     * @param propertyName
-     * @param fields
-     * @param targetTableName
-     * @param targetColumnName
-     * @param sourceTableName
-     * @param sourceColumnName
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setOneToMany}
      */
     public setOneToMany (
         propertyName: string,
@@ -142,7 +236,7 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         targetColumnName : string,
         sourceTableName  : string,
         sourceColumnName : string
-    ) {
+    ): void {
         this._builder.includeColumnFromQueryBuilder(
             PgJsonAggBuilder.create(
                 PgJsonBuildObjectEntityBuilder.create(
@@ -160,28 +254,8 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
     }
 
     /**
-     * Append a relation from many entities to one, e.g. the property will be
-     * single entity object.
-     *
-     * The PostgreSQL query will look like this:
-     * ```
-     * SELECT
-     *   "cart_items".*,
-     *   json_agg(json_build_object('cart_id', "carts"."cart_id", 'cart_name', "carts"."cart_name"))->0 AS cart
-     * FROM "cart_items"
-     * LEFT JOIN "carts" ON "carts"."cart_id" = "cart_items"."cart_id"
-     * GROUP BY "cart_items"."cart_item_id";
-     * ```
-     *
-     * ***Note*** that this only works if the "carts"."carts_id" is unique!
-     * There will be multiple entities returned if not.
-     *
-     * @param propertyName
-     * @param fields
-     * @param targetTableName
-     * @param targetColumnName
-     * @param sourceTableName
-     * @param sourceColumnName
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setManyToOne}
      */
     public setManyToOne (
         propertyName: string,
@@ -191,7 +265,7 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         targetColumnName : string,
         sourceTableName  : string,
         sourceColumnName : string
-    ) {
+    ): void {
         this._builder.includeColumnFromQueryBuilder(
             PgJsonIndexBuilder.create(
                 PgJsonAggBuilder.create(
@@ -211,10 +285,14 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setOneToManyRelations}
+     */
     public setOneToManyRelations (
         relations: readonly EntityRelationOneToMany[],
         metadataManager: PersisterMetadataManager
-    ) {
+    ): void {
         forEach(
             relations,
             (relation: EntityRelationOneToMany) : void => {
@@ -234,11 +312,15 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setManyToOneRelations}
+     */
     public setManyToOneRelations (
         relations: readonly EntityRelationManyToOne[],
         metadataManager: PersisterMetadataManager,
         fields: readonly EntityField[]
-    ) {
+    ): void {
         forEach(
             relations,
             (relation: EntityRelationManyToOne) : void => {
@@ -262,6 +344,10 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.buildAnd}
+     */
     public buildAnd (
         where     : Where,
         tableName : string,
@@ -280,22 +366,42 @@ export class PgEntitySelectQueryBuilder implements SelectQueryBuilder {
         return andBuilder;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumn}
+     */
     public includeColumn (tableName: string, columnName: string): void {
         this._builder.includeColumn(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsDate}
+     */
     public includeColumnAsDate (tableName: string, columnName: string): void {
         this._builder.includeColumnAsDate(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsText}
+     */
     public includeColumnAsText (tableName: string, columnName: string): void {
         this._builder.includeColumnAsText(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsTime}
+     */
     public includeColumnAsTime (tableName: string, columnName: string): void {
         this._builder.includeColumnAsTime(tableName, columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsTimestamp}
+     */
     public includeColumnAsTimestamp (tableName: string, columnName: string): void {
         this._builder.includeColumnAsTimestamp(tableName, columnName);
     }

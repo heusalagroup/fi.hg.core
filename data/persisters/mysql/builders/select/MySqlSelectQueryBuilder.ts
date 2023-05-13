@@ -7,67 +7,78 @@ import { map } from "../../../../../functions/map";
 import { Sort } from "../../../../Sort";
 import { EntityField } from "../../../../types/EntityField";
 import { EntityUtils } from "../../../../utils/EntityUtils";
-import { SortDirection } from "../../../../types/SortDirection";
 import {
-    PH_AS, PH_FROM_TABLE, PH_GROUP_BY_TABLE_COLUMN, PH_LEFT_JOIN,
+    PH_AS, PH_FROM_TABLE,
+    PH_GROUP_BY_TABLE_COLUMN,
+    PH_LEFT_JOIN,
     PH_TABLE_ALL_COLUMNS,
     PH_TABLE_COLUMN,
     PH_TABLE_COLUMN_AS_DATE_AS,
     PH_TABLE_COLUMN_AS_TEXT_AS,
     PH_TABLE_COLUMN_AS_TIME_AS,
-    PH_TABLE_COLUMN_AS_TIMESTAMP_AS, PH_TABLE_COLUMN_WITH_SORT_ORDER
+    PH_TABLE_COLUMN_AS_TIMESTAMP_AS,
+    PH_TABLE_COLUMN_WITH_SORT_ORDER
 } from "../../constants/queries";
+import { BaseSelectQueryBuilder } from "../../../types/BaseSelectQueryBuilder";
 
-export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
+export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements SelectQueryBuilder {
 
-    private _mainIdColumnName : string | undefined;
-    private _mainTableName : string | undefined;
-    private _tablePrefix : string = '';
-    private readonly _fieldQueries : (() => string)[];
-    private readonly _fieldValues : (() => any)[];
-    private readonly _leftJoinQueries : (() => string)[];
-    private readonly _leftJoinValues : (() => any)[];
-    private _where : QueryBuilder | undefined;
-    private readonly _orderByQueries : (() => string)[];
-    private readonly _orderByValues : (() => any)[];
-
-    public constructor () {
-        this._mainIdColumnName = undefined;
-        this._mainTableName = undefined;
-        this._where = undefined;
-        this._tablePrefix = '';
-        this._fieldQueries = [];
-        this._fieldValues = [];
-        this._leftJoinQueries = [];
-        this._leftJoinValues = [];
-        this._orderByQueries = [];
-        this._orderByValues = [];
+    public static create () : MySqlSelectQueryBuilder {
+        return new MySqlSelectQueryBuilder();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.valueOf}
+     */
     public valueOf () {
         return this.toString();
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.toString}
+     */
     public toString () : string {
         return `"${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setTablePrefix}
+     */
     public setTablePrefix (prefix: string) {
         this._tablePrefix = prefix;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getTablePrefix}
+     */
     public getTablePrefix (): string {
         return this._tablePrefix;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getCompleteTableName}
+     */
     public getCompleteTableName (tableName : string) : string {
         return `${this._tablePrefix}${tableName}`;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setWhereFromQueryBuilder}
+     */
     public setWhereFromQueryBuilder (builder: QueryBuilder): void {
         this._where = builder;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumn}
+     */
     public includeColumn (
         tableName: string,
         columnName: string
@@ -77,6 +88,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsText}
+     */
     public includeColumnAsText (
         tableName: string,
         columnName: string
@@ -87,6 +102,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsTime}
+     */
     public includeColumnAsTime (
         tableName: string,
         columnName: string
@@ -97,6 +116,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsDate}
+     */
     public includeColumnAsDate (
         tableName: string,
         columnName: string
@@ -107,6 +130,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsTimestamp}
+     */
     public includeColumnAsTimestamp (
         tableName: string,
         columnName: string
@@ -117,11 +144,19 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => columnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeAllColumnsFromTable}
+     */
     public includeAllColumnsFromTable (tableName: string) : void {
         this._fieldQueries.push(() => PH_TABLE_ALL_COLUMNS);
         this._fieldValues.push(() => this.getCompleteTableName(tableName));
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnFromQueryBuilder}
+     */
     public includeColumnFromQueryBuilder (
         builder: QueryBuilder,
         asColumnName: string
@@ -140,6 +175,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => asColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeFormulaByString}
+     */
     public includeFormulaByString (
         formula: string,
         asColumnName: string
@@ -154,24 +193,44 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._fieldValues.push(() => asColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setFromTable}
+     */
     public setFromTable (tableName: string) {
         this._mainTableName = tableName;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getCompleteFromTable}
+     */
     public getCompleteFromTable (): string {
         if (!this._mainTableName) throw new TypeError(`From table has not been initialized yet`);
         return this.getCompleteTableName(this._mainTableName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getShortFromTable}
+     */
     public getShortFromTable (): string {
         if (!this._mainTableName) throw new TypeError(`From table has not been initialized yet`);
         return this._mainTableName;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setGroupByColumn}
+     */
     public setGroupByColumn (columnName: string) {
         this._mainIdColumnName = columnName;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setOrderByTableFields}
+     */
     public setOrderByTableFields (
         sort      : Sort,
         tableName : string,
@@ -187,11 +246,19 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         );
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getGroupByColumn}
+     */
     public getGroupByColumn (): string {
         if (!this._mainIdColumnName) throw new TypeError(`Group by has not been initialized yet`);
         return this._mainIdColumnName;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.leftJoinTable}
+     */
     public leftJoinTable (
         fromTableName : string,
         fromColumnName : string,
@@ -206,10 +273,18 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         this._leftJoinValues.push( () => fromColumnName);
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.build}
+     */
     public build () : [string, any[]] {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.buildQueryString}
+     */
     public buildQueryString () : string {
         const fieldQueries = map(this._fieldQueries, (f) => f());
         const leftJoinQueries = map(this._leftJoinQueries, (f) => f());
@@ -233,6 +308,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         return query;
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.buildQueryValues}
+     */
     public buildQueryValues () : any[] {
         const fieldValues = map(this._fieldValues, (f) => f());
         const leftJoinValues = map(this._leftJoinValues, (f) => f());
@@ -250,6 +329,10 @@ export class MySqlSelectQueryBuilder implements SelectQueryBuilder {
         ];
     }
 
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.getQueryValueFactories}
+     */
     public getQueryValueFactories (): (() => any)[] {
         return [
             ...this._fieldValues,

@@ -11,16 +11,33 @@ import { Where } from "../../Where";
 /**
  * This persister implements every method but doesn't really do anything.
  * It is useful for testing purposes.
+ *
+ * @see {@link Persister}
  */
 export class MockPersister implements Persister {
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.destroy}
+     */
     public destroy () {}
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.setupEntityMetadata}
+     */
     public async setupEntityMetadata (
         metadata : EntityMetadata
     ) : Promise<void> {
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.count}
+     */
     public async count<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where | undefined
@@ -28,6 +45,11 @@ export class MockPersister implements Persister {
         return 0;
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.existsBy}
+     */
     public async existsBy<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where,
@@ -35,12 +57,22 @@ export class MockPersister implements Persister {
         return false;
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.deleteAll}
+     */
     public async deleteAll<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where | undefined
     ): Promise<void> {
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.findAll}
+     */
     public async findAll<T extends Entity, ID extends EntityIdTypes> (
         metadata  : EntityMetadata,
         where     : Where | undefined,
@@ -49,6 +81,11 @@ export class MockPersister implements Persister {
         return [];
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.findBy}
+     */
     public async findBy<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         where    : Where | undefined,
@@ -57,6 +94,11 @@ export class MockPersister implements Persister {
         return undefined;
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.insert}
+     */
     public async insert<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         entity   : readonly T[] | T,
@@ -66,6 +108,11 @@ export class MockPersister implements Persister {
         return item;
     }
 
+    /**
+     * **MOCKED VERSION!**
+     * @inheritDoc
+     * @see {@link Persister.update}
+     */
     public async update<T extends Entity, ID extends EntityIdTypes> (
         metadata : EntityMetadata,
         entity   : T,
