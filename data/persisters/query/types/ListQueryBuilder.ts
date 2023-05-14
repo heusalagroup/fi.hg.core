@@ -1,11 +1,12 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "./QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "./QueryBuilder";
 
 /**
  * Defines an interface for a builder of relational database items in a list.
  *
- * For example, the items in the INSERT query value lists.
+ * For example, the items in the INSERT query value lists or the assignment list
+ * in the UPDATE query.
  */
 export interface ListQueryBuilder extends QueryBuilder {
 
@@ -17,7 +18,7 @@ export interface ListQueryBuilder extends QueryBuilder {
      */
     appendExpression (
         queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        ...valueFactories : readonly QueryValueFactory[]
     ) : void;
 
     /**
@@ -103,6 +104,34 @@ export interface ListQueryBuilder extends QueryBuilder {
         value: any
     ): void;
 
+    /**
+     * Set a parameter with an assigment.
+     *
+     * This is usually used in the update clause, e.g. it is the
+     * `columnName = ?` part from the `UPDATE table SET columnName = ?`.
+     *
+     * @param columnName
+     * @param value
+     */
+    setAssignmentWithParam (
+        columnName: string,
+        value: any
+    ) : void
+
+    /**
+     * Set a parameter with an assigment.
+     *
+     * This is usually used in the update clause, e.g. it is the
+     * `columnName = DATE_FORMAT(?, ...)` part from the
+     * `UPDATE table SET columnName = DATE_FORMAT(?, ...)`.
+     *
+     * @param columnName The column name to set
+     * @param value The time value
+     */
+    setAssignmentWithParamAsTimestamp (
+        columnName: string,
+        value: any
+    ) : void
 
 
     ///////////////////////         QueryBuilder         ///////////////////////
@@ -126,7 +155,7 @@ export interface ListQueryBuilder extends QueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.build}
      */
-    build () : [string, any[]];
+    build () : QueryBuildResult;
 
     /**
      * @inheritDoc
@@ -138,12 +167,12 @@ export interface ListQueryBuilder extends QueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.buildQueryValues}
      */
-    buildQueryValues () : any[];
+    buildQueryValues () : readonly any[];
 
     /**
      * @inheritDoc
      * @see {@link QueryBuilder.getQueryValueFactories}
      */
-    getQueryValueFactories () : (() => any)[];
+    getQueryValueFactories () : readonly QueryValueFactory[];
 
 }

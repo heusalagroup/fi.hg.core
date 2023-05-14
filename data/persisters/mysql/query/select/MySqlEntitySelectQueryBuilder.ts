@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { MySqlSelectQueryBuilder } from "./MySqlSelectQueryBuilder";
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { MySqlEntityJsonObjectBuilder } from "../formulas/MySqlEntityJsonObjectBuilder";
 import { MySqlJsonArrayAggBuilder } from "../formulas/MySqlJsonArrayAggBuilder";
 import { EntityField } from "../../../../types/EntityField";
@@ -37,132 +37,6 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
      */
     public static create () : MySqlEntitySelectQueryBuilder {
         return new MySqlEntitySelectQueryBuilder();
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeColumn}
-     */
-    public includeColumn (tableName: string, columnName: string, asColumnName: string): void {
-        this._builder.includeColumn(tableName, columnName, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeColumnAsText}
-     */
-    public includeColumnAsText (tableName: string, columnName: string, asColumnName: string): void {
-        this._builder.includeColumnAsText(tableName, columnName, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeColumnAsTime}
-     */
-    public includeColumnAsTime (tableName: string, columnName: string, asColumnName: string): void {
-        this._builder.includeColumnAsTime(tableName, columnName, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeColumnAsDate}
-     */
-    public includeColumnAsDate (tableName: string, columnName: string, asColumnName: string): void {
-        this._builder.includeColumnAsDate(tableName, columnName, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeColumnAsTimestamp}
-     */
-    public includeColumnAsTimestamp (tableName: string, columnName: string, asColumnName: string): void {
-        this._builder.includeColumnAsTimestamp(tableName, columnName, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeAllColumnsFromTable}
-     * @deprecated Use MySqlEntitySelectQueryBuilder.includeEntityFields
-     */
-    public includeAllColumnsFromTable (tableName: string): void {
-        return this._builder.includeAllColumnsFromTable(tableName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
-     */
-    public includeEntityFields (
-        tableName           : string,
-        fields              : readonly EntityField[],
-        temporalProperties  : readonly TemporalProperty[]
-    ): void {
-        EntitySelectQueryUtils.includeEntityFields(
-            this._builder,
-            tableName,
-            fields,
-            temporalProperties
-        );
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeColumnFromQueryBuilder}
-     */
-    public includeColumnFromQueryBuilder (builder: QueryBuilder, asColumnName: string): void {
-        return this._builder.includeColumnFromQueryBuilder(builder, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeFormulaByString}
-     */
-    public includeFormulaByString (formula: string, asColumnName: string): void {
-        return this._builder.includeFormulaByString(formula, asColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.leftJoinTable}
-     */
-    public leftJoinTable (fromTableName: string, fromColumnName: string, sourceTableName: string, sourceColumnName: string): void {
-        return this._builder.leftJoinTable(fromTableName, fromColumnName, sourceTableName, sourceColumnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.setGroupByColumn}
-     */
-    public setGroupByColumn (columnName: string): void {
-        return this._builder.setGroupByColumn(columnName);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.setOrderBy}
-     */
-    public setOrderBy (
-        sort      : Sort,
-        tableName : string,
-        fields    : readonly EntityField[]
-    ): void {
-        return this._builder.setOrderByTableFields(sort, tableName, fields);
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.getGroupByColumn}
-     */
-    public getGroupByColumn (): string | undefined {
-        return this._builder.getGroupByColumn();
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.setWhereFromQueryBuilder}
-     */
-    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
-        return this._builder.setWhereFromQueryBuilder(builder);
     }
 
     /**
@@ -274,6 +148,127 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
         );
     }
 
+
+    ///////////////////////         QueryEntityResultable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
+     */
+    public includeEntityFields (
+        tableName           : string,
+        fields              : readonly EntityField[],
+        temporalProperties  : readonly TemporalProperty[]
+    ): void {
+        EntitySelectQueryUtils.includeEntityFields(
+            this._builder,
+            tableName,
+            fields,
+            temporalProperties
+        );
+    }
+
+
+    ///////////////////////         QueryResultable         ///////////////////////
+
+    buildResultQueryString () : string {
+        return this._builder.buildResultQueryString();
+    }
+
+    getResultValueFactories () : readonly QueryValueFactory[] {
+        return this._builder.getResultValueFactories();
+    }
+
+    appendResultExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : readonly QueryValueFactory[]
+    ) : void {
+        return this._builder.appendResultExpression(
+            queryFactory,
+            ...valueFactories
+        );
+    }
+
+    appendResultExpressionUsingQueryBuilder (
+        builder: QueryBuilder,
+        ...valueFactories : readonly QueryValueFactory[]
+    ) : void {
+        return this._builder.appendResultExpressionUsingQueryBuilder(
+            builder,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumn}
+     */
+    public includeColumn (tableName: string, columnName: string, asColumnName: string): void {
+        this._builder.includeColumn(tableName, columnName, asColumnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsText}
+     */
+    public includeColumnAsText (tableName: string, columnName: string, asColumnName: string): void {
+        this._builder.includeColumnAsText(tableName, columnName, asColumnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsTime}
+     */
+    public includeColumnAsTime (tableName: string, columnName: string, asColumnName: string): void {
+        this._builder.includeColumnAsTime(tableName, columnName, asColumnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsDate}
+     */
+    public includeColumnAsDate (tableName: string, columnName: string, asColumnName: string): void {
+        this._builder.includeColumnAsDate(tableName, columnName, asColumnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnAsTimestamp}
+     */
+    public includeColumnAsTimestamp (tableName: string, columnName: string, asColumnName: string): void {
+        this._builder.includeColumnAsTimestamp(tableName, columnName, asColumnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeAllColumnsFromTable}
+     * @deprecated Use MySqlEntitySelectQueryBuilder.includeEntityFields
+     */
+    public includeAllColumnsFromTable (tableName: string): void {
+        return this._builder.includeAllColumnsFromTable(tableName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeColumnFromQueryBuilder}
+     */
+    public includeColumnFromQueryBuilder (builder: QueryBuilder, asColumnName: string): void {
+        return this._builder.includeColumnFromQueryBuilder(builder, asColumnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeFormulaByString}
+     */
+    public includeFormulaByString (formula: string, asColumnName: string): void {
+        return this._builder.includeFormulaByString(formula, asColumnName);
+    }
+
+
+    ///////////////////////         QueryEntityWhereable         ///////////////////////
+
+
     /**
      * @inheritDoc
      * @see {@link EntitySelectQueryBuilder.buildAnd}
@@ -284,20 +279,149 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
         fields    : readonly EntityField[]
     ) {
         const completeTableName = this.getTableNameWithPrefix(tableName);
-        const andBuilder = new MySqlAndChainBuilder();
+        const andBuilder = MySqlAndChainBuilder.create();
         ChainQueryBuilderUtils.buildChain(
             andBuilder,
             where,
             completeTableName,
             fields,
-            () => new MySqlAndChainBuilder(),
-            () => new MySqlOrChainBuilder()
+            () => MySqlAndChainBuilder.create(),
+            () => MySqlOrChainBuilder.create()
         );
         return andBuilder;
     }
 
 
+    ///////////////////////         QueryWhereable         ///////////////////////
 
+    buildWhereQueryString () : string {
+        return this._builder.buildWhereQueryString();
+    }
+
+    getWhereValueFactories () : readonly QueryValueFactory[] {
+        return this._builder.getWhereValueFactories();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setWhereFromQueryBuilder}
+     */
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        return this._builder.setWhereFromQueryBuilder(builder);
+    }
+
+
+    ///////////////////////         QueryLeftJoinable         ///////////////////////
+
+
+    buildLeftJoinQueryString () : string {
+        return this._builder.buildLeftJoinQueryString();
+    }
+
+    getLeftJoinValueFactories () : readonly QueryValueFactory[] {
+        return this._builder.getLeftJoinValueFactories();
+    }
+
+    appendLeftJoinExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : readonly QueryValueFactory[]
+    ) : void {
+        return this._builder.appendLeftJoinExpression(
+            queryFactory,
+            ...valueFactories
+        );
+    }
+
+    appendLeftJoinExpressionUsingQueryBuilder (
+        builder: QueryBuilder,
+        ...valueFactories : readonly QueryValueFactory[]
+    ) : void {
+        return this._builder.appendLeftJoinExpressionUsingQueryBuilder(
+            builder,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.leftJoinTable}
+     */
+    public leftJoinTable (fromTableName: string, fromColumnName: string, sourceTableName: string, sourceColumnName: string): void {
+        return this._builder.leftJoinTable(fromTableName, fromColumnName, sourceTableName, sourceColumnName);
+    }
+
+
+    ///////////////////////         QueryOrderable         ///////////////////////
+
+
+    buildOrderQueryString () : string {
+        return this._builder.buildOrderQueryString();
+    }
+
+    getOrderValueFactories () : readonly QueryStringFactory[] {
+        return this._builder.getOrderValueFactories();
+    }
+
+    appendOrderExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : readonly QueryStringFactory[]
+    ) : void {
+        return this._builder.appendOrderExpression(
+            queryFactory,
+            ...valueFactories
+        );
+    }
+
+    appendOrderExpressionUsingQueryBuilder (
+        builder: QueryBuilder,
+        ...valueFactories : readonly QueryStringFactory[]
+    ) : void {
+        return this._builder.appendOrderExpressionUsingQueryBuilder(
+            builder,
+            ...valueFactories
+        );
+    }
+
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setOrderBy}
+     */
+    public setOrderByTableFields (
+        sort      : Sort,
+        tableName : string,
+        fields    : readonly EntityField[]
+    ): void {
+        return this._builder.setOrderByTableFields(sort, tableName, fields);
+    }
+
+
+    ///////////////////////         QueryGroupable         ///////////////////////
+
+
+    buildGroupByQueryString () : string{
+        return this._builder.buildGroupByQueryString();
+    }
+
+    getGroupByValueFactories () : readonly QueryStringFactory[]{
+        return this._builder.getGroupByValueFactories();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.setGroupByColumn}
+     */
+    public setGroupByColumn (columnName: string): void {
+        return this._builder.setGroupByColumn(columnName);
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.getGroupByColumn}
+     */
+    public getGroupByColumn (): string | undefined {
+        return this._builder.getGroupByColumn();
+    }
 
 
 
@@ -353,7 +477,6 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
     }
 
 
-
     ///////////////////////         QueryBuilder         ///////////////////////
 
 
@@ -377,7 +500,7 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
      * @inheritDoc
      * @see {@link EntitySelectQueryBuilder.build}
      */
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return this._builder.build();
     }
 
@@ -393,7 +516,7 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
      * @inheritDoc
      * @see {@link EntitySelectQueryBuilder.buildQueryValues}
      */
-    public buildQueryValues (): any[] {
+    public buildQueryValues (): readonly any[] {
         return this._builder.buildQueryValues();
     }
 
@@ -401,7 +524,7 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
      * @inheritDoc
      * @see {@link EntitySelectQueryBuilder.getQueryValueFactories}
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         return this._builder.getQueryValueFactories();
     }
 

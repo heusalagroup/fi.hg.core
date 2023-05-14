@@ -1,15 +1,15 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { PgDeleteQueryBuilder } from "./PgDeleteQueryBuilder";
-import { DeleteQueryBuilder } from "../../../query/delete/DeleteQueryBuilder";
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { EntityField } from "../../../../types/EntityField";
 import { PgAndChainBuilder } from "../formulas/PgAndChainBuilder";
 import { Where } from "../../../../Where";
 import { ChainQueryBuilderUtils } from "../../../query/utils/ChainQueryBuilderUtils";
 import { PgOrChainBuilder } from "../formulas/PgOrChainBuilder";
+import { EntityDeleteQueryBuilder } from "../../../query/delete/EntityDeleteQueryBuilder";
 
-export class PgEntityDeleteQueryBuilder implements DeleteQueryBuilder {
+export class PgEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
 
     private _builder : PgDeleteQueryBuilder;
 
@@ -17,41 +17,43 @@ export class PgEntityDeleteQueryBuilder implements DeleteQueryBuilder {
         this._builder = new PgDeleteQueryBuilder();
     }
 
-    public valueOf () {
-        return this.toString();
+
+    ///////////////////////         EntityDeleteQueryBuilder         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    public buildAnd (
+        where     : Where,
+        tableName : string,
+        fields    : readonly EntityField[]
+    ) : PgAndChainBuilder {
+        const completeTableName = this.getTableNameWithPrefix(tableName);
+        const andBuilder = new PgAndChainBuilder();
+        ChainQueryBuilderUtils.buildChain(andBuilder, where, completeTableName, fields, () => new PgAndChainBuilder(), () => new PgOrChainBuilder());
+        return andBuilder;
     }
 
-    public toString () : string {
-        return `PgEntityDeleteQueryBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+
+    ///////////////////////         QueryWhereable         ///////////////////////
+
+
+    buildWhereQueryString () : string {
+        return this._builder.buildWhereQueryString();
     }
 
-    public build (): [ string, any[] ] {
-        return this._builder.build();
+    getWhereValueFactories () : readonly QueryValueFactory[] {
+        return this._builder.getWhereValueFactories();
     }
 
-    public buildQueryString (): string {
-        return this._builder.buildQueryString();
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        return this._builder.setWhereFromQueryBuilder(builder);
     }
 
-    public buildQueryValues (): any[] {
-        return this._builder.buildQueryValues();
-    }
 
-    public getQueryValueFactories (): (() => any)[] {
-        return this._builder.getQueryValueFactories();
-    }
+    ///////////////////////         TablePrefixable         ///////////////////////
 
-    public setFromTable (tableName: string): void {
-        return this._builder.setFromTable(tableName);
-    }
-
-    public getShortFromTable (): string {
-        return this._builder.getShortFromTable();
-    }
-
-    public getCompleteFromTable (): string {
-        return this._builder.getCompleteFromTable();
-    }
 
     public setTablePrefix (prefix: string): void {
         return this._builder.setTablePrefix(prefix);
@@ -61,23 +63,49 @@ export class PgEntityDeleteQueryBuilder implements DeleteQueryBuilder {
         return this._builder.getTablePrefix();
     }
 
-    public getCompleteTableName (tableName: string): string {
-        return this._builder.getCompleteTableName(tableName);
+    public getTableNameWithPrefix (tableName: string): string {
+        return this._builder.getTableNameWithPrefix(tableName);
     }
 
-    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
-        return this._builder.setWhereFromQueryBuilder(builder);
+    public setTableName (tableName: string): void {
+        return this._builder.setTableName(tableName);
     }
 
-    public buildAnd (
-        where     : Where,
-        tableName : string,
-        fields    : readonly EntityField[]
-    ) : PgAndChainBuilder {
-        const completeTableName = this.getCompleteTableName(tableName);
-        const andBuilder = new PgAndChainBuilder();
-        ChainQueryBuilderUtils.buildChain(andBuilder, where, completeTableName, fields, () => new PgAndChainBuilder(), () => new PgOrChainBuilder());
-        return andBuilder;
+    public getTableName (): string {
+        return this._builder.getTableName();
     }
+
+    public getCompleteTableName (): string {
+        return this._builder.getCompleteTableName();
+    }
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+    public valueOf () {
+        return this.toString();
+    }
+
+    public toString () : string {
+        return `PgEntityDeleteQueryBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+    }
+
+    public build (): QueryBuildResult {
+        return this._builder.build();
+    }
+
+    public buildQueryString (): string {
+        return this._builder.buildQueryString();
+    }
+
+    public buildQueryValues (): readonly any[] {
+        return this._builder.buildQueryValues();
+    }
+
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
+        return this._builder.getQueryValueFactories();
+    }
+
 
 }

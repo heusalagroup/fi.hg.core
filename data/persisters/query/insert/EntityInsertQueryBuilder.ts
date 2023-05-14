@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { InsertQueryBuilder } from "./InsertQueryBuilder";
+import { QueryBuildResult, QueryValueFactory } from "../types/QueryBuilder";
 
 /**
  * Defines an interface for a builder of relational database create query.
@@ -76,7 +77,7 @@ export interface EntityInsertQueryBuilder extends InsertQueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.build}
      */
-    build () : [string, any[]];
+    build () : QueryBuildResult;
 
     /**
      * @inheritDoc
@@ -88,13 +89,13 @@ export interface EntityInsertQueryBuilder extends InsertQueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.buildQueryValues}
      */
-    buildQueryValues () : any[];
+    buildQueryValues () : readonly any[];
 
     /**
      * @inheritDoc
      * @see {@link QueryBuilder.getQueryValueFactories}
      */
-    getQueryValueFactories () : (() => any)[];
+    getQueryValueFactories () : readonly QueryValueFactory[];
 
 
 }

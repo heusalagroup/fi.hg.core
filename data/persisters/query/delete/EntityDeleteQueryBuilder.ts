@@ -1,32 +1,39 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../types/QueryBuilder";
-import { QueryWhereable } from "../types/QueryWhereable";
-import { TablePrefixable } from "../types/TablePrefixable";
+import { DeleteQueryBuilder } from "./DeleteQueryBuilder";
 import { Where } from "../../../Where";
 import { EntityField } from "../../../types/EntityField";
 import { ChainQueryBuilder } from "../types/ChainQueryBuilder";
 
-export interface DeleteQueryBuilder extends QueryWhereable, TablePrefixable, QueryBuilder {
+export interface EntityDeleteQueryBuilder extends DeleteQueryBuilder {
 
+
+
+    ///////////////////////         DeleteQueryBuilder         ///////////////////////
 
 
 
     ///////////////////////         QueryWhereable         ///////////////////////
 
-    buildWhereQueryString () : string;
-
-    getWhereValueFactories () : readonly QueryValueFactory[];
-
-    setWhereFromQueryBuilder (builder: QueryBuilder): void;
-
-    ///////////////////////         TablePrefixable         ///////////////////////
-
 
     /**
      * @inheritDoc
      */
-    setTablePrefix (prefix: string) : void;
+    setWhereFromQueryBuilder (builder: QueryBuilder): void;
+
+    /**
+     * @inheritDoc
+     */
+    buildAnd (
+        where     : Where,
+        tableName : string,
+        fields    : readonly EntityField[]
+    ) : ChainQueryBuilder;
+
+
+    ///////////////////////         TablePrefixable         ///////////////////////
+
 
     /**
      * @inheritDoc
@@ -36,7 +43,17 @@ export interface DeleteQueryBuilder extends QueryWhereable, TablePrefixable, Que
     /**
      * @inheritDoc
      */
+    setTablePrefix (prefix: string) : void;
+
+    /**
+     * @inheritDoc
+     */
     getTableNameWithPrefix (tableName : string) : string;
+
+    /**
+     * @inheritDoc
+     */
+    getTableName (): string;
 
     /**
      * @inheritDoc
@@ -45,11 +62,6 @@ export interface DeleteQueryBuilder extends QueryWhereable, TablePrefixable, Que
 
     /**
      * @inheritDoc
-     */
-    getTableName (): string;
-
-    /**
-     * Get the complete table name where to insert rows including the prefix
      */
     getCompleteTableName (): string;
 

@@ -1,8 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { map } from "../../../../../functions/map";
-import { PH_TABLE_COLUMN, PH_TABLE_COLUMN_AS_TEXT, PH_VALUE } from "../../constants/queries";
+import { MY_PH_TABLE_COLUMN, MY_PH_TABLE_COLUMN_AS_TEXT, MY_PH_VALUE } from "../../constants/mysql-queries";
 
 /**
  * This generates formulas like `JSON_OBJECT(property, table.column[, property2, table2.column2, ...])`
@@ -10,7 +10,7 @@ import { PH_TABLE_COLUMN, PH_TABLE_COLUMN_AS_TEXT, PH_VALUE } from "../../consta
 export class MySqlJsonObjectQueryBuilder implements QueryBuilder {
 
     private readonly _keyValueQueries : (() => string)[];
-    private readonly _keyValueValues : (() => any)[];
+    private readonly _keyValueValues : QueryValueFactory[];
 
     public constructor () {
         this._keyValueQueries = [];
@@ -25,7 +25,7 @@ export class MySqlJsonObjectQueryBuilder implements QueryBuilder {
         return `JSON_OBJECT "${this._keyValueQueries.map(item => item.toString()).join('')}" with ${this._keyValueValues.map(item=>item()).join(' ')}`;
     }
 
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
@@ -40,7 +40,7 @@ export class MySqlJsonObjectQueryBuilder implements QueryBuilder {
         tableName: string,
         columnName: string
     ) {
-        this._keyValueQueries.push(() => `${PH_VALUE}, ${PH_TABLE_COLUMN}`);
+        this._keyValueQueries.push(() => `${MY_PH_VALUE}, ${MY_PH_TABLE_COLUMN}`);
         this._keyValueValues.push(() => propertyName);
         this._keyValueValues.push(() => tableName);
         this._keyValueValues.push(() => columnName);
@@ -57,7 +57,7 @@ export class MySqlJsonObjectQueryBuilder implements QueryBuilder {
         tableName: string,
         columnName: string
     ) {
-        this._keyValueQueries.push(() => `${PH_VALUE}, ${PH_TABLE_COLUMN_AS_TEXT}`);
+        this._keyValueQueries.push(() => `${MY_PH_VALUE}, ${MY_PH_TABLE_COLUMN_AS_TEXT}`);
         this._keyValueValues.push(() => propertyName);
         this._keyValueValues.push(() => tableName);
         this._keyValueValues.push(() => columnName);
@@ -68,11 +68,11 @@ export class MySqlJsonObjectQueryBuilder implements QueryBuilder {
         return `JSON_OBJECT(${keyValueQueries.join(', ')})`;
     }
 
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         return map(this._keyValueValues, (f) => f());
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return this._keyValueValues;
     }
 

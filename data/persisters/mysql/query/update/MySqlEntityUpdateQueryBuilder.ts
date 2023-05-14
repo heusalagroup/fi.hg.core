@@ -6,11 +6,10 @@ import { MySqlUpdateQueryBuilder } from "./MySqlUpdateQueryBuilder";
 import { EntityUpdateQueryBuilder } from "../../../query/update/EntityUpdateQueryBuilder";
 import { Entity } from "../../../../Entity";
 import { forEach } from "../../../../../functions/forEach";
-import { map } from "../../../../../functions/map";
 import { has } from "../../../../../functions/has";
 import { find } from "../../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
-import { filter } from "../../../../../functions/filter";
+import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../../query/types/QueryBuilder";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -32,13 +31,11 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
     }
 
 
+    ///////////////////////         EntityUpdateQueryBuilder         ///////////////////////
+
 
     /**
-     *
-     * @param fields
-     * @param temporalProperties
-     * @param ignoreProperties
-     * @param entity
+     * @inheritDoc
      */
     public appendEntity<T extends Entity> (
         entity              : T,
@@ -47,80 +44,65 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
         ignoreProperties    : readonly string[],
     ) : void {
         const timeDefinitions : readonly string[] = ['TIMESTAMP', 'DATETIME', 'DATE', 'TIME'];
-        const itemBuilder = MySqlListQueryBuilder.create();
-
-        const properties : string[] = map(
-            filter(
-                fields,
-                (field: EntityField) : boolean => {
-                    const { propertyName } = field;
-                    return !ignoreProperties.includes(propertyName);
-                }
-            ),
-            (field: EntityField) : string => {
-                const { propertyName, columnName } = field;
-                this._builder.addColumnName(columnName);
-                return propertyName;
-            }
-        );
-
+        const setAssigmentBuilder = MySqlListQueryBuilder.create();
         forEach(
-            properties,
-            (propertyName : string) => {
-
-                const field = find(fields, (item) => item.propertyName === propertyName);
-                if (!field) throw new TypeError(`Field info not found for property "${propertyName}"`);
-
-                const { columnDefinition } = field;
+            fields,
+            (field: EntityField) => {
+                const { propertyName, columnName, columnDefinition } = field;
+                if (ignoreProperties.includes(propertyName)) return;
 
                 const temporalProperty : TemporalProperty | undefined = find(
                     temporalProperties,
                     (item: TemporalProperty) : boolean => item.propertyName === propertyName
                 );
                 const temporalType = temporalProperty?.temporalType;
-
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
-
                 if ( temporalType || (columnDefinition && timeDefinitions.includes(columnDefinition)) ) {
-                    itemBuilder.setParamFromTimestampString(value);
+                    setAssigmentBuilder.setAssignmentWithParamAsTimestamp(columnName, value);
                 } else {
-                    itemBuilder.setParam(value);
+                    setAssigmentBuilder.setAssignmentWithParam(columnName, value);
                 }
-
             }
         );
-
-        this._builder.appendValueListUsingQueryBuilder(itemBuilder);
-
+        this._builder.appendSetListUsingQueryBuilder(setAssigmentBuilder);
     }
 
-    public appendEntityList<T extends Entity> (
-        list                : readonly T[],
-        fields              : readonly EntityField[],
-        temporalProperties  : readonly TemporalProperty[],
-        ignoreProperties    : readonly string[],
-    ) : void {
-        forEach(
-            list,
-            (item) => this.appendEntity(item, fields, temporalProperties, ignoreProperties)
-        );
-    }
+
 
     ///////////////////////         UpdateQueryBuilder         ///////////////////////
 
 
+    public addPrefixFactory (queryFactory: QueryStringFactory, ...valueFactories: readonly QueryValueFactory[]): void {
+        this._builder.addPrefixFactory(queryFactory, ...valueFactories);
+    }
+
+    public addSetFactory (queryFactory: QueryStringFactory, ...valueFactories: readonly QueryValueFactory[]): void {
+        this._builder.addSetFactory(queryFactory, ...valueFactories);
+    }
+
+    public appendSetListUsingQueryBuilder (builder: QueryBuilder): void {
+        this._builder.appendSetListUsingQueryBuilder(builder);
+    }
+
+
+    ///////////////////////         TableWhereable         ///////////////////////
+
+
+    buildWhereQueryString () : string {
+        return this._builder.buildWhereQueryString();
+    }
+
+    getWhereValueFactories () : readonly QueryValueFactory[] {
+        return this._builder.getWhereValueFactories();
+    }
+
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        this._builder.setWhereFromQueryBuilder(builder);
+    }
 
 
     ///////////////////////         TablePrefixable         ///////////////////////
 
-
-    /**
-     * @inheritDoc
-     * @see {@link EntityUpdateQueryBuilder.getTablePrefix}
-     */
-    public getTablePrefix (): string {
-        return this._builder.getTablePrefix();
-    }
 
     /**
      * @inheritDoc
@@ -132,10 +114,18 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
 
     /**
      * @inheritDoc
+     * @see {@link EntityUpdateQueryBuilder.getTablePrefix}
+     */
+    public getTablePrefix (): string {
+        return this._builder.getTablePrefix();
+    }
+
+    /**
+     * @inheritDoc
      * @see {@link EntityUpdateQueryBuilder.getCompleteFromTable}
      */
-    public getTableName (): string {
-        return this._builder.getTableName();
+    public getTableNameWithPrefix (tableName : string): string {
+        return this._builder.getTableNameWithPrefix(tableName);
     }
 
     /**
@@ -150,16 +140,16 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
      * @inheritDoc
      * @see {@link EntityUpdateQueryBuilder.getCompleteFromTable}
      */
-    public getFullTableName (): string {
-        return this._builder.getFullTableName();
+    public getTableName (): string {
+        return this._builder.getTableName();
     }
 
     /**
      * @inheritDoc
      * @see {@link EntityUpdateQueryBuilder.getCompleteFromTable}
      */
-    public getTableNameWithPrefix (tableName : string): string {
-        return this._builder.getTableNameWithPrefix(tableName);
+    public getCompleteTableName (): string {
+        return this._builder.getCompleteTableName();
     }
 
 
@@ -187,7 +177,7 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
      * @inheritDoc
      * @see {@link EntityUpdateQueryBuilder.build}
      */
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return this._builder.build();
     }
 
@@ -203,7 +193,7 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
      * @inheritDoc
      * @see {@link EntityUpdateQueryBuilder.buildQueryValues}
      */
-    public buildQueryValues (): any[] {
+    public buildQueryValues () : readonly any[] {
         return this._builder.buildQueryValues();
     }
 
@@ -211,8 +201,9 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
      * @inheritDoc
      * @see {@link EntityUpdateQueryBuilder.getQueryValueFactories}
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         return this._builder.getQueryValueFactories();
     }
+
 
 }

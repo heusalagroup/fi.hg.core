@@ -2,21 +2,18 @@
 
 import { UpdateQueryBuilder } from "../../../query/update/UpdateQueryBuilder";
 import {
-    PH_TABLE_NAME,
-    PH_VALUE
-} from "../../constants/queries";
+    MY_PH_TABLE_NAME
+} from "../../constants/mysql-queries";
 import { BaseUpdateQueryBuilder } from "../../../query/update/BaseUpdateQueryBuilder";
-import { map } from "../../../../../functions/map";
-import { reduce } from "../../../../../functions/reduce";
-import { has } from "../../../../../functions/has";
+import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../../query/types/QueryBuilder";
 
-export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder implements UpdateQueryBuilder {
+export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder {
 
     protected constructor () {
         super();
         this.addPrefixFactory(
-            () => `UDDATE ${PH_TABLE_NAME}`,
-            () => this.getFullTableName()
+            () => `UPDATE ${MY_PH_TABLE_NAME}`,
+            () => this.getCompleteTableName()
         );
     }
 
@@ -24,62 +21,45 @@ export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder implements U
         return new MySqlUpdateQueryBuilder();
     }
 
+
+    ///////////////////////      BaseUpdateQueryBuilder      ///////////////////////
+
+
+
+
+
+    ///////////////////////      UpdateQueryBuilder      ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
     public addPrefixFactory (
-        queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        queryFactory  : QueryStringFactory,
+        ...valueFactories : readonly QueryValueFactory[]
     ) : void {
         super.addPrefixFactory(queryFactory, ...valueFactories);
     }
 
-    public addValueFactory (
-        queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+    /**
+     * @inheritDoc
+     */
+    public addSetFactory (
+        queryFactory  : QueryStringFactory,
+        ...valueFactories : readonly QueryValueFactory[]
     ) : void {
-        super.addValueFactory(queryFactory, ...valueFactories);
+        super.addSetFactory(queryFactory, ...valueFactories);
     }
 
     /**
      * @inheritDoc
-     * @see {@link UpdateQueryBuilder.includeColumn}
      */
-    public appendValueList (
-        list: readonly any[]
-    ) : void {
-        const queryString = `(${map(list, () => PH_VALUE).join(', ')})`;
-        const valueFactories = map(list, (item) => () => item);
-        this.addValueFactory(
-            () : string => queryString,
-            ...valueFactories
-        );
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link UpdateQueryBuilder.includeColumn}
-     */
-    public appendValueObject (
-        obj: {readonly [key: string] : any}
-    ) : void {
-        const columnNames = this.getColumnNames();
-        if (!columnNames?.length) throw new TypeError(`There must be at least one column name`);
-        this.appendValueList(
-            reduce(
-                columnNames,
-                (list: any[], columnName: string) : any[] => {
-                    if (has(obj, columnName)) {
-                        list.push(obj[columnName]);
-                    } else {
-                        list.push(null);
-                    }
-                    return list;
-                },
-                []
-            )
-        );
+    public appendSetListUsingQueryBuilder (builder: QueryBuilder) : void {
+        super.appendSetListUsingQueryBuilder(builder);
     }
 
 
-    ///////////////////////      UpdateQueryBuilder      ///////////////////////
+    ///////////////////////      TablePrefixable      ///////////////////////
 
 
     /**
@@ -118,8 +98,8 @@ export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder implements U
      * @inheritDoc
      * @see {@link UpdateQueryBuilder.getCompleteFromTable}
      */
-    public getFullTableName (): string {
-        return super.getFullTableName();
+    public getCompleteTableName (): string {
+        return super.getCompleteTableName();
     }
 
     /**
@@ -155,7 +135,7 @@ export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder implements U
      * @inheritDoc
      * @see {@link UpdateQueryBuilder.build}
      */
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return super.build();
     }
 
@@ -171,7 +151,7 @@ export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder implements U
      * @inheritDoc
      * @see {@link UpdateQueryBuilder.buildQueryValues}
      */
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         return super.buildQueryValues();
     }
 
@@ -179,7 +159,7 @@ export class MySqlUpdateQueryBuilder extends BaseUpdateQueryBuilder implements U
      * @inheritDoc
      * @see {@link UpdateQueryBuilder.getQueryValueFactories}
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         return super.getQueryValueFactories();
     }
 

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { EntityField } from "../../../../types/EntityField";
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { PgRowBuilder } from "./PgRowBuilder";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
 
@@ -18,12 +18,13 @@ export class PgRowEntityBuilder implements QueryBuilder {
         this._jsonBuilder = new PgRowBuilder();
     }
 
-    public valueOf () {
-        return this.toString();
-    }
-
-    public toString () : string {
-        return `PgRowEntityBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+    public static create (
+        tableName : string,
+        fields    : readonly EntityField[]
+    ) : PgRowEntityBuilder {
+        const f = new PgRowEntityBuilder();
+        f.setEntityFieldsFromTable(tableName, fields);
+        return f;
     }
 
     public setEntityFieldsFromTable (
@@ -40,16 +41,19 @@ export class PgRowEntityBuilder implements QueryBuilder {
         );
     }
 
-    public static create (
-        tableName : string,
-        fields    : readonly EntityField[]
-    ) : PgRowEntityBuilder {
-        const f = new PgRowEntityBuilder();
-        f.setEntityFieldsFromTable(tableName, fields);
-        return f;
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+    public valueOf () {
+        return this.toString();
     }
 
-    public build (): [ string, any[] ] {
+    public toString () : string {
+        return `PgRowEntityBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+    }
+
+    public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -57,11 +61,11 @@ export class PgRowEntityBuilder implements QueryBuilder {
         return this._jsonBuilder.buildQueryString();
     }
 
-    public buildQueryValues (): any[] {
+    public buildQueryValues (): readonly any[] {
         return this._jsonBuilder.buildQueryValues();
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         return this._jsonBuilder.getQueryValueFactories();
     }
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { PgQueryUtils } from "../../utils/PgQueryUtils";
 import { map } from "../../../../../functions/map";
 
@@ -26,7 +26,7 @@ export class PgParameterListBuilder implements QueryBuilder {
         return `PgParameterListBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
     }
 
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
@@ -40,11 +40,11 @@ export class PgParameterListBuilder implements QueryBuilder {
         return map(this._value, () => placeholder).join(', ');
     }
 
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         return this._value ? map(this._value, (item) => item) : [];
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return map(this._value, (item) => () => item);
     }
 

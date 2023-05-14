@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { SelectQueryBuilder } from "./SelectQueryBuilder";
-import { QueryBuilder } from "../types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../types/QueryBuilder";
 import { EntityField } from "../../../types/EntityField";
 import { TemporalProperty } from "../../../types/TemporalProperty";
 import { EntityRelationOneToMany } from "../../../types/EntityRelationOneToMany";
@@ -10,115 +10,21 @@ import { EntityRelationManyToOne } from "../../../types/EntityRelationManyToOne"
 import { Where } from "../../../Where";
 import { ChainQueryBuilder } from "../types/ChainQueryBuilder";
 import { Sort } from "../../../Sort";
-import { TablePrefixable } from "../types/TablePrefixable";
+import { QueryEntityWhereable } from "../types/QueryEntityWhereable";
+import { QueryEntityResultable } from "../types/QueryEntityResultable";
+import { QueryEntityOrderable } from "../types/QueryEntityOrderable";
 
 /**
  * Defines an interface for a builder of relational database read query from
  * entity types.
  */
-export interface EntitySelectQueryBuilder extends SelectQueryBuilder {
-
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeColumn}
-     */
-    includeColumn (tableName: string, columnName: string, asColumnName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeColumnAsText}
-     */
-    includeColumnAsText (tableName: string, columnName: string, asColumnName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeColumnAsTime}
-     */
-    includeColumnAsTime (tableName: string, columnName: string, asColumnName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeColumnAsDate}
-     */
-    includeColumnAsDate (tableName: string, columnName: string, asColumnName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeColumnAsTimestamp}
-     */
-    includeColumnAsTimestamp (tableName: string, columnName: string, asColumnName: string) : void;
-
-    /**
-     * @deprecated Use EntitySelectQueryBuilder.includeEntityFields instead of
-     * this method.
-     *
-     * @inheritDoc
-     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
-     * @see {@link SelectQueryBuilder.includeAllColumnsFromTable}
-     */
-    includeAllColumnsFromTable (tableName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeColumnFromQueryBuilder}
-     */
-    includeColumnFromQueryBuilder (builder: QueryBuilder, asColumnName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.includeFormulaByString}
-     */
-    includeFormulaByString (formula: string, asColumnName: string): void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.setGroupByColumn}
-     */
-    setGroupByColumn (columnName: string) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.leftJoinTable}
-     */
-    leftJoinTable (
-        fromTableName : string,
-        fromColumnName : string,
-        sourceTableName : string,
-        sourceColumnName : string
-    ) : void;
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.setWhereFromQueryBuilder}
-     */
-    setWhereFromQueryBuilder (builder: QueryBuilder): void;
-
-    /**
-     * Include fields from an entity in to the query.
-     *
-     * @param tableName The table name
-     * @param fields Entity field definitions
-     * @param temporalProperties Temporal property definitions
-     */
-    includeEntityFields (
-        tableName           : string,
-        fields              : readonly EntityField[],
-        temporalProperties  : readonly TemporalProperty[]
-    ): void;
-
-    /**
-     * Set order of fields.
-     *
-     * @param sort The sorting configuration
-     * @param tableName The table name
-     * @param fields Entity field definitions
-     */
-    setOrderBy (
-        sort      : Sort,
-        tableName : string,
-        fields    : readonly EntityField[]
-    ): void;
+export interface EntitySelectQueryBuilder
+    extends
+        SelectQueryBuilder,
+        QueryEntityWhereable,
+        QueryEntityResultable,
+        QueryEntityOrderable
+{
 
     /**
      * Append a relation from one entity to many, e.g. the property will be an
@@ -244,18 +150,152 @@ export interface EntitySelectQueryBuilder extends SelectQueryBuilder {
         fields: readonly EntityField[]
     ): void;
 
+
+    ///////////////////////         QueryEntityResultable         ///////////////////////
+
+
+    includeEntityFields (
+        tableName           : string,
+        fields              : readonly EntityField[],
+        temporalProperties  : readonly TemporalProperty[]
+    ): void;
+
+
+    ///////////////////////         TableResultable         ///////////////////////
+
+
+
     /**
-     * Build a chain of "and" operations for filtering criteria.
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumn}
+     */
+    includeColumn (tableName: string, columnName: string, asColumnName: string) : void;
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsText}
+     */
+    includeColumnAsText (tableName: string, columnName: string, asColumnName: string) : void;
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsTime}
+     */
+    includeColumnAsTime (tableName: string, columnName: string, asColumnName: string) : void;
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsDate}
+     */
+    includeColumnAsDate (tableName: string, columnName: string, asColumnName: string) : void;
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnAsTimestamp}
+     */
+    includeColumnAsTimestamp (tableName: string, columnName: string, asColumnName: string) : void;
+
+    /**
+     * @deprecated Use EntitySelectQueryBuilder.includeEntityFields instead of
+     * this method.
      *
-     * @param where The criteria to filter entities
-     * @param tableName The table name without prefix
+     * @inheritDoc
+     * @see {@link EntitySelectQueryBuilder.includeEntityFields}
+     * @see {@link SelectQueryBuilder.includeAllColumnsFromTable}
+     */
+    includeAllColumnsFromTable (tableName: string) : void;
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeColumnFromQueryBuilder}
+     */
+    includeColumnFromQueryBuilder (builder: QueryBuilder, asColumnName: string) : void;
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.includeFormulaByString}
+     */
+    includeFormulaByString (formula: string, asColumnName: string): void;
+
+
+    /**
+     * Include fields from an entity in to the query.
+     *
+     * @param tableName The table name
      * @param fields Entity field definitions
+     * @param temporalProperties Temporal property definitions
+     */
+    includeEntityFields (
+        tableName           : string,
+        fields              : readonly EntityField[],
+        temporalProperties  : readonly TemporalProperty[]
+    ): void;
+
+
+    ///////////////////////         QueryGroupable         ///////////////////////
+
+
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setGroupByColumn}
+     */
+    setGroupByColumn (columnName: string) : void;
+
+
+    ///////////////////////         QueryOrderable         ///////////////////////
+
+
+    /**
+     * Set order of fields.
+     *
+     * @param sort The sorting configuration
+     * @param tableName The table name
+     * @param fields Entity field definitions
+     */
+    setOrderByTableFields (
+        sort      : Sort,
+        tableName : string,
+        fields    : readonly EntityField[]
+    ): void;
+
+
+    ///////////////////////         QueryLeftJoinable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.leftJoinTable}
+     */
+    leftJoinTable (
+        fromTableName : string,
+        fromColumnName : string,
+        sourceTableName : string,
+        sourceColumnName : string
+    ) : void;
+
+
+    ///////////////////////         QueryEntityWhereable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
      */
     buildAnd (
         where     : Where,
         tableName : string,
         fields    : readonly EntityField[]
     ) : ChainQueryBuilder;
+
+
+    ///////////////////////         QueryWhereable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setWhereFromQueryBuilder}
+     */
+    setWhereFromQueryBuilder (builder: QueryBuilder): void;
 
 
     ///////////////////////         TablePrefixable         ///////////////////////
@@ -322,7 +362,7 @@ export interface EntitySelectQueryBuilder extends SelectQueryBuilder {
      * @see {@link QueryBuilder.build}
      * @see {@link SelectQueryBuilder.build}
      */
-    build () : [string, any[]];
+    build () : QueryBuildResult;
 
     /**
      * @inheritDoc
@@ -336,14 +376,14 @@ export interface EntitySelectQueryBuilder extends SelectQueryBuilder {
      * @see {@link QueryBuilder.buildQueryValues}
      * @see {@link SelectQueryBuilder.buildQueryValues}
      */
-    buildQueryValues () : any[];
+    buildQueryValues () : readonly any[];
 
     /**
      * @inheritDoc
      * @see {@link QueryBuilder.getQueryValueFactories}
      * @see {@link SelectQueryBuilder.getQueryValueFactories}
      */
-    getQueryValueFactories () : (() => any)[];
+    getQueryValueFactories () : readonly QueryValueFactory[];
 
 
 

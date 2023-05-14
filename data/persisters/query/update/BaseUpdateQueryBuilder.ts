@@ -1,25 +1,23 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { UpdateQueryBuilder } from "./UpdateQueryBuilder";
 import { map } from "../../../../functions/map";
 import { forEach } from "../../../../functions/forEach";
-import { QueryBuilder } from "../types/QueryBuilder";
-import { PH_COLUMN, PH_TABLE_COLUMN, PH_VALUE } from "../../mysql/constants/queries";
+import { UpdateQueryBuilder } from "./UpdateQueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../types/QueryBuilder";
 
 /**
  * Defines an abstract class for a builder of relational database create query.
  */
 export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
 
+    private readonly _prefixQueries : QueryStringFactory[];
+    private readonly _prefixValues : QueryValueFactory[];
+    private readonly _setQueries : QueryStringFactory[];
+    private readonly _setValues : QueryValueFactory[];
 
-    private readonly _prefixQueries : (() => string)[];
-    private readonly _prefixValues : (() => any)[];
-    private readonly _inputQueries : (() => string)[];
-    private readonly _inputValues : (() => any)[];
-    private readonly _columnNames : string[];
-
-    private _intoTableName : string | undefined;
+    private _tableName : string | undefined;
     private _tablePrefix : string = '';
+    private _where : QueryBuilder | undefined;
 
     /**
      * Constructs the internal data values for SELECT queries.
@@ -27,32 +25,24 @@ export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
      * @protected
      */
     protected constructor () {
-        this._columnNames = [];
-        this._intoTableName = undefined;
+        this._tableName = undefined;
         this._tablePrefix = '';
         this._prefixQueries = [];
         this._prefixValues = [];
-        this._inputQueries = [];
-        this._inputValues = [];
+        this._setQueries = [];
+        this._setValues = [];
     }
 
-    public addColumnName (
-        name: string
-    ) : void {
-        if (this._columnNames.includes(name)) {
-            // TODO: Throw an exception and fix uses?
-        } else {
-            this._columnNames.push(name);
-        }
-    }
 
-    public getColumnNames () : readonly string[] {
-        return this._columnNames;
-    }
+    ///////////////////////      UpdateQueryBuilder      ///////////////////////
 
+
+    /**
+     * @inheritDoc
+     */
     public addPrefixFactory (
-        queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        queryFactory  : QueryStringFactory,
+        ...valueFactories : readonly QueryValueFactory[]
     ) : void {
         this._prefixQueries.push(queryFactory);
         forEach(
@@ -63,32 +53,55 @@ export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
         );
     }
 
-    public addValueFactory (
-        queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+    /**
+     * @inheritDoc
+     */
+    public addSetFactory (
+        queryFactory  : QueryStringFactory,
+        ...valueFactories : readonly QueryValueFactory[]
     ) : void {
-        this._inputQueries.push(queryFactory);
+        this._setQueries.push(queryFactory);
         forEach(
             valueFactories,
             (factory) => {
-                this._inputValues.push(factory);
+                this._setValues.push(factory);
             }
         );
     }
 
-    public abstract appendValueList (list: any[]) : void;
-
-    public abstract appendValueObject (list: {readonly [key: string] : any}) : void;
-
-    public appendValueListUsingQueryBuilder (builder: QueryBuilder) : void {
-        this.addValueFactory(
-            () => `(${builder.buildQueryString()})`,
+    /**
+     * @inheritDoc
+     */
+    public appendSetListUsingQueryBuilder (builder: QueryBuilder) : void {
+        this.addSetFactory(
+            () => builder.buildQueryString(),
             ...builder.getQueryValueFactories()
         );
     }
 
 
-    ///////////////////////      UpdateQueryBuilder      ///////////////////////
+    ///////////////////////         QueryWhereable         ///////////////////////
+
+
+
+    buildWhereQueryString () : string {
+        return this._where ? this._where.buildQueryString() : '';
+    }
+
+    getWhereValueFactories () : readonly QueryValueFactory[] {
+        return this._where ? this._where.getQueryValueFactories() : [];
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setWhereFromQueryBuilder}
+     */
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        this._where = builder;
+    }
+
+
+    ///////////////////////      TablePrefixable      ///////////////////////
 
 
     /**
@@ -112,8 +125,8 @@ export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
      * @see {@link UpdateQueryBuilder.getTablePrefix}
      */
     public getTableName (): string {
-        if (!this._intoTableName) throw new TypeError('The table name where to update entities has not been configured in the query builder');
-        return this._intoTableName;
+        if (!this._tableName) throw new TypeError('The table name where to update entities has not been configured in the query builder');
+        return this._tableName;
     }
 
     /**
@@ -121,16 +134,16 @@ export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
      * @see {@link UpdateQueryBuilder.setFromTable}
      */
     public setTableName (tableName: string) {
-        this._intoTableName = tableName;
+        this._tableName = tableName;
     }
 
     /**
      * @inheritDoc
      * @see {@link UpdateQueryBuilder.getCompleteFromTable}
      */
-    public getFullTableName (): string {
-        if (!this._intoTableName) throw new TypeError(`The table where to update rows has not been initialized yet`);
-        return this.getTableNameWithPrefix(this._intoTableName);
+    public getCompleteTableName (): string {
+        if (!this._tableName) throw new TypeError(`The table where to update rows has not been initialized yet`);
+        return this.getTableNameWithPrefix(this._tableName);
     }
 
     /**
@@ -162,7 +175,7 @@ export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
     /**
      * @inheritDoc
      */
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
@@ -172,33 +185,33 @@ export abstract class BaseUpdateQueryBuilder implements UpdateQueryBuilder {
     public buildQueryString (): string {
         const prefixes = map(this._prefixQueries, (f) => f());
         if (!prefixes.length) throw new TypeError('No prefix factories detected for update query builder! This must be an error.');
-        const inputValues = map(this._inputQueries, (f) => f());
-        if (!inputValues.length) throw new TypeError('No value placeholders detected for update query builder! This must be an error.');
-        return `${prefixes.join(' ')} (${this._columnNames.map(() => PH_COLUMN).join(', ')}) VALUES ${inputValues.join(', ')}`;
+        const setQuery = map(this._setQueries, (f) => f());
+        if (!setQuery.length) throw new TypeError('No value placeholders detected for update query builder! This must be an error.');
+        const where = this._where ? this._where.buildQueryString() : '';
+        return `${
+            prefixes.join(' ')
+        } SET ${
+            setQuery.join(', ')
+        }${
+            where ? ` WHERE ${where}` : ''
+        }`;
     }
 
     /**
      * @inheritDoc
      */
-    public buildQueryValues (): any[]  {
-        const prefixValues = map(this._prefixValues, (f) => f());
-        const columnValues = map(this._columnNames, (name: string) : string => name);
-        const paramValues = map(this._inputValues, (f) => f());
-        return [
-            ...prefixValues,
-            ...columnValues,
-            ...paramValues,
-        ];
+    public buildQueryValues () : readonly any[]  {
+        return map(this.getQueryValueFactories(), (f) => f());
     }
 
     /**
      * @inheritDoc
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         return [
             ...this._prefixValues,
-            ...map(this._columnNames, (name : string) => (() : string => name) ),
-            ...this._inputValues
+            ...this._setValues,
+            ...(this._where ? this._where.getQueryValueFactories() : [])
         ];
     }
 

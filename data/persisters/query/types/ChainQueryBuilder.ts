@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "./QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "./QueryBuilder";
 
 export type ChainQueryBuilderFactory = () => ChainQueryBuilder;
 
@@ -10,24 +10,6 @@ export type ChainQueryBuilderFactory = () => ChainQueryBuilder;
  * `expression AND expression2 [ AND ... ]`
  */
 export interface ChainQueryBuilder extends QueryBuilder {
-
-    /**
-     * @inheritDoc
-     */
-    build () : [string, any[]];
-
-    /**
-     * @inheritDoc     */
-    buildQueryString () : string;
-
-    /**
-     * @inheritDoc     */
-    buildQueryValues () : any[];
-
-    /**
-     * @inheritDoc
-     */
-    getQueryValueFactories () : (() => any)[];
 
     /**
      * This will add an expression like `table.column IN (value1, value2, ...)`,
@@ -112,5 +94,28 @@ export interface ChainQueryBuilder extends QueryBuilder {
     setFromQueryBuilder (
         builder: QueryBuilder
     ) : void;
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    build () : QueryBuildResult;
+
+    /**
+     * @inheritDoc     */
+    buildQueryString () : string;
+
+    /**
+     * @inheritDoc     */
+    buildQueryValues () : readonly any[];
+
+    /**
+     * @inheritDoc
+     */
+    getQueryValueFactories () : readonly QueryValueFactory[];
+
 
 }

@@ -1,8 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { DeleteQueryBuilder } from "../../../query/delete/DeleteQueryBuilder";
-import { PH_FROM_TABLE } from "../../constants/queries";
+import { MY_PH_FROM_TABLE } from "../../constants/mysql-queries";
 
 export class MySqlDeleteQueryBuilder implements DeleteQueryBuilder {
 
@@ -16,6 +16,74 @@ export class MySqlDeleteQueryBuilder implements DeleteQueryBuilder {
         this._tablePrefix = '';
     }
 
+
+    ///////////////////////         QueryWhereable         ///////////////////////
+
+
+    buildWhereQueryString () : string {
+        return this._where ? this._where.buildQueryString() : '';
+    }
+
+    getWhereValueFactories () : readonly QueryValueFactory[] {
+        return this._where ? this._where.getQueryValueFactories() : [];
+    }
+
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        this._where = builder;
+    }
+
+
+    ///////////////////////         TablePrefixable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    public setTablePrefix (prefix: string) {
+        this._tablePrefix = prefix;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getTablePrefix (): string {
+        return this._tablePrefix;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getTableNameWithPrefix (tableName : string) : string {
+        return `${this._tablePrefix}${tableName}`;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setTableName (tableName: string) {
+        this._tableName = tableName;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getTableName (): string {
+        if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
+        return this._tableName;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public getCompleteTableName (): string {
+        if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
+        return this.getTableNameWithPrefix(this._tableName);
+    }
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
     public valueOf () {
         return this.toString();
     }
@@ -24,61 +92,32 @@ export class MySqlDeleteQueryBuilder implements DeleteQueryBuilder {
         return `DELETE "${this._tablePrefix}${this._tableName}" ${this._where}`;
     }
 
-    public setTablePrefix (prefix: string) {
-        this._tablePrefix = prefix;
-    }
-
-    public getTablePrefix (): string {
-        return this._tablePrefix;
-    }
-
-    public getCompleteTableName (tableName : string) : string {
-        return `${this._tablePrefix}${tableName}`;
-    }
-
-    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
-        this._where = builder;
-    }
-
-    public setFromTable (tableName: string) {
-        this._tableName = tableName;
-    }
-
-    public getCompleteFromTable (): string {
-        if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
-        return this.getCompleteTableName(this._tableName);
-    }
-
-    public getShortFromTable (): string {
-        if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
-        return this._tableName;
-    }
-
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
     public buildQueryString () : string {
         if (!this._tableName) throw new TypeError('Table must be selected');
-        let query = `DELETE ${PH_FROM_TABLE}`;
+        let query = `DELETE ${MY_PH_FROM_TABLE}`;
         if (this._where) {
             query += ` WHERE ${this._where.buildQueryString()}`;
         }
         return query;
     }
 
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         return [
-            this.getCompleteFromTable(),
+            this.getCompleteTableName(),
             ...( this._where ? this._where.buildQueryValues() : [])
         ];
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return [
-            () => this.getCompleteFromTable(),
+            () => this.getCompleteTableName(),
             ...( this._where ? this._where.getQueryValueFactories() : [])
         ]
     }
+
 
 }

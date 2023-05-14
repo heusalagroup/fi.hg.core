@@ -11,6 +11,7 @@ import { Table } from "../../../../Table";
 import { Id } from "../../../../Id";
 import { Column } from "../../../../Column";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
+import { MySqlAndChainBuilder } from "../formulas/MySqlAndChainBuilder";
 
 describe('MySqlEntityUpdateQueryBuilder', () => {
 
@@ -130,7 +131,7 @@ describe('MySqlEntityUpdateQueryBuilder', () => {
 
     describe('create', () => {
 
-        it('can build insert query builder', () => {
+        it('can build update query builder', () => {
             const builder = MySqlEntityUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
             builder.setTablePrefix(tablePrefix);
@@ -143,24 +144,30 @@ describe('MySqlEntityUpdateQueryBuilder', () => {
                 [idPropertyName]
             );
 
-            builder.appendEntity(
-                carEntity2,
-                metadata.fields,
-                metadata.temporalProperties,
-                [idPropertyName]
-            );
+            const where = MySqlAndChainBuilder.create();
+            where.setColumnEquals(tablePrefix+tableName, idColumn, "1");
+            builder.setWhereFromQueryBuilder(where);
 
             const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?), (?, ?)`);
 
-            expect( values ).toHaveLength(7);
+            expect( queryString ).toBe(`UPDATE ?? SET ?? = ?, ?? = ? WHERE (??.?? = ?)`);
+            expect( values ).toHaveLength(8);
+
+            // Table name
             expect( values[0] ).toBe(tablePrefix+tableName);
+
+            // 1st column in set
             expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(ageColumn);
-            expect( values[3] ).toBe('Car A');
+            expect( values[2] ).toBe('Car A');
+
+            // 2nd column in set
+            expect( values[3] ).toBe(ageColumn);
             expect( values[4] ).toBe(13);
-            expect( values[5] ).toBe('Car B');
-            expect( values[6] ).toBe(99);
+
+            // Table in WHERE
+            expect( values[5] ).toBe(tablePrefix+tableName);
+            expect( values[6] ).toBe(idColumn);
+            expect( values[7] ).toBe("1");
 
         });
 

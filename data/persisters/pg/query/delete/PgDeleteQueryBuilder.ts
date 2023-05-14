@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { DeleteQueryBuilder } from "../../../query/delete/DeleteQueryBuilder";
 import { PgQueryUtils } from "../../utils/PgQueryUtils";
 
@@ -16,13 +16,28 @@ export class PgDeleteQueryBuilder implements DeleteQueryBuilder {
         this._tablePrefix = '';
     }
 
-    public valueOf () {
-        return this.toString();
+
+
+    ///////////////////////         QueryWhereable         ///////////////////////
+
+
+    buildWhereQueryString () : string {
+        return this._where ? this._where.buildQueryString() : '';
     }
 
-    public toString () : string {
-        return `PgDeleteQueryBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+    getWhereValueFactories () : readonly QueryValueFactory[] {
+        return this._where ? this._where.getQueryValueFactories() : [];
     }
+
+    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
+        this._where = builder;
+    }
+
+
+
+    ///////////////////////         TablePrefixable         ///////////////////////
+
+
 
     public setTablePrefix (prefix: string) {
         this._tablePrefix = prefix;
@@ -32,51 +47,77 @@ export class PgDeleteQueryBuilder implements DeleteQueryBuilder {
         return this._tablePrefix;
     }
 
-    public getCompleteTableName (tableName : string) : string {
+    public getTableNameWithPrefix (tableName : string) : string {
         return `${this._tablePrefix}${tableName}`;
     }
 
-    public setWhereFromQueryBuilder (builder: QueryBuilder): void {
-        this._where = builder;
-    }
-
-    public setFromTable (tableName: string) {
+    public setTableName (tableName: string) {
         this._tableName = tableName;
     }
 
-    public getCompleteFromTable (): string {
-        if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
-        return this.getCompleteTableName(this._tableName);
-    }
-
-    public getShortFromTable (): string {
+    public getTableName (): string {
         if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
         return this._tableName;
     }
 
-    public build () : [string, any[]] {
+    public getCompleteTableName (): string {
+        if (!this._tableName) throw new TypeError(`From table has not been initialized yet`);
+        return this.getTableNameWithPrefix(this._tableName);
+    }
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    public valueOf () {
+        return this.toString();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public toString () : string {
+        return `PgDeleteQueryBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public build () : QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
+    /**
+     * @inheritDoc
+     */
     public buildQueryString () : string {
-        if (!this._tableName) throw new TypeError('Table must be selected');
-        let query = `DELETE FROM ${PgQueryUtils.quoteTableName(this.getCompleteTableName(this._tableName))}`;
+        let query = `DELETE FROM ${PgQueryUtils.quoteTableName(this.getCompleteTableName())}`;
         if (this._where) {
             query += ` WHERE ${this._where.buildQueryString()}`;
         }
         return query;
     }
 
-    public buildQueryValues () : any[] {
+    /**
+     * @inheritDoc
+     */
+    public buildQueryValues () : readonly any[] {
         return [
             ...( this._where ? this._where.buildQueryValues() : [])
         ];
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    /**
+     * @inheritDoc
+     */
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         return [
             ...( this._where ? this._where.getQueryValueFactories() : [])
-        ]
+        ];
     }
+
 
 }

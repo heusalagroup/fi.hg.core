@@ -3,6 +3,7 @@
 import { map } from "../../../../functions/map";
 import { forEach } from "../../../../functions/forEach";
 import { ListQueryBuilder } from "./ListQueryBuilder";
+import { QueryBuildResult, QueryValueFactory } from "./QueryBuilder";
 
 /**
  * This generates formulas like `(expression[, expression2, ...])` intended to
@@ -12,7 +13,7 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
 
     private readonly _separator : string;
     private readonly _queryList : (() => string)[];
-    private readonly _valueList : (() => any)[];
+    private readonly _valueList : QueryValueFactory[];
 
     protected constructor (
         separator: string
@@ -22,7 +23,8 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
         this._valueList = [];
     }
 
-    ///////////////////         ListItemQueryBuilder         ///////////////////
+
+    ///////////////////         ListQueryBuilder         ///////////////////
 
 
     /**
@@ -30,7 +32,7 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
      */
     public appendExpression (
         queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        ...valueFactories : QueryValueFactory[]
     ) : void {
         this._queryList.push(queryFactory);
         forEach(
@@ -100,6 +102,22 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
         value: any
     ): void;
 
+    /**
+     * @inheritDoc
+     */
+    public abstract setAssignmentWithParam (
+        columnName: string,
+        value: any
+    ) : void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setAssignmentWithParamAsTimestamp (
+        columnName: string,
+        value: any
+    ) : void;
+
 
     ///////////////////////         QueryBuilder         ///////////////////////
 
@@ -118,7 +136,7 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
         return `"${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
     }
 
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
@@ -126,11 +144,11 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
         return map(this._queryList, (f) => f()).join(this._separator);
     }
 
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         return map(this._valueList, (f) => f());
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return this._valueList;
     }
 

@@ -1,53 +1,92 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../types/QueryBuilder";
+import { QueryWhereable } from "../types/QueryWhereable";
+import { TablePrefixable } from "../types/TablePrefixable";
 
 /**
  * Defines an interface for a builder of relational database update query.
  */
-export interface UpdateQueryBuilder extends QueryBuilder {
+export interface UpdateQueryBuilder extends QueryBuilder, QueryWhereable, TablePrefixable {
+
+    /**
+     * Append factories for prefix part of the update query.
+     *
+     * This configures the start of the query, which usually includes
+     * `UPDATE ?` with a table name.
+     *
+     * @param queryFactory
+     * @param valueFactories
+     */
+    addPrefixFactory (
+        queryFactory  : QueryStringFactory,
+        ...valueFactories : readonly QueryValueFactory[]
+    ) : void;
+
+    /**
+     * Append factories for the assignment list part of the update query.
+     *
+     * This is the part of `SET ??=?, ??=?` without the SET keyword.
+     *
+     * @param queryFactory
+     * @param valueFactories
+     */
+    addSetFactory (
+        queryFactory  : QueryStringFactory,
+        ...valueFactories : readonly QueryValueFactory[]
+    ) : void;
+
+    /**
+     * Append factories for the assignment list from another builder.
+     *
+     * @param builder
+     * @see {@link ListQueryBuilder}
+     */
+    appendSetListUsingQueryBuilder (builder: QueryBuilder) : void;
+
+
+    ///////////////////////         QueryWhereable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    setWhereFromQueryBuilder (builder: QueryBuilder): void;
+
 
 
     ///////////////////////         TablePrefixable         ///////////////////////
 
 
     /**
-     * Get the table prefix
-     *
-     * @see {@link UpdateQueryBuilder.getTablePrefix}
+     * @inheritDoc
      */
     getTablePrefix (): string;
 
     /**
-     * Set the table prefix
-     *
-     * @see {@link UpdateQueryBuilder.setTablePrefix}
+     * @inheritDoc
      */
     setTablePrefix (prefix: string) : void;
 
     /**
-     * Get the complete table name with the prefix
-     *
-     * @param tableName The table name without the prefix
+     * @inheritDoc
      */
     getTableNameWithPrefix (tableName : string) : string;
 
     /**
-     * Get the table name where to insert rows, without the prefix
+     * @inheritDoc
      */
     getTableName (): string;
 
     /**
-     * Set the table name where to insert rows, without the prefix
-     *
-     * @param tableName
+     * @inheritDoc
      */
     setTableName (tableName: string): void;
 
     /**
-     * Get the complete table name where to insert rows including the prefix
+     * @inheritDoc
      */
-    getFullTableName (): string;
+    getCompleteTableName (): string;
 
 
     ///////////////////////         QueryBuilder         ///////////////////////
@@ -71,7 +110,7 @@ export interface UpdateQueryBuilder extends QueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.build}
      */
-    build () : [string, any[]];
+    build () : QueryBuildResult;
 
     /**
      * @inheritDoc
@@ -83,13 +122,13 @@ export interface UpdateQueryBuilder extends QueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.buildQueryValues}
      */
-    buildQueryValues () : any[];
+    buildQueryValues () : readonly any[];
 
     /**
      * @inheritDoc
      * @see {@link QueryBuilder.getQueryValueFactories}
      */
-    getQueryValueFactories () : (() => any)[];
+    getQueryValueFactories () : readonly QueryValueFactory[];
 
 
 }

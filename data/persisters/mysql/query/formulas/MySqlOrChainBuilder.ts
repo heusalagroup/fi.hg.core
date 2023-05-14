@@ -2,17 +2,21 @@
 
 import { map } from "../../../../../functions/map";
 import { ChainQueryBuilder } from "../../../query/types/ChainQueryBuilder";
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
-import { PH_TABLE_COLUMN_AFTER, PH_TABLE_COLUMN_BEFORE, PH_TABLE_COLUMN_BETWEEN_RANGE, PH_TABLE_COLUMN_EQUAL, PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, PH_TABLE_COLUMN_IN } from "../../constants/queries";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
+import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN } from "../../constants/mysql-queries";
 
 export class MySqlOrChainBuilder implements ChainQueryBuilder {
 
     private readonly _formulaQuery : (() => string)[];
-    private readonly _formulaValues : (() => any)[];
+    private readonly _formulaValues : QueryValueFactory[];
 
-    constructor () {
+    protected constructor () {
         this._formulaQuery = [];
         this._formulaValues = [];
+    }
+
+    public static create () {
+        return new MySqlOrChainBuilder();
     }
 
     public valueOf () {
@@ -28,7 +32,7 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         columnName : string,
         values : readonly any[]
     ) {
-        this._formulaQuery.push( () => PH_TABLE_COLUMN_IN );
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_IN );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => values);
@@ -39,7 +43,7 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         columnName : string,
         value : any
     ) {
-        this._formulaQuery.push( () => PH_TABLE_COLUMN_EQUAL );
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_EQUAL );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => value);
@@ -50,7 +54,7 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         columnName : string,
         value : any
     ) {
-        this._formulaQuery.push( () => PH_TABLE_COLUMN_BEFORE );
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_BEFORE );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => value);
@@ -61,7 +65,7 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         columnName : string,
         value : any
     ) {
-        this._formulaQuery.push( () => PH_TABLE_COLUMN_AFTER );
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_AFTER );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => value);
@@ -73,7 +77,7 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         start : any,
         end : any,
     ) {
-        this._formulaQuery.push( () => PH_TABLE_COLUMN_BETWEEN_RANGE );
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_BETWEEN_RANGE );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => start);
@@ -84,12 +88,12 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         tableName : string,
         columnName : string
     ) {
-        this._formulaQuery.push( () => PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID );
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
     }
 
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -98,11 +102,11 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         return `(${formulaQuery.join(') OR (')})`;
     }
 
-    public buildQueryValues (): any[] {
+    public buildQueryValues () : readonly any[] {
         return map(this._formulaValues, (f) => f());
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return this._formulaValues;
     }
 

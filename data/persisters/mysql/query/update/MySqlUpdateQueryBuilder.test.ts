@@ -3,6 +3,8 @@
 import { MySqlUpdateQueryBuilder } from "./MySqlUpdateQueryBuilder";
 import { QueryBuilder } from "../../../query/types/QueryBuilder";
 import { map } from "../../../../../functions/map";
+import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
+import { MySqlAndChainBuilder } from "../formulas/MySqlAndChainBuilder";
 
 /**
  * Note: This mock can be modified by changing return values of `buildQueryString` and
@@ -33,6 +35,8 @@ describe('MySqlUpdateQueryBuilder', () => {
     const nameProperty = 'carName';
     const ageProperty = 'carAge';
     const dateProperty = 'carDate';
+    const dateValue = '2023-04-04T14:58:59Z';
+    const dateValueInDb = '2023-04-04 14:58:59';
     let dateOnlyListBuilder : QueryBuilder;
     let nameAndDateListBuilder : QueryBuilder;
 
@@ -54,14 +58,12 @@ describe('MySqlUpdateQueryBuilder', () => {
 
     describe('#create', () => {
 
-        it('can build insert query builder', () => {
+        it('can build update query builder', () => {
             const builder = MySqlUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
         });
 
     });
-
-
 
     describe('#setTablePrefix', () => {
 
@@ -74,10 +76,9 @@ describe('MySqlUpdateQueryBuilder', () => {
 
     });
 
+    describe('#setTableName', () => {
 
-    describe('#setIntoTable', () => {
-
-        it('can set table name where to insert into', () => {
+        it('can set table name which to update', () => {
             const builder = MySqlUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
             builder.setTablePrefix(tablePrefix);
@@ -87,245 +88,104 @@ describe('MySqlUpdateQueryBuilder', () => {
 
     });
 
+    describe('#getCompleteTableName', () => {
 
-    describe('#addColumnName', () => {
-
-        it('can add column name', () => {
-
+        it('can get full table name which to update', () => {
             const builder = MySqlUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
             builder.setTablePrefix(tablePrefix);
             builder.setTableName(tableName);
-            builder.addColumnName(nameColumn);
-            builder.appendValueList(['hello']);
-            const [ , values ] = builder.build();
-            expect( values ).toHaveLength(3);
-            expect( values[1] ).toBe(nameColumn);
-
+            expect(builder.getCompleteTableName()).toBe(tablePrefix+tableName);
         });
 
     });
-
-
-    describe('#appendValueList', () => {
-
-        it('can append value to insert', () => {
-
-            const builder = MySqlUpdateQueryBuilder.create();
-            expect( builder ).toBeDefined();
-            builder.setTablePrefix(tablePrefix);
-            builder.setTableName(tableName);
-            builder.addColumnName(nameColumn);
-            builder.appendValueList(['hello']);
-
-            const [ , values ] = builder.build();
-            expect( values ).toHaveLength(3);
-            expect( values[2] ).toBe('hello');
-
-        });
-
-    });
-
-
 
     describe('#build', () => {
 
-        it('can build insert query for one row with single column', () => {
+        it('can build update query with single column', () => {
 
             const builder = MySqlUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
             builder.setTablePrefix(tablePrefix);
             builder.setTableName(tableName);
-            builder.addColumnName(nameColumn);
-            builder.appendValueList(['hello']);
+
+            const setList = MySqlListQueryBuilder.create();
+            setList.setAssignmentWithParam(nameColumn, 'hello');
+            builder.appendSetListUsingQueryBuilder(setList);
+
+            const where = MySqlAndChainBuilder.create();
+            where.setColumnEquals(tablePrefix+tableName, idColumn, "1");
+            builder.setWhereFromQueryBuilder(where);
 
             const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??) VALUES (?)`);
+            expect( queryString ).toBe(`UPDATE ?? SET ?? = ? WHERE (??.?? = ?)`);
 
-            expect( values ).toHaveLength(3);
+            expect( values ).toHaveLength(6);
             expect( values[0] ).toBe(tablePrefix+tableName);
             expect( values[1] ).toBe(nameColumn);
             expect( values[2] ).toBe('hello');
+            expect( values[3] ).toBe(tablePrefix+tableName);
+            expect( values[4] ).toBe(idColumn);
+            expect( values[5] ).toBe("1");
 
         });
 
-        it('can build insert query for one row with single date column', () => {
+        it('can build update query with single date column', () => {
 
             const builder = MySqlUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
             builder.setTablePrefix(tablePrefix);
             builder.setTableName(tableName);
 
-            builder.addColumnName(dateColumn);
+            const setList = MySqlListQueryBuilder.create();
+            setList.setAssignmentWithParamAsTimestamp(dateColumn, dateValue);
+            builder.appendSetListUsingQueryBuilder(setList);
 
-            builder.appendValueListUsingQueryBuilder(dateOnlyListBuilder);
+            const where = MySqlAndChainBuilder.create();
+            where.setColumnEquals(tablePrefix+tableName, idColumn, "1");
+            builder.setWhereFromQueryBuilder(where);
 
             const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??) VALUES (date query)`);
+            expect( queryString ).toBe(`UPDATE ?? SET ?? = ? WHERE (??.?? = ?)`);
 
-            expect( values ).toHaveLength(3);
+            expect( values ).toHaveLength(6);
             expect( values[0] ).toBe(tablePrefix+tableName);
             expect( values[1] ).toBe(dateColumn);
-            expect( values[2] ).toBe('value of date query');
+            expect( values[2] ).toBe(dateValueInDb);
+            expect( values[3] ).toBe(tablePrefix+tableName);
+            expect( values[4] ).toBe(idColumn);
+            expect( values[5] ).toBe("1");
 
         });
 
-        it('can build insert query for one row with name and date columns', () => {
+        it('can build update query for one row with name and date columns', () => {
 
             const builder = MySqlUpdateQueryBuilder.create();
             expect( builder ).toBeDefined();
             builder.setTablePrefix(tablePrefix);
             builder.setTableName(tableName);
 
-            builder.addColumnName(nameColumn);
-            builder.addColumnName(dateColumn);
+            const setList = MySqlListQueryBuilder.create();
+            setList.setAssignmentWithParam(nameColumn, 'hello');
+            setList.setAssignmentWithParamAsTimestamp(dateColumn, dateValue);
+            builder.appendSetListUsingQueryBuilder(setList);
 
-            builder.appendValueListUsingQueryBuilder(nameAndDateListBuilder);
-
-            const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (name query, date query)`);
-
-            expect( values ).toHaveLength(5);
-            expect( values[0] ).toBe(tablePrefix+tableName);
-            expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(dateColumn);
-            expect( values[3] ).toBe('value of name query');
-            expect( values[4] ).toBe('value of date query');
-
-        });
-
-        it('can build insert query for two rows with name and date columns', () => {
-
-            const builder = MySqlUpdateQueryBuilder.create();
-            expect( builder ).toBeDefined();
-            builder.setTablePrefix(tablePrefix);
-            builder.setTableName(tableName);
-
-            builder.addColumnName(nameColumn);
-            builder.addColumnName(dateColumn);
-
-            builder.appendValueListUsingQueryBuilder(nameAndDateListBuilder);
-
-            nameAndDateListBuilder = mockQueryBuilderFactory();
-            (nameAndDateListBuilder.buildQueryString as any).mockReturnValue('name query 2, date query 2');
-            (nameAndDateListBuilder.getQueryValueFactories as any).mockReturnValue([() => 'value of name query 2', () => 'value of date query 2']);
-
-            builder.appendValueListUsingQueryBuilder(nameAndDateListBuilder);
+            const where = MySqlAndChainBuilder.create();
+            where.setColumnEquals(tablePrefix+tableName, idColumn, "1");
+            builder.setWhereFromQueryBuilder(where);
 
             const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (name query, date query), (name query 2, date query 2)`);
+            expect( queryString ).toBe(`UPDATE ?? SET ?? = ?, ?? = ? WHERE (??.?? = ?)`);
 
-            expect( values ).toHaveLength(7);
+            expect( values ).toHaveLength(8);
             expect( values[0] ).toBe(tablePrefix+tableName);
             expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(dateColumn);
-            expect( values[3] ).toBe('value of name query');
-            expect( values[4] ).toBe('value of date query');
-            expect( values[5] ).toBe('value of name query 2');
-            expect( values[6] ).toBe('value of date query 2');
-
-        });
-
-        it('can build insert query with two columns', () => {
-
-            const builder = MySqlUpdateQueryBuilder.create();
-            expect( builder ).toBeDefined();
-            builder.setTablePrefix(tablePrefix);
-            builder.setTableName(tableName);
-
-
-
-            builder.addColumnName(nameColumn);
-            builder.addColumnName(ageColumn);
-            builder.appendValueList(['hello', 13]);
-
-            const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?)`);
-
-            expect( values ).toHaveLength(5);
-            expect( values[0] ).toBe(tablePrefix+tableName);
-            expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(ageColumn);
-            expect( values[3] ).toBe('hello');
-            expect( values[4] ).toBe(13);
-
-        });
-
-        it('can build insert query with two columns and two rows', () => {
-
-            const builder = MySqlUpdateQueryBuilder.create();
-            expect( builder ).toBeDefined();
-            builder.setTablePrefix(tablePrefix);
-            builder.setTableName(tableName);
-
-            builder.addColumnName(nameColumn);
-            builder.addColumnName(ageColumn);
-            builder.appendValueList(['hello', 13]);
-            builder.appendValueList(['world', 99]);
-
-            const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?), (?, ?)`);
-
-            expect( values ).toHaveLength(7);
-            expect( values[0] ).toBe(tablePrefix+tableName);
-            expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(ageColumn);
-            expect( values[3] ).toBe('hello');
-            expect( values[4] ).toBe(13);
-            expect( values[5] ).toBe('world');
-            expect( values[6] ).toBe(99);
-
-        });
-
-        it('can build insert query from an object', () => {
-
-            const builder = MySqlUpdateQueryBuilder.create();
-            expect( builder ).toBeDefined();
-            builder.setTablePrefix(tablePrefix);
-            builder.setTableName(tableName);
-
-            builder.addColumnName(nameColumn);
-            builder.addColumnName(ageColumn);
-            builder.appendValueObject({car_name: 'hello', car_age: 13});
-            builder.appendValueObject({car_name: 'world', car_age: 99});
-
-            const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?), (?, ?)`);
-
-            expect( values ).toHaveLength(7);
-            expect( values[0] ).toBe(tablePrefix+tableName);
-            expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(ageColumn);
-            expect( values[3] ).toBe('hello');
-            expect( values[4] ).toBe(13);
-            expect( values[5] ).toBe('world');
-            expect( values[6] ).toBe(99);
-
-        });
-
-        it('can build insert query from an object with extra values', () => {
-
-            const builder = MySqlUpdateQueryBuilder.create();
-            expect( builder ).toBeDefined();
-            builder.setTablePrefix(tablePrefix);
-            builder.setTableName(tableName);
-
-            builder.addColumnName(nameColumn);
-            builder.addColumnName(ageColumn);
-            builder.appendValueObject({car_name: 'hello', car_age: 13, car_term: false});
-            builder.appendValueObject({car_term: true, car_age: 99, car_name: 'world'});
-
-            const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?), (?, ?)`);
-
-            expect( values ).toHaveLength(7);
-            expect( values[0] ).toBe(tablePrefix+tableName);
-            expect( values[1] ).toBe(nameColumn);
-            expect( values[2] ).toBe(ageColumn);
-            expect( values[3] ).toBe('hello');
-            expect( values[4] ).toBe(13);
-            expect( values[5] ).toBe('world');
-            expect( values[6] ).toBe(99);
+            expect( values[2] ).toBe('hello');
+            expect( values[3] ).toBe(dateColumn);
+            expect( values[4] ).toBe(dateValueInDb);
+            expect( values[5] ).toBe(tablePrefix+tableName);
+            expect( values[6] ).toBe(idColumn);
+            expect( values[7] ).toBe("1");
 
         });
 

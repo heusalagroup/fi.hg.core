@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { SelectQueryBuilder } from "../../../query/select/SelectQueryBuilder";
 import { forEach } from "../../../../../functions/forEach";
 import { map } from "../../../../../functions/map";
@@ -8,23 +8,57 @@ import { Sort } from "../../../../Sort";
 import { EntityField } from "../../../../types/EntityField";
 import { EntityUtils } from "../../../../utils/EntityUtils";
 import {
-    PH_AS, PH_FROM_TABLE,
-    PH_GROUP_BY_TABLE_COLUMN,
-    PH_LEFT_JOIN,
-    PH_TABLE_ALL_COLUMNS,
-    PH_TABLE_COLUMN,
-    PH_TABLE_COLUMN_AS_DATE_AS,
-    PH_TABLE_COLUMN_AS_TEXT_AS,
-    PH_TABLE_COLUMN_AS_TIME_AS,
-    PH_TABLE_COLUMN_AS_TIMESTAMP_AS,
-    PH_TABLE_COLUMN_WITH_SORT_ORDER
-} from "../../constants/queries";
+    MY_PH_AS, MY_PH_FROM_TABLE,
+    MY_PH_GROUP_BY_TABLE_COLUMN,
+    MY_PH_LEFT_JOIN,
+    MY_PH_TABLE_ALL_COLUMNS,
+    MY_PH_TABLE_COLUMN, MY_PH_TABLE_COLUMN_AS,
+    MY_PH_TABLE_COLUMN_AS_DATE_AS,
+    MY_PH_TABLE_COLUMN_AS_TEXT_AS,
+    MY_PH_TABLE_COLUMN_AS_TIME_AS,
+    MY_PH_TABLE_COLUMN_AS_TIMESTAMP_AS,
+    MY_PH_TABLE_COLUMN_WITH_SORT_ORDER
+} from "../../constants/mysql-queries";
 import { BaseSelectQueryBuilder } from "../../../query/select/BaseSelectQueryBuilder";
 
 export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements SelectQueryBuilder {
 
     public static create () : MySqlSelectQueryBuilder {
-        return new MySqlSelectQueryBuilder();
+        return new MySqlSelectQueryBuilder(
+            ', ',
+            ' ',
+            ', ',
+        );
+    }
+
+
+    ///////////////////////         QueryResultable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    public appendResultExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : QueryValueFactory[]
+    ) : void {
+        super.appendResultExpression(
+            queryFactory,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public appendResultExpressionUsingQueryBuilder (
+        builder: QueryBuilder,
+        ...valueFactories : QueryValueFactory[]
+    ) : void {
+        super.appendResultExpressionUsingQueryBuilder(
+            builder,
+            ...valueFactories
+        );
     }
 
     /**
@@ -36,9 +70,12 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         columnName: string,
         asColumnName: string
     ) : void {
-        this._fieldQueries.push(() => PH_TABLE_COLUMN);
-        this._fieldValues.push(() => this.getTableNameWithPrefix(tableName));
-        this._fieldValues.push(() => columnName);
+        this.appendResultExpression(
+            () => MY_PH_TABLE_COLUMN_AS,
+            () => this.getTableNameWithPrefix(tableName),
+            () => columnName,
+            () => asColumnName ?? columnName,
+        );
     }
 
     /**
@@ -50,10 +87,12 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         columnName: string,
         asColumnName: string
     ) : void {
-        this._fieldQueries.push(() => PH_TABLE_COLUMN_AS_TEXT_AS);
-        this._fieldValues.push(() => this.getTableNameWithPrefix(tableName));
-        this._fieldValues.push(() => columnName);
-        this._fieldValues.push(() => columnName);
+        this.appendResultExpression(
+            () => MY_PH_TABLE_COLUMN_AS_TEXT_AS,
+            () => this.getTableNameWithPrefix(tableName),
+            () => columnName,
+            () => asColumnName ?? columnName
+        );
     }
 
     /**
@@ -65,10 +104,12 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         columnName: string,
         asColumnName: string
     ) : void {
-        this._fieldQueries.push(() => PH_TABLE_COLUMN_AS_TIME_AS);
-        this._fieldValues.push(() => this.getTableNameWithPrefix(tableName));
-        this._fieldValues.push(() => columnName);
-        this._fieldValues.push(() => columnName);
+        this.appendResultExpression(
+            () => MY_PH_TABLE_COLUMN_AS_TIME_AS,
+            () => this.getTableNameWithPrefix(tableName),
+            () => columnName,
+            () => asColumnName ?? columnName,
+        );
     }
 
     /**
@@ -80,10 +121,12 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         columnName: string,
         asColumnName: string
     ) : void {
-        this._fieldQueries.push(() => PH_TABLE_COLUMN_AS_DATE_AS);
-        this._fieldValues.push(() => this.getTableNameWithPrefix(tableName));
-        this._fieldValues.push(() => columnName);
-        this._fieldValues.push(() => columnName);
+        this.appendResultExpression(
+            () => MY_PH_TABLE_COLUMN_AS_DATE_AS,
+            () => this.getTableNameWithPrefix(tableName),
+            () => columnName,
+            () => asColumnName ?? columnName,
+        );
     }
 
     /**
@@ -95,10 +138,21 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         columnName: string,
         asColumnName: string
     ) : void {
-        this._fieldQueries.push(() => PH_TABLE_COLUMN_AS_TIMESTAMP_AS);
-        this._fieldValues.push(() => this.getTableNameWithPrefix(tableName));
-        this._fieldValues.push(() => columnName);
-        this._fieldValues.push(() => columnName);
+        if (!tableName) {
+            throw new TypeError(`includeColumnAsTimestamp: table name is required`);
+        }
+        if (!columnName) {
+            throw new TypeError(`includeColumnAsTimestamp: columnName is required`);
+        }
+        if (!asColumnName) {
+            throw new TypeError(`includeColumnAsTimestamp: asColumnName is required`);
+        }
+        this.appendResultExpression(
+            () => MY_PH_TABLE_COLUMN_AS_TIMESTAMP_AS,
+        () => this.getTableNameWithPrefix(tableName),
+            () => columnName,
+            () => asColumnName ?? columnName,
+        );
     }
 
     /**
@@ -106,8 +160,13 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      * @see {@link SelectQueryBuilder.includeAllColumnsFromTable}
      */
     public includeAllColumnsFromTable (tableName: string) : void {
-        this._fieldQueries.push(() => PH_TABLE_ALL_COLUMNS);
-        this._fieldValues.push(() => this.getTableNameWithPrefix(tableName));
+        if (!tableName) {
+            throw new TypeError(`includeAllColumnsFromTable: table name is required`);
+        }
+        this.appendResultExpression(
+            () => MY_PH_TABLE_ALL_COLUMNS,
+            () => this.getTableNameWithPrefix(tableName),
+        );
     }
 
     /**
@@ -118,18 +177,14 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         builder: QueryBuilder,
         asColumnName: string
     ) : void {
-        this._fieldQueries.push(() => {
-            const query = builder.buildQueryString();
-            if (!query) throw new TypeError(`Query builder failed to create query string`);
-            return PH_AS(query);
-        });
-        forEach(
-            builder.getQueryValueFactories(),
-            (item) => {
-                this._fieldValues.push(item);
-            }
+        if (!asColumnName) {
+            throw new TypeError(`includeColumnFromQueryBuilder: column name is required`);
+        }
+        this.appendResultExpression(
+            () => MY_PH_AS(builder.buildQueryString()),
+            ...builder.getQueryValueFactories(),
+            () => asColumnName
         );
-        this._fieldValues.push(() => asColumnName);
     }
 
     /**
@@ -146,9 +201,116 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
         if (!asColumnName) {
             throw new TypeError(`includeFormulaByString: column name is required`);
         }
-        this._fieldQueries.push(() => PH_AS(formula));
-        this._fieldValues.push(() => asColumnName);
+        this.appendResultExpression(
+            () => MY_PH_AS(formula),
+            () => asColumnName
+        );
     }
+
+    ///////////////////////         QueryLeftJoinable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    appendLeftJoinExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : QueryValueFactory[]
+    ) : void {
+        super.appendLeftJoinExpression(
+            queryFactory,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    appendLeftJoinExpressionUsingQueryBuilder (
+        builder: QueryBuilder,
+        ...valueFactories : QueryValueFactory[]
+    ) : void {
+        super.appendLeftJoinExpressionUsingQueryBuilder(
+            builder,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.leftJoinTable}
+     */
+    public leftJoinTable (
+        fromTableName : string,
+        fromColumnName : string,
+        sourceTableName : string,
+        sourceColumnName : string
+    ) {
+        this.appendLeftJoinExpression(
+            () => MY_PH_LEFT_JOIN,
+            () => this.getTableNameWithPrefix(fromTableName),
+            () => this.getTableNameWithPrefix(sourceTableName),
+            () => sourceColumnName,
+            () => this.getTableNameWithPrefix(fromTableName),
+            () => fromColumnName,
+        )
+    }
+
+
+    ///////////////////////         QueryOrderable         ///////////////////////
+
+    /**
+     * @inheritDoc
+     */
+    appendOrderExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : QueryValueFactory[]
+    ) : void {
+        super.appendOrderExpression(
+            queryFactory,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    appendOrderExpressionUsingQueryBuilder (
+        builder: QueryBuilder,
+        ...valueFactories : QueryValueFactory[]
+    ) : void {
+        super.appendOrderExpressionUsingQueryBuilder(
+            builder,
+            ...valueFactories
+        );
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link SelectQueryBuilder.setOrderByTableFields}
+     */
+    public setOrderByTableFields (
+        sort      : Sort,
+        tableName : string,
+        fields    : readonly EntityField[]
+    ) : void {
+        forEach(
+            sort.getSortOrders(),
+            (item) => {
+                this.appendOrderExpression(
+                    () => MY_PH_TABLE_COLUMN_WITH_SORT_ORDER(item.getDirection()),
+                    () => this.getTableNameWithPrefix(tableName),
+                    () => EntityUtils.getColumnName(item.getProperty(), fields)
+                );
+            }
+        );
+    }
+
+
+
+    ///////////////////////         QueryGroupable         ///////////////////////
+
+
 
     /**
      * @inheritDoc
@@ -164,43 +326,6 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      */
     public getGroupByColumn (): string | undefined {
         return super.getGroupByColumn();
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.setOrderByTableFields}
-     */
-    public setOrderByTableFields (
-        sort      : Sort,
-        tableName : string,
-        fields    : readonly EntityField[]
-    ) {
-        forEach(
-            sort.getSortOrders(),
-            (item) => {
-                this._orderByQueries.push( () => PH_TABLE_COLUMN_WITH_SORT_ORDER(item.getDirection()) );
-                this._orderByValues.push( () => this.getTableNameWithPrefix(tableName) );
-                this._orderByValues.push( () => EntityUtils.getColumnName(item.getProperty(), fields) );
-            }
-        );
-    }
-
-    /**
-     * @inheritDoc
-     * @see {@link SelectQueryBuilder.leftJoinTable}
-     */
-    public leftJoinTable (
-        fromTableName : string,
-        fromColumnName : string,
-        sourceTableName : string,
-        sourceColumnName : string
-    ) {
-        this._leftJoinQueries.push(() => PH_LEFT_JOIN);
-        this._leftJoinValues.push( () => this.getTableNameWithPrefix(fromTableName));
-        this._leftJoinValues.push( () => this.getTableNameWithPrefix(sourceTableName));
-        this._leftJoinValues.push( () => sourceColumnName);
-        this._leftJoinValues.push( () => this.getTableNameWithPrefix(fromTableName));
-        this._leftJoinValues.push( () => fromColumnName);
     }
 
 
@@ -276,7 +401,7 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      * @inheritDoc
      * @see {@link SelectQueryBuilder.build}
      */
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
@@ -285,27 +410,33 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      * @see {@link SelectQueryBuilder.buildQueryString}
      */
     public buildQueryString () : string {
+        let query = `SELECT ${this.buildResultQueryString()}`;
+
         const fromTableName = this.getTableName();
-        const groupByColumn = this.getGroupByColumn();
-        const fieldQueries = map(this._fieldQueries, (f) => f());
-        const leftJoinQueries = map(this._leftJoinQueries, (f) => f());
-        const orderBys = map(this._orderByQueries, (f) => f());
-        let query = `SELECT ${fieldQueries.join(', ')}`;
         if (fromTableName) {
-            query += ` ${PH_FROM_TABLE}`;
+            query += ` ${MY_PH_FROM_TABLE}`;
         }
-        if (leftJoinQueries.length) {
-            query += ` ${leftJoinQueries.join(' ')}`;
+
+        const leftJoinQuery = this.buildLeftJoinQueryString();
+        if (leftJoinQuery) {
+            query += ` ${leftJoinQuery}`;
         }
-        if (this._where) {
-            query += ` WHERE ${this._where.buildQueryString()}`;
+
+        const whereQuery = this.buildWhereQueryString();
+        if (whereQuery) {
+            query += ` WHERE ${whereQuery}`;
         }
+
+        const groupByColumn = this.getGroupByColumn();
         if ( groupByColumn ) {
-            query += ` ${PH_GROUP_BY_TABLE_COLUMN}`;
+            query += ` ${MY_PH_GROUP_BY_TABLE_COLUMN}`;
         }
-        if ( orderBys.length ) {
-            query += ` ORDER BY ${ orderBys.join(', ') }`;
+
+        const orderBys = this.buildOrderQueryString();
+        if ( orderBys ) {
+            query += ` ORDER BY ${ orderBys }`;
         }
+
         return query;
     }
 
@@ -313,17 +444,18 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      * @inheritDoc
      * @see {@link SelectQueryBuilder.buildQueryValues}
      */
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         const fromTableName = this.getTableName();
         const groupByColumn = this.getGroupByColumn();
-        const fieldValues = map(this._fieldValues, (f) => f());
-        const leftJoinValues = map(this._leftJoinValues, (f) => f());
-        const orderByValues = map(this._orderByValues, (f) => f());
+        const fieldValues = map(this.getResultValueFactories(), (f) => f());
+        const leftJoinValues = map(this.getLeftJoinValueFactories(), (f) => f());
+        const orderByValues = map(this.getOrderValueFactories(), (f) => f());
+        const whereValues = map(this.getWhereValueFactories(), (f) => f());
         return [
             ...fieldValues,
             ...( fromTableName ? [this.getTableNameWithPrefix(fromTableName)] : []),
             ...leftJoinValues,
-            ...( this._where ? this._where.buildQueryValues() : []),
+            ...whereValues,
             ...( fromTableName ? [
                 this.getTableNameWithPrefix(fromTableName),
                 groupByColumn
@@ -336,19 +468,19 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      * @inheritDoc
      * @see {@link SelectQueryBuilder.getQueryValueFactories}
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         const fromTableName = this.getTableName();
         const groupByColumn = this.getGroupByColumn();
         return [
-            ...this._fieldValues,
+            ...this.getResultValueFactories(),
             ...( fromTableName ? [() => fromTableName ? this.getTableNameWithPrefix(fromTableName) : fromTableName] : []),
-            ...this._leftJoinValues,
-            ...( this._where ? this._where.getQueryValueFactories() : []),
+            ...this.getLeftJoinValueFactories(),
+            ...this.getWhereValueFactories(),
             ...( fromTableName && groupByColumn ? [
                 () => fromTableName ? this.getTableNameWithPrefix(fromTableName) : fromTableName,
                 () => groupByColumn
             ] : []),
-            ...this._orderByValues
+            ...this.getWhereValueFactories()
         ]
     }
 

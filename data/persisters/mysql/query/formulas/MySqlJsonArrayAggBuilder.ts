@@ -21,7 +21,7 @@ export class MySqlJsonArrayAggBuilder implements QueryBuilder {
         return this._builder ? this._builder.toString() : 'unset MySqlJsonArrayAggBuilder';
     }
 
-    public build (): [ string, any[] ] {
+    public build (): readonly [ string, readonly any[] ] {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -34,12 +34,12 @@ export class MySqlJsonArrayAggBuilder implements QueryBuilder {
         return `JSON_ARRAYAGG(${this._builder.buildQueryString()})`;
     }
 
-    public buildQueryValues (): any[] {
+    public buildQueryValues (): readonly any[] {
         if (!this._builder) throw new TypeError(`Could not build JSON_ARRAYAGG() query: Query builder not initialized`);
         return this._builder.buildQueryValues();
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly (() => any)[] {
         if (!this._builder) throw new TypeError(`Could not build JSON_ARRAYAGG() query: Query builder not initialized`);
         return this._builder.getQueryValueFactories();
     }

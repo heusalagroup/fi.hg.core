@@ -11,6 +11,7 @@ import { has } from "../../../../../functions/has";
 import { find } from "../../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { filter } from "../../../../../functions/filter";
+import { QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -182,7 +183,7 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
      * @inheritDoc
      * @see {@link EntityInsertQueryBuilder.build}
      */
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return this._builder.build();
     }
 
@@ -198,7 +199,7 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
      * @inheritDoc
      * @see {@link EntityInsertQueryBuilder.buildQueryValues}
      */
-    public buildQueryValues (): any[] {
+    public buildQueryValues () : readonly any[] {
         return this._builder.buildQueryValues();
     }
 
@@ -206,7 +207,7 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
      * @inheritDoc
      * @see {@link EntityInsertQueryBuilder.getQueryValueFactories}
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return this._builder.getQueryValueFactories();
     }
 

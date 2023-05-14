@@ -1,6 +1,10 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { UpdateQueryBuilder } from "./UpdateQueryBuilder";
+import { Entity } from "../../../Entity";
+import { EntityField } from "../../../types/EntityField";
+import { TemporalProperty } from "../../../types/TemporalProperty";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../types/QueryBuilder";
 
 /**
  * Defines an interface for a builder of relational database create query.
@@ -8,51 +12,67 @@ import { UpdateQueryBuilder } from "./UpdateQueryBuilder";
 export interface EntityUpdateQueryBuilder extends UpdateQueryBuilder {
 
 
-
+    /**
+     * Sets the assigment list on the update query based on this entity.
+     *
+     * @param entity
+     * @param fields
+     * @param temporalProperties
+     * @param ignoreProperties
+     */
+    appendEntity<T extends Entity> (
+        entity              : T,
+        fields              : readonly EntityField[],
+        temporalProperties  : readonly TemporalProperty[],
+        ignoreProperties    : readonly string[],
+    ) : void;
 
 
     ///////////////////////         UpdateQueryBuilder         ///////////////////////
 
 
+
+    ///////////////////////         TableWhereable         ///////////////////////
+
+
     /**
-     * Get the table prefix
-     *
-     * @see {@link UpdateQueryBuilder.getTablePrefix}
+     * @inheritDoc
+     */
+    setWhereFromQueryBuilder (builder: QueryBuilder): void;
+
+
+    ///////////////////////         TablePrefixable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
      */
     getTablePrefix (): string;
 
     /**
-     * Set the table prefix
-     *
-     * @see {@link UpdateQueryBuilder.setTablePrefix}
+     * @inheritDoc
      */
     setTablePrefix (prefix: string) : void;
 
     /**
-     * Get the table name where to insert rows, without the prefix
-     *
-     * @param tableName
+     * @inheritDoc
+     */
+    getTableNameWithPrefix (tableName : string) : string;
+
+    /**
+     * @inheritDoc
      */
     getTableName (): string;
 
     /**
-     * Set the table name where to insert rows, without the prefix
-     *
-     * @param tableName
+     * @inheritDoc
      */
     setTableName (tableName: string): void;
 
     /**
-     * Get the complete table name where to insert rows including the prefix
+     * @inheritDoc
      */
-    getFullTableName (): string;
-
-    /**
-     * Get the complete table name with the prefix
-     *
-     * @param tableName The table name without the prefix
-     */
-    getTableNameWithPrefix (tableName : string) : string;
+    getCompleteTableName (): string;
 
 
     ///////////////////////         QueryBuilder         ///////////////////////
@@ -76,7 +96,7 @@ export interface EntityUpdateQueryBuilder extends UpdateQueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.build}
      */
-    build () : [string, any[]];
+    build () : QueryBuildResult;
 
     /**
      * @inheritDoc
@@ -88,13 +108,13 @@ export interface EntityUpdateQueryBuilder extends UpdateQueryBuilder {
      * @inheritDoc
      * @see {@link QueryBuilder.buildQueryValues}
      */
-    buildQueryValues () : any[];
+    buildQueryValues () : readonly any[];
 
     /**
      * @inheritDoc
      * @see {@link QueryBuilder.getQueryValueFactories}
      */
-    getQueryValueFactories () : (() => any)[];
+    getQueryValueFactories () : readonly QueryValueFactory[];
 
 
 }

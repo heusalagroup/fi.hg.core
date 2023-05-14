@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { map } from "../../../../../functions/map";
 import { PgQueryUtils } from "../../utils/PgQueryUtils";
 import { PgParameterListBuilder } from "./PgParameterListBuilder";
@@ -12,8 +12,8 @@ import { ChainQueryBuilder } from "../../../query/types/ChainQueryBuilder";
  */
 export class PgOrChainBuilder implements ChainQueryBuilder {
 
-    private readonly _formulaQuery : (() => string)[];
-    private readonly _formulaValues : (() => any)[];
+    private readonly _formulaQuery : QueryStringFactory[];
+    private readonly _formulaValues : QueryValueFactory[];
 
     constructor () {
         this._formulaQuery = [];
@@ -111,7 +111,7 @@ export class PgOrChainBuilder implements ChainQueryBuilder {
     /**
      * @inheritDoc
      */
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -126,14 +126,14 @@ export class PgOrChainBuilder implements ChainQueryBuilder {
     /**
      * @inheritDoc
      */
-    public buildQueryValues (): any[] {
+    public buildQueryValues () : readonly any[] {
         return map(this._formulaValues, (f) => f());
     }
 
     /**
      * @inheritDoc
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return this._formulaValues;
     }
 

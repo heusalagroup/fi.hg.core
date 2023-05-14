@@ -3,8 +3,8 @@
 import { InsertQueryBuilder } from "./InsertQueryBuilder";
 import { map } from "../../../../functions/map";
 import { forEach } from "../../../../functions/forEach";
-import { QueryBuilder } from "../types/QueryBuilder";
-import { PH_COLUMN, PH_TABLE_COLUMN, PH_VALUE } from "../../mysql/constants/queries";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../types/QueryBuilder";
+import { MY_PH_COLUMN, MY_PH_TABLE_COLUMN, MY_PH_VALUE } from "../../mysql/constants/mysql-queries";
 
 /**
  * Defines an abstract class for a builder of relational database create query.
@@ -13,9 +13,9 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
 
 
     private readonly _prefixQueries : (() => string)[];
-    private readonly _prefixValues : (() => any)[];
+    private readonly _prefixValues : QueryValueFactory[];
     private readonly _inputQueries : (() => string)[];
-    private readonly _inputValues : (() => any)[];
+    private readonly _inputValues : QueryValueFactory[];
     private readonly _columnNames : string[];
 
     private _intoTableName : string | undefined;
@@ -52,7 +52,7 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
 
     public addPrefixFactory (
         queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        ...valueFactories : QueryValueFactory[]
     ) : void {
         this._prefixQueries.push(queryFactory);
         forEach(
@@ -65,7 +65,7 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
 
     public addValueFactory (
         queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        ...valueFactories : QueryValueFactory[]
     ) : void {
         this._inputQueries.push(queryFactory);
         forEach(
@@ -161,7 +161,7 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
     /**
      * @inheritDoc
      */
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [this.buildQueryString(), this.buildQueryValues()];
     }
 
@@ -173,13 +173,13 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
         if (!prefixes.length) throw new TypeError('No prefix factories detected for insert query builder! This must be an error.');
         const inputValues = map(this._inputQueries, (f) => f());
         if (!inputValues.length) throw new TypeError('No value placeholders detected for insert query builder! This must be an error.');
-        return `${prefixes.join(' ')} (${this._columnNames.map(() => PH_COLUMN).join(', ')}) VALUES ${inputValues.join(', ')}`;
+        return `${prefixes.join(' ')} (${this._columnNames.map(() => MY_PH_COLUMN).join(', ')}) VALUES ${inputValues.join(', ')}`;
     }
 
     /**
      * @inheritDoc
      */
-    public buildQueryValues (): any[]  {
+    public buildQueryValues () : readonly any[]  {
         const prefixValues = map(this._prefixValues, (f) => f());
         const columnValues = map(this._columnNames, (name: string) : string => name);
         const paramValues = map(this._inputValues, (f) => f());
@@ -193,7 +193,7 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
     /**
      * @inheritDoc
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return [
             ...this._prefixValues,
             ...map(this._columnNames, (name : string) => (() : string => name) ),

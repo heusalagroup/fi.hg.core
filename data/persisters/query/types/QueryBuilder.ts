@@ -1,5 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+export type QueryStringFactory = (() => string);
+export type QueryValueFactory = (() => any);
+export type QueryBuildResult = readonly [ string, readonly any[] ];
+
 /**
  * Defines an interface for a builder of relational database query.
  *
@@ -36,7 +40,7 @@ export interface QueryBuilder {
      * @returns The query string and linked values for it
      * @see {@link QueryBuilder.build}
      */
-    build () : [string, any[]];
+    build () : QueryBuildResult;
 
     /**
      * Builds the SQL query with possible value placeholders and returns it as
@@ -51,7 +55,7 @@ export interface QueryBuilder {
      *
      * @see {@link QueryBuilder.buildQueryValues}
      */
-    buildQueryValues () : any[];
+    buildQueryValues () : readonly any[];
 
     /**
      * Returns array of factory functions which can be used to build array of
@@ -59,6 +63,6 @@ export interface QueryBuilder {
      *
      * @see {@link QueryBuilder.getQueryValueFactories}
      */
-    getQueryValueFactories () : (() => any)[];
+    getQueryValueFactories () : readonly QueryValueFactory[];
 
 }

@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 
 /**
  * This generates formulas like `formula->index` which return json array value by
@@ -16,6 +16,21 @@ export class PgJsonIndexBuilder implements QueryBuilder {
         this._builder = undefined;
     }
 
+    public static create (
+        builder: QueryBuilder,
+        index: number
+    ) : PgJsonIndexBuilder {
+        const f = new PgJsonIndexBuilder(index);
+        f.setFormulaFromQueryBuilder(builder);
+        return f;
+    }
+
+    public setFormulaFromQueryBuilder (builder : QueryBuilder) {
+        this._builder = builder;
+    }
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
     public valueOf () {
         return this.toString();
     }
@@ -24,12 +39,7 @@ export class PgJsonIndexBuilder implements QueryBuilder {
         return `PgJsonIndexBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
     }
 
-
-    public setFormulaFromQueryBuilder (builder : QueryBuilder) {
-        this._builder = builder;
-    }
-
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -38,23 +48,14 @@ export class PgJsonIndexBuilder implements QueryBuilder {
         return `${this._builder.buildQueryString()}->${this._index}`;
     }
 
-    public buildQueryValues (): any[] {
+    public buildQueryValues (): readonly any[] {
         if (!this._builder) throw new TypeError(`Query builder not initialized`);
         return this._builder.buildQueryValues();
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         if (!this._builder) throw new TypeError(`Query builder not initialized`);
         return this._builder.getQueryValueFactories();
-    }
-
-    public static create (
-        builder: QueryBuilder,
-        index: number
-    ) : PgJsonIndexBuilder {
-        const f = new PgJsonIndexBuilder(index);
-        f.setFormulaFromQueryBuilder(builder);
-        return f;
     }
 
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { EntityField } from "../../../../types/EntityField";
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 import { MySqlJsonObjectQueryBuilder } from "./MySqlJsonObjectQueryBuilder";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
 import { TemporalProperty } from "../../../../types/TemporalProperty";
@@ -57,7 +57,7 @@ export class MySqlEntityJsonObjectBuilder implements QueryBuilder {
         );
     }
 
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -65,11 +65,11 @@ export class MySqlEntityJsonObjectBuilder implements QueryBuilder {
         return this._jsonBuilder.buildQueryString();
     }
 
-    public buildQueryValues (): any[] {
+    public buildQueryValues () : readonly any[] {
         return this._jsonBuilder.buildQueryValues();
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return this._jsonBuilder.getQueryValueFactories();
     }
 

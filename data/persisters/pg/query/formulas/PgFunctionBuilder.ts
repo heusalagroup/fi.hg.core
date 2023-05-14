@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { QueryBuilder } from "../../../query/types/QueryBuilder";
+import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 
 /**
  * This generates formulas like `f(formula)`
@@ -19,6 +19,20 @@ export class PgFunctionBuilder implements QueryBuilder {
         this._builder = undefined;
     }
 
+    public static create (builder: QueryBuilder, name: string) : PgFunctionBuilder {
+        const f = new PgFunctionBuilder(name);
+        f.setFormulaFromQueryBuilder(builder);
+        return f;
+    }
+
+    public setFormulaFromQueryBuilder (builder : QueryBuilder) {
+        this._builder = builder;
+    }
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
     public valueOf () {
         return this.toString();
     }
@@ -27,11 +41,7 @@ export class PgFunctionBuilder implements QueryBuilder {
         return `PgFunctionBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
     }
 
-    public setFormulaFromQueryBuilder (builder : QueryBuilder) {
-        this._builder = builder;
-    }
-
-    public build (): [ string, any[] ] {
+    public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];
     }
 
@@ -40,20 +50,14 @@ export class PgFunctionBuilder implements QueryBuilder {
         return `${this._name}(${this._builder.buildQueryString()})`;
     }
 
-    public buildQueryValues (): any[] {
+    public buildQueryValues (): readonly any[] {
         if (!this._builder) throw new TypeError(`Could not build ${this._name}() query values: Query builder not initialized`);
         return this._builder.buildQueryValues();
     }
 
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories (): readonly QueryValueFactory[] {
         if (!this._builder) throw new TypeError(`Could not build ${this._name}() query factories: Query builder not initialized`);
         return this._builder.getQueryValueFactories();
-    }
-
-    public static create (builder: QueryBuilder, name: string) : PgFunctionBuilder {
-        const f = new PgFunctionBuilder(name);
-        f.setFormulaFromQueryBuilder(builder);
-        return f;
     }
 
 }

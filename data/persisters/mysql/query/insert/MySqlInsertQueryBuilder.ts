@@ -2,20 +2,21 @@
 
 import { InsertQueryBuilder } from "../../../query/insert/InsertQueryBuilder";
 import {
-    PH_INTO_TABLE,
-    PH_VALUE
-} from "../../constants/queries";
+    MY_PH_INTO_TABLE,
+    MY_PH_VALUE
+} from "../../constants/mysql-queries";
 import { BaseInsertQueryBuilder } from "../../../query/insert/BaseInsertQueryBuilder";
 import { map } from "../../../../../functions/map";
 import { reduce } from "../../../../../functions/reduce";
 import { has } from "../../../../../functions/has";
+import { QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
 
 export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements InsertQueryBuilder {
 
     protected constructor () {
         super();
         this.addPrefixFactory(
-            () => `INSERT ${PH_INTO_TABLE}`,
+            () => `INSERT ${MY_PH_INTO_TABLE}`,
             () => this.getFullTableName()
         );
     }
@@ -26,14 +27,14 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
 
     public addPrefixFactory (
         queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        ...valueFactories : QueryValueFactory[]
     ) : void {
         super.addPrefixFactory(queryFactory, ...valueFactories);
     }
 
     public addValueFactory (
         queryFactory  : (() => string),
-        ...valueFactories : (() => any)[]
+        ...valueFactories : QueryValueFactory[]
     ) : void {
         super.addValueFactory(queryFactory, ...valueFactories);
     }
@@ -45,7 +46,7 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
     public appendValueList (
         list: readonly any[]
     ) : void {
-        const queryString = `(${map(list, () => PH_VALUE).join(', ')})`;
+        const queryString = `(${map(list, () => MY_PH_VALUE).join(', ')})`;
         const valueFactories = map(list, (item) => () => item);
         this.addValueFactory(
             () : string => queryString,
@@ -155,7 +156,7 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
      * @inheritDoc
      * @see {@link InsertQueryBuilder.build}
      */
-    public build () : [string, any[]] {
+    public build () : QueryBuildResult {
         return super.build();
     }
 
@@ -171,7 +172,7 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
      * @inheritDoc
      * @see {@link InsertQueryBuilder.buildQueryValues}
      */
-    public buildQueryValues () : any[] {
+    public buildQueryValues () : readonly any[] {
         return super.buildQueryValues();
     }
 
@@ -179,7 +180,7 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
      * @inheritDoc
      * @see {@link InsertQueryBuilder.getQueryValueFactories}
      */
-    public getQueryValueFactories (): (() => any)[] {
+    public getQueryValueFactories () : readonly QueryValueFactory[] {
         return super.getQueryValueFactories();
     }
 
