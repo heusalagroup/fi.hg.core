@@ -14,7 +14,7 @@ import { Where } from "../Where";
  * framework.
  *
  * Because of this, we have intentionally left the API as simple as possible.
- * Our method signatures also intentionally does not leave out any optional
+ * Our method signatures also intentionally do not leave out any optional
  * parameters.
  *
  * For example, we want it to be an syntax error if you call
@@ -27,7 +27,7 @@ import { Where } from "../Where";
  * persister to be refactored to support all of our future improvements, you
  * should contact us and make it officially part of our framework. For
  * commercial closed source Persisters our company can provide commercial
- * support to upgrade these changes for a support fee.
+ * support to upgrade these changes with a support contract.
  *
  * @see {@link MySqlPersister}
  * @see {@link PgPersister}

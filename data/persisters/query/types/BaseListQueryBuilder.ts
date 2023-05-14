@@ -1,0 +1,138 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
+import { map } from "../../../../functions/map";
+import { forEach } from "../../../../functions/forEach";
+import { ListQueryBuilder } from "./ListQueryBuilder";
+
+/**
+ * This generates formulas like `(expression[, expression2, ...])` intended to
+ * be used inside the INSERT query values.
+ */
+export abstract class BaseListQueryBuilder implements ListQueryBuilder {
+
+    private readonly _separator : string;
+    private readonly _queryList : (() => string)[];
+    private readonly _valueList : (() => any)[];
+
+    protected constructor (
+        separator: string
+    ) {
+        this._separator = separator;
+        this._queryList = [];
+        this._valueList = [];
+    }
+
+    ///////////////////         ListItemQueryBuilder         ///////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    public appendExpression (
+        queryFactory  : (() => string),
+        ...valueFactories : (() => any)[]
+    ) : void {
+        this._queryList.push(queryFactory);
+        forEach(
+            valueFactories,
+            (factory) => {
+                this._valueList.push(factory);
+            }
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setTableColumn (
+        tableName: string,
+        columnName: string
+    ): void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setTableColumnAsText (
+        tableName: string,
+        columnName: string
+    ): void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setTableColumnAsTimestampString (
+        tableName: string,
+        columnName: string
+    ) : void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setParam (
+        value: any
+    ) : void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setParamFactory (
+        value: () => any
+    ) : void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setParamAsText (
+        value: any
+    ): void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setParamFromTimestampString (
+        value: any
+    ): void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setParamAsTimestampValue (
+        value: any
+    ): void;
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    public valueOf () {
+        return this.toString();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public toString () : string {
+        return `"${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
+    }
+
+    public build () : [string, any[]] {
+        return [this.buildQueryString(), this.buildQueryValues()];
+    }
+
+    public buildQueryString () : string {
+        return map(this._queryList, (f) => f()).join(this._separator);
+    }
+
+    public buildQueryValues () : any[] {
+        return map(this._valueList, (f) => f());
+    }
+
+    public getQueryValueFactories (): (() => any)[] {
+        return this._valueList;
+    }
+
+
+}

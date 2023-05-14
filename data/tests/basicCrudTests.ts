@@ -1,18 +1,16 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
 import "../../../jest/matchers/index";
+import { find } from "../../functions/find";
 import { Repository } from "../types/Repository";
 import { RepositoryTestContext } from "./types/types/RepositoryTestContext";
 import { Persister } from "../types/Persister";
 import { createCrudRepositoryWithPersister } from "../types/CrudRepository";
-import { find } from "../../functions/find";
 import { Sort } from "../Sort";
 import { Table } from "../Table";
 import { Entity } from "../Entity";
 import { Id } from "../Id";
 import { Column } from "../Column";
-import { PgPersister } from "../../../pg/PgPersister";
-import { LogLevel } from "../../types/LogLevel";
 import { Temporal } from "../Temporal";
 import { TemporalType } from "../types/TemporalType";
 
@@ -47,10 +45,13 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
      */
     @Table('bars')
     class BarEntity extends Entity {
+
         constructor (dto ?: {barName: string, barDate: string}) {
             super()
-            this.barName = dto?.barName;
-            this.barDate = dto?.barDate;
+            const barName = dto?.barName ?? undefined;
+            const barDate = dto?.barDate ?? undefined;
+            this.barName = barName;
+            this.barDate = barDate;
         }
 
         @Id()
@@ -147,19 +148,17 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
     let barEntityName3 : string = 'Bar 789';
     let barEntityName4 : string = 'Bar 123';
 
-    let dateBeforeEntity1       : string = '2023-04-04T14:58:59.000Z';
-    let barEntityDate1          : string = '2023-04-30T10:03:12.000Z';
-    let dateBetweenEntity1And2  : string = '2023-05-02T17:44:14.000Z';
-    let barEntityDate2          : string = '2023-05-11T17:12:03.000Z';
-    let dateBetweenEntity2And3  : string = '2023-05-11T17:57:00.000Z';
-    let barEntityDate3          : string = '2023-05-12T07:44:12.000Z';
-    let dateBetweenEntity3And4  : string = '2023-05-12T15:30:42.000Z';
-    let barEntityDate4          : string = '2023-05-12T15:55:39.000Z';
-    let dateAfterEntity4        : string = '2023-05-12T15:55:59.000Z';
+    let dateBeforeEntity1       : string = '2023-04-04T14:58:59Z';
+    let barEntityDate1          : string = '2023-04-30T10:03:12Z';
+    let dateBetweenEntity1And2  : string = '2023-05-02T17:44:14Z';
+    let barEntityDate2          : string = '2023-05-11T17:12:03Z';
+    let dateBetweenEntity2And3  : string = '2023-05-11T17:57:00Z';
+    let barEntityDate3          : string = '2023-05-12T07:44:12Z';
+    let dateBetweenEntity3And4  : string = '2023-05-12T15:30:42Z';
+    let barEntityDate4          : string = '2023-05-12T15:55:39Z';
+    let dateAfterEntity4        : string = '2023-05-12T15:55:59Z';
 
     beforeEach( async () => {
-
-        PgPersister.setLogLevel(LogLevel.NONE);
 
         persister = context.getPersister();
 
@@ -175,16 +174,16 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
             new BarEntity(),
             persister
         );
-        PgPersister.setLogLevel(LogLevel.DEBUG);
         await barRepository.deleteAll();
-        PgPersister.setLogLevel(LogLevel.NONE);
 
         barEntity1 = await persister.insert(
             new BarEntity().getMetadata(),
             new BarEntity({barName: barEntityName1, barDate: barEntityDate1}),
         );
+
         barEntityId1 = barEntity1?.barId as string;
         if (!barEntityId1) throw new TypeError('barEntity1 failed to initialize');
+        if (barEntity1.barDate !== barEntityDate1) throw new TypeError(`barEntity1 date did not initialize correctly: ${barEntity1.barDate}`);
 
         barEntity2 = await persister.insert(
             new BarEntity().getMetadata(),
@@ -193,6 +192,8 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         barEntityId2 = barEntity2?.barId as string;
         if (!barEntityId2) throw new TypeError('barEntity2 failed to initialize');
         if (barEntityId1 === barEntityId2) throw new TypeError(`barEntity2 failed to initialize (not unique ID with barEntityId1 and barEntityId2): ${barEntityId1}`);
+        if (barEntity2.barDate !== barEntityDate2) throw new TypeError(`barEntity1 date did not initialize correctly: ${barEntity2.barDate}`);
+
 
         barEntity3 = await persister.insert(
             new BarEntity().getMetadata(),
@@ -202,6 +203,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         if (!barEntityId3) throw new TypeError('barEntity3 failed to initialize');
         if (barEntityId1 === barEntityId3) throw new TypeError(`barEntityId3 failed to initialize (not unique ID with entity 1): ${barEntityId1}`);
         if (barEntityId2 === barEntityId3) throw new TypeError(`barEntityId3 failed to initialize (not unique ID with entity 2): ${barEntityId2}`);
+        if (barEntity3.barDate !== barEntityDate3) throw new TypeError(`barEntity1 date did not initialize correctly: ${barEntity3.barDate}`);
 
         barEntity4 = await persister.insert(
             new BarEntity().getMetadata(),
@@ -212,8 +214,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         if (barEntityId1 === barEntityId4) throw new TypeError(`barEntityId4 failed to initialize (not unique ID with entity 1): ${barEntityId1}`);
         if (barEntityId2 === barEntityId4) throw new TypeError(`barEntityId4 failed to initialize (not unique ID with entity 2): ${barEntityId2}`);
         if (barEntityId3 === barEntityId4) throw new TypeError(`barEntityId4 failed to initialize (not unique ID with entity 3): ${barEntityId3}`);
-
-        PgPersister.setLogLevel(LogLevel.DEBUG);
+        if (barEntity4.barDate !== barEntityDate4) throw new TypeError(`barEntity1 date did not initialize correctly: ${barEntity4.barDate}`);
 
     });
 
@@ -525,7 +526,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
         });
 
-        it('can save older entity', async () => {
+        it.only('can save older entity', async () => {
 
             expect( await barRepository.count() ).toBe(4);
 
@@ -833,15 +834,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
     describe('#findAllByBarDateBetween', () => {
 
-        beforeEach(() => {
-            PgPersister.setLogLevel(LogLevel.DEBUG);
-        });
-
-        afterEach(() => {
-            PgPersister.setLogLevel(LogLevel.NONE);
-        });
-
-        it.only('can find all entities between values by date unordered', async () => {
+        it('can find all entities between values by date unordered', async () => {
             const items = await barRepository.findAllByBarDateBetween(barEntityDate2, barEntityDate3);
             expect(items).toHaveLength(2);
 
@@ -1004,8 +997,8 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
         it('can find an entity before time in unsorted order', async () => {
 
-            // Matches entity 1, 2 or 3
-            const item = await barRepository.findByBarDateBefore(dateBetweenEntity3And4);
+            // Matches entity 1
+            const item = await barRepository.findByBarDateBefore(dateBetweenEntity1And2);
             expect(item?.barId).toBe(barEntityId1);
             expect(item?.barName).toBe(barEntityName1);
 

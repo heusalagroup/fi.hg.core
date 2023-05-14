@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
 import "../../../jest/matchers/index";
+import { find } from "../../functions/find";
 import { OneToMany } from "../OneToMany";
 import { JoinColumn } from "../JoinColumn";
 import { RepositoryTestContext } from "./types/types/RepositoryTestContext";
@@ -8,7 +9,6 @@ import { Persister } from "../types/Persister";
 import { Repository } from "../types/Repository";
 import { createCrudRepositoryWithPersister } from "../types/CrudRepository";
 import { ManyToOne } from "../ManyToOne";
-import { find } from "../../functions/find";
 import { EntityUtils } from "../utils/EntityUtils";
 import { LogLevel } from "../../types/LogLevel";
 import { isString } from "../../types/String";

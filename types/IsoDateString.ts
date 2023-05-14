@@ -1,9 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isString } from "./String";
-import { explainNot, explainOk } from "./explain";
-import { isValidDate, parseValidDate } from "./Date";
-import { isNumber } from "./Number";
+import { explainNot, explainOk, explainOr } from "./explain";
+import { parseValidDate } from "./Date";
+import { isUndefined } from "./undefined";
 
 export type IsoDateString = string;
 
@@ -34,4 +34,12 @@ export function parseIsoDateString (value: any) : IsoDateString | undefined {
     if (isIsoDateString(value)) return value;
     const date = parseValidDate(value);
     return date ? date.toISOString() : undefined;
+}
+
+export function isIsoDateStringOrUndefined (value: unknown): value is IsoDateString | undefined {
+    return isUndefined(value) || isIsoDateString(value);
+}
+
+export function explainIsoDateStringOrUndefined (value: unknown): string {
+    return isIsoDateStringOrUndefined(value) ? explainOk() : explainNot(explainOr(['IsoDateString', 'undefined']));
 }

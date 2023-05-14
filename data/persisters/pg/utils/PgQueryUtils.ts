@@ -23,6 +23,18 @@ export class PgQueryUtils {
         return TO_CHAR_TIMESTAMP(PgQueryUtils.quoteTableAndColumn(tableName, columnName));
     }
 
+    public static quoteTableAndColumnAsColumnName (tableName: string, columnName: string, asColumnName: string) : string {
+        return AS_COLUMN_NAME(PgQueryUtils.quoteTableAndColumnAsText(tableName, columnName), asColumnName);
+    }
+
+    public static quoteTableAndColumnAsTextAsColumnName (tableName: string, columnName: string, asColumnName: string) : string {
+        return AS_COLUMN_NAME(TO_TEXT(PgQueryUtils.quoteTableAndColumn(tableName, columnName)), asColumnName);
+    }
+
+    public static quoteTableAndColumnAsTimestampStringAsColumnName (tableName: string, columnName: string, asColumnName: string) : string {
+        return AS_COLUMN_NAME(TO_CHAR_TIMESTAMP(PgQueryUtils.quoteTableAndColumn(tableName, columnName)), asColumnName);
+    }
+
 
     /**
      * Returns the placeholder for values
@@ -69,5 +81,7 @@ const ESCAPE_TABLE_OR_COLUMN = (value: string) : string => {
 }
 
 const TO_TEXT = (value: string) => `${value}::text`;
+
+const AS_COLUMN_NAME = (value: string, asColumnName: string) => `${value} AS ${PgQueryUtils.quoteColumnName(asColumnName)}`;
 
 const TO_CHAR_TIMESTAMP = (value: string) => `to_char (${value}::timestamp at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"')`;
