@@ -1,9 +1,10 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isString } from "./String";
-import { explainNot, explainOk } from "./explain";
-import { isValidDate, parseValidDate } from "./Date";
-import { isNumber } from "./Number";
+import { explainNot, explainOk, explainOr } from "./explain";
+import { parseValidDate } from "./Date";
+import { isUndefined } from "./undefined";
+import { trimStart } from "../functions/trimStart";
 
 export type IsoDateString = string;
 
@@ -30,8 +31,27 @@ export function stringifyIsoDateString (value : IsoDateString) : string {
     return `IsoDateString(${value})`;
 }
 
-export function parseIsoDateString (value: any) : IsoDateString | undefined {
+export function parseIsoDateString (
+    value: any,
+    trimFractions ?: boolean
+) : IsoDateString | undefined {
     if (isIsoDateString(value)) return value;
     const date = parseValidDate(value);
-    return date ? date.toISOString() : undefined;
+    if (!date) return undefined;
+    const str = date.toISOString();
+    if ( trimFractions !== true ) {
+        return str;
+    } else {
+        const i = str.lastIndexOf( '.' );
+        if ( i < 0 ) return str;
+        return str.substring( 0, i ) + trimStart( str.substring( i + 1 ), '0123456789' );
+    }
+}
+
+export function isIsoDateStringOrUndefined (value: unknown): value is IsoDateString | undefined {
+    return isUndefined(value) || isIsoDateString(value);
+}
+
+export function explainIsoDateStringOrUndefined (value: unknown): string {
+    return isIsoDateStringOrUndefined(value) ? explainOk() : explainNot(explainOr(['IsoDateString', 'undefined']));
 }

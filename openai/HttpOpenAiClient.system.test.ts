@@ -4,9 +4,10 @@
 //
 // These tests calls the real OpenAI API if the `OPENAI_API_KEY` is provided.
 //
+// Make sure your system testing environment runs `HgNode.initialize()`
+//
 
 import { HttpOpenAiClient } from './HttpOpenAiClient';
-import { HgNode } from "../../node/HgNode";
 import { LogLevel } from "../types/LogLevel";
 import { RequestClient } from "../RequestClient";
 import { HttpService } from "../HttpService";
@@ -21,10 +22,6 @@ RequestClient.setLogLevel(LogLevel.NONE);
 HttpService.setLogLevel(LogLevel.NONE);
 
 (OPENAI_API_KEY ? describe : describe.skip)('system', () => {
-
-    beforeAll( () => {
-        HgNode.initialize();
-    });
 
     describe('HttpOpenAiClient', () => {
 

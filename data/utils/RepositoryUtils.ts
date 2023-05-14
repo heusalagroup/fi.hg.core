@@ -10,6 +10,7 @@ import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
 import { EntityField } from "../types/EntityField";
 import { Sort } from "../Sort";
+import { Where } from "../Where";
 
 const LOG = LogService.createLogger('RepositoryUtils');
 
@@ -33,7 +34,7 @@ export class RepositoryUtils {
         RepositoryType extends CrudRepository<T, ID>
     > (
         proto          : any,
-        entityMetadata : EntityMetadata
+        entityMetadata : EntityMetadata,
     ) {
         forEach(entityMetadata.fields, (item: EntityField) => {
             const propertyName = item.propertyName;
@@ -42,14 +43,14 @@ export class RepositoryUtils {
             const camelCasePropertyName = RepositoryUtils._getCamelCaseName(propertyName);
             LOG.debug(`camelCasePropertyName = '${camelCasePropertyName}'`)
 
+            // Standard ones
             const findAllByMethodName = `findAllBy${camelCasePropertyName}`;
             if (!has(proto, findAllByMethodName)) {
                 proto[findAllByMethodName] = function findAllByProperty (propertyValue: any, sort?: Sort) : Promise<T[]> {
-                    return RepositoryUtils._findAllByProperty<T, ID>(
+                    return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
-                        propertyName,
-                        propertyValue,
                         entityMetadata,
+                        Where.propertyEquals(propertyName, propertyValue),
                         sort
                     );
                 };
@@ -58,11 +59,10 @@ export class RepositoryUtils {
             const findByMethodName = `findBy${camelCasePropertyName}`;
             if (!has(proto, findByMethodName)) {
                 proto[findByMethodName] = function findByProperty (propertyValue: any, sort?: Sort) : Promise<T | undefined> {
-                    return RepositoryUtils._findByProperty<T, ID>(
+                    return RepositoryUtils._findByCondition<T, ID>(
                         this,
-                        propertyName,
-                        propertyValue,
                         entityMetadata,
+                        Where.propertyEquals(propertyName, propertyValue),
                         sort
                     );
                 };
@@ -71,11 +71,10 @@ export class RepositoryUtils {
             const deleteAllByMethodName = `deleteAllBy${camelCasePropertyName}`;
             if (!has(proto, deleteAllByMethodName)) {
                 proto[deleteAllByMethodName] = function deleteAllByProperty (propertyValue: any) : Promise<void> {
-                    return RepositoryUtils._deleteAllByProperty<T, ID>(
+                    return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
-                        propertyName,
-                        propertyValue,
-                        entityMetadata
+                        entityMetadata,
+                        Where.propertyEquals(propertyName, propertyValue),
                     );
                 };
             }
@@ -83,11 +82,10 @@ export class RepositoryUtils {
             const existsByMethodName = `existsBy${camelCasePropertyName}`;
             if (!has(proto, existsByMethodName)) {
                 proto[existsByMethodName] = function existsByProperty (propertyValue: any) : Promise<boolean> {
-                    return RepositoryUtils._existsByProperty<T, ID>(
+                    return RepositoryUtils._existsByCondition<T, ID>(
                         this,
-                        propertyName,
-                        propertyValue,
-                        entityMetadata
+                        entityMetadata,
+                        Where.propertyEquals(propertyName, propertyValue),
                     );
                 };
             }
@@ -95,11 +93,196 @@ export class RepositoryUtils {
             const countByMethodName = `countBy${camelCasePropertyName}`;
             if (!has(proto, countByMethodName)) {
                 proto[countByMethodName] = function countByProperty (propertyValue: any) : Promise<number> {
-                    return RepositoryUtils._countByProperty<T, ID>(
+                    return RepositoryUtils._countByCondition<T, ID>(
                         this,
-                        propertyName,
-                        propertyValue,
-                        entityMetadata
+                        entityMetadata,
+                        Where.propertyEquals(propertyName, propertyValue),
+                    );
+                };
+            }
+
+
+
+            // Between
+
+            const findAllByMethodNameBetween = `findAllBy${camelCasePropertyName}Between`;
+            if (!has(proto, findAllByMethodNameBetween)) {
+                proto[findAllByMethodNameBetween] = function findAllByPropertyBetween (startValue: any, endValue: any, sort?: Sort) : Promise<T[]> {
+                    return RepositoryUtils._findAllByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBetween(propertyName, startValue, endValue),
+                        sort
+                    );
+                };
+            }
+
+            const findByMethodNameBetween = `findBy${camelCasePropertyName}Between`;
+            if (!has(proto, findByMethodNameBetween)) {
+                proto[findByMethodNameBetween] = function findByPropertyBetween (startValue: any, endValue: any, sort?: Sort) : Promise<T | undefined> {
+                    return RepositoryUtils._findByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBetween(propertyName, startValue, endValue),
+                        sort
+                    );
+                };
+            }
+
+            const deleteAllByMethodNameBetween = `deleteAllBy${camelCasePropertyName}Between`;
+            if (!has(proto, deleteAllByMethodNameBetween)) {
+                proto[deleteAllByMethodNameBetween] = function deleteAllByPropertyBetween (startValue: any, endValue: any) : Promise<void> {
+                    return RepositoryUtils._deleteAllByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBetween(propertyName, startValue, endValue),
+                    );
+                };
+            }
+
+            const existsByMethodNameBetween = `existsBy${camelCasePropertyName}Between`;
+            if (!has(proto, existsByMethodNameBetween)) {
+                proto[existsByMethodNameBetween] = function existsByPropertyBetween (startValue: any, endValue: any) : Promise<boolean> {
+                    return RepositoryUtils._existsByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBetween(propertyName, startValue, endValue),
+                    );
+                };
+            }
+
+            const countByMethodNameBetween = `countBy${camelCasePropertyName}Between`;
+            if (!has(proto, countByMethodNameBetween)) {
+                proto[countByMethodNameBetween] = function countByPropertyBetween (startValue: any, endValue: any) : Promise<number> {
+                    return RepositoryUtils._countByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBetween(propertyName, startValue, endValue),
+                    );
+                };
+            }
+
+
+
+
+            // After
+
+            const findAllByMethodNameAfter = `findAllBy${camelCasePropertyName}After`;
+            if (!has(proto, findAllByMethodNameAfter)) {
+                proto[findAllByMethodNameAfter] = function findAllByPropertyAfter (value: any, sort?: Sort) : Promise<T[]> {
+                    return RepositoryUtils._findAllByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyAfter(propertyName, value),
+                        sort
+                    );
+                };
+            }
+
+            const findByMethodNameAfter = `findBy${camelCasePropertyName}After`;
+            if (!has(proto, findByMethodNameAfter)) {
+                proto[findByMethodNameAfter] = function findByPropertyAfter (value: any, sort?: Sort) : Promise<T | undefined> {
+                    return RepositoryUtils._findByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyAfter(propertyName, value),
+                        sort
+                    );
+                };
+            }
+
+            const deleteAllByMethodNameAfter = `deleteAllBy${camelCasePropertyName}After`;
+            if (!has(proto, deleteAllByMethodNameAfter)) {
+                proto[deleteAllByMethodNameAfter] = function deleteAllByPropertyAfter (value: any) : Promise<void> {
+                    return RepositoryUtils._deleteAllByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyAfter(propertyName, value),
+                    );
+                };
+            }
+
+            const existsByMethodNameAfter = `existsBy${camelCasePropertyName}After`;
+            if (!has(proto, existsByMethodNameAfter)) {
+                proto[existsByMethodNameAfter] = function existsByPropertyAfter (value: any) : Promise<boolean> {
+                    return RepositoryUtils._existsByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyAfter(propertyName, value),
+                    );
+                };
+            }
+
+            const countByMethodNameAfter = `countBy${camelCasePropertyName}After`;
+            if (!has(proto, countByMethodNameAfter)) {
+                proto[countByMethodNameAfter] = function countByPropertyAfter (value: any) : Promise<number> {
+                    return RepositoryUtils._countByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyAfter(propertyName, value),
+                    );
+                };
+            }
+
+
+
+
+
+            // Before
+
+            const findAllByMethodNameBefore = `findAllBy${camelCasePropertyName}Before`;
+            if (!has(proto, findAllByMethodNameBefore)) {
+                proto[findAllByMethodNameBefore] = function findAllByPropertyBefore (value: any, sort?: Sort) : Promise<T[]> {
+                    return RepositoryUtils._findAllByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBefore(propertyName, value),
+                        sort
+                    );
+                };
+            }
+
+            const findByMethodNameBefore = `findBy${camelCasePropertyName}Before`;
+            if (!has(proto, findByMethodNameBefore)) {
+                proto[findByMethodNameBefore] = function findByPropertyBefore (value: any, sort?: Sort) : Promise<T | undefined> {
+                    return RepositoryUtils._findByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBefore(propertyName, value),
+                        sort
+                    );
+                };
+            }
+
+            const deleteAllByMethodNameBefore = `deleteAllBy${camelCasePropertyName}Before`;
+            if (!has(proto, deleteAllByMethodNameBefore)) {
+                proto[deleteAllByMethodNameBefore] = function deleteAllByPropertyBefore (value: any) : Promise<void> {
+                    return RepositoryUtils._deleteAllByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBefore(propertyName, value),
+                    );
+                };
+            }
+
+            const existsByMethodNameBefore = `existsBy${camelCasePropertyName}Before`;
+            if (!has(proto, existsByMethodNameBefore)) {
+                proto[existsByMethodNameBefore] = function existsByPropertyBefore (value: any) : Promise<boolean> {
+                    return RepositoryUtils._existsByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBefore(propertyName, value),
+                    );
+                };
+            }
+
+            const countByMethodNameBefore = `countBy${camelCasePropertyName}Before`;
+            if (!has(proto, countByMethodNameBefore)) {
+                proto[countByMethodNameBefore] = function countByPropertyBefore (value: any) : Promise<number> {
+                    return RepositoryUtils._countByCondition<T, ID>(
+                        this,
+                        entityMetadata,
+                        Where.propertyBefore(propertyName, value),
                     );
                 };
             }
@@ -115,23 +298,20 @@ export class RepositoryUtils {
      * The implementation for `Repository.findAllBy{PropertyName} : T[]`.
      *
      * @param self
-     * @param propertyName
-     * @param propertyValue
+     * @param where
      * @param entityMetadata
      * @param sort
      */
-    private static async _findAllByProperty<T extends Entity, ID extends EntityIdTypes> (
+    private static async _findAllByCondition<T extends Entity, ID extends EntityIdTypes> (
         self            : CrudRepository<T, ID>,
-        propertyName    : string,
-        propertyValue   : any,
         entityMetadata  : EntityMetadata,
+        where           : Where,
         sort            : Sort | undefined
     ) : Promise<T[]> {
         const persister = self.__getPersister();
-        return await persister.findAllByProperty<T, ID>(
-            propertyName,
-            propertyValue,
+        return await persister.findAll<T, ID>(
             entityMetadata,
+            where,
             sort
         );
     }
@@ -140,23 +320,20 @@ export class RepositoryUtils {
      * The implementation for `Repository.findBy{PropertyName} : Promise<T | undefined>`.
      *
      * @param self
-     * @param propertyName
-     * @param propertyValue
+     * @param where
      * @param entityMetadata
      * @param sort
      */
-    private static async _findByProperty<T extends Entity, ID extends EntityIdTypes> (
+    private static async _findByCondition<T extends Entity, ID extends EntityIdTypes> (
         self           : CrudRepository<T, ID>,
-        propertyName   : string,
-        propertyValue  : any,
         entityMetadata : EntityMetadata,
+        where          : Where,
         sort           : Sort | undefined
     ) : Promise<T | undefined> {
         const persister = self.__getPersister();
-        return await persister.findByProperty<T, ID>(
-            propertyName,
-            propertyValue,
+        return await persister.findBy<T, ID>(
             entityMetadata,
+            where,
             sort
         );
     }
@@ -165,63 +342,57 @@ export class RepositoryUtils {
      * The implementation for `Repository.deleteAllBy{PropertyName} : Promise<void>`.
      *
      * @param self
-     * @param propertyName
-     * @param propertyValue
+     * @param where
      * @param entityMetadata
      */
-    private static async _deleteAllByProperty<T extends Entity, ID extends EntityIdTypes> (
+    private static async _deleteAllByCondition<T extends Entity, ID extends EntityIdTypes> (
         self           : CrudRepository<T, ID>,
-        propertyName   : string,
-        propertyValue  : any,
-        entityMetadata : EntityMetadata
+        entityMetadata : EntityMetadata,
+        where          : Where,
     ) : Promise<void> {
-
         const persister = self.__getPersister();
-
-        return await persister.deleteAllByProperty<T, ID>(propertyName, propertyValue, entityMetadata);
-
+        return await persister.deleteAll<T, ID>(
+            entityMetadata,
+            where
+        );
     }
 
     /**
      * The implementation for `Repository.existsBy{PropertyName} : Promise<boolean>`.
      *
      * @param self
-     * @param propertyName
-     * @param propertyValue
+     * @param where
      * @param entityMetadata
      */
-    private static async _existsByProperty<T extends Entity, ID extends EntityIdTypes> (
+    private static async _existsByCondition<T extends Entity, ID extends EntityIdTypes> (
         self           : CrudRepository<T, ID>,
-        propertyName   : string,
-        propertyValue  : any,
-        entityMetadata : EntityMetadata
+        entityMetadata : EntityMetadata,
+        where          : Where,
     ) : Promise<boolean> {
-
         const persister = self.__getPersister();
-
-        return await persister.existsByProperty<T, ID>(propertyName, propertyValue, entityMetadata);
-
+        return await persister.existsBy<T, ID>(
+            entityMetadata,
+            where
+        );
     }
 
     /**
      * The implementation for `Repository.countBy{PropertyName} : Promise<number>`.
      *
      * @param self
-     * @param propertyName
-     * @param propertyValue
+     * @param where
      * @param entityMetadata
      */
-    private static async _countByProperty<T extends Entity, ID extends EntityIdTypes> (
+    private static async _countByCondition<T extends Entity, ID extends EntityIdTypes> (
         self           : CrudRepository<T, ID>,
-        propertyName   : string,
-        propertyValue  : any,
-        entityMetadata : EntityMetadata
+        entityMetadata : EntityMetadata,
+        where          : Where,
     ) : Promise<number> {
-
         const persister = self.__getPersister();
-
-        return await persister.countByProperty<T, ID>(propertyName, propertyValue, entityMetadata);
-
+        return await persister.count<T, ID>(
+            entityMetadata,
+            where
+        );
     }
 
 }

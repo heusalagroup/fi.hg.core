@@ -12,7 +12,9 @@ import { CrudRepository } from "./CrudRepository";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
 import { KeyValuePairs } from "./KeyValuePairs";
-import { Sort } from "../Sort";
+import { isSort, Sort } from "../Sort";
+import { isWhere, Where } from "../Where";
+import { isArray } from "../../types/Array";
 
 const LOG = LogService.createLogger('CrudRepositoryImpl');
 
@@ -42,7 +44,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
     /**
      * You shouldn't use Persister directly through this API.
      *
-     * This interface is exposed to a public access for our own internal implementation, because TypeScript doesn't
+     * This interface is exposed to public access for our own internal implementation, because TypeScript doesn't
      * support a concept like "friends" found from other languages.
      */
     public __getPersister () : Persister {
@@ -52,23 +54,38 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
     public async delete (entity: T): Promise<void> {
         LOG.debug(`delete: entity = `, entity);
         const id = EntityUtils.getId<T, ID>(entity, this._entityMetadata);
+        const propertyName = EntityUtils.getIdPropertyName(this._entityMetadata);
         LOG.debug(`delete: id = `, id);
-        return await this._persister.deleteById<T, ID>(id, this._entityMetadata);
+        return await this._persister.deleteAll<T, ID>(
+            this._entityMetadata,
+            Where.propertyEquals(propertyName, id)
+        );
     }
 
     public async findAll (
-        sort ?: Sort
+        arg1 ?: Where | Sort | undefined,
+        arg2 ?: Sort | Where | undefined
     ): Promise<T[]> {
-        LOG.debug(`findAll`);
-        return await this._persister.findAll(this._entityMetadata, sort);
+        const [where, sort] = this._parseArgs(arg1, arg2);
+        return await this._persister.findAll(
+            this._entityMetadata,
+            where,
+            sort
+        );
     }
 
     public async findAllById (
-        ids: any[],
+        ids: any[] | any,
         sort ?: Sort
     ) : Promise<T[]> {
         LOG.debug(`findAllById = `, ids);
-        return await this._persister.findAllById(ids, this._entityMetadata, sort);
+        ids = isArray(ids) ? ids : [ids];
+        const propertyName = EntityUtils.getIdPropertyName(this._entityMetadata);
+        return await this._persister.findAll(
+            this._entityMetadata,
+            Where.propertyListEquals(propertyName, ids),
+            sort
+        );
     }
 
     public async findById (
@@ -76,59 +93,108 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         sort ?: Sort
     ): Promise<T | undefined> {
         LOG.debug(`findById = `, id);
-        return await this._persister.findById(id, this._entityMetadata, sort);
+        const propertyName = EntityUtils.getIdPropertyName(this._entityMetadata);
+        return await this._persister.findBy(
+            this._entityMetadata,
+            Where.propertyEquals(propertyName, id),
+            sort
+        );
     }
 
+    /**
+     * @deprecated Use .findAll(Where...)
+     * @param propertyName
+     * @param value
+     * @param sort
+     */
     public async find (
         propertyName: string,
         value: any,
         sort ?: Sort
     ): Promise<T[]> {
         LOG.debug(`find = `, propertyName, value);
-        return await this._persister.findAllByProperty(
-            propertyName,
-            value,
+        return await this._persister.findAll(
             this._entityMetadata,
+            Where.propertyEquals(propertyName, value),
             sort
         );
     }
 
-    public async count (): Promise<number> {
-        LOG.debug(`count`);
-        return await this._persister.count<T, ID>(this._entityMetadata);
+    public async count (
+        where ?: Where
+    ): Promise<number> {
+        return await this._persister.count<T, ID>(this._entityMetadata, where);
     }
 
-    public async deleteAll (): Promise<void>;
-    public async deleteAll (entities: T[]): Promise<void>;
+    public async existsBy (
+        where : Where
+    ): Promise<boolean> {
+        return await this._persister.existsBy<T, ID>(this._entityMetadata, where);
+    }
 
-    public async deleteAll (entities?: T[]): Promise<void> {
-        LOG.debug(`deleteAll: entities = `, entities);
+    public async deleteAll (
+        entities ?: readonly T[] | Where | undefined
+    ): Promise<void> {
+
         if (entities === undefined) {
-            return await this._persister.deleteAll<T, ID>(this._entityMetadata);
-        } else {
-            const ids = map(entities, (item : T) => {
-                return EntityUtils.getId<T, ID>(item, this._entityMetadata);
-            });
-            LOG.debug(`deleteAll: ids = `, ids);
-            return await this._persister.deleteAllById<T, ID>(ids, this._entityMetadata);
+            LOG.debug(`deleteAll`);
+            return await this._persister.deleteAll<T, ID>(
+                this._entityMetadata,
+                undefined
+            );
         }
+
+        if (isWhere(entities)) {
+            LOG.debug(`deleteAll: where = `, entities);
+            return await this._persister.deleteAll<T, ID>(
+                this._entityMetadata,
+                entities
+            );
+        }
+
+        LOG.debug(`deleteAll: entities = `, entities);
+        const propertyName = this._entityMetadata.idPropertyName;
+        const ids = map(
+            entities,
+            (item : T)  : ID => EntityUtils.getId<T, ID>(item, this._entityMetadata)
+        );
+        LOG.debug(`deleteAll: ids = `, ids);
+        return await this._persister.deleteAll<T, ID>(
+            this._entityMetadata,
+            Where.propertyListEquals(
+                propertyName,
+                ids
+            ),
+        );
+
     }
 
     public async deleteById (id: ID): Promise<void> {
         LOG.debug(`deleteById: id = `, id);
-        return await this._persister.deleteById<T, ID>(id, this._entityMetadata);
+        return await this._persister.deleteAll<T, ID>(
+            this._entityMetadata,
+            Where.propertyEquals(this._entityMetadata.idPropertyName, id)
+        );
     }
 
-    public async deleteAllById (ids: ID[]): Promise<void> {
+    public async deleteAllById (ids: readonly ID[] | ID): Promise<void> {
+        ids = isArray(ids) ? ids : [ids];
         LOG.debug(`deleteAllById: ids = `, ids);
-        return await this._persister.deleteAllById<T, ID>(ids, this._entityMetadata);
+        const idPropertyName : string = EntityUtils.getIdPropertyName(this._entityMetadata);
+        return await this._persister.deleteAll<T, ID>(
+            this._entityMetadata,
+            Where.propertyListEquals(idPropertyName, ids)
+        );
     }
 
     public async existsById (id: ID): Promise<boolean> {
         LOG.debug(`existsById: id = `, id);
         const idPropertyName : string = EntityUtils.getIdPropertyName(this._entityMetadata);
         LOG.debug(`existsById: idPropertyName = `, idPropertyName);
-        return await this._persister.existsByProperty<T, ID>(idPropertyName, id, this._entityMetadata);
+        return await this._persister.existsBy<T, ID>(
+            this._entityMetadata,
+            Where.propertyEquals(idPropertyName, id),
+        );
     }
 
     public async saveAll (
@@ -155,13 +221,33 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         LOG.debug(`save: metadata = `, metadata);
         const id = (entity as KeyValuePairs)[metadata.idPropertyName];
         LOG.debug(`save: id = `, id);
-        if ( !id ) return await this._persister.insert(entity, metadata);
+        if ( !id ) return await this._persister.insert(metadata, entity);
         const current = await this.findById(id);
         LOG.debug(`save: current = `, current);
         if (!current) {
             throw new RepositoryEntityError(id, RepositoryEntityError.Code.ENTITY_NOT_FOUND, `Entity "${id}" not found in table: ${metadata.tableName}`);
         }
-        return await this._persister.update(entity, metadata);
+        return await this._persister.update(metadata, entity);
+    }
+
+    private _parseArgs (
+        arg1 ?: Where | Sort | undefined,
+        arg2 ?: Sort | Where | undefined
+    ) : [Where | undefined, Sort | undefined] {
+        if (isSort(arg1)) {
+            if (isWhere(arg2)) return [arg2, arg1];
+            // if (isSort(arg2)) return [undefined, arg1.and(arg2)];
+            if (arg2 !== undefined) throw new TypeError(`Argument 2 is unknown type: ${arg2}`);
+            return [undefined, arg1];
+        } else if (isWhere(arg1)) {
+            if (isSort(arg2)) return [arg1, arg2];
+            if (isWhere(arg2)) return [arg1.and(arg2), undefined];
+            if (arg2 !== undefined) throw new TypeError(`Argument 2 is unknown type: ${arg2}`);
+            return [arg1, undefined];
+        } if (arg1 === undefined && arg2 === undefined) {
+            return [undefined, undefined];
+        }
+        throw new TypeError(`Both arguments are unknown type: ${arg1} ${arg2}`);
     }
 
 }

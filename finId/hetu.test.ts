@@ -18,7 +18,7 @@ const VALID_HETU_1_DAY = 1;
 const VALID_HETU_2 = '010171-1985';
 const INVALID_HETU_1 = '010171-1234';
 
-xdescribe('HetuObject', () => {
+describe.skip('HetuObject', () => {
 
   test('HetuObject is class', () => {
     expect(new HetuObject(VALID_HETU_1)).toBeInstanceOf(HetuObject);
@@ -44,7 +44,7 @@ xdescribe('HetuObject', () => {
 
 });
 
-xdescribe('parseHetuString / hetuChecksum / parseSex', () => {
+describe.skip('parseHetuString / hetuChecksum / parseSex', () => {
 
   test('can parse valid hetu string', () => {
     expect(parseHetuString(INVALID_HETU_1)).toBeDefined();

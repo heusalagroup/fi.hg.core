@@ -44,7 +44,7 @@ describe('ProductUtils', () => {
 
         });
 
-        xit('can composite composable product', () => {
+        it.skip('can composite composable product', () => {
 
             const shellId = 'shell-1';
             const extraDiskId = 'shell-disk-1';

@@ -371,7 +371,7 @@ describe("HgAiCommandServiceImpl", () => {
 
     });
 
-    xdescribe("main", () => {
+    describe.skip("main", () => {
         // TODO:
     });
 
