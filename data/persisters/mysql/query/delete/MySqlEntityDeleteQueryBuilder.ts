@@ -10,6 +10,8 @@ import { ChainQueryBuilderUtils } from "../../../query/utils/ChainQueryBuilderUt
 import { MySqlOrChainBuilder } from "../formulas/MySqlOrChainBuilder";
 import { EntityDeleteQueryBuilder } from "../../../query/delete/EntityDeleteQueryBuilder";
 import { ChainQueryBuilder } from "../../../query/types/ChainQueryBuilder";
+import { TemporalProperty } from "../../../../types/TemporalProperty";
+import { MY_TIME_COLUMN_DEFINITIONS } from "../../constants/mysql-queries";
 
 export class MySqlEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
 
@@ -22,7 +24,8 @@ export class MySqlEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
     public buildAnd (
         where     : Where,
         tableName : string,
-        fields    : readonly EntityField[]
+        fields    : readonly EntityField[],
+        temporalProperties     : readonly TemporalProperty[]
     ) : ChainQueryBuilder {
         const completeTableName = this.getTableNameWithPrefix(tableName);
         const andBuilder = MySqlAndChainBuilder.create();
@@ -31,6 +34,8 @@ export class MySqlEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
             where,
             completeTableName,
             fields,
+            temporalProperties,
+            MY_TIME_COLUMN_DEFINITIONS,
             () => MySqlAndChainBuilder.create(),
             () => MySqlOrChainBuilder.create()
         );

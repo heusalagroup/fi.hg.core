@@ -3,7 +3,7 @@
 import { map } from "../../../../../functions/map";
 import { ChainQueryBuilder } from "../../../query/types/ChainQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
-import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN } from "../../constants/mysql-queries";
+import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_AFTER_AS_TIME, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BEFORE_AS_TIME, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUAL_AS_TIME, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN, MY_PH_TABLE_COLUMN_IN_AS_TIME } from "../../constants/mysql-queries";
 
 export class MySqlOrChainBuilder implements ChainQueryBuilder {
 
@@ -19,13 +19,8 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         return new MySqlOrChainBuilder();
     }
 
-    public valueOf () {
-        return this.toString();
-    }
 
-    public toString () : string {
-        return `"${this._formulaQuery.map(item => item.toString()).join(' OR ')}" with ${this._formulaValues.map(item=>item()).join(' ')}`;
-    }
+
 
     public setColumnInList (
         tableName : string,
@@ -84,6 +79,63 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         this._formulaValues.push(() => end);
     }
 
+    public setColumnInListAsTime (
+        tableName : string,
+        columnName : string,
+        values : readonly any[]
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_IN_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => values);
+    }
+
+    public setColumnEqualsAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_EQUAL_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => value);
+    }
+
+    public setColumnBeforeAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_BEFORE_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => value);
+    }
+
+    public setColumnAfterAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_AFTER_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => value);
+    }
+
+    public setColumnBetweenAsTime (
+        tableName : string,
+        columnName : string,
+        start : any,
+        end : any,
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => start);
+        this._formulaValues.push(() => end);
+    }
+
     public setColumnEqualsByLastInsertId (
         tableName : string,
         columnName : string
@@ -92,6 +144,22 @@ export class MySqlOrChainBuilder implements ChainQueryBuilder {
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
     }
+
+
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+
+    public valueOf () {
+        return this.toString();
+    }
+
+    public toString () : string {
+        return `"${this._formulaQuery.map(item => item.toString()).join(' OR ')}" with ${this._formulaValues.map(item=>item()).join(' ')}`;
+    }
+
 
     public build (): QueryBuildResult {
         return [ this.buildQueryString(), this.buildQueryValues() ];

@@ -14,6 +14,7 @@ import { isBetweenCondition } from "../../../conditions/BetweenCondition";
 import { isBeforeCondition } from "../../../conditions/BeforeCondition";
 import { isAfterCondition } from "../../../conditions/AfterCondition";
 import { ChainQueryBuilder, ChainQueryBuilderFactory } from "../types/ChainQueryBuilder";
+import { TemporalProperty } from "../../../types/TemporalProperty";
 
 export class ChainQueryBuilderUtils {
 
@@ -23,16 +24,20 @@ export class ChainQueryBuilderUtils {
      * @param where
      * @param completeTableName
      * @param fields
+     * @param temporalProperties
+     * @param timeColumnDefinitions
      * @param buildAndChain
      * @param buildOrChain
      */
     public static buildChain (
-        builder           : ChainQueryBuilder,
-        where             : Where,
-        completeTableName : string,
-        fields            : readonly EntityField[],
-        buildAndChain     : ChainQueryBuilderFactory,
-        buildOrChain      : ChainQueryBuilderFactory
+        builder               : ChainQueryBuilder,
+        where                 : Where,
+        completeTableName     : string,
+        fields                : readonly EntityField[],
+        temporalProperties    : readonly TemporalProperty[],
+        timeColumnDefinitions : readonly string[],
+        buildAndChain         : ChainQueryBuilderFactory,
+        buildOrChain          : ChainQueryBuilderFactory
     ) : void {
         forEach(
             where.getConditions(),
@@ -43,14 +48,14 @@ export class ChainQueryBuilderUtils {
 
                     if (isAndCondition(item)) {
                         const and : ChainQueryBuilder = buildAndChain();
-                        ChainQueryBuilderUtils.buildChain(and, item.getWhere(), completeTableName, fields, buildAndChain, buildOrChain);
+                        ChainQueryBuilderUtils.buildChain(and, item.getWhere(), completeTableName, fields, temporalProperties, timeColumnDefinitions, buildAndChain, buildOrChain);
                         builder.setFromQueryBuilder(and);
                         return;
                     }
 
                     if (isOrCondition(item)) {
                         const or : ChainQueryBuilder = buildOrChain();
-                        ChainQueryBuilderUtils.buildChain(or, item.getWhere(), completeTableName, fields, buildAndChain, buildOrChain);
+                        ChainQueryBuilderUtils.buildChain(or, item.getWhere(), completeTableName, fields, temporalProperties, timeColumnDefinitions, buildAndChain, buildOrChain);
                         builder.setFromQueryBuilder(or);
                         return;
                     }
@@ -60,22 +65,47 @@ export class ChainQueryBuilderUtils {
 
                 if (isPropertyNameTarget(target)) {
                     const propertyName = target.getPropertyName();
-                    const columnName = find(fields, (field) => field.propertyName === propertyName)?.columnName;
+                    const field = find(fields, (field) => field.propertyName === propertyName);
+                    if (!field) throw new TypeError(`Could not find field info for property "${propertyName}" from table "${completeTableName}"`);
+                    const columnName = field?.columnName;
                     if (!columnName) throw new TypeError(`Could not find column name for property "${propertyName}" from table "${completeTableName}"`);
+
+                    const { columnDefinition } = field;
+
+                    const temporalProperty = find(temporalProperties, item => item.propertyName === propertyName);
+                    const temporalType = temporalProperty?.temporalType;
+
+                    const isTime : boolean = !!temporalType || !!(columnDefinition && timeColumnDefinitions.includes(columnDefinition));
 
                     if (isEqualCondition(item)) {
                         const value = item.getValue();
-                        builder.setColumnEquals(completeTableName, columnName, value);
+                        if (isTime) {
+                            builder.setColumnEqualsAsTime(completeTableName, columnName, value);
+                        } else {
+                            builder.setColumnEquals(completeTableName, columnName, value);
+                        }
                     } else if (isBetweenCondition(item)) {
                         const start = item.getRangeStart();
                         const end = item.getRangeEnd();
-                        builder.setColumnBetween(completeTableName, columnName, start, end);
+                        if (isTime) {
+                            builder.setColumnBetweenAsTime( completeTableName, columnName, start, end );
+                        } else {
+                            builder.setColumnBetween(completeTableName, columnName, start, end);
+                        }
                     } else if (isBeforeCondition(item)) {
                         const value = item.getValue();
-                        builder.setColumnBefore(completeTableName, columnName, value);
+                        if (isTime) {
+                            builder.setColumnBeforeAsTime(completeTableName, columnName, value);
+                        } else {
+                            builder.setColumnBefore( completeTableName, columnName, value );
+                        }
                     } else if (isAfterCondition(item)) {
                         const value = item.getValue();
-                        builder.setColumnAfter(completeTableName, columnName, value);
+                        if (isTime) {
+                            builder.setColumnAfterAsTime(completeTableName, columnName, value);
+                        } else {
+                            builder.setColumnAfter( completeTableName, columnName, value );
+                        }
                     } else {
                         throw new TypeError(`The condition was unsupported: ${item}`)
                     }

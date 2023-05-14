@@ -1,10 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { InsertQueryBuilder } from "./InsertQueryBuilder";
 import { map } from "../../../../functions/map";
 import { forEach } from "../../../../functions/forEach";
+import { InsertQueryBuilder } from "./InsertQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../types/QueryBuilder";
-import { MY_PH_COLUMN, MY_PH_TABLE_COLUMN, MY_PH_VALUE } from "../../mysql/constants/mysql-queries";
 
 /**
  * Defines an abstract class for a builder of relational database create query.
@@ -14,9 +13,13 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
 
     private readonly _prefixQueries : (() => string)[];
     private readonly _prefixValues : QueryValueFactory[];
+
     private readonly _inputQueries : (() => string)[];
     private readonly _inputValues : QueryValueFactory[];
-    private readonly _columnNames : string[];
+
+    private readonly _columnNameSeparator : string;
+    private readonly _columnNameQueries : (() => string)[];
+    private readonly _columnNameValues : QueryValueFactory[];
 
     private _intoTableName : string | undefined;
     private _tablePrefix : string = '';
@@ -26,29 +29,37 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
      *
      * @protected
      */
-    protected constructor () {
-        this._columnNames = [];
+    protected constructor (
+        columnNameSeparator : string
+    ) {
         this._intoTableName = undefined;
         this._tablePrefix = '';
+        this._columnNameSeparator = columnNameSeparator;
         this._prefixQueries = [];
         this._prefixValues = [];
         this._inputQueries = [];
         this._inputValues = [];
+        this._columnNameQueries = [];
+        this._columnNameValues = [];
     }
 
-    public addColumnName (
-        name: string
+    public addColumnFactory (
+        queryFactory  : (() => string),
+        ...valueFactories : QueryValueFactory[]
     ) : void {
-        if (this._columnNames.includes(name)) {
-            // TODO: Throw an exception and fix uses?
-        } else {
-            this._columnNames.push(name);
-        }
+        this._columnNameQueries.push(queryFactory);
+        forEach(
+            valueFactories,
+            (factory) => {
+                this._columnNameValues.push(factory);
+            }
+        );
     }
 
-    public getColumnNames () : readonly string[] {
-        return this._columnNames;
-    }
+    public abstract addColumnName (
+        name: string
+    ) : void;
+
 
     public addPrefixFactory (
         queryFactory  : (() => string),
@@ -78,7 +89,10 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
 
     public abstract appendValueList (list: any[]) : void;
 
-    public abstract appendValueObject (list: {readonly [key: string] : any}) : void;
+    public abstract appendValueObject (
+        columnNames: readonly string[],
+        list: {readonly [key: string] : any}
+    ) : void;
 
     public appendValueListUsingQueryBuilder (builder: QueryBuilder) : void {
         this.addValueFactory(
@@ -171,23 +185,18 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
     public buildQueryString (): string {
         const prefixes = map(this._prefixQueries, (f) => f());
         if (!prefixes.length) throw new TypeError('No prefix factories detected for insert query builder! This must be an error.');
+        const columnNameValues = map(this._columnNameQueries, (f) => f());
+        if (!columnNameValues.length) throw new TypeError('No value placeholders detected for insert query builder! This must be an error.');
         const inputValues = map(this._inputQueries, (f) => f());
         if (!inputValues.length) throw new TypeError('No value placeholders detected for insert query builder! This must be an error.');
-        return `${prefixes.join(' ')} (${this._columnNames.map(() => MY_PH_COLUMN).join(', ')}) VALUES ${inputValues.join(', ')}`;
+        return `${prefixes.join(' ')} (${columnNameValues.join(', ')}) VALUES ${inputValues.join(', ')}`;
     }
 
     /**
      * @inheritDoc
      */
     public buildQueryValues () : readonly any[]  {
-        const prefixValues = map(this._prefixValues, (f) => f());
-        const columnValues = map(this._columnNames, (name: string) : string => name);
-        const paramValues = map(this._inputValues, (f) => f());
-        return [
-            ...prefixValues,
-            ...columnValues,
-            ...paramValues,
-        ];
+        return map(this.getQueryValueFactories(), (f) => f());
     }
 
     /**
@@ -196,7 +205,7 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
     public getQueryValueFactories () : readonly QueryValueFactory[] {
         return [
             ...this._prefixValues,
-            ...map(this._columnNames, (name : string) => (() : string => name) ),
+            ...this._columnNameValues,
             ...this._inputValues
         ];
     }

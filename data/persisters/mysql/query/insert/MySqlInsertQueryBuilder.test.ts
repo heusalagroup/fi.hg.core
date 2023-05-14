@@ -286,8 +286,8 @@ describe('MySqlInsertQueryBuilder', () => {
 
             builder.addColumnName(nameColumn);
             builder.addColumnName(ageColumn);
-            builder.appendValueObject({car_name: 'hello', car_age: 13});
-            builder.appendValueObject({car_name: 'world', car_age: 99});
+            builder.appendValueObject(['car_name', 'car_age'], {car_name: 'hello', car_age: 13});
+            builder.appendValueObject(['car_name', 'car_age'], {car_name: 'world', car_age: 99});
 
             const [ queryString, values ] = builder.build();
             expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?), (?, ?)`);
@@ -312,8 +312,8 @@ describe('MySqlInsertQueryBuilder', () => {
 
             builder.addColumnName(nameColumn);
             builder.addColumnName(ageColumn);
-            builder.appendValueObject({car_name: 'hello', car_age: 13, car_term: false});
-            builder.appendValueObject({car_term: true, car_age: 99, car_name: 'world'});
+            builder.appendValueObject(['car_name', 'car_age'],{car_name: 'hello', car_age: 13, car_term: false});
+            builder.appendValueObject(['car_name', 'car_age'],{car_term: true, car_age: 99, car_name: 'world'});
 
             const [ queryString, values ] = builder.build();
             expect( queryString ).toBe(`INSERT INTO ?? (??, ??) VALUES (?, ?), (?, ?)`);

@@ -1,29 +1,24 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { InsertQueryBuilder } from "../../../query/insert/InsertQueryBuilder";
-import {
-    MY_PH_COLUMN,
-    MY_PH_INTO_TABLE,
-    MY_PH_VALUE
-} from "../../constants/mysql-queries";
-import { BaseInsertQueryBuilder } from "../../../query/insert/BaseInsertQueryBuilder";
 import { map } from "../../../../../functions/map";
 import { reduce } from "../../../../../functions/reduce";
 import { has } from "../../../../../functions/has";
+import { InsertQueryBuilder } from "../../../query/insert/InsertQueryBuilder";
+import { BaseInsertQueryBuilder } from "../../../query/insert/BaseInsertQueryBuilder";
 import { QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
+import { PgQueryUtils } from "../../utils/PgQueryUtils";
 
-export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements InsertQueryBuilder {
+export class PgInsertQueryBuilder extends BaseInsertQueryBuilder implements InsertQueryBuilder {
 
     protected constructor () {
         super(', ');
         this.addPrefixFactory(
-            () => `INSERT ${MY_PH_INTO_TABLE}`,
-            () => this.getFullTableName()
+            () => `INSERT INTO ${PgQueryUtils.quoteTableName(this.getFullTableName())}`,
         );
     }
 
-    public static create () : MySqlInsertQueryBuilder {
-        return new MySqlInsertQueryBuilder();
+    public static create () : PgInsertQueryBuilder {
+        return new PgInsertQueryBuilder();
     }
 
     public addPrefixFactory (
@@ -47,7 +42,7 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
     public appendValueList (
         list: readonly any[]
     ) : void {
-        const queryString = `(${map(list, () => MY_PH_VALUE).join(', ')})`;
+        const queryString = `(${map(list, () => PgQueryUtils.getValuePlaceholder()).join(', ')})`;
         const valueFactories = map(list, (item) => () => item);
         this.addValueFactory(
             () : string => queryString,
@@ -60,8 +55,8 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
      * @see {@link InsertQueryBuilder.includeColumn}
      */
     public appendValueObject (
-        columnNames: readonly string[],
-        obj: {readonly [key: string] : any}
+        columnNames : readonly string[],
+        obj         : {readonly [key: string] : any}
     ) : void {
         if (!columnNames?.length) throw new TypeError(`There must be at least one column name`);
         this.appendValueList(
@@ -85,10 +80,10 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
         name: string
     ) : void {
         this.addColumnFactory(
-            () => MY_PH_COLUMN,
-            () => name
+            () => PgQueryUtils.quoteColumnName(name)
         );
     }
+
 
 
     ///////////////////////      InsertQueryBuilder      ///////////////////////
@@ -176,7 +171,7 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
      * @see {@link InsertQueryBuilder.buildQueryString}
      */
     public buildQueryString () : string {
-        return super.buildQueryString();
+        return `${super.buildQueryString()} RETURNING *`;
     }
 
     /**

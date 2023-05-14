@@ -1,45 +1,45 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { EntityField } from "../../../../types/EntityField";
-import { TemporalProperty } from "../../../../types/TemporalProperty";
-import { MySqlInsertQueryBuilder } from "./MySqlInsertQueryBuilder";
-import { EntityInsertQueryBuilder } from "../../../query/insert/EntityInsertQueryBuilder";
-import { Entity } from "../../../../Entity";
 import { forEach } from "../../../../../functions/forEach";
 import { map } from "../../../../../functions/map";
 import { has } from "../../../../../functions/has";
 import { find } from "../../../../../functions/find";
-import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { filter } from "../../../../../functions/filter";
+import { PG_TIME_COLUMN_DEFINITIONS } from "../../constants/pg-queries";
+import { EntityField } from "../../../../types/EntityField";
+import { TemporalProperty } from "../../../../types/TemporalProperty";
+import { PgInsertQueryBuilder } from "./PgInsertQueryBuilder";
+import { EntityInsertQueryBuilder } from "../../../query/insert/EntityInsertQueryBuilder";
+import { Entity } from "../../../../Entity";
+import { PgListQueryBuilder } from "../types/PgListQueryBuilder";
 import { QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
-import { MY_TIME_COLUMN_DEFINITIONS } from "../../constants/mysql-queries";
 import { LogService } from "../../../../../LogService";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
 import { LogLevel } from "../../../../../types/LogLevel";
 
-const LOG = LogService.createLogger( 'MySqlEntityInsertQueryBuilder' );
+const LOG = LogService.createLogger( 'PgEntityInsertQueryBuilder' );
 
 /**
- * Defines an interface for a builder of MySQL database read query from
+ * Defines an interface for a builder of PostgreSQL database read query from
  * entity types.
  */
-export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
+export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
 
     public static setLogLevel (level: LogLevel) : void {
         LOG.setLogLevel(level);
     }
 
-    private readonly _builder : MySqlInsertQueryBuilder;
+    private readonly _builder : PgInsertQueryBuilder;
 
     protected constructor () {
-        this._builder = MySqlInsertQueryBuilder.create();
+        this._builder = PgInsertQueryBuilder.create();
     }
 
     /**
-     * Create select query builder for MySQL
+     * Create select query builder for PostgreSQL
      */
-    public static create () : MySqlEntityInsertQueryBuilder {
-        return new MySqlEntityInsertQueryBuilder();
+    public static create () : PgEntityInsertQueryBuilder {
+        return new PgEntityInsertQueryBuilder();
     }
 
 
@@ -57,7 +57,7 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly string[] = MY_TIME_COLUMN_DEFINITIONS;
+        const timeDefinitions : readonly string[] = PG_TIME_COLUMN_DEFINITIONS;
 
         const properties : string[] = map(
             filter(
@@ -75,7 +75,7 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
             }
         );
 
-        const itemBuilder = MySqlListQueryBuilder.create();
+        const itemBuilder = PgListQueryBuilder.create();
         forEach(
             properties,
             (propertyName : string) => {
@@ -94,7 +94,7 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
                 const temporalType = temporalProperty?.temporalType;
 
                 const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
-                LOG.debug(`appendEntity: isTime: `, isTime);
+                LOG.debug(`appendEntity: isTime: `, isTime, propertyName);
 
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
                 if ( isTime ) {

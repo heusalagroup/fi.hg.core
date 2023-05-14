@@ -13,6 +13,7 @@ import { Id } from "../Id";
 import { Column } from "../Column";
 import { Temporal } from "../Temporal";
 import { TemporalType } from "../types/TemporalType";
+import { LogLevel } from "../../types/LogLevel";
 
 export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
@@ -526,7 +527,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
         });
 
-        it.only('can save older entity', async () => {
+        it('can save older entity', async () => {
 
             expect( await barRepository.count() ).toBe(4);
 

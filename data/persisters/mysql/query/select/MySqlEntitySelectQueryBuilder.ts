@@ -19,6 +19,7 @@ import { MySqlOrChainBuilder } from "../formulas/MySqlOrChainBuilder";
 import { TemporalProperty } from "../../../../types/TemporalProperty";
 import { EntitySelectQueryUtils } from "../../../query/utils/EntitySelectQueryUtils";
 import { EntitySelectQueryBuilder } from "../../../query/select/EntitySelectQueryBuilder";
+import { MY_TIME_COLUMN_DEFINITIONS } from "../../constants/mysql-queries";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -276,7 +277,8 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
     public buildAnd (
         where     : Where,
         tableName : string,
-        fields    : readonly EntityField[]
+        fields    : readonly EntityField[],
+        temporalProperties     : readonly TemporalProperty[]
     ) {
         const completeTableName = this.getTableNameWithPrefix(tableName);
         const andBuilder = MySqlAndChainBuilder.create();
@@ -285,6 +287,8 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
             where,
             completeTableName,
             fields,
+            temporalProperties,
+            MY_TIME_COLUMN_DEFINITIONS,
             () => MySqlAndChainBuilder.create(),
             () => MySqlOrChainBuilder.create()
         );

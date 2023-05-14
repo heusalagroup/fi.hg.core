@@ -143,11 +143,13 @@ export interface EntitySelectQueryBuilder
      * @param relations
      * @param metadataManager
      * @param fields
+     * @param temporalProperties
      */
     setManyToOneRelations (
         relations: readonly EntityRelationManyToOne[],
         metadataManager: PersisterMetadataManager,
-        fields: readonly EntityField[]
+        fields: readonly EntityField[],
+        temporalProperties: readonly TemporalProperty[]
     ): void;
 
 
@@ -284,7 +286,8 @@ export interface EntitySelectQueryBuilder
     buildAnd (
         where     : Where,
         tableName : string,
-        fields    : readonly EntityField[]
+        fields    : readonly EntityField[],
+        temporalProperties    : readonly TemporalProperty[]
     ) : ChainQueryBuilder;
 
 

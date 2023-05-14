@@ -3,7 +3,8 @@
 import { map } from "../../../../../functions/map";
 import { ChainQueryBuilder } from "../../../query/types/ChainQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
-import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN } from "../../constants/mysql-queries";
+import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_AFTER_AS_TIME, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BEFORE_AS_TIME, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUAL_AS_TIME, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN, MY_PH_TABLE_COLUMN_IN_AS_TIME } from "../../constants/mysql-queries";
+import { EntityUtils } from "../../../../utils/EntityUtils";
 
 export class MySqlAndChainBuilder implements ChainQueryBuilder {
 
@@ -83,6 +84,65 @@ export class MySqlAndChainBuilder implements ChainQueryBuilder {
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => value);
+    }
+
+
+    public setColumnInListAsTime (
+        tableName : string,
+        columnName : string,
+        values : readonly any[]
+    ) {
+        // FIXME: Implement list of times
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_IN_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => map(values, i => EntityUtils.parseIsoStringAsMySQLDateString(i)));
+    }
+
+    public setColumnEqualsAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_EQUAL_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => EntityUtils.parseIsoStringAsMySQLDateString(value) );
+    }
+
+    public setColumnBetweenAsTime (
+        tableName : string,
+        columnName : string,
+        start : any,
+        end : any,
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => EntityUtils.parseIsoStringAsMySQLDateString(start));
+        this._formulaValues.push(() => EntityUtils.parseIsoStringAsMySQLDateString(end));
+    }
+
+    public setColumnBeforeAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_BEFORE_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => EntityUtils.parseIsoStringAsMySQLDateString(value));
+    }
+
+    public setColumnAfterAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_AFTER_AS_TIME );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => EntityUtils.parseIsoStringAsMySQLDateString(value));
     }
 
     public setColumnEqualsByLastInsertId (

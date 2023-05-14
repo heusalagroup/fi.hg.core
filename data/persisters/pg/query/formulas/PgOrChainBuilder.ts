@@ -15,17 +15,13 @@ export class PgOrChainBuilder implements ChainQueryBuilder {
     private readonly _formulaQuery : QueryStringFactory[];
     private readonly _formulaValues : QueryValueFactory[];
 
-    constructor () {
+    protected constructor () {
         this._formulaQuery = [];
         this._formulaValues = [];
     }
 
-    public valueOf () {
-        return this.toString();
-    }
-
-    public toString () : string {
-        return `PgOrChainBuilder ${this.buildQueryString()} with [${this.buildQueryValues().join(', ')}]`;
+    public static create () {
+        return new PgOrChainBuilder();
     }
 
 
@@ -96,6 +92,79 @@ export class PgOrChainBuilder implements ChainQueryBuilder {
         this._formulaValues.push(() => end);
     }
 
+
+    /**
+     * @inheritDoc
+     */
+    public setColumnInListAsTime (
+        tableName : string,
+        columnName : string,
+        values : readonly any[]
+    ) : void {
+        const builder = new PgParameterListBuilder();
+        builder.setParams(values);
+        // FIXME: This does not support times
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumn(tableName, columnName)} IN (${builder.buildQueryString()})` );
+        forEach(
+            builder.getQueryValueFactories(),
+            (f) => this._formulaValues.push(f)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setColumnEqualsAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) : void {
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumn(tableName, columnName)} = ${PgQueryUtils.getValuePlaceholderAsTimestamp()}` );
+        this._formulaValues.push(() => value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setColumnBeforeAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) : void {
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumn(tableName, columnName)} < ${PgQueryUtils.getValuePlaceholderAsTimestamp()}` );
+        this._formulaValues.push(() => value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setColumnAfterAsTime (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) : void {
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumn(tableName, columnName)} > ${PgQueryUtils.getValuePlaceholderAsTimestamp()}` );
+        this._formulaValues.push(() => value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setColumnBetweenAsTime (
+        tableName : string,
+        columnName : string,
+        start : any,
+        end : any,
+    ) : void {
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumn(tableName, columnName)} BETWEEN ${PgQueryUtils.getValuePlaceholderAsTimestamp()} AND ${PgQueryUtils.getValuePlaceholderAsTimestamp()}` );
+        this._formulaValues.push(() => start);
+        this._formulaValues.push(() => end);
+    }
+
+
+
+
+
     /**
      * @inheritDoc
      */
@@ -106,6 +175,19 @@ export class PgOrChainBuilder implements ChainQueryBuilder {
         builder.getQueryValueFactories().forEach((factory)=> {
             this._formulaValues.push(factory);
         });
+    }
+
+
+
+
+
+
+    public valueOf () {
+        return this.toString();
+    }
+
+    public toString () : string {
+        return `PgOrChainBuilder ${this.buildQueryString()} with [${this.buildQueryValues().join(', ')}]`;
     }
 
     /**

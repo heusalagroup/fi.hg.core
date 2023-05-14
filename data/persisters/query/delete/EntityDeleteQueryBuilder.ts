@@ -5,13 +5,29 @@ import { DeleteQueryBuilder } from "./DeleteQueryBuilder";
 import { Where } from "../../../Where";
 import { EntityField } from "../../../types/EntityField";
 import { ChainQueryBuilder } from "../types/ChainQueryBuilder";
+import { TemporalProperty } from "../../../types/TemporalProperty";
+import { QueryEntityWhereable } from "../types/QueryEntityWhereable";
 
-export interface EntityDeleteQueryBuilder extends DeleteQueryBuilder {
+export interface EntityDeleteQueryBuilder extends DeleteQueryBuilder, QueryEntityWhereable {
 
 
 
     ///////////////////////         DeleteQueryBuilder         ///////////////////////
 
+
+
+    ///////////////////////         QueryEntityWhereable         ///////////////////////
+
+
+    /**
+     * @inheritDoc
+     */
+    buildAnd (
+        where     : Where,
+        tableName : string,
+        fields    : readonly EntityField[],
+        temporalProperties     : readonly TemporalProperty[]
+    ) : ChainQueryBuilder;
 
 
     ///////////////////////         QueryWhereable         ///////////////////////
@@ -21,15 +37,6 @@ export interface EntityDeleteQueryBuilder extends DeleteQueryBuilder {
      * @inheritDoc
      */
     setWhereFromQueryBuilder (builder: QueryBuilder): void;
-
-    /**
-     * @inheritDoc
-     */
-    buildAnd (
-        where     : Where,
-        tableName : string,
-        fields    : readonly EntityField[]
-    ) : ChainQueryBuilder;
 
 
     ///////////////////////         TablePrefixable         ///////////////////////

@@ -25,6 +25,7 @@ import { SortOrder } from "../../../../types/SortOrder";
 import { PgQueryUtils } from "../../utils/PgQueryUtils";
 import { EntityUtils } from "../../../../utils/EntityUtils";
 import { SortDirection } from "../../../../types/SortDirection";
+import { PG_TIME_COLUMN_DEFINITIONS } from "../../constants/pg-queries";
 
 /**
  * Defines an interface for a builder of PostgreSQL database read query from
@@ -161,7 +162,8 @@ export class PgEntitySelectQueryBuilder
     public setManyToOneRelations (
         relations: readonly EntityRelationManyToOne[],
         metadataManager: PersisterMetadataManager,
-        fields: readonly EntityField[]
+        fields: readonly EntityField[],
+        temporalProperties: readonly TemporalProperty[]
     ): void {
         forEach(
             relations,
@@ -186,6 +188,11 @@ export class PgEntitySelectQueryBuilder
         );
     }
 
+
+    ///////////////////////         QueryEntityWhereable         ///////////////////////
+
+
+
     /**
      * @inheritDoc
      * @see {@link EntitySelectQueryBuilder.buildAnd}
@@ -193,17 +200,20 @@ export class PgEntitySelectQueryBuilder
     public buildAnd (
         where     : Where,
         tableName : string,
-        fields    : readonly EntityField[]
+        fields    : readonly EntityField[],
+        temporalProperties : readonly TemporalProperty[]
     ) : PgAndChainBuilder {
         const completeTableName = this.getTableNameWithPrefix(tableName);
-        const andBuilder = new PgAndChainBuilder();
+        const andBuilder = PgAndChainBuilder.create();
         ChainQueryBuilderUtils.buildChain(
             andBuilder,
             where,
             completeTableName,
             fields,
-            () => new PgAndChainBuilder(),
-            () => new PgOrChainBuilder()
+            temporalProperties,
+            PG_TIME_COLUMN_DEFINITIONS,
+            () => PgAndChainBuilder.create(),
+            () => PgOrChainBuilder.create()
         );
         return andBuilder;
     }

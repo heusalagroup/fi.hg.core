@@ -28,6 +28,9 @@ import { every } from "../../functions/every";
 import { PersisterMetadataManager } from "../persisters/types/PersisterMetadataManager";
 import { has } from "../../functions/has";
 import { LogLevel } from "../../types/LogLevel";
+import { TemporalProperty } from "../types/TemporalProperty";
+import { find } from "../../functions/find";
+import { createIsoDateString, parseIsoDateString } from "../../types/IsoDateString";
 
 const LOG = LogService.createLogger('EntityUtils');
 
@@ -223,18 +226,30 @@ export class EntityUtils {
             throw new TypeError(`The dbEntity must be defined: ${dbEntity}`);
         }
 
-        const { createEntity, fields, manyToOneRelations, oneToManyRelations } = parentMetadata;
+        const { createEntity, fields, manyToOneRelations, oneToManyRelations, temporalProperties } = parentMetadata;
+
         if (!createEntity) throw new TypeError(`Could not create entity: No create function`);
         const ret : T = createEntity() as unknown as T;
 
         forEach(
             fields,
             (field: EntityField) : void => {
-                const {fieldType, propertyName, columnName, metadata} = field;
+                const { fieldType, propertyName, columnName, metadata, columnDefinition } = field;
                 if (fieldType === EntityFieldType.JOINED_ENTITY) {
                     // This is handled below at @ManyToOne
                 } else {
-                    (ret as any)[propertyName] = dbEntity[columnName];
+
+                    const temporalProperty : TemporalProperty | undefined = find(temporalProperties, item => item.propertyName === propertyName);
+                    const temporalType = temporalProperty?.temporalType;
+
+                    const isTime : boolean = !!temporalType || !!(columnDefinition && ['TIMESTAMP', 'DATETIME', 'DATE', 'TIME'].includes(columnDefinition));
+                    if (isTime) {
+                        LOG.debug(`toEntity: "${propertyName}": as string "${dbEntity[columnName]}": `, dbEntity[columnName]);
+                        (ret as any)[propertyName] = EntityUtils.parseDateAsString(dbEntity[columnName]);
+                    } else {
+                        (ret as any)[propertyName] = dbEntity[columnName];
+                    }
+
                 }
             }
         );
@@ -375,7 +390,7 @@ export class EntityUtils {
 
     public static parseDateAsString (input : Date | string | undefined) : string | undefined {
         if ( (isString(input) && trim(input)) === '' || input === undefined ) return undefined;
-        return `${input}`;
+        return `${parseIsoDateString(input, true)}`;
     }
 
     public static parseMySQLDateAsIsoString (value : any) : string | undefined {

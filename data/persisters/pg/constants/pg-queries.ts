@@ -2,6 +2,8 @@
 
 import { PgQueryUtils } from "../utils/PgQueryUtils";
 
+export const PG_TIME_COLUMN_DEFINITIONS : readonly string[] = ['TIMESTAMP', 'DATETIME', 'TIME'];
+
 function assertExists (value: string, message: string) : string {
     if (!value) throw new TypeError(message);
     return value;
@@ -27,3 +29,18 @@ export const PG_PH_LEFT_JOIN = (
     fromTable: string, fromColumn: string,
     sourceTable: string, sourceColumn: string,
 ) => `LEFT JOIN ${qt(fromTable)} ON ${qtc(sourceTable, sourceColumn)} = ${qtc(fromTable, fromColumn)}`;
+
+// export const TO_CHAR_TIMESTAMP = (value: string) => `to_json(${value})#>>'{}'`;
+export const PG_TO_CHAR_TIMESTAMP = (value: string) => `${value}`;
+
+export const PG_TO_TIMESTAMP = (value: string) => `${value}`;
+
+export const PG_AS_COLUMN_NAME = (value: string, asColumnName: string) => `${value} AS ${qc( asColumnName )}`;
+
+export const PG_TO_TEXT = (value: string) => `${value}::text`;
+
+export const PG_ESCAPE_TABLE_OR_COLUMN = (value: string): string => {
+    const doubleQuote = '"';
+    const escapedIdentifier = value.split( doubleQuote ).join( doubleQuote + doubleQuote );
+    return doubleQuote + escapedIdentifier + doubleQuote;
+};

@@ -5,8 +5,10 @@ import { Where } from "../../../Where";
 import { EntityField } from "../../../types/EntityField";
 import { ChainQueryBuilder } from "./ChainQueryBuilder";
 import { QueryWhereable } from "./QueryWhereable";
+import { TemporalProperty } from "../../../types/TemporalProperty";
 
 export interface QueryEntityWhereable extends QueryWhereable {
+
 
     /**
      * Build a chain of "and" operations for filtering criteria.
@@ -14,11 +16,13 @@ export interface QueryEntityWhereable extends QueryWhereable {
      * @param where The criteria to filter entities
      * @param tableName The table name without prefix
      * @param fields Entity field definitions
+     * @param temporalProperties
      */
     buildAnd (
         where     : Where,
         tableName : string,
-        fields    : readonly EntityField[]
+        fields    : readonly EntityField[],
+        temporalProperties     : readonly TemporalProperty[]
     ) : ChainQueryBuilder;
 
 

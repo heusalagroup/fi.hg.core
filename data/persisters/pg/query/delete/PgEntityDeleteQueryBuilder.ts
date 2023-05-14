@@ -8,6 +8,8 @@ import { Where } from "../../../../Where";
 import { ChainQueryBuilderUtils } from "../../../query/utils/ChainQueryBuilderUtils";
 import { PgOrChainBuilder } from "../formulas/PgOrChainBuilder";
 import { EntityDeleteQueryBuilder } from "../../../query/delete/EntityDeleteQueryBuilder";
+import { TemporalProperty } from "../../../../types/TemporalProperty";
+import { PG_TIME_COLUMN_DEFINITIONS } from "../../constants/pg-queries";
 
 export class PgEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
 
@@ -27,11 +29,12 @@ export class PgEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
     public buildAnd (
         where     : Where,
         tableName : string,
-        fields    : readonly EntityField[]
+        fields    : readonly EntityField[],
+        temporalProperties    : readonly TemporalProperty[],
     ) : PgAndChainBuilder {
         const completeTableName = this.getTableNameWithPrefix(tableName);
-        const andBuilder = new PgAndChainBuilder();
-        ChainQueryBuilderUtils.buildChain(andBuilder, where, completeTableName, fields, () => new PgAndChainBuilder(), () => new PgOrChainBuilder());
+        const andBuilder = PgAndChainBuilder.create();
+        ChainQueryBuilderUtils.buildChain(andBuilder, where, completeTableName, fields, temporalProperties, PG_TIME_COLUMN_DEFINITIONS, () => PgAndChainBuilder.create(), () => PgOrChainBuilder.create());
         return andBuilder;
     }
 

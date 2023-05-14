@@ -1,10 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { BaseListQueryBuilder } from "../../../query/types/BaseListQueryBuilder";
-import { MY_PH_TABLE_COLUMN, MY_PH_TABLE_COLUMN_AS_TEXT, MY_PH_FROM_TIMESTAMP_TABLE_COLUMN_AS_TIMESTAMP, MY_PH_VALUE, MY_PH_VALUE_AS_TEXT, MY_PH_VALUE_TO_ISO_STRING, MY_PH_ASSIGN_VALUE, MY_PH_ASSIGN_TIMESTAMP_VALUE } from "../../constants/mysql-queries";
-import { EntityUtils } from "../../../../utils/EntityUtils";
+import { PgQueryUtils } from "../../utils/PgQueryUtils";
 
-export class MySqlListQueryBuilder extends BaseListQueryBuilder {
+export class PgListQueryBuilder extends BaseListQueryBuilder {
 
     protected constructor (separator : string) {
         super(separator);
@@ -12,8 +11,8 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
 
     public static create (
         separator ?: string
-    ) : MySqlListQueryBuilder {
-        return new MySqlListQueryBuilder( separator ?? ', ' );
+    ) : PgListQueryBuilder {
+        return new PgListQueryBuilder( separator ?? ', ' );
     }
 
     /**
@@ -21,7 +20,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setParam (value: any): void {
         this.appendExpression(
-            () => MY_PH_VALUE,
+            () => PgQueryUtils.getValuePlaceholder(),
             () => value
         );
     }
@@ -31,7 +30,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setParamAsText (value: any): void {
         this.appendExpression(
-            () => MY_PH_VALUE_AS_TEXT,
+            () => PgQueryUtils.getValuePlaceholderAsText(),
             () => value
         );
     }
@@ -41,8 +40,8 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setParamFromTimestampString (value: any): void {
         this.appendExpression(
-            () => MY_PH_VALUE,
-            () => EntityUtils.parseIsoStringAsMySQLDateString(value)
+            () => PgQueryUtils.getValuePlaceholderAsTimestamp(),
+            () => value
         );
     }
 
@@ -51,7 +50,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setParamAsTimestampValue (value: any): void {
         this.appendExpression(
-            () => MY_PH_VALUE_TO_ISO_STRING,
+            () => PgQueryUtils.getValuePlaceholderAsTimestampString(),
             () => value
         );
     }
@@ -63,7 +62,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
         factory: () => any
     ): void {
         this.appendExpression(
-            () => MY_PH_VALUE,
+            () => PgQueryUtils.getValuePlaceholder(),
             factory
         );
     }
@@ -73,9 +72,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setTableColumn (tableName: string, columnName: string): void {
         this.appendExpression(
-            () => MY_PH_TABLE_COLUMN,
-            () => tableName,
-            () => columnName
+            () => PgQueryUtils.quoteTableAndColumn(tableName, columnName)
         );
     }
 
@@ -84,9 +81,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setTableColumnAsText (tableName: string, columnName: string): void {
         this.appendExpression(
-            () => MY_PH_TABLE_COLUMN_AS_TEXT,
-            () => tableName,
-            () => columnName
+            () => PgQueryUtils.quoteTableAndColumnAsText(tableName, columnName),
         );
     }
 
@@ -95,9 +90,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
      */
     public setTableColumnAsTimestampString (tableName: string, columnName: string): void {
         this.appendExpression(
-            () => MY_PH_FROM_TIMESTAMP_TABLE_COLUMN_AS_TIMESTAMP,
-            () => tableName,
-            () => columnName
+            () => PgQueryUtils.quoteTableAndColumnAsTimestampString(tableName, columnName),
         );
     }
 
@@ -109,8 +102,7 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
         value: any
     ) : void {
         this.appendExpression(
-            () => MY_PH_ASSIGN_VALUE,
-            () => columnName,
+            () => `${PgQueryUtils.quoteColumnName(columnName)} = ${PgQueryUtils.getValuePlaceholder()}`,
             () => value
         );
     }
@@ -123,9 +115,8 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
         value: any
     ) : void {
         this.appendExpression(
-            () => MY_PH_ASSIGN_TIMESTAMP_VALUE,
-            () => columnName,
-            () => EntityUtils.parseIsoStringAsMySQLDateString(value)
+            () => `${PgQueryUtils.quoteColumnName(columnName)} = ${PgQueryUtils.getValuePlaceholderAsTimestampString()}`,
+            () => value
         );
     }
 
