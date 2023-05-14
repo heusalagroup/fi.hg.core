@@ -33,16 +33,19 @@ export function stringifyIsoDateString (value : IsoDateString) : string {
 
 export function parseIsoDateString (
     value: any,
-    trimFractions : boolean = false
+    trimFractions ?: boolean
 ) : IsoDateString | undefined {
     if (isIsoDateString(value)) return value;
     const date = parseValidDate(value);
     if (!date) return undefined;
     const str = date.toISOString();
-    if ( !trimFractions ) return str;
-    const i = str.lastIndexOf( '.' );
-    if ( i < 0 ) return str;
-    return str.substring( 0, i ) + trimStart( str.substring( i + 1 ), '0123456789' );
+    if ( trimFractions !== true ) {
+        return str;
+    } else {
+        const i = str.lastIndexOf( '.' );
+        if ( i < 0 ) return str;
+        return str.substring( 0, i ) + trimStart( str.substring( i + 1 ), '0123456789' );
+    }
 }
 
 export function isIsoDateStringOrUndefined (value: unknown): value is IsoDateString | undefined {

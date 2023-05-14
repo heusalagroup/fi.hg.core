@@ -69,7 +69,7 @@ describe('IsoDateString', () => {
         });
 
         it('can parse valid values without milliseconds', () => {
-            expect( parseIsoDateString('"Sun Apr 30 2023 10:03:12 GMT+0300 (Eastern European Summer Time)') ).toBe('2023-04-23T10:51:32.000Z');
+            expect( parseIsoDateString('"Sun Apr 30 2023 10:03:12 GMT+0300 (Eastern European Summer Time)') ).toBe('2023-04-30T07:03:12.000Z');
         });
 
         it('can parse invalid values', () => {

@@ -11,6 +11,7 @@ import { Table } from "../../../../Table";
 import { Id } from "../../../../Id";
 import { Column } from "../../../../Column";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
+import { LogLevel } from "../../../../../types/LogLevel";
 
 describe('MySqlEntityInsertQueryBuilder', () => {
 
@@ -72,6 +73,8 @@ describe('MySqlEntityInsertQueryBuilder', () => {
     let entities : readonly Entity[];
 
     beforeEach( () => {
+
+        MySqlEntityInsertQueryBuilder.setLogLevel(LogLevel.NONE);
 
         createEntity = () : Entity => new CarEntity();
 

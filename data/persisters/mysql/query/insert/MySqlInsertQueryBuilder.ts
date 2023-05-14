@@ -14,8 +14,11 @@ import { QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryB
 
 export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements InsertQueryBuilder {
 
+    private readonly _columnNames : string[];
+
     protected constructor () {
         super(', ');
+        this._columnNames = [];
         this.addPrefixFactory(
             () => `INSERT ${MY_PH_INTO_TABLE}`,
             () => this.getFullTableName()
@@ -84,6 +87,8 @@ export class MySqlInsertQueryBuilder extends BaseInsertQueryBuilder implements I
     public addColumnName (
         name: string
     ) : void {
+        if (this._columnNames.includes(name)) return;
+        this._columnNames.push(name);
         this.addColumnFactory(
             () => MY_PH_COLUMN,
             () => name

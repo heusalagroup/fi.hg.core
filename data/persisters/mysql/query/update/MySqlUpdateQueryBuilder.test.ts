@@ -146,7 +146,7 @@ describe('MySqlUpdateQueryBuilder', () => {
             builder.setWhereFromQueryBuilder(where);
 
             const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`UPDATE ?? SET ?? = ? WHERE (??.?? = ?)`);
+            expect( queryString ).toBe(`UPDATE ?? SET ?? = DATE_FORMAT(?, '%Y-%m-%d %H:%i:%s') WHERE (??.?? = ?)`);
 
             expect( values ).toHaveLength(6);
             expect( values[0] ).toBe(tablePrefix+tableName);
@@ -175,7 +175,7 @@ describe('MySqlUpdateQueryBuilder', () => {
             builder.setWhereFromQueryBuilder(where);
 
             const [ queryString, values ] = builder.build();
-            expect( queryString ).toBe(`UPDATE ?? SET ?? = ?, ?? = ? WHERE (??.?? = ?)`);
+            expect( queryString ).toBe(`UPDATE ?? SET ?? = ?, ?? = DATE_FORMAT(?, '%Y-%m-%d %H:%i:%s') WHERE (??.?? = ?)`);
 
             expect( values ).toHaveLength(8);
             expect( values[0] ).toBe(tablePrefix+tableName);
