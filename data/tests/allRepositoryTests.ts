@@ -6,9 +6,7 @@ import { entityRelationshipTests } from "./entityRelationshipTests";
 import { Persister } from "../types/Persister";
 
 export const allRepositoryTests = (
-    createPersister     : () => Persister,
-    basicCrud           : boolean,
-    entityRelationships : boolean
+    createPersister     : () => Persister
 ) => {
 
     let context : RepositoryTestContext = createRepositoryTestContext();
@@ -22,11 +20,11 @@ export const allRepositoryTests = (
         context.persister = undefined;
     });
 
-    (basicCrud ? describe : describe.skip)('CRUD operations', () => {
+    describe('CRUD operations', () => {
         basicCrudTests(context);
     });
 
-    (entityRelationships ? describe : describe.skip)('Entity relationships', () => {
+    describe('Entity relationships', () => {
         entityRelationshipTests(context);
     });
 

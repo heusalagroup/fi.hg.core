@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
 import "../../../jest/matchers/index";
+import { find } from "../../functions/find";
 import { OneToMany } from "../OneToMany";
 import { JoinColumn } from "../JoinColumn";
 import { RepositoryTestContext } from "./types/types/RepositoryTestContext";
@@ -8,7 +9,6 @@ import { Persister } from "../types/Persister";
 import { Repository } from "../types/Repository";
 import { createCrudRepositoryWithPersister } from "../types/CrudRepository";
 import { ManyToOne } from "../ManyToOne";
-import { find } from "../../functions/find";
 import { EntityUtils } from "../utils/EntityUtils";
 import { LogLevel } from "../../types/LogLevel";
 import { isString } from "../../types/String";
@@ -137,8 +137,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 1`)
         cartA = new CartEntity({cartName: cartA_name});
         cartA = await persister.insert(
+            cartA.getMetadata(),
             cartA,
-            cartA.getMetadata()
         );
         cartA_id = cartA?.cartId as string;
         if (!isString(cartA_id)) throw new TypeError(`cartA_id failed to initialize: ${JSON.stringify(cartA_id)}`);
@@ -146,8 +146,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 2`)
         cartA_item1 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item1_name});
         cartA_item1 = await persister.insert(
+            cartA_item1.getMetadata(),
             cartA_item1,
-            cartA_item1.getMetadata()
         );
         cartA_item1_id = cartA_item1?.cartItemId as string;
         if (!isString(cartA_item1_id)) throw new TypeError(`cartItemA1_id failed to initialize: ${JSON.stringify(cartA_item1_id)}`);
@@ -155,8 +155,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 3`)
         cartA_item2 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item2_name});
         cartA_item2 = await persister.insert(
+            cartA_item2.getMetadata(),
             cartA_item2,
-            cartA_item2.getMetadata()
         );
         cartA_item2_id = cartA_item2?.cartItemId as string;
         if (!isString(cartA_item2_id)) throw new TypeError(`cartItemA2_id failed to initialize: ${JSON.stringify(cartA_item2_id)}`);
@@ -164,8 +164,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 4`)
         cartA_item3 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item3_name});
         cartA_item3 = await persister.insert(
+            cartA_item3.getMetadata(),
             cartA_item3,
-            cartA_item3.getMetadata()
         );
         cartA_item3_id = cartA_item3?.cartItemId as string;
         if (!isString(cartA_item3_id)) throw new TypeError(`cartItemA3_id failed to initialize: ${JSON.stringify(cartA_item3_id)}`);
@@ -173,8 +173,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 5`)
         cartB = new CartEntity({cartName: cartB_name});
         cartB = await persister.insert(
+            cartB.getMetadata(),
             cartB,
-            cartB.getMetadata()
         );
         cartB_id = cartB?.cartId as string;
         if (!isString(cartB_id)) throw new TypeError(`cartB_id failed to initialize: ${JSON.stringify(cartB_id)}`);
@@ -182,8 +182,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 6`)
         cartB_item1 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item1_name});
         cartB_item1 = await persister.insert(
+            cartB_item1.getMetadata(),
             cartB_item1,
-            cartB_item1.getMetadata()
         );
         cartB_item1_id = cartB_item1?.cartItemId as string;
         if (!isString(cartB_item1_id)) throw new TypeError(`cartB_item1_id failed to initialize: ${JSON.stringify(cartB_item1_id)}`);
@@ -191,8 +191,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 7`)
         cartB_item2 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item2_name});
         cartB_item2 = await persister.insert(
+            cartB_item2.getMetadata(),
             cartB_item2,
-            cartB_item2.getMetadata()
         );
         cartB_item2_id = cartB_item2?.cartItemId as string;
         if (!isString(cartB_item2_id)) throw new TypeError(`cartB_item2_id failed to initialize: ${JSON.stringify(cartB_item2_id)}`);
@@ -200,8 +200,8 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // LOG.debug(`Step 8`)
         cartB_item3 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item3_name});
         cartB_item3 = await persister.insert(
+            cartB_item3.getMetadata(),
             cartB_item3,
-            cartB_item3.getMetadata()
         );
         cartB_item3_id = cartB_item3?.cartItemId as string;
         if (!isString(cartB_item3_id)) throw new TypeError(`cartB_item3_id failed to initialize: ${JSON.stringify(cartB_item3_id)}`);
