@@ -5,6 +5,7 @@ import { EntityField } from "../types/EntityField";
 import { EntityFieldType } from "../types/EntityFieldType";
 import { TemporalProperty } from "../types/TemporalProperty";
 import { TemporalType } from "../types/TemporalType";
+import { ColumnDefinition } from "../types/ColumnDefinition";
 
 describe('EntityBuilderUtils', () => {
 
@@ -27,7 +28,7 @@ describe('EntityBuilderUtils', () => {
 
         });
 
-        it('calls the correct callback based on the UNKNOWN field widthout columnDefinition', () => {
+        it('calls the correct callback based on the UNKNOWN field without columnDefinition', () => {
 
             const fields: EntityField[] = [
                 { fieldType: EntityFieldType.UNKNOWN, propertyName: 'dateTime', columnName: 'date_time', nullable: false },
@@ -62,7 +63,7 @@ describe('EntityBuilderUtils', () => {
         it('calls the correct callback based on the UNKNOWN field with columnDefinition as TIMESTAMP', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: 'TIMESTAMP' },
+                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: ColumnDefinition.TIMESTAMP },
             ];
 
             const temporalProperties: TemporalProperty[] = [
@@ -125,7 +126,7 @@ describe('EntityBuilderUtils', () => {
         it('calls the correct callback based on the BIGINT column definition', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'fooId', columnName: 'foo_id', nullable: false, columnDefinition: 'BIGINT' },
+                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'fooId', columnName: 'foo_id', nullable: false, columnDefinition: ColumnDefinition.BIGINT },
             ];
 
             const temporalProperties: TemporalProperty[] = [
@@ -157,8 +158,8 @@ describe('EntityBuilderUtils', () => {
         it('calls multiple correct callbacks based on the field and temporal properties', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.DATE_TIME, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: 'TIMESTAMP' },
-                { fieldType: EntityFieldType.STRING, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: 'BIGINT' },
+                { fieldType: EntityFieldType.DATE_TIME, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: ColumnDefinition.TIMESTAMP },
+                { fieldType: EntityFieldType.STRING, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: ColumnDefinition.BIGINT },
                 { fieldType: EntityFieldType.NUMBER, propertyName: 'number', columnName: 'number_column', nullable: false },
                 // Add more field types as needed
             ];

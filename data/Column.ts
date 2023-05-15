@@ -4,6 +4,7 @@ import { isString } from "../types/String";
 import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
 import { EntityMetadata } from "./types/EntityMetadata";
 import { createEntityField } from "./types/EntityField";
+import { parseColumnDefinition } from "./types/ColumnDefinition";
 
 export const Column = (
     columnName : string,
@@ -12,7 +13,7 @@ export const Column = (
     return (target: any, propertyName : string | symbol) => {
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);
         EntityMetadataUtils.updateMetadata(target.constructor, (metadata: EntityMetadata) => {
-            metadata.fields.push(createEntityField(propertyName, columnName, columnDefinition));
+            metadata.fields.push(createEntityField(propertyName, columnName, parseColumnDefinition(columnDefinition)));
         });
     };
 };

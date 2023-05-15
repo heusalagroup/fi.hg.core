@@ -15,6 +15,7 @@ import { isBeforeCondition } from "../../../conditions/BeforeCondition";
 import { isAfterCondition } from "../../../conditions/AfterCondition";
 import { ChainQueryBuilder, ChainQueryBuilderFactory } from "../types/ChainQueryBuilder";
 import { TemporalProperty } from "../../../types/TemporalProperty";
+import { ColumnDefinition } from "../../../types/ColumnDefinition";
 
 export class ChainQueryBuilderUtils {
 
@@ -35,7 +36,7 @@ export class ChainQueryBuilderUtils {
         completeTableName     : string,
         fields                : readonly EntityField[],
         temporalProperties    : readonly TemporalProperty[],
-        timeColumnDefinitions : readonly string[],
+        timeColumnDefinitions : readonly ColumnDefinition[],
         buildAndChain         : ChainQueryBuilderFactory,
         buildOrChain          : ChainQueryBuilderFactory
     ) : void {

@@ -1,8 +1,10 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { PgQueryUtils } from "../utils/PgQueryUtils";
+import { ColumnDefinition } from "../../../types/ColumnDefinition";
 
-export const PG_TIME_COLUMN_DEFINITIONS : readonly string[] = ['TIMESTAMP', 'DATETIME', 'TIME'];
+export const PG_TIME_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.TIMESTAMP, ColumnDefinition.TIMESTAMPTZ, ColumnDefinition.DATETIME, ColumnDefinition.TIME];
+export const PG_JSON_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.JSON, ColumnDefinition.JSONB];
 
 function assertExists (value: string, message: string) : string {
     if (!value) throw new TypeError(message);

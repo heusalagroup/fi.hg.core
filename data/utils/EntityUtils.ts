@@ -7,7 +7,7 @@ import { RepositoryError } from "../types/RepositoryError";
 import { trim } from "../../functions/trim";
 import { isString } from "../../types/String";
 import { MySqlDateTime } from "../persisters/mysql/types/MySqlDateTime";
-import { isReadonlyJsonAny, parseJson, parseReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
+import { cloneJson, isJsonAny, isReadonlyJsonAny, parseJson, parseReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
 import { isNumber } from "../../types/Number";
 import { reduce } from "../../functions/reduce";
 import { LogService } from "../../LogService";
@@ -30,7 +30,8 @@ import { has } from "../../functions/has";
 import { LogLevel } from "../../types/LogLevel";
 import { TemporalProperty } from "../types/TemporalProperty";
 import { find } from "../../functions/find";
-import { createIsoDateString, parseIsoDateString } from "../../types/IsoDateString";
+import { parseIsoDateString } from "../../types/IsoDateString";
+import { ColumnDefinition } from "../types/ColumnDefinition";
 
 const LOG = LogService.createLogger('EntityUtils');
 
@@ -179,7 +180,7 @@ export class EntityUtils {
         return clonedEntity;
     }
 
-    public static cloneValue<T> (value: T) : T {
+    public static cloneValue<T = any> (value: T) : T {
 
         if ( isString(value)
             || isNumber(value)
@@ -190,15 +191,19 @@ export class EntityUtils {
             return value;
         }
 
-        if (isArray(value)) {
+        if ( isArray(value) ) {
             return map(
                 value,
                 (item: any) => EntityUtils.cloneValue(item)
             ) as unknown as T;
         }
 
-        if (isEntity(value)) {
+        if ( isEntity(value) ) {
             return value.clone() as unknown as T;
+        }
+
+        if ( isJsonAny(value) ) {
+            return cloneJson(value) as unknown as T;
         }
 
         LOG.debug(`value = `, value);
@@ -222,6 +227,8 @@ export class EntityUtils {
         metadataManager: PersisterMetadataManager
     ): T {
 
+        const jsonDefinitions = [ColumnDefinition.JSON, ColumnDefinition.JSONB];
+
         if (!dbEntity) {
             throw new TypeError(`The dbEntity must be defined: ${dbEntity}`);
         }
@@ -242,13 +249,21 @@ export class EntityUtils {
                     const temporalProperty : TemporalProperty | undefined = find(temporalProperties, item => item.propertyName === propertyName);
                     const temporalType = temporalProperty?.temporalType;
 
-                    const isTime : boolean = !!temporalType || !!(columnDefinition && ['TIMESTAMP', 'DATETIME', 'DATE', 'TIME'].includes(columnDefinition));
+                    const isTime : boolean = !!temporalType || !!(columnDefinition && [ColumnDefinition.TIMESTAMP, ColumnDefinition.DATETIME, ColumnDefinition.DATE, ColumnDefinition.TIME].includes(columnDefinition));
                     if (isTime) {
                         LOG.debug(`toEntity: "${propertyName}": as string "${dbEntity[columnName]}": `, dbEntity[columnName]);
                         (ret as any)[propertyName] = EntityUtils.parseDateAsString(dbEntity[columnName]);
-                    } else {
-                        (ret as any)[propertyName] = dbEntity[columnName];
+                        return;
                     }
+
+                    const isJson : boolean = columnDefinition ? jsonDefinitions.includes(columnDefinition) : false;
+                    if (isJson) {
+                        LOG.debug(`toEntity: "${propertyName}": as string "${dbEntity[columnName]}": `, dbEntity[columnName]);
+                        (ret as any)[propertyName] = EntityUtils.parseJsonObject(dbEntity[columnName]);
+                        return;
+                    }
+
+                    (ret as any)[propertyName] = dbEntity[columnName];
 
                 }
             }
@@ -335,6 +350,15 @@ export class EntityUtils {
         return ret;
     }
 
+    public static getPropertyFromEntity<T extends Entity> (value : T, propertyName: string) : any {
+
+        // TODO: Some day, we'll use this. If the property is JSON, we could already use.
+        //       This would support things like `"jsonData.name"`.
+        //return get(value, propertyName);
+
+        return has(value, propertyName) ? (value as any)[propertyName] : undefined;
+    }
+
     public static getIdColumnName (metadata: EntityMetadata) : string {
         return EntityUtils.getColumnName(metadata.idPropertyName, metadata.fields);
     }
@@ -403,9 +427,8 @@ export class EntityUtils {
         return parsed ? parsed : undefined;
     }
 
-    public static parseJson (value : any) : string | undefined {
-        let parsed = MySqlDateTime.parse(EntityUtils.parseDateAsString(value));
-        return parsed ? parsed.getISOString() : undefined;
+    public static toJsonString (value : any) : string | undefined {
+        return JSON.stringify(value);
     }
 
     public static parseIsoStringAsMySQLDateString (value : any) : string | undefined {

@@ -151,9 +151,7 @@ export class MemoryPersister implements Persister {
     ): Promise<T[]> {
         const tableName = metadata.tableName;
         if (!has(this._data, tableName)) return [];
-
         const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
-
         const allItems = this._data[tableName].items;
         const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
         const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);

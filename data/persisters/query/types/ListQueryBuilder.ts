@@ -83,9 +83,20 @@ export interface ListQueryBuilder extends QueryBuilder {
     ): void;
 
     /**
+     * Appends expression which maps the value to next item as cast to JSON string
+     *
+     * Use this when importing JSON to the database.
+     *
+     * @param value
+     */
+    setParamFromJson (
+        value: any
+    ): void;
+
+    /**
      * Appends expression which maps the value to next item as cast to ISO timestamp string
      *
-     * Use this when exporting timestamps from the database.
+     * Use this when importing timestamps to the database.
      *
      * @param value
      */
@@ -96,7 +107,7 @@ export interface ListQueryBuilder extends QueryBuilder {
     /**
      * Appends expression which maps the value to next item as cast to relational database time format from ISO timestamp string
      *
-     * Use this when importing data to the database.
+     * Use this when exporting data to the database.
      *
      * @param value
      */
@@ -129,6 +140,21 @@ export interface ListQueryBuilder extends QueryBuilder {
      * @param value The time value
      */
     setAssignmentWithParamAsTimestamp (
+        columnName: string,
+        value: any
+    ) : void
+
+    /**
+     * Set a parameter with an assigment.
+     *
+     * This is usually used in the update clause, e.g. it is the
+     * `columnName = ?` part from the
+     * `UPDATE table SET columnName = ?`.
+     *
+     * @param columnName The column name to set
+     * @param value The time value
+     */
+    setAssignmentWithParamAsJson (
         columnName: string,
         value: any
     ) : void

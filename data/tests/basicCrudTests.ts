@@ -13,7 +13,6 @@ import { Id } from "../Id";
 import { Column } from "../Column";
 import { Temporal } from "../Temporal";
 import { TemporalType } from "../types/TemporalType";
-import { LogLevel } from "../../types/LogLevel";
 
 export const basicCrudTests = (context : RepositoryTestContext) : void => {
 

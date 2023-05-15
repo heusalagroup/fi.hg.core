@@ -91,6 +91,13 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
     /**
      * @inheritDoc
      */
+    public abstract setParamFromJson (
+        value: any
+    ): void;
+
+    /**
+     * @inheritDoc
+     */
     public abstract setParamFromTimestampString (
         value: any
     ): void;
@@ -114,6 +121,14 @@ export abstract class BaseListQueryBuilder implements ListQueryBuilder {
      * @inheritDoc
      */
     public abstract setAssignmentWithParamAsTimestamp (
+        columnName: string,
+        value: any
+    ) : void;
+
+    /**
+     * @inheritDoc
+     */
+    public abstract setAssignmentWithParamAsJson (
         columnName: string,
         value: any
     ) : void;

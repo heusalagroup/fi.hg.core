@@ -6,6 +6,7 @@ import { TemporalProperty } from "../../../types/TemporalProperty";
 import { TemporalType } from "../../../types/TemporalType";
 import { SelectQueryBuilder } from "../select/SelectQueryBuilder";
 import { EntitySelectQueryUtils } from "./EntitySelectQueryUtils";
+import { ColumnDefinition } from "../../../types/ColumnDefinition";
 
 describe('EntitySelectQueryUtils', () => {
 
@@ -25,7 +26,7 @@ describe('EntitySelectQueryUtils', () => {
 
             const fields: EntityField[] = [
                 { fieldType: EntityFieldType.DATE_TIME, propertyName: 'datetime', columnName: 'date_time', nullable: false },
-                { fieldType: EntityFieldType.BIGINT, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: 'BIGINT' },
+                { fieldType: EntityFieldType.BIGINT, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: ColumnDefinition.BIGINT },
             ];
 
             const temporalProperties: TemporalProperty[] = [

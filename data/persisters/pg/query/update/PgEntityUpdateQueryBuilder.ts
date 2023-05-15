@@ -10,6 +10,7 @@ import { has } from "../../../../../functions/has";
 import { find } from "../../../../../functions/find";
 import { PgListQueryBuilder } from "../types/PgListQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../../query/types/QueryBuilder";
+import { PG_TIME_COLUMN_DEFINITIONS } from "../../constants/pg-queries";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -43,7 +44,7 @@ export class PgEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly string[] = ['TIMESTAMP', 'DATETIME', 'DATE', 'TIME'];
+        const timeDefinitions : readonly string[] = PG_TIME_COLUMN_DEFINITIONS;
         const setAssigmentBuilder = PgListQueryBuilder.create();
         forEach(
             fields,

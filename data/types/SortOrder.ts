@@ -2,6 +2,7 @@
 
 import { SortDirection } from "./SortDirection";
 import { has } from "../../functions/has";
+import { get } from "../../functions/get";
 
 /**
  * @see https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Sort.Order.html
@@ -36,8 +37,8 @@ export class SortOrder {
                 const property = order.getProperty();
                 const direction = order.getDirection();
 
-                const aValue = a && has(a, property) ? (a as any)[property] : undefined;
-                const bValue = b && has(b, property) ? (b as any)[property] : undefined;
+                const aValue = a && get(a, property);
+                const bValue = b && get(b, property);
 
                 if (aValue === bValue) continue;
 

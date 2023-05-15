@@ -16,57 +16,12 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
         return new MySqlListQueryBuilder( separator ?? ', ' );
     }
 
-    /**
-     * @inheritDoc
-     */
-    public setParam (value: any): void {
-        this.appendExpression(
-            () => MY_PH_VALUE,
-            () => value
-        );
-    }
 
-    /**
-     * @inheritDoc
-     */
-    public setParamAsText (value: any): void {
-        this.appendExpression(
-            () => MY_PH_VALUE_AS_TEXT,
-            () => value
-        );
-    }
 
-    /**
-     * @inheritDoc
-     */
-    public setParamFromTimestampString (value: any): void {
-        this.appendExpression(
-            () => MY_PH_VALUE,
-            () => EntityUtils.parseIsoStringAsMySQLDateString(value)
-        );
-    }
 
-    /**
-     * @inheritDoc
-     */
-    public setParamAsTimestampValue (value: any): void {
-        this.appendExpression(
-            () => MY_PH_VALUE_TO_ISO_STRING,
-            () => value
-        );
-    }
+    ///////////////////         ListQueryBuilder         ///////////////////
 
-    /**
-     * @inheritDoc
-     */
-    public setParamFactory (
-        factory: () => any
-    ): void {
-        this.appendExpression(
-            () => MY_PH_VALUE,
-            factory
-        );
-    }
+
 
     /**
      * @inheritDoc
@@ -104,6 +59,68 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
     /**
      * @inheritDoc
      */
+    public setParam (value: any): void {
+        this.appendExpression(
+            () => MY_PH_VALUE,
+            () => value
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setParamFactory (
+        factory: () => any
+    ): void {
+        this.appendExpression(
+            () => MY_PH_VALUE,
+            factory
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setParamAsText (value: any): void {
+        this.appendExpression(
+            () => MY_PH_VALUE_AS_TEXT,
+            () => value
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setParamFromTimestampString (value: any): void {
+        this.appendExpression(
+            () => MY_PH_VALUE,
+            () => EntityUtils.parseIsoStringAsMySQLDateString(value)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setParamFromJson (value: any): void {
+        this.appendExpression(
+            () => MY_PH_VALUE,
+            () => EntityUtils.toJsonString(value)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setParamAsTimestampValue (value: any): void {
+        this.appendExpression(
+            () => MY_PH_VALUE_TO_ISO_STRING,
+            () => value
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public setAssignmentWithParam (
         columnName: string,
         value: any
@@ -126,6 +143,20 @@ export class MySqlListQueryBuilder extends BaseListQueryBuilder {
             () => MY_PH_ASSIGN_TIMESTAMP_VALUE,
             () => columnName,
             () => EntityUtils.parseIsoStringAsMySQLDateString(value)
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setAssignmentWithParamAsJson (
+        columnName: string,
+        value: any
+    ) : void {
+        this.appendExpression(
+            () => MY_PH_ASSIGN_VALUE,
+            () => columnName,
+            () => EntityUtils.toJsonString(value)
         );
     }
 

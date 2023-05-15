@@ -5,13 +5,14 @@ import { reduce } from "../../../../functions/reduce";
 import { Condition } from "../../../conditions/types/Condition";
 import { isPropertyNameTarget, PropertyNameTarget } from "../../../conditions/types/PropertyNameTarget";
 import { BetweenCondition, isBetweenCondition } from "../../../conditions/BetweenCondition";
-import { has } from "../../../../functions/has";
 import { EqualCondition, isEqualCondition } from "../../../conditions/EqualCondition";
 import { isWhereConditionTarget } from "../../../conditions/types/WhereConditionTarget";
 import { isOrCondition } from "../../../conditions/OrCondition";
 import { isAndCondition } from "../../../conditions/AndCondition";
 import { BeforeCondition, isBeforeCondition } from "../../../conditions/BeforeCondition";
 import { AfterCondition, isAfterCondition } from "../../../conditions/AfterCondition";
+import { isEqual } from "../../../../functions/isEqual";
+import { get } from "../../../../functions/get";
 
 // import { LogService } from "../../../../LogService";
 // const LOG = LogService.createLogger('MemoryItemUtils');
@@ -249,10 +250,16 @@ export class MemoryValueUtils {
         value: T,
         propertyName: string
     ) : T | undefined {
-        if (!has(value, propertyName)) return undefined;
-        return (value as any)[propertyName];
+        return get(value, propertyName);
     }
 
+    /**
+     * This method is used in the between tests.
+     *
+     * @param value
+     * @param rangeStart
+     * @param rangeEnd
+     */
     public static rangeTest<T = any> (
         value      : T,
         rangeStart : T,
@@ -265,7 +272,7 @@ export class MemoryValueUtils {
         value     : T,
         testValue : T
     ) : boolean {
-        return value === testValue;
+        return isEqual(value, testValue);
     }
 
     public static beforeTest<T = any> (

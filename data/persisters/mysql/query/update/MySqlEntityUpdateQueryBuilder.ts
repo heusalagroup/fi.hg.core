@@ -10,6 +10,8 @@ import { has } from "../../../../../functions/has";
 import { find } from "../../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../../query/types/QueryBuilder";
+import { MY_JSON_COLUMN_DEFINITIONS, MY_TIME_COLUMN_DEFINITIONS } from "../../constants/mysql-queries";
+import { ColumnDefinition } from "../../../../types/ColumnDefinition";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -43,11 +45,15 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly string[] = ['TIMESTAMP', 'DATETIME', 'DATE', 'TIME'];
+        const timeDefinitions : readonly ColumnDefinition[] = MY_TIME_COLUMN_DEFINITIONS;
+        const jsonDefinitions : readonly ColumnDefinition[] = MY_JSON_COLUMN_DEFINITIONS;
         const setAssigmentBuilder = MySqlListQueryBuilder.create();
         forEach(
             fields,
             (field: EntityField) => {
+
+                // FIXME: This code is almost identical to the MySqlEntityInsertQueryBuilder. Consider moving it as a utility function.
+
                 const { propertyName, columnName, columnDefinition } = field;
                 if (ignoreProperties.includes(propertyName)) return;
 
@@ -57,11 +63,22 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
                 );
                 const temporalType = temporalProperty?.temporalType;
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
-                if ( temporalType || (columnDefinition && timeDefinitions.includes(columnDefinition)) ) {
+
+                const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
+
+                if ( isTime ) {
                     setAssigmentBuilder.setAssignmentWithParamAsTimestamp(columnName, value);
-                } else {
-                    setAssigmentBuilder.setAssignmentWithParam(columnName, value);
+                    return;
                 }
+
+                const isJson : boolean = !isTime && columnDefinition ? jsonDefinitions.includes(columnDefinition) : false;
+                if (isJson) {
+                    setAssigmentBuilder.setAssignmentWithParamAsJson(columnName, value);
+                    return;
+                }
+
+                setAssigmentBuilder.setAssignmentWithParam(columnName, value);
+
             }
         );
         this._builder.appendSetListUsingQueryBuilder(setAssigmentBuilder);

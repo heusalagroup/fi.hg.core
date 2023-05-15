@@ -38,6 +38,16 @@ export class PgListQueryBuilder extends BaseListQueryBuilder {
     /**
      * @inheritDoc
      */
+    public setParamFromJson (value: any): void {
+        this.appendExpression(
+            () => PgQueryUtils.getValuePlaceholder(),
+            () => value
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public setParamFromTimestampString (value: any): void {
         this.appendExpression(
             () => PgQueryUtils.getValuePlaceholderAsTimestamp(),
@@ -116,6 +126,19 @@ export class PgListQueryBuilder extends BaseListQueryBuilder {
     ) : void {
         this.appendExpression(
             () => `${PgQueryUtils.quoteColumnName(columnName)} = ${PgQueryUtils.getValuePlaceholderAsTimestampString()}`,
+            () => value
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public setAssignmentWithParamAsJson (
+        columnName: string,
+        value: any
+    ) : void {
+        this.appendExpression(
+            () => `${PgQueryUtils.quoteColumnName(columnName)} = ${PgQueryUtils.getValuePlaceholder()}`,
             () => value
         );
     }

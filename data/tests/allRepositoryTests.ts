@@ -4,6 +4,7 @@ import { createRepositoryTestContext, RepositoryTestContext } from "./types/type
 import { basicCrudTests } from "./basicCrudTests";
 import { entityRelationshipTests } from "./entityRelationshipTests";
 import { Persister } from "../types/Persister";
+import { typeJsonTests } from "./typeJsonTests";
 
 export const allRepositoryTests = (
     createPersister     : () => Persister
@@ -26,6 +27,14 @@ export const allRepositoryTests = (
 
     describe('Entity relationships', () => {
         entityRelationshipTests(context);
+    });
+
+    describe('Types', () => {
+
+        describe('JSON', () => {
+            typeJsonTests(context);
+        });
+
     });
 
 };

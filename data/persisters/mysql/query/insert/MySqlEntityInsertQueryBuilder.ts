@@ -7,15 +7,16 @@ import { EntityInsertQueryBuilder } from "../../../query/insert/EntityInsertQuer
 import { Entity } from "../../../../Entity";
 import { forEach } from "../../../../../functions/forEach";
 import { map } from "../../../../../functions/map";
-import { has } from "../../../../../functions/has";
 import { find } from "../../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { filter } from "../../../../../functions/filter";
 import { QueryBuildResult, QueryValueFactory } from "../../../query/types/QueryBuilder";
-import { MY_TIME_COLUMN_DEFINITIONS } from "../../constants/mysql-queries";
+import { MY_JSON_COLUMN_DEFINITIONS, MY_TIME_COLUMN_DEFINITIONS } from "../../constants/mysql-queries";
 import { LogService } from "../../../../../LogService";
 import { EntityFieldType } from "../../../../types/EntityFieldType";
 import { LogLevel } from "../../../../../types/LogLevel";
+import { EntityUtils } from "../../../../utils/EntityUtils";
+import { ColumnDefinition } from "../../../../types/ColumnDefinition";
 
 const LOG = LogService.createLogger( 'MySqlEntityInsertQueryBuilder' );
 
@@ -57,7 +58,8 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly string[] = MY_TIME_COLUMN_DEFINITIONS;
+        const timeDefinitions : readonly ColumnDefinition[] = MY_TIME_COLUMN_DEFINITIONS;
+        const jsonDefinitions : readonly ColumnDefinition[] = MY_JSON_COLUMN_DEFINITIONS;
 
         const properties : string[] = map(
             filter(
@@ -80,6 +82,8 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
             properties,
             (propertyName : string) => {
 
+                // FIXME: This code is almost identical to the MySqlEntityInsertQueryBuilder. Consider moving it as a utility function.
+
                 const field = find(fields, (item) => item.propertyName === propertyName);
                 if (!field) throw new TypeError(`Field info not found for property "${propertyName}"`);
 
@@ -93,15 +97,22 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
                 );
                 const temporalType = temporalProperty?.temporalType;
 
+                const value : any = EntityUtils.getPropertyFromEntity(entity, propertyName) ?? null;
+
                 const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
                 LOG.debug(`appendEntity: isTime: `, isTime);
-
-                const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
                 if ( isTime ) {
                     itemBuilder.setParamFromTimestampString(value);
-                } else {
-                    itemBuilder.setParam(value);
+                    return;
                 }
+
+                const isJson : boolean = !isTime && columnDefinition ? jsonDefinitions.includes(columnDefinition) : false;
+                if (isJson) {
+                    itemBuilder.setParamFromJson(value);
+                    return;
+                }
+
+                itemBuilder.setParam(value);
 
             }
         );
