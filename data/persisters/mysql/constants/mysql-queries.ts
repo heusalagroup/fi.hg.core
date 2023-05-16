@@ -4,7 +4,7 @@ import { SortDirection } from "../../../types/SortDirection";
 import { ColumnDefinition } from "../../../types/ColumnDefinition";
 
 export const MY_TIME_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.TIMESTAMP, ColumnDefinition.DATETIME, ColumnDefinition.DATE, ColumnDefinition.TIME];
-export const MY_JSON_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.JSON];
+export const MY_JSON_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.JSON, ColumnDefinition.JSONB];
 
 export const MY_PH_VALUE = `?`;
 export const MY_PH_ASSIGN_VALUE = `?? = ?`;

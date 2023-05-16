@@ -25,6 +25,7 @@ import { createMemoryItem, MemoryItem } from "./types/MemoryItem";
 import { createMemoryTable, MemoryTable } from "./types/MemoryTable";
 import { MemoryIdType } from "./types/MemoryIdType";
 import { MemoryValueUtils } from "./utils/MemoryValueUtils";
+import { PersisterType } from "../types/PersisterType";
 
 const LOG = LogService.createLogger('MemoryPersister');
 
@@ -64,6 +65,14 @@ export class MemoryPersister implements Persister {
         this._data = {};
         this._idType = idType ?? MemoryIdType.STRING;
         this._metadataManager = new PersisterMetadataManagerImpl();
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link Persister.getPersisterType}
+     */
+    public getPersisterType (): PersisterType {
+        return PersisterType.MEMORY;
     }
 
     /**

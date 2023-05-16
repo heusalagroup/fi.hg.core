@@ -7,6 +7,7 @@ import { first } from "../../../functions/first";
 import { isArray } from "../../../types/Array";
 import { Sort } from "../../Sort";
 import { Where } from "../../Where";
+import { PersisterType } from "../types/PersisterType";
 
 /**
  * This persister implements every method but doesn't really do anything.
@@ -15,6 +16,10 @@ import { Where } from "../../Where";
  * @see {@link Persister}
  */
 export class MockPersister implements Persister {
+
+    public getPersisterType (): PersisterType {
+        return PersisterType.MOCK;
+    }
 
     /**
      * **MOCKED VERSION!**

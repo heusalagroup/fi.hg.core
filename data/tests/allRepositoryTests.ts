@@ -5,12 +5,15 @@ import { basicCrudTests } from "./basicCrudTests";
 import { entityRelationshipTests } from "./entityRelationshipTests";
 import { Persister } from "../types/Persister";
 import { typeJsonTests } from "./typeJsonTests";
+import { typeNativeJsonTests } from "./typeNativeJsonTests";
+import { PersisterType } from "../persisters/types/PersisterType";
 
 export const allRepositoryTests = (
-    createPersister     : () => Persister
+    persisterType   : PersisterType,
+    createPersister : () => Persister
 ) => {
 
-    let context : RepositoryTestContext = createRepositoryTestContext();
+    let context : RepositoryTestContext = createRepositoryTestContext(persisterType);
 
     beforeEach(() => {
         context.persister = createPersister();
@@ -31,8 +34,12 @@ export const allRepositoryTests = (
 
     describe('Types', () => {
 
-        describe('JSON', () => {
+        describe('JSON (string)', () => {
             typeJsonTests(context);
+        });
+
+        describe('JSON (native)', () => {
+            typeNativeJsonTests(context);
         });
 
     });

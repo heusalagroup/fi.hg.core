@@ -8,6 +8,7 @@ import { MemoryPersister } from "./MemoryPersister";
 import { allRepositoryTests } from "../../tests/allRepositoryTests";
 import { setCrudRepositoryLogLevel } from "../../types/CrudRepository";
 import { PersisterMetadataManagerImpl } from "../types/PersisterMetadataManagerImpl";
+import { PersisterType } from "../types/PersisterType";
 
 describe('Repository integrations', () => {
 
@@ -21,6 +22,7 @@ describe('Repository integrations', () => {
 
     describe('Memory-based', () => {
         allRepositoryTests(
+            PersisterType.MEMORY,
             () => new MemoryPersister()
         );
     });

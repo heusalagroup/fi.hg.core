@@ -5,6 +5,7 @@ import { EntityMetadata } from "./EntityMetadata";
 import { Entity, EntityIdTypes } from "../Entity";
 import { Sort } from "../Sort";
 import { Where } from "../Where";
+import { PersisterType } from "../persisters/types/PersisterType";
 
 /**
  * Implements interface for relational database entity persister.
@@ -35,6 +36,11 @@ import { Where } from "../Where";
  * @see {@link MockPersister}
  */
 export interface Persister {
+
+    /**
+     * Get the type of the persister.
+     */
+    getPersisterType () : PersisterType;
 
     /**
      * Destroys the persister.
