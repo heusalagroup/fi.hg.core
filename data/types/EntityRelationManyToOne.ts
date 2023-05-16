@@ -9,20 +9,17 @@ export interface EntityRelationManyToOne {
     readonly propertyName : string;
 
     /**
-     * The remote table in which this entity is mapped to, if known.
+     * The remote table in which this entity is mapped to.
      *
-     * This will be reverse-matched using the mappedBy property and the column
-     * name from the `@OneToMany` and `@JoinColumn` annotations.
-     *
-     * @See PersiserMetadataManagerImpl
+     * @See {@link ManyToOne}
      */
-    readonly mappedTable ?: string | undefined;
+    readonly mappedTable : string;
 
 }
 
 export function createEntityRelationManyToOne (
     propertyName  : string,
-    mappedTable   : string | undefined
+    mappedTable   : string
 ) : EntityRelationManyToOne {
     return {
         propertyName,

@@ -36,7 +36,7 @@ describe('PersisterMetadataManagerImpl', () => {
                 @Column('cart_id')
                 public cartId ?: string;
 
-                @OneToMany("cart")
+                @OneToMany("cart_items","cart")
                 public cartItems : readonly CartItemEntity[];
 
             }

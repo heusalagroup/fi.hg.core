@@ -7,7 +7,7 @@ import { createEntityRelationManyToOne } from "./types/EntityRelationManyToOne";
 import { EntityConstructor } from "./Entity";
 
 export const ManyToOne = (
-    mapped : string | EntityConstructor
+    mappedTo : string | EntityConstructor
 ): PropertyDecorator => {
     return (
         target: any,
@@ -15,13 +15,13 @@ export const ManyToOne = (
     ) => {
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);
 
-        let mappedTable : string | undefined = undefined;
-        if (isString(mapped)) {
-            if (!mapped) throw new TypeError(`The mapped property "${propertyName}" cannot be empty`);
-            mappedTable = mapped;
-        } else if (mapped) {
-            const metadata = EntityMetadataUtils.getMetadata( mapped );
-            if ( !metadata ) throw new TypeError( `Could not find metadata for property "${propertyName}" Entity constructor: ${mapped}` );
+        let mappedTable : string;
+        if (isString(mappedTo)) {
+            if (!mappedTo) throw new TypeError(`The mapped property "${propertyName}" cannot be empty`);
+            mappedTable = mappedTo;
+        } else if (mappedTo) {
+            const metadata = EntityMetadataUtils.getMetadata( mappedTo );
+            if ( !metadata ) throw new TypeError( `Could not find metadata for property "${propertyName}" Entity constructor: ${mappedTo}` );
             if ( !metadata.tableName ) throw new TypeError( `Could not find table name for property "${propertyName}" from metadata: ${metadata}` );
             mappedTable = metadata.tableName;
         } else {

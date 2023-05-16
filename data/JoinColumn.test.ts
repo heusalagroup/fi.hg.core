@@ -25,11 +25,12 @@ describe('JoinColumn', () => {
         @Column('cart_id')
         public cartId ?: string;
 
-        @OneToMany("cart")
+        @OneToMany('cart_items', "cart")
         public cartItems ?: readonly CartItemEntity[];
 
     }
 
+    @Table('cart_items')
     class CartItemEntity extends Entity {
 
         constructor () {

@@ -113,7 +113,7 @@ export class PersisterMetadataManagerImpl implements PersisterMetadataManager {
                             oneToManyMetadata.oneToManyRelations,
                             (oneToMany: EntityRelationOneToMany) : EntityRelationOneToMany => {
                                 LOG.debug(`item = `, oneToMany, manyToOnePropertyName, oneToManyTableName);
-                                if (oneToMany.mappedBy === manyToOnePropertyName && oneToMany.mappedTable !== tableName) {
+                                if ( oneToMany.mappedBy === manyToOnePropertyName && oneToMany.mappedTable !== tableName ) {
                                     LOG.debug(`Column "${manyToOneColumnName}" in "${oneToManyTableName}" will be linked to property "${manyToOnePropertyName}" in table "${tableName}"`);
                                     return createEntityRelationOneToMany(
                                         oneToMany.propertyName,

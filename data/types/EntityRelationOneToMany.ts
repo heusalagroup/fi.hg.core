@@ -14,14 +14,11 @@ export interface EntityRelationOneToMany {
     readonly mappedBy : string;
 
     /**
-     * The remote table in which this entity is mapped to, if known.
+     * The remote table in which this entity is mapped to.
      *
-     * This will be reverse-matched using the mappedBy property and the column
-     * name from the `@ManyToOne` and `@JoinColumn` annotations.
-     *
-     * @See {@link PersiserMetadataManagerImpl}
+     * @See {@link OneToMany}
      */
-    readonly mappedTable ?: string | undefined;
+    readonly mappedTable : string;
 
 }
 
@@ -34,7 +31,7 @@ export interface EntityRelationOneToMany {
 export function createEntityRelationOneToMany (
     propertyName  : string,
     mappedBy      : string,
-    mappedTable  ?: string | undefined
+    mappedTable   : string
 ) : EntityRelationOneToMany {
     return {
         propertyName,

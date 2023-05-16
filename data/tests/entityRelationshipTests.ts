@@ -35,7 +35,7 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         @Column('cart_name')
         public cartName ?: string;
 
-        @OneToMany("cart")
+        @OneToMany('cart_items', "cart")
         public cartItems : readonly CartItemEntity[];
 
     }

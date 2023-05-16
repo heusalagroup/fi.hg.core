@@ -24,11 +24,12 @@ describe('OneToMany', () => {
         @Column('cart_id')
         public cartId ?: string;
 
-        @OneToMany("cart")
+        @OneToMany("cart_items", "cart")
         public cartItems ?: readonly CartItemEntity[];
 
     }
 
+    @Table('cart_items')
     class CartItemEntity extends Entity {
 
         constructor () {
@@ -54,7 +55,7 @@ describe('OneToMany', () => {
     });
 
     it('can set fields metadata for cart property', () => {
-        const expectedItem : EntityRelationOneToMany = createEntityRelationOneToMany("cartItems", "cart");
+        const expectedItem : EntityRelationOneToMany = createEntityRelationOneToMany("cartItems", "cart", "cart_items");
         expect(metadata.oneToManyRelations).toBeArray();
         expect(metadata.oneToManyRelations).toContainEqual(expectedItem);
     });
