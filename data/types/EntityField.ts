@@ -34,6 +34,20 @@ export interface EntityField {
     nullable   : boolean;
 
     /**
+     * If enabled, this field will be included in INSERT queries.
+     *
+     * Default is `true`.
+     */
+    insertable ?: boolean;
+
+    /**
+     * If enabled, this field will be included in UPDATE queries.
+     *
+     * Default is `true`.
+     */
+    updatable ?: boolean;
+
+    /**
      * The field metadata if this field is an entity
      */
     metadata   ?: EntityMetadata | undefined;
@@ -41,18 +55,22 @@ export interface EntityField {
 }
 
 export function createEntityField (
-    propertyName : string,
-    columnName   : string,
-    columnDefinition ?: ColumnDefinition,
-    nullable    ?: boolean | undefined,
-    fieldType   ?: EntityFieldType | undefined,
-    metadata    ?: EntityMetadata | undefined,
+    propertyName       : string,
+    columnName         : string,
+    columnDefinition  ?: ColumnDefinition,
+    nullable          ?: boolean | undefined,
+    fieldType         ?: EntityFieldType | undefined,
+    metadata          ?: EntityMetadata | undefined,
+    insertable        ?: boolean | undefined,
+    updatable         ?: boolean | undefined,
 ) : EntityField {
     return {
         propertyName,
         columnName,
         ...(columnDefinition ? {columnDefinition: parseColumnDefinition(columnDefinition)} : {}),
         nullable : nullable ?? true,
+        insertable : insertable ?? true,
+        updatable : updatable ?? true,
         fieldType : parseEntityFieldType(fieldType) ?? EntityFieldType.UNKNOWN,
         ...(metadata ? {metadata} : {})
     };

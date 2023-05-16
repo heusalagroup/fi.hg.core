@@ -8,12 +8,28 @@ import { parseColumnDefinition } from "./types/ColumnDefinition";
 
 export const Column = (
     columnName : string,
-    columnDefinition ?: string
+    columnDefinition ?: string,
+    opts ?: {
+        readonly insertable ?: boolean,
+        readonly updatable ?: boolean,
+        readonly nullable ?: boolean,
+    }
 ): PropertyDecorator => {
     return (target: any, propertyName : string | symbol) => {
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);
         EntityMetadataUtils.updateMetadata(target.constructor, (metadata: EntityMetadata) => {
-            metadata.fields.push(createEntityField(propertyName, columnName, parseColumnDefinition(columnDefinition)));
+            metadata.fields.push(
+                createEntityField(
+                    propertyName,
+                    columnName,
+                    parseColumnDefinition(columnDefinition),
+                    opts?.nullable,
+                    undefined,
+                    undefined,
+                    opts?.insertable,
+                    opts?.updatable,
+                )
+            );
         });
     };
 };

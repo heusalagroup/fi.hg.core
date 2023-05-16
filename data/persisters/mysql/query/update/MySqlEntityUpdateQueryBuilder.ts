@@ -54,8 +54,9 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
 
                 // FIXME: This code is almost identical to the MySqlEntityInsertQueryBuilder. Consider moving it as a utility function.
 
-                const { propertyName, columnName, columnDefinition } = field;
+                const { propertyName, columnName, columnDefinition, updatable } = field;
                 if (ignoreProperties.includes(propertyName)) return;
+                if (!updatable) return;
 
                 const temporalProperty : TemporalProperty | undefined = find(
                     temporalProperties,

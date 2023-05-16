@@ -49,8 +49,9 @@ export class PgEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
         forEach(
             fields,
             (field: EntityField) => {
-                const { propertyName, columnName, columnDefinition } = field;
+                const { propertyName, columnName, columnDefinition, updatable } = field;
                 if (ignoreProperties.includes(propertyName)) return;
+                if (!updatable) return;
 
                 const temporalProperty : TemporalProperty | undefined = find(
                     temporalProperties,

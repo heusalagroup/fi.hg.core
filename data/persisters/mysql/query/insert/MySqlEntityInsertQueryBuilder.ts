@@ -65,8 +65,8 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
             filter(
                 fields,
                 (field: EntityField) : boolean => {
-                    const { propertyName, fieldType } = field;
-                    return !ignoreProperties.includes(propertyName) && fieldType !== EntityFieldType.JOINED_ENTITY;
+                    const { propertyName, fieldType, insertable } = field;
+                    return !!insertable && !ignoreProperties.includes(propertyName) && fieldType !== EntityFieldType.JOINED_ENTITY;
                 }
             ),
             (field: EntityField) : string => {

@@ -63,8 +63,8 @@ export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
             filter(
                 fields,
                 (field: EntityField) : boolean => {
-                    const { propertyName, fieldType } = field;
-                    return !ignoreProperties.includes(propertyName) && fieldType !== EntityFieldType.JOINED_ENTITY;
+                    const { propertyName, fieldType, insertable } = field;
+                    return !!insertable && !ignoreProperties.includes(propertyName) && fieldType !== EntityFieldType.JOINED_ENTITY;
                 }
             ),
             (field: EntityField) : string => {
@@ -96,11 +96,13 @@ export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
                 const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
                 LOG.debug(`appendEntity: isTime: `, isTime, propertyName);
 
-                const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
-                if ( isTime ) {
-                    itemBuilder.setParamFromTimestampString(value);
-                } else {
-                    itemBuilder.setParam(value);
+                const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : undefined;
+                if (value !== undefined) {
+                    if ( isTime ) {
+                        itemBuilder.setParamFromTimestampString(value);
+                    } else {
+                        itemBuilder.setParam(value);
+                    }
                 }
 
             }

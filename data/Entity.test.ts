@@ -30,6 +30,15 @@ describe('Entity', () => {
         @Column('foo_boolean')
         public fooBoolean ?: boolean;
 
+        @Column('foo_nullable', undefined, {nullable: false})
+        public nullableFoo ?: boolean;
+
+        @Column('foo_insertable', undefined, {insertable: false})
+        public insertableFoo ?: boolean;
+
+        @Column('foo_updatable', undefined, {updatable: false})
+        public updatableFoo ?: boolean;
+
     }
 
     let entity : FooEntity;
@@ -57,24 +66,56 @@ describe('Entity', () => {
                        "columnName": "foo_id",
                        "propertyName": "fooId",
                        "fieldType": "UNKNOWN",
-                       "nullable": true
+                       "insertable": true,
+                       "updatable": true,
+                       "nullable": true,
                    },
                    {
                        "columnName": "foo_name",
                        "propertyName": "fooName",
                        "fieldType": "UNKNOWN",
+                       "insertable": true,
+                       "updatable": true,
                        "nullable": true
                    },
                    {
                        "columnName": "foo_number",
                        "propertyName": "fooNumber",
                        "fieldType": "UNKNOWN",
+                       "insertable": true,
+                       "updatable": true,
                        "nullable": true
                    },
                    {
                        "columnName": "foo_boolean",
                        "propertyName": "fooBoolean",
                        "fieldType": "UNKNOWN",
+                       "insertable": true,
+                       "updatable": true,
+                       "nullable": true
+                   },
+                   {
+                       "columnName": "foo_nullable",
+                       "propertyName": "nullableFoo",
+                       "fieldType": "UNKNOWN",
+                       "insertable": true,
+                       "updatable": true,
+                       "nullable": false
+                   },
+                   {
+                       "columnName": "foo_insertable",
+                       "propertyName": "insertableFoo",
+                       "fieldType": "UNKNOWN",
+                       "insertable": false,
+                       "updatable": true,
+                       "nullable": true
+                   },
+                   {
+                       "columnName": "foo_updatable",
+                       "propertyName": "updatableFoo",
+                       "fieldType": "UNKNOWN",
+                       "insertable": true,
+                       "updatable": false,
                        "nullable": true
                    }
                ]
