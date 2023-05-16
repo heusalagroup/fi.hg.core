@@ -37,7 +37,8 @@ export class RepositoryUtils {
         entityMetadata : EntityMetadata,
     ) {
         forEach(entityMetadata.fields, (item: EntityField) => {
-            const propertyName = item.propertyName;
+
+            const { propertyName } = item;
             LOG.debug(`propertyName = '${propertyName}'`)
 
             const camelCasePropertyName = RepositoryUtils._getCamelCaseName(propertyName);

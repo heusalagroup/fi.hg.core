@@ -54,19 +54,20 @@ export class PersisterMetadataManagerImpl implements PersisterMetadataManager {
     private _updateRelations () : void {
         forEach(
             values(this._metadata),
-            (manyToOneMetadata: EntityMetadata) : void => {
+            (metadata: EntityMetadata) : void => {
 
-                LOG.debug(`metadata = `, manyToOneMetadata);
+                LOG.debug(`metadata = `, metadata);
 
                 /**
                  * This is the metadata where the @ManyToOne annotation is located
                  */
-                const { tableName, fields, manyToOneRelations } = manyToOneMetadata;
+                const { tableName, fields, manyToOneRelations, oneToManyRelations } = metadata;
 
                 LOG.debug(`tableName = `, tableName);
                 LOG.debug(`fields = `, fields);
-                LOG.debug(`manyToOneRelations = `, manyToOneRelations);
 
+                // Update many to one -relations
+                LOG.debug(`manyToOneRelations = `, manyToOneRelations);
                 forEach(
                     manyToOneRelations,
                     (manyToOne: EntityRelationManyToOne) => {
@@ -87,7 +88,6 @@ export class PersisterMetadataManagerImpl implements PersisterMetadataManager {
                             return;
                         }
 
-                        const manyToOneColumnName = manyToOneField.columnName;
                         const oneToManyTableName = manyToOne.mappedTable;
                         if (!oneToManyTableName) {
                             LOG.debug(`Property "${manyToOnePropertyName}" had @ManyToOne annotation but we could not find remote table name. This might be because the remote entity has not been setup yet.`);
@@ -109,22 +109,61 @@ export class PersisterMetadataManagerImpl implements PersisterMetadataManager {
                         }
 
                         // Updates table name mapping from @OneToMany annotations to @ManyToOne
-                        oneToManyMetadata.oneToManyRelations = map(
-                            oneToManyMetadata.oneToManyRelations,
-                            (oneToMany: EntityRelationOneToMany) : EntityRelationOneToMany => {
-                                LOG.debug(`item = `, oneToMany, manyToOnePropertyName, oneToManyTableName);
-                                if ( oneToMany.mappedBy === manyToOnePropertyName && oneToMany.mappedTable !== tableName ) {
-                                    LOG.debug(`Column "${manyToOneColumnName}" in "${oneToManyTableName}" will be linked to property "${manyToOnePropertyName}" in table "${tableName}"`);
-                                    return createEntityRelationOneToMany(
-                                        oneToMany.propertyName,
-                                        oneToMany.mappedBy,
-                                        tableName
-                                    );
-                                } else {
-                                    return oneToMany;
-                                }
-                            }
-                        );
+                        // oneToManyMetadata.oneToManyRelations = map(
+                        //     oneToManyMetadata.oneToManyRelations,
+                        //     (oneToMany: EntityRelationOneToMany) : EntityRelationOneToMany => {
+                        //         LOG.debug(`item = `, oneToMany, manyToOnePropertyName, oneToManyTableName);
+                        //         if ( oneToMany.mappedTable === tableName && oneToMany.mappedBy === manyToOnePropertyName && oneToMany.mappedTable !== tableName ) {
+                        //             LOG.debug(`Column "${manyToOneColumnName}" in "${oneToManyTableName}" will be linked to property "${manyToOnePropertyName}" in table "${tableName}"`);
+                        //             return createEntityRelationOneToMany(
+                        //                 oneToMany.propertyName,
+                        //                 oneToMany.mappedBy,
+                        //                 tableName
+                        //             );
+                        //         } else {
+                        //             return oneToMany;
+                        //         }
+                        //     }
+                        // );
+
+                    }
+                );
+
+                // Update one to many -relations
+                LOG.debug(`oneToManyRelations = `, oneToManyRelations);
+                forEach(
+                    oneToManyRelations,
+                    (oneToMany: EntityRelationOneToMany) => {
+                        LOG.debug( `one to many = `, oneToMany );
+
+                        const oneToManyPropertyName = oneToMany.propertyName;
+
+                        const oneToManyField : EntityField | undefined = find(fields, (item: EntityField) : boolean => item.propertyName === oneToManyPropertyName);
+                        if (!oneToManyField) {
+                            LOG.warn(`Warning! Property "${oneToManyPropertyName}" had @OneToMany annotation but no field configuration found.`);
+                            return;
+                        }
+                        if (oneToManyField.fieldType !== EntityFieldType.JOINED_ENTITY) {
+                            LOG.warn(`Warning! Property "${oneToManyPropertyName}" had @OneToMany annotation but was not joined column type (it was "${oneToManyField.fieldType}").`);
+                            return;
+                        }
+
+                        const manyToOneTableName = oneToMany.mappedTable;
+                        if (!manyToOneTableName) {
+                            LOG.debug(`Property "${oneToManyPropertyName}" had @OneToMany annotation but we could not find remote table name. This might be because the remote entity has not been setup yet.`);
+                            return;
+                        }
+
+                        const manyToOneMetadata = this.getMetadataByTable(manyToOneTableName);
+                        if (!manyToOneMetadata) {
+                            LOG.debug(`Property "${oneToManyPropertyName}" had @OneToMany annotation but we could not find metadata for remote table "${manyToOneTableName}". This might be because the remote entity has not been setup yet.`);
+                            return;
+                        }
+
+                        if (!oneToManyField.metadata) {
+                            LOG.debug(`Updated metadata for property "${oneToMany.propertyName}" as `, manyToOneMetadata);
+                            oneToManyField.metadata = manyToOneMetadata;
+                        }
 
                     }
                 );
