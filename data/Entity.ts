@@ -12,6 +12,10 @@ import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
  */
 export type EntityIdTypes = string | number;
 
+export interface EntityConstructor {
+    new (...args: any): Entity;
+}
+
 export class Entity implements EntityLike {
 
     public getMetadata (): EntityMetadata {

@@ -40,7 +40,7 @@ describe('JoinColumn', () => {
         @Column('cart_item_id')
         public cartItemId ?: string;
 
-        @ManyToOne()
+        @ManyToOne(CartEntity)
         @JoinColumn('cart_id', false)
         public cart ?: CartEntity;
 

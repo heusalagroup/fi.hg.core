@@ -135,9 +135,9 @@ export class PgEntitySelectQueryBuilder
     ): void {
         forEach(
             relations,
-            (relation: EntityRelationOneToMany) : void => {
-                const { propertyName } = relation;
-                const mappedTable = relation?.mappedTable;
+            (oneToManyRelation: EntityRelationOneToMany) : void => {
+                const { propertyName } = oneToManyRelation;
+                const mappedTable = oneToManyRelation?.mappedTable;
                 if (!mappedTable) throw new TypeError(`The relation "${propertyName}" did not have table defined`);
                 const mappedMetadata = metadataManager.getMetadataByTable(mappedTable);
                 if (!mappedMetadata) throw new TypeError(`Could not find metadata for property "${propertyName}"`);

@@ -129,7 +129,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         persister = context.getPersister();
 
-        LOG.info(`Persister: ${persisterType}`);
+        // LOG.info(`Persister: ${persisterType}`);
 
         // Will be initialized with four entities
         dataRepository = createCrudRepositoryWithPersister<DataEntity, string, DataRepository>(

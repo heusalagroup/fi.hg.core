@@ -39,7 +39,7 @@ describe('ManyToOne', () => {
         @Column('cart_item_id')
         public cartItemId ?: string;
 
-        @ManyToOne()
+        @ManyToOne(CartEntity)
         @JoinColumn('cart_id', false)
         public cart ?: CartEntity;
 
@@ -54,7 +54,7 @@ describe('ManyToOne', () => {
     });
 
     it('can set fields metadata for cart property', () => {
-        const expectedItem : EntityRelationManyToOne = createEntityRelationManyToOne("cart");
+        const expectedItem : EntityRelationManyToOne = createEntityRelationManyToOne("cart", "carts");
         expect(metadata.manyToOneRelations).toBeArray();
         expect(metadata.manyToOneRelations).toContainEqual(expectedItem);
     });

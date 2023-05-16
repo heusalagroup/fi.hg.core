@@ -4,7 +4,7 @@
 export interface EntityRelationOneToMany {
 
     /**
-     * The property name on the class
+     * The property name of the field in the entity
      */
     readonly propertyName : string;
 
@@ -19,12 +19,18 @@ export interface EntityRelationOneToMany {
      * This will be reverse-matched using the mappedBy property and the column
      * name from the `@ManyToOne` and `@JoinColumn` annotations.
      *
-     * @See PersiserMetadataManagerImpl
+     * @See {@link PersiserMetadataManagerImpl}
      */
     readonly mappedTable ?: string | undefined;
 
 }
 
+/**
+ *
+ * @param propertyName The property name of the field in the entity. See {@link EntityRelationOneToMany.propertyName}
+ * @param mappedBy The property name in which this relation is mapped to in the remote entity. See {@link EntityRelationOneToMany.mappedBy}
+ * @param mappedTable The remote table in which this entity is mapped to, if known. See {@link EntityRelationOneToMany.mappedTable}
+ */
 export function createEntityRelationOneToMany (
     propertyName  : string,
     mappedBy      : string,

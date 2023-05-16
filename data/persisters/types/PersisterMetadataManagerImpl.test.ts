@@ -53,7 +53,7 @@ describe('PersisterMetadataManagerImpl', () => {
                 @Column('cart_item_id')
                 public cartItemId ?: string;
 
-                @ManyToOne()
+                @ManyToOne(CartEntity)
                 @JoinColumn('cart_id', false)
                 public cart ?: CartEntity;
 
@@ -90,26 +90,6 @@ describe('PersisterMetadataManagerImpl', () => {
         });
         it('cannot fetch metadata using missing table', () => {
             expect( manager.getMetadataByTable('holidays') ).toBe(undefined);
-        });
-    });
-
-    describe('#getTableForIdPropertyName', () => {
-        it('can get table name using id property name', () => {
-            expect( manager.getTableForIdPropertyName('cartId') ).toBe('carts');
-            expect( manager.getTableForIdPropertyName('cartItemId') ).toStrictEqual('cart_items');
-        });
-        it('cannot get table name using missing id property name', () => {
-            expect( manager.getTableForIdPropertyName('holidayId') ).toBe(undefined);
-        });
-    });
-
-    describe('#getTableForIdColumnName', () => {
-        it('can get table name using id column name', () => {
-            expect( manager.getTableForIdColumnName('cart_id') ).toBe('carts');
-            expect( manager.getTableForIdColumnName('cart_item_id') ).toStrictEqual('cart_items');
-        });
-        it('cannot get table name using missing id column name', () => {
-            expect( manager.getTableForIdColumnName('holiday_id') ).toBe(undefined);
         });
     });
 

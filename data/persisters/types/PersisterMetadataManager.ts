@@ -8,7 +8,4 @@ export interface PersisterMetadataManager {
 
     getMetadataByTable (tableName: string) : EntityMetadata | undefined;
 
-    getTableForIdPropertyName (id: string) : string | undefined;
-    getTableForIdColumnName (id: string) : string | undefined;
-
 }

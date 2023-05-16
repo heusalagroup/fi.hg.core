@@ -278,8 +278,8 @@ export class EntityUtils {
                 if (!propertyName) return;
                 const mappedTable = relation?.mappedTable;
                 if (!mappedTable) {
-                    LOG.debug(`oneToMany: "${propertyName}": mappedTable=`, mappedTable);
-                    throw new TypeError(`The property "${propertyName}" did not have table configured`);
+                    LOG.warn(`Warning: @oneToMany: The property "${propertyName}" did not have table mapped`);
+                    return;
                 }
                 const mappedMetadata = metadataManager.getMetadataByTable(mappedTable);
                 if (!mappedMetadata) {

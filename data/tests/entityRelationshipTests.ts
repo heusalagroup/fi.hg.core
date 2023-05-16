@@ -59,7 +59,7 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         @Column('cart_item_name')
         public cartItemName ?: string;
 
-        @ManyToOne()
+        @ManyToOne(CartEntity)
         @JoinColumn('cart_id', false)
         public cart ?: CartEntity;
 

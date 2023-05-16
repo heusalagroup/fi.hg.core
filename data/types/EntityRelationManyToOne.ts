@@ -22,7 +22,7 @@ export interface EntityRelationManyToOne {
 
 export function createEntityRelationManyToOne (
     propertyName  : string,
-    mappedTable  ?: string | undefined
+    mappedTable   : string | undefined
 ) : EntityRelationManyToOne {
     return {
         propertyName,
