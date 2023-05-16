@@ -13,7 +13,6 @@ import { Id } from "../Id";
 import { Column } from "../Column";
 import { ReadonlyJsonObject } from "../../Json";
 import { isDeepStrictEqual } from "util";
-import { MySqlPersister } from "../../../mysql/MySqlPersister";
 import { LogLevel } from "../../types/LogLevel";
 import { PersisterType } from "../persisters/types/PersisterType";
 import { LogService } from "../../LogService";
@@ -128,8 +127,6 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
     const jsonDataEntity5          : MyJsonData = { name: jsonDataName5 };
 
     beforeEach( async () => {
-
-        MySqlPersister.setLogLevel(LogLevel.DEBUG)
 
         persister = context.getPersister();
 
