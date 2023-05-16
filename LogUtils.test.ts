@@ -63,7 +63,7 @@ describe('LogUtils', () => {
         });
 
         it('returns a string for a Date object', () => {
-            const date = new Date(2023, 4, 9, 12, 30, 0, 0);
+            const date = new Date(Date.UTC(2023, 4, 9, 9, 30, 0, 0));
             const result = LogUtils.stringifyValue(date);
             expect(result).toBe('2023-05-09T09:30:00.000Z');
         });
