@@ -66,6 +66,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         arg1 ?: Where | Sort | undefined,
         arg2 ?: Sort | Where | undefined
     ): Promise<T[]> {
+        LOG.debug(`findAll = `, arg1, arg2);
         const [where, sort] = this._parseArgs(arg1, arg2);
         return await this._persister.findAll(
             this._entityMetadata,
@@ -78,7 +79,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         ids: any[] | any,
         sort ?: Sort
     ) : Promise<T[]> {
-        LOG.debug(`findAllById = `, ids);
+        LOG.debug(`findAllById = `, ids, sort);
         ids = isArray(ids) ? ids : [ids];
         const propertyName = EntityUtils.getIdPropertyName(this._entityMetadata);
         return await this._persister.findAll(

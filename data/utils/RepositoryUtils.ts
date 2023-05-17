@@ -11,6 +11,8 @@ import { LogLevel } from "../../types/LogLevel";
 import { EntityField } from "../types/EntityField";
 import { Sort } from "../Sort";
 import { Where } from "../Where";
+import { isReservedRepositoryMethodName } from "../types/Repository";
+import { ObjectUtils } from "../../ObjectUtils";
 
 const LOG = LogService.createLogger('RepositoryUtils');
 
@@ -46,8 +48,8 @@ export class RepositoryUtils {
 
             // Standard ones
             const findAllByMethodName = `findAllBy${camelCasePropertyName}`;
-            if (!has(proto, findAllByMethodName)) {
-                proto[findAllByMethodName] = function findAllByProperty (propertyValue: any, sort?: Sort) : Promise<T[]> {
+            if ( !this._isReservedRepositoryMethodName(proto, findAllByMethodName) ) {
+                proto[findAllByMethodName] = function findAllByProperty (propertyValue: any, sort?: Sort): Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
                         entityMetadata,
@@ -55,10 +57,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findAllByMethodName}" was already defined. Not extending it.`);
             }
 
             const findByMethodName = `findBy${camelCasePropertyName}`;
-            if (!has(proto, findByMethodName)) {
+            if (!this._isReservedRepositoryMethodName(proto, findByMethodName)) {
                 proto[findByMethodName] = function findByProperty (propertyValue: any, sort?: Sort) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
@@ -67,10 +71,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findByMethodName}" was already defined. Not extending it.`);
             }
 
             const deleteAllByMethodName = `deleteAllBy${camelCasePropertyName}`;
-            if (!has(proto, deleteAllByMethodName)) {
+            if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodName)) {
                 proto[deleteAllByMethodName] = function deleteAllByProperty (propertyValue: any) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
@@ -78,10 +84,12 @@ export class RepositoryUtils {
                         Where.propertyEquals(propertyName, propertyValue),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${deleteAllByMethodName}" was already defined. Not extending it.`);
             }
 
             const existsByMethodName = `existsBy${camelCasePropertyName}`;
-            if (!has(proto, existsByMethodName)) {
+            if (!this._isReservedRepositoryMethodName(proto, existsByMethodName)) {
                 proto[existsByMethodName] = function existsByProperty (propertyValue: any) : Promise<boolean> {
                     return RepositoryUtils._existsByCondition<T, ID>(
                         this,
@@ -89,10 +97,12 @@ export class RepositoryUtils {
                         Where.propertyEquals(propertyName, propertyValue),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${existsByMethodName}" was already defined. Not extending it.`);
             }
 
             const countByMethodName = `countBy${camelCasePropertyName}`;
-            if (!has(proto, countByMethodName)) {
+            if (!this._isReservedRepositoryMethodName(proto, countByMethodName)) {
                 proto[countByMethodName] = function countByProperty (propertyValue: any) : Promise<number> {
                     return RepositoryUtils._countByCondition<T, ID>(
                         this,
@@ -100,6 +110,8 @@ export class RepositoryUtils {
                         Where.propertyEquals(propertyName, propertyValue),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${countByMethodName}" was already defined. Not extending it.`);
             }
 
 
@@ -107,7 +119,7 @@ export class RepositoryUtils {
             // Between
 
             const findAllByMethodNameBetween = `findAllBy${camelCasePropertyName}Between`;
-            if (!has(proto, findAllByMethodNameBetween)) {
+            if (!this._isReservedRepositoryMethodName(proto, findAllByMethodNameBetween)) {
                 proto[findAllByMethodNameBetween] = function findAllByPropertyBetween (startValue: any, endValue: any, sort?: Sort) : Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
@@ -116,10 +128,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findAllByMethodNameBetween}" was already defined. Not extending it.`);
             }
 
             const findByMethodNameBetween = `findBy${camelCasePropertyName}Between`;
-            if (!has(proto, findByMethodNameBetween)) {
+            if (!this._isReservedRepositoryMethodName(proto, findByMethodNameBetween)) {
                 proto[findByMethodNameBetween] = function findByPropertyBetween (startValue: any, endValue: any, sort?: Sort) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
@@ -128,10 +142,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findByMethodNameBetween}" was already defined. Not extending it.`);
             }
 
             const deleteAllByMethodNameBetween = `deleteAllBy${camelCasePropertyName}Between`;
-            if (!has(proto, deleteAllByMethodNameBetween)) {
+            if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodNameBetween)) {
                 proto[deleteAllByMethodNameBetween] = function deleteAllByPropertyBetween (startValue: any, endValue: any) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
@@ -139,10 +155,12 @@ export class RepositoryUtils {
                         Where.propertyBetween(propertyName, startValue, endValue),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${deleteAllByMethodNameBetween}" was already defined. Not extending it.`);
             }
 
             const existsByMethodNameBetween = `existsBy${camelCasePropertyName}Between`;
-            if (!has(proto, existsByMethodNameBetween)) {
+            if (!this._isReservedRepositoryMethodName(proto, existsByMethodNameBetween)) {
                 proto[existsByMethodNameBetween] = function existsByPropertyBetween (startValue: any, endValue: any) : Promise<boolean> {
                     return RepositoryUtils._existsByCondition<T, ID>(
                         this,
@@ -150,10 +168,12 @@ export class RepositoryUtils {
                         Where.propertyBetween(propertyName, startValue, endValue),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${existsByMethodNameBetween}" was already defined. Not extending it.`);
             }
 
             const countByMethodNameBetween = `countBy${camelCasePropertyName}Between`;
-            if (!has(proto, countByMethodNameBetween)) {
+            if (!this._isReservedRepositoryMethodName(proto, countByMethodNameBetween)) {
                 proto[countByMethodNameBetween] = function countByPropertyBetween (startValue: any, endValue: any) : Promise<number> {
                     return RepositoryUtils._countByCondition<T, ID>(
                         this,
@@ -161,6 +181,8 @@ export class RepositoryUtils {
                         Where.propertyBetween(propertyName, startValue, endValue),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${countByMethodNameBetween}" was already defined. Not extending it.`);
             }
 
 
@@ -169,7 +191,7 @@ export class RepositoryUtils {
             // After
 
             const findAllByMethodNameAfter = `findAllBy${camelCasePropertyName}After`;
-            if (!has(proto, findAllByMethodNameAfter)) {
+            if (!this._isReservedRepositoryMethodName(proto, findAllByMethodNameAfter)) {
                 proto[findAllByMethodNameAfter] = function findAllByPropertyAfter (value: any, sort?: Sort) : Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
@@ -178,10 +200,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findAllByMethodNameAfter}" was already defined. Not extending it.`);
             }
 
             const findByMethodNameAfter = `findBy${camelCasePropertyName}After`;
-            if (!has(proto, findByMethodNameAfter)) {
+            if (!this._isReservedRepositoryMethodName(proto, findByMethodNameAfter)) {
                 proto[findByMethodNameAfter] = function findByPropertyAfter (value: any, sort?: Sort) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
@@ -190,10 +214,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findByMethodNameAfter}" was already defined. Not extending it.`);
             }
 
             const deleteAllByMethodNameAfter = `deleteAllBy${camelCasePropertyName}After`;
-            if (!has(proto, deleteAllByMethodNameAfter)) {
+            if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodNameAfter)) {
                 proto[deleteAllByMethodNameAfter] = function deleteAllByPropertyAfter (value: any) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
@@ -201,10 +227,12 @@ export class RepositoryUtils {
                         Where.propertyAfter(propertyName, value),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${deleteAllByMethodNameAfter}" was already defined. Not extending it.`);
             }
 
             const existsByMethodNameAfter = `existsBy${camelCasePropertyName}After`;
-            if (!has(proto, existsByMethodNameAfter)) {
+            if (!this._isReservedRepositoryMethodName(proto, existsByMethodNameAfter)) {
                 proto[existsByMethodNameAfter] = function existsByPropertyAfter (value: any) : Promise<boolean> {
                     return RepositoryUtils._existsByCondition<T, ID>(
                         this,
@@ -212,10 +240,12 @@ export class RepositoryUtils {
                         Where.propertyAfter(propertyName, value),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${existsByMethodNameAfter}" was already defined. Not extending it.`);
             }
 
             const countByMethodNameAfter = `countBy${camelCasePropertyName}After`;
-            if (!has(proto, countByMethodNameAfter)) {
+            if (!this._isReservedRepositoryMethodName(proto, countByMethodNameAfter)) {
                 proto[countByMethodNameAfter] = function countByPropertyAfter (value: any) : Promise<number> {
                     return RepositoryUtils._countByCondition<T, ID>(
                         this,
@@ -223,6 +253,8 @@ export class RepositoryUtils {
                         Where.propertyAfter(propertyName, value),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${countByMethodNameAfter}" was already defined. Not extending it.`);
             }
 
 
@@ -232,7 +264,7 @@ export class RepositoryUtils {
             // Before
 
             const findAllByMethodNameBefore = `findAllBy${camelCasePropertyName}Before`;
-            if (!has(proto, findAllByMethodNameBefore)) {
+            if (!this._isReservedRepositoryMethodName(proto, findAllByMethodNameBefore)) {
                 proto[findAllByMethodNameBefore] = function findAllByPropertyBefore (value: any, sort?: Sort) : Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
@@ -241,10 +273,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findAllByMethodNameBefore}" was already defined. Not extending it.`);
             }
 
             const findByMethodNameBefore = `findBy${camelCasePropertyName}Before`;
-            if (!has(proto, findByMethodNameBefore)) {
+            if (!this._isReservedRepositoryMethodName(proto, findByMethodNameBefore)) {
                 proto[findByMethodNameBefore] = function findByPropertyBefore (value: any, sort?: Sort) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
@@ -253,10 +287,12 @@ export class RepositoryUtils {
                         sort
                     );
                 };
+            } else {
+                LOG.debug(`The property "${findByMethodNameBefore}" was already defined. Not extending it.`);
             }
 
             const deleteAllByMethodNameBefore = `deleteAllBy${camelCasePropertyName}Before`;
-            if (!has(proto, deleteAllByMethodNameBefore)) {
+            if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodNameBefore)) {
                 proto[deleteAllByMethodNameBefore] = function deleteAllByPropertyBefore (value: any) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
@@ -264,10 +300,12 @@ export class RepositoryUtils {
                         Where.propertyBefore(propertyName, value),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${deleteAllByMethodNameBefore}" was already defined. Not extending it.`);
             }
 
             const existsByMethodNameBefore = `existsBy${camelCasePropertyName}Before`;
-            if (!has(proto, existsByMethodNameBefore)) {
+            if (!this._isReservedRepositoryMethodName(proto, existsByMethodNameBefore)) {
                 proto[existsByMethodNameBefore] = function existsByPropertyBefore (value: any) : Promise<boolean> {
                     return RepositoryUtils._existsByCondition<T, ID>(
                         this,
@@ -275,10 +313,12 @@ export class RepositoryUtils {
                         Where.propertyBefore(propertyName, value),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${existsByMethodNameBefore}" was already defined. Not extending it.`);
             }
 
             const countByMethodNameBefore = `countBy${camelCasePropertyName}Before`;
-            if (!has(proto, countByMethodNameBefore)) {
+            if (!this._isReservedRepositoryMethodName(proto, countByMethodNameBefore)) {
                 proto[countByMethodNameBefore] = function countByPropertyBefore (value: any) : Promise<number> {
                     return RepositoryUtils._countByCondition<T, ID>(
                         this,
@@ -286,6 +326,8 @@ export class RepositoryUtils {
                         Where.propertyBefore(propertyName, value),
                     );
                 };
+            } else {
+                LOG.debug(`The property "${countByMethodNameBefore}" was already defined. Not extending it.`);
             }
 
         });
@@ -394,6 +436,13 @@ export class RepositoryUtils {
             entityMetadata,
             where
         );
+    }
+
+    private static _isReservedRepositoryMethodName (
+        proto : any,
+        name  : string
+    ) : boolean {
+        return ObjectUtils.isReservedPropertyName(proto, name) || isReservedRepositoryMethodName(name);
     }
 
 }

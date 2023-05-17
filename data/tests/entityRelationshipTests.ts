@@ -9,14 +9,11 @@ import { Persister } from "../types/Persister";
 import { Repository } from "../types/Repository";
 import { createCrudRepositoryWithPersister } from "../types/CrudRepository";
 import { ManyToOne } from "../ManyToOne";
-import { EntityUtils } from "../utils/EntityUtils";
-import { LogLevel } from "../../types/LogLevel";
 import { isString } from "../../types/String";
 import { Table } from "../Table";
 import { Entity } from "../Entity";
 import { Id } from "../Id";
 import { Column } from "../Column";
-import { PgPersister } from "../../../pg/PgPersister";
 
 export const entityRelationshipTests = (context : RepositoryTestContext) : void => {
 
@@ -24,22 +21,22 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     class CartEntity extends Entity {
 
         constructor (dto ?: {
-            readonly cartItems ?: readonly CartItemEntity[],
-            readonly cartName ?: string,
+            readonly items ?: readonly CartItemEntity[],
+            readonly name ?: string,
             readonly contacts ?: readonly ContactEntity[]
         }) {
             super();
             this.contacts = dto?.contacts ?? [];
-            this.cartItems = dto?.cartItems ?? [];
-            this.cartName = dto?.cartName;
+            this.items = dto?.items ?? [];
+            this.name = dto?.name;
         }
 
         @Id()
         @Column('cart_id', 'BIGINT')
-        public cartId ?: string;
+        public id ?: string;
 
         @Column('cart_name')
-        public cartName ?: string;
+        public name ?: string;
 
         // We need two one to many -mappings to test that it works correctly
         // with multiple of these
@@ -47,28 +44,28 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         public contacts : readonly ContactEntity[];
 
         @OneToMany('cart_items', "cart")
-        public cartItems : readonly CartItemEntity[];
+        public items : readonly CartItemEntity[];
 
     }
 
     @Table('contacts')
     class ContactEntity extends Entity {
 
-        constructor (dto ?: {readonly cartId ?: string, readonly contactName ?: string}) {
+        constructor (dto ?: {readonly cartId ?: string, readonly name ?: string}) {
             super();
             this.cartId = dto?.cartId;
-            this.contactName = dto?.contactName;
+            this.name = dto?.name;
         }
 
         @Id()
         @Column('contact_id', 'BIGINT')
-        public contactId ?: string;
+        public id ?: string;
 
         @Column('cart_id', 'BIGINT')
         public cartId ?: string;
 
         @Column('contact_name')
-        public contactName ?: string;
+        public name ?: string;
 
         @ManyToOne(CartEntity)
         @JoinColumn('cart_id', false)
@@ -79,21 +76,21 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     @Table('cart_items')
     class CartItemEntity extends Entity {
 
-        constructor (dto ?: {readonly cartId ?: string, readonly cartItemName ?: string}) {
+        constructor (dto ?: {readonly cartId ?: string, readonly name ?: string}) {
             super();
             this.cartId = dto?.cartId;
-            this.cartItemName = dto?.cartItemName;
+            this.name = dto?.name;
         }
 
         @Id()
         @Column('cart_item_id', 'BIGINT')
-        public cartItemId ?: string;
+        public id ?: string;
 
         @Column('cart_id', 'BIGINT')
         public cartId ?: string;
 
         @Column('cart_item_name')
-        public cartItemName ?: string;
+        public name ?: string;
 
         @ManyToOne(CartEntity)
         @JoinColumn('cart_id', false)
@@ -103,22 +100,22 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
     interface CartRepository extends Repository<CartEntity, string> {
 
-        findAllByCartName (name: string) : Promise<CartEntity[]>;
-        findByCartName (name: string): Promise<CartEntity | undefined>;
+        findAllByName (name: string) : Promise<CartEntity[]>;
+        findByName (name: string): Promise<CartEntity | undefined>;
 
     }
 
     interface CartItemRepository extends Repository<CartItemEntity, string> {
 
-        findAllByCartItemName (name: string) : Promise<CartItemEntity[]>;
-        findByCartItemName (name: string): Promise<CartItemEntity | undefined>;
+        findAllByName (name: string) : Promise<CartItemEntity[]>;
+        findByName (name: string): Promise<CartItemEntity | undefined>;
 
     }
 
     interface ContactRepository extends Repository<ContactEntity, string> {
 
-        findAllByContactName (name: string) : Promise<ContactEntity[]>;
-        findByContactName (name: string): Promise<ContactEntity | undefined>;
+        findAllByName (name: string) : Promise<ContactEntity[]>;
+        findByName (name: string): Promise<ContactEntity | undefined>;
 
     }
 
@@ -183,8 +180,6 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
     beforeEach( async () => {
 
-        EntityUtils.setLogLevel(LogLevel.NONE);
-
         persister = context.getPersister();
 
         cartRepository = createCrudRepositoryWithPersister<CartEntity, string, CartRepository>(
@@ -207,134 +202,134 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         await contactRepository.deleteAll();
 
         // LOG.debug(`Step 1`)
-        cartA = new CartEntity({cartName: cartA_name});
+        cartA = new CartEntity({name: cartA_name});
         cartA = await persister.insert(
             cartA.getMetadata(),
             cartA,
         );
-        cartA_id = cartA?.cartId as string;
+        cartA_id = cartA?.id as string;
         if (!isString(cartA_id)) throw new TypeError(`cartA_id failed to initialize: ${JSON.stringify(cartA_id)}`);
 
 
         // LOG.debug(`Step 2`)
-        cartA_item1 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item1_name});
+        cartA_item1 = new CartItemEntity({cartId: cartA_id, name: cartA_item1_name});
         cartA_item1 = await persister.insert(
             cartA_item1.getMetadata(),
             cartA_item1,
         );
-        cartA_item1_id = cartA_item1?.cartItemId as string;
+        cartA_item1_id = cartA_item1?.id as string;
         if (!isString(cartA_item1_id)) throw new TypeError(`cartItemA1_id failed to initialize: ${JSON.stringify(cartA_item1_id)}`);
 
         // LOG.debug(`Step 3`)
-        cartA_item2 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item2_name});
+        cartA_item2 = new CartItemEntity({cartId: cartA_id, name: cartA_item2_name});
         cartA_item2 = await persister.insert(
             cartA_item2.getMetadata(),
             cartA_item2,
         );
-        cartA_item2_id = cartA_item2?.cartItemId as string;
+        cartA_item2_id = cartA_item2?.id as string;
         if (!isString(cartA_item2_id)) throw new TypeError(`cartItemA2_id failed to initialize: ${JSON.stringify(cartA_item2_id)}`);
 
         // LOG.debug(`Step 4`)
-        cartA_item3 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item3_name});
+        cartA_item3 = new CartItemEntity({cartId: cartA_id, name: cartA_item3_name});
         cartA_item3 = await persister.insert(
             cartA_item3.getMetadata(),
             cartA_item3,
         );
-        cartA_item3_id = cartA_item3?.cartItemId as string;
+        cartA_item3_id = cartA_item3?.id as string;
         if (!isString(cartA_item3_id)) throw new TypeError(`cartItemA3_id failed to initialize: ${JSON.stringify(cartA_item3_id)}`);
 
 
         // LOG.debug(`Step 2`)
-        cartA_contact1 = new ContactEntity({cartId: cartA_id, contactName: cartA_contact1_name});
+        cartA_contact1 = new ContactEntity({cartId: cartA_id, name: cartA_contact1_name});
         cartA_contact1 = await persister.insert(
             cartA_contact1.getMetadata(),
             cartA_contact1,
         );
-        cartA_contact1_id = cartA_contact1?.contactId as string;
+        cartA_contact1_id = cartA_contact1?.id as string;
         if (!isString(cartA_contact1_id)) throw new TypeError(`contactA1_id failed to initialize: ${JSON.stringify(cartA_contact1_id)}`);
 
         // LOG.debug(`Step 3`)
-        cartA_contact2 = new ContactEntity({cartId: cartA_id, contactName: cartA_contact2_name});
+        cartA_contact2 = new ContactEntity({cartId: cartA_id, name: cartA_contact2_name});
         cartA_contact2 = await persister.insert(
             cartA_contact2.getMetadata(),
             cartA_contact2,
         );
-        cartA_contact2_id = cartA_contact2?.contactId as string;
+        cartA_contact2_id = cartA_contact2?.id as string;
         if (!isString(cartA_contact2_id)) throw new TypeError(`contactA2_id failed to initialize: ${JSON.stringify(cartA_contact2_id)}`);
 
         // LOG.debug(`Step 4`)
-        cartA_contact3 = new ContactEntity({cartId: cartA_id, contactName: cartA_contact3_name});
+        cartA_contact3 = new ContactEntity({cartId: cartA_id, name: cartA_contact3_name});
         cartA_contact3 = await persister.insert(
             cartA_contact3.getMetadata(),
             cartA_contact3,
         );
-        cartA_contact3_id = cartA_contact3?.contactId as string;
+        cartA_contact3_id = cartA_contact3?.id as string;
         if (!isString(cartA_contact3_id)) throw new TypeError(`contactA3_id failed to initialize: ${JSON.stringify(cartA_contact3_id)}`);
 
 
         // LOG.debug(`Step 5`)
-        cartB = new CartEntity({cartName: cartB_name});
+        cartB = new CartEntity({name: cartB_name});
         cartB = await persister.insert(
             cartB.getMetadata(),
             cartB,
         );
-        cartB_id = cartB?.cartId as string;
+        cartB_id = cartB?.id as string;
         if (!isString(cartB_id)) throw new TypeError(`cartB_id failed to initialize: ${JSON.stringify(cartB_id)}`);
 
 
         // LOG.debug(`Step 6`)
-        cartB_item1 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item1_name});
+        cartB_item1 = new CartItemEntity({cartId: cartB_id, name: cartB_item1_name});
         cartB_item1 = await persister.insert(
             cartB_item1.getMetadata(),
             cartB_item1,
         );
-        cartB_item1_id = cartB_item1?.cartItemId as string;
+        cartB_item1_id = cartB_item1?.id as string;
         if (!isString(cartB_item1_id)) throw new TypeError(`cartB_item1_id failed to initialize: ${JSON.stringify(cartB_item1_id)}`);
 
         // LOG.debug(`Step 7`)
-        cartB_item2 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item2_name});
+        cartB_item2 = new CartItemEntity({cartId: cartB_id, name: cartB_item2_name});
         cartB_item2 = await persister.insert(
             cartB_item2.getMetadata(),
             cartB_item2,
         );
-        cartB_item2_id = cartB_item2?.cartItemId as string;
+        cartB_item2_id = cartB_item2?.id as string;
         if (!isString(cartB_item2_id)) throw new TypeError(`cartB_item2_id failed to initialize: ${JSON.stringify(cartB_item2_id)}`);
 
         // LOG.debug(`Step 8`)
-        cartB_item3 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item3_name});
+        cartB_item3 = new CartItemEntity({cartId: cartB_id, name: cartB_item3_name});
         cartB_item3 = await persister.insert(
             cartB_item3.getMetadata(),
             cartB_item3,
         );
-        cartB_item3_id = cartB_item3?.cartItemId as string;
+        cartB_item3_id = cartB_item3?.id as string;
         if (!isString(cartB_item3_id)) throw new TypeError(`cartB_item3_id failed to initialize: ${JSON.stringify(cartB_item3_id)}`);
 
 
         // LOG.debug(`Step 6`)
-        cartB_contact1 = new ContactEntity({cartId: cartB_id, contactName: cartB_contact1_name});
+        cartB_contact1 = new ContactEntity({cartId: cartB_id, name: cartB_contact1_name});
         cartB_contact1 = await persister.insert(
             cartB_contact1.getMetadata(),
             cartB_contact1,
         );
-        cartB_contact1_id = cartB_contact1?.contactId as string;
+        cartB_contact1_id = cartB_contact1?.id as string;
         if (!isString(cartB_contact1_id)) throw new TypeError(`cartB_contact1_id failed to initialize: ${JSON.stringify(cartB_contact1_id)}`);
 
         // LOG.debug(`Step 7`)
-        cartB_contact2 = new ContactEntity({cartId: cartB_id, contactName: cartB_contact2_name});
+        cartB_contact2 = new ContactEntity({cartId: cartB_id, name: cartB_contact2_name});
         cartB_contact2 = await persister.insert(
             cartB_contact2.getMetadata(),
             cartB_contact2,
         );
-        cartB_contact2_id = cartB_contact2?.contactId as string;
+        cartB_contact2_id = cartB_contact2?.id as string;
         if (!isString(cartB_contact2_id)) throw new TypeError(`cartB_contact2_id failed to initialize: ${JSON.stringify(cartB_contact2_id)}`);
 
         // LOG.debug(`Step 8`)
-        cartB_contact3 = new ContactEntity({cartId: cartB_id, contactName: cartB_contact3_name});
+        cartB_contact3 = new ContactEntity({cartId: cartB_id, name: cartB_contact3_name});
         cartB_contact3 = await persister.insert(
             cartB_contact3.getMetadata(),
             cartB_contact3,
         );
-        cartB_contact3_id = cartB_contact3?.contactId as string;
+        cartB_contact3_id = cartB_contact3?.id as string;
         if (!isString(cartB_contact3_id)) throw new TypeError(`cartB_contact3_id failed to initialize: ${JSON.stringify(cartB_contact3_id)}`);
 
 
@@ -346,34 +341,32 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
         it('returns related cart items mapped by @OneToMany', async () => {
 
-            PgPersister.setLogLevel(LogLevel.DEBUG);
-
             const items = await cartRepository.findAll();
             expect(items).toBeArray();
             expect(items?.length).toBeGreaterThanOrEqual(2);
 
-            const cart1 = find(items, (item) : boolean => item.cartId === cartA_id);
-            const cart2 = find(items, (item) : boolean => item.cartId === cartB_id);
-            expect(cart1?.cartId).toBe(cartA_id);
-            expect(cart2?.cartId).toBe(cartB_id);
+            const cart1 = find(items, (item: CartEntity) : boolean => item.id === cartA_id);
+            const cart2 = find(items, (item: CartEntity) : boolean => item.id === cartB_id);
+            expect(cart1?.id).toBe(cartA_id);
+            expect(cart2?.id).toBe(cartB_id);
 
-            expect((cart1?.cartItems as any)?.length).toBeGreaterThanOrEqual(3);
-            const cart1_item1 = find(cart1?.cartItems, (item) => item.cartItemId === cartA_item1_id);
-            const cart1_item2 = find(cart1?.cartItems, (item) => item.cartItemId === cartA_item2_id);
-            const cart1_item3 = find(cart1?.cartItems, (item) => item.cartItemId === cartA_item3_id);
-            expect(cart1_item1?.cartItemId).toBe(cartA_item1_id);
-            expect(cart1_item2?.cartItemId).toBe(cartA_item2_id);
-            expect(cart1_item3?.cartItemId).toBe(cartA_item3_id);
-            expect((cart1?.cartItems as any)?.length).toBe(3);
+            expect((cart1?.items as any)?.length).toBeGreaterThanOrEqual(3);
+            const cart1_item1 = find(cart1?.items, (item) => item.id === cartA_item1_id);
+            const cart1_item2 = find(cart1?.items, (item) => item.id === cartA_item2_id);
+            const cart1_item3 = find(cart1?.items, (item) => item.id === cartA_item3_id);
+            expect(cart1_item1?.id).toBe(cartA_item1_id);
+            expect(cart1_item2?.id).toBe(cartA_item2_id);
+            expect(cart1_item3?.id).toBe(cartA_item3_id);
+            expect((cart1?.items as any)?.length).toBe(3);
 
-            expect((cart2?.cartItems as any)?.length).toBeGreaterThanOrEqual(3);
-            const cart2_item1 = find(cart2?.cartItems, (item) => item.cartItemId === cartB_item1_id);
-            const cart2_item2 = find(cart2?.cartItems, (item) => item.cartItemId === cartB_item2_id);
-            const cart2_item3 = find(cart2?.cartItems, (item) => item.cartItemId === cartB_item3_id);
-            expect(cart2_item1?.cartItemId).toBe(cartB_item1_id);
-            expect(cart2_item2?.cartItemId).toBe(cartB_item2_id);
-            expect(cart2_item3?.cartItemId).toBe(cartB_item3_id);
-            expect((cart2?.cartItems as any)?.length).toBe(3);
+            expect((cart2?.items as any)?.length).toBeGreaterThanOrEqual(3);
+            const cart2_item1 = find(cart2?.items, (item) => item.id === cartB_item1_id);
+            const cart2_item2 = find(cart2?.items, (item) => item.id === cartB_item2_id);
+            const cart2_item3 = find(cart2?.items, (item) => item.id === cartB_item3_id);
+            expect(cart2_item1?.id).toBe(cartB_item1_id);
+            expect(cart2_item2?.id).toBe(cartB_item2_id);
+            expect(cart2_item3?.id).toBe(cartB_item3_id);
+            expect((cart2?.items as any)?.length).toBe(3);
 
             expect(items?.length).toBe(2);
 
@@ -385,60 +378,60 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
             expect(items).toBeArray();
             expect(items?.length).toBe(6);
 
-            const item1 = find(items, (item) => item?.cartItemId === cartA_item1_id);
-            const item2 = find(items, (item) => item?.cartItemId === cartA_item2_id);
-            const item3 = find(items, (item) => item?.cartItemId === cartA_item3_id);
-            const item4 = find(items, (item) => item?.cartItemId === cartB_item1_id);
-            const item5 = find(items, (item) => item?.cartItemId === cartB_item2_id);
-            const item6 = find(items, (item) => item?.cartItemId === cartB_item3_id);
+            const item1 = find(items, (item) => item?.id === cartA_item1_id);
+            const item2 = find(items, (item) => item?.id === cartA_item2_id);
+            const item3 = find(items, (item) => item?.id === cartA_item3_id);
+            const item4 = find(items, (item) => item?.id === cartB_item1_id);
+            const item5 = find(items, (item) => item?.id === cartB_item2_id);
+            const item6 = find(items, (item) => item?.id === cartB_item3_id);
 
             expect(item1?.cart).toBeDefined();
-            expect(item1?.cart?.cartId).toBe(cartA_id);
-            expect(item1?.cart?.cartName).toBe(cartA_name);
-            expect((item1?.cart?.cartItems as any)?.length).toBe(0);
-            // expect((item1?.cart?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((item1?.cart?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((item1?.cart?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(item1?.cart?.id).toBe(cartA_id);
+            expect(item1?.cart?.name).toBe(cartA_name);
+            expect((item1?.cart?.items as any)?.length).toBe(0);
+            // expect((item1?.cart?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((item1?.cart?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((item1?.cart?.items as any)[2]?.id).toBe(cartA_item3_id);
 
             expect(item2?.cart).toBeDefined();
-            expect(item2?.cart?.cartId).toBe(cartA_id);
-            expect(item2?.cart?.cartName).toBe(cartA_name);
-            expect((item2?.cart?.cartItems as any)?.length).toBe(0);
-            // expect((item2?.cart?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((item2?.cart?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((item2?.cart?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(item2?.cart?.id).toBe(cartA_id);
+            expect(item2?.cart?.name).toBe(cartA_name);
+            expect((item2?.cart?.items as any)?.length).toBe(0);
+            // expect((item2?.cart?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((item2?.cart?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((item2?.cart?.items as any)[2]?.id).toBe(cartA_item3_id);
 
             expect(item3?.cart).toBeDefined();
-            expect(item3?.cart?.cartId).toBe(cartA_id);
-            expect(item3?.cart?.cartName).toBe(cartA_name);
-            expect((item3?.cart?.cartItems as any)?.length).toBe(0);
-            // expect((item3?.cart?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((item3?.cart?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((item3?.cart?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(item3?.cart?.id).toBe(cartA_id);
+            expect(item3?.cart?.name).toBe(cartA_name);
+            expect((item3?.cart?.items as any)?.length).toBe(0);
+            // expect((item3?.cart?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((item3?.cart?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((item3?.cart?.items as any)[2]?.id).toBe(cartA_item3_id);
 
             expect(item4?.cart).toBeDefined();
-            expect(item4?.cart?.cartId).toBe(cartB_id);
-            expect(item4?.cart?.cartName).toBe(cartB_name);
-            expect((item4?.cart?.cartItems as any)?.length).toBe(0);
-            // expect((item4?.cart?.cartItems as any)[0]?.cartItemId).toBe(cartB_item1_id);
-            // expect((item4?.cart?.cartItems as any)[1]?.cartItemId).toBe(cartB_item2_id);
-            // expect((item4?.cart?.cartItems as any)[2]?.cartItemId).toBe(cartB_item3_id);
+            expect(item4?.cart?.id).toBe(cartB_id);
+            expect(item4?.cart?.name).toBe(cartB_name);
+            expect((item4?.cart?.items as any)?.length).toBe(0);
+            // expect((item4?.cart?.items as any)[0]?.id).toBe(cartB_item1_id);
+            // expect((item4?.cart?.items as any)[1]?.id).toBe(cartB_item2_id);
+            // expect((item4?.cart?.items as any)[2]?.id).toBe(cartB_item3_id);
 
             expect(item5?.cart).toBeDefined();
-            expect(item5?.cart?.cartId).toBe(cartB_id);
-            expect(item5?.cart?.cartName).toBe(cartB_name);
-            expect((item5?.cart?.cartItems as any)?.length).toBe(0);
-            // expect((item5?.cart?.cartItems as any)[0]?.cartItemId).toBe(cartB_item1_id);
-            // expect((item5?.cart?.cartItems as any)[1]?.cartItemId).toBe(cartB_item2_id);
-            // expect((item5?.cart?.cartItems as any)[2]?.cartItemId).toBe(cartB_item3_id);
+            expect(item5?.cart?.id).toBe(cartB_id);
+            expect(item5?.cart?.name).toBe(cartB_name);
+            expect((item5?.cart?.items as any)?.length).toBe(0);
+            // expect((item5?.cart?.items as any)[0]?.id).toBe(cartB_item1_id);
+            // expect((item5?.cart?.items as any)[1]?.id).toBe(cartB_item2_id);
+            // expect((item5?.cart?.items as any)[2]?.id).toBe(cartB_item3_id);
 
             expect(item6?.cart).toBeDefined();
-            expect(item6?.cart?.cartId).toBe(cartB_id);
-            expect(item6?.cart?.cartName).toBe(cartB_name);
-            expect((item6?.cart?.cartItems as any)?.length).toBe(0);
-            // expect((item6?.cart?.cartItems as any)[0]?.cartItemId).toBe(cartB_item1_id);
-            // expect((item6?.cart?.cartItems as any)[1]?.cartItemId).toBe(cartB_item2_id);
-            // expect((item6?.cart?.cartItems as any)[2]?.cartItemId).toBe(cartB_item3_id);
+            expect(item6?.cart?.id).toBe(cartB_id);
+            expect(item6?.cart?.name).toBe(cartB_name);
+            expect((item6?.cart?.items as any)?.length).toBe(0);
+            // expect((item6?.cart?.items as any)[0]?.id).toBe(cartB_item1_id);
+            // expect((item6?.cart?.items as any)[1]?.id).toBe(cartB_item2_id);
+            // expect((item6?.cart?.items as any)[2]?.id).toBe(cartB_item3_id);
 
         });
 
@@ -447,19 +440,20 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     describe('#findAllById', () => {
 
         it('returns related cart mapped by @OneToMany to cart item entities', async () => {
+
             const items = await cartRepository.findAllById([cartA_id]);
             expect(items).toBeArray();
             expect(items?.length).toBe(1);
-            expect(items[0]?.cartId).toBe(cartA_id);
-            expect(items[0]?.cartItems?.length).toBe(3);
+            expect(items[0]?.id).toBe(cartA_id);
+            expect(items[0]?.items?.length).toBe(3);
 
-            const item1 = find((items[0]?.cartItems as any), (item) => item?.cartItemId === cartA_item1_id);
-            const item2 = find((items[0]?.cartItems as any), (item) => item?.cartItemId === cartA_item2_id);
-            const item3 = find((items[0]?.cartItems as any), (item) => item?.cartItemId === cartA_item3_id);
+            const item1 = find((items[0]?.items as any), (item) => item?.id === cartA_item1_id);
+            const item2 = find((items[0]?.items as any), (item) => item?.id === cartA_item2_id);
+            const item3 = find((items[0]?.items as any), (item) => item?.id === cartA_item3_id);
 
-            expect(item1?.cartItemId).toBe(cartA_item1_id);
-            expect(item2?.cartItemId).toBe(cartA_item2_id);
-            expect(item3?.cartItemId).toBe(cartA_item3_id);
+            expect(item1?.id).toBe(cartA_item1_id);
+            expect(item2?.id).toBe(cartA_item2_id);
+            expect(item3?.id).toBe(cartA_item3_id);
         });
 
         it('returns related cart item mapped by @ManyToOne to cart entity', async () => {
@@ -472,10 +466,10 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
             const cart = cartItem.cart;
             expect(cart).toBeDefined();
 
-            expect(cart?.cartItems?.length).toBe(0);
-            // expect((cart?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((cart?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((cart?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cart?.items?.length).toBe(0);
+            // expect((cart?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((cart?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((cart?.items as any)[2]?.id).toBe(cartA_item3_id);
 
         });
 
@@ -486,17 +480,17 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         it('returns related cart mapped by @OneToMany to cart item entities', async () => {
             const entity : CartEntity | undefined = await cartRepository.findById(cartA_id);
             expect(entity).toBeDefined();
-            expect(entity?.cartId).toBe(cartA_id);
-            expect(entity?.cartItems).toBeArray();
-            expect(entity?.cartItems?.length).toBe(3);
+            expect(entity?.id).toBe(cartA_id);
+            expect(entity?.items).toBeArray();
+            expect(entity?.items?.length).toBe(3);
 
-            const item1 = find((entity?.cartItems as any), (item) => item?.cartItemId === cartA_item1_id);
-            const item2 = find((entity?.cartItems as any), (item) => item?.cartItemId === cartA_item2_id);
-            const item3 = find((entity?.cartItems as any), (item) => item?.cartItemId === cartA_item3_id);
+            const item1 = find((entity?.items as any), (item) => item?.id === cartA_item1_id);
+            const item2 = find((entity?.items as any), (item) => item?.id === cartA_item2_id);
+            const item3 = find((entity?.items as any), (item) => item?.id === cartA_item3_id);
 
-            expect(item1?.cartItemId).toBe(cartA_item1_id);
-            expect(item2?.cartItemId).toBe(cartA_item2_id);
-            expect(item3?.cartItemId).toBe(cartA_item3_id);
+            expect(item1?.id).toBe(cartA_item1_id);
+            expect(item2?.id).toBe(cartA_item2_id);
+            expect(item3?.id).toBe(cartA_item3_id);
         });
 
         it('returns related cart item mapped by @ManyToOne to cart entity', async () => {
@@ -506,11 +500,11 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
             const cartEntity = entity?.cart;
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(0);
-            // expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(0);
+            // expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
         });
 
     });
@@ -518,36 +512,36 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     describe('#find', () => {
 
         it('returns related cart mapped by @OneToMany to cart item entities', async () => {
-            const items = await cartRepository.find("cartName", cartA_name);
+            const items = await cartRepository.find("name", cartA_name);
             expect(items).toBeArray();
             expect(items?.length).toBe(1);
-            expect(items[0]?.cartId).toBe(cartA_id);
-            expect(items[0]?.cartName).toBe(cartA_name);
+            expect(items[0]?.id).toBe(cartA_id);
+            expect(items[0]?.name).toBe(cartA_name);
 
             const cartEntity = items[0] as any;
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(3);
-            expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(3);
+            expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
 
         });
 
         it('returns related cart item mapped by @ManyToOne to the cart entity', async () => {
-            const items = await cartItemRepository.find("cartItemName", cartA_item1_name);
+            const items = await cartItemRepository.find("name", cartA_item1_name);
             expect(items).toBeArray();
             expect(items?.length).toBe(1);
-            expect(items[0]?.cartItemId).toBe(cartA_item1_id);
-            expect(items[0]?.cartItemName).toBe(cartA_item1_name);
+            expect(items[0]?.id).toBe(cartA_item1_id);
+            expect(items[0]?.name).toBe(cartA_item1_name);
 
             const cartEntity = items[0]?.cart as any;
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(0);
-            // expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(0);
+            // expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
 
         });
 
@@ -560,14 +554,14 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
             const newItem = new CartItemEntity(
                 {
-                     cartItemName: 'New Item 1'
+                     name: 'New Item 1'
                 }
             );
 
             const newCart = new CartEntity(
                 {
-                    cartName: 'Hello world 1',
-                    cartItems: [newItem]
+                    name: 'Hello world 1',
+                    items: [newItem]
                 }
             );
 
@@ -577,14 +571,14 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
             const savedCart = savedItems[0] as any;
             expect(savedCart).toBeDefined();
-            expect(savedCart?.cartName).toBe('Hello world 1');
-            expect(savedCart?.cartItems).toBeArray();
-            expect(savedCart?.cartItems?.length).toBe(1);
+            expect(savedCart?.name).toBe('Hello world 1');
+            expect(savedCart?.items).toBeArray();
+            expect(savedCart?.items?.length).toBe(1);
 
-            const savedCartItem = savedCart?.cartItems[0];
+            const savedCartItem = savedCart?.items[0];
 
-            expect(savedCartItem?.cartItemId).toBeDefined();
-            expect(savedCartItem?.cartItemName).toBe('New Item 1');
+            expect(savedCartItem?.id).toBeDefined();
+            expect(savedCartItem?.name).toBe('New Item 1');
 
         });
 
@@ -593,14 +587,14 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
             const newCart = new CartEntity(
                 {
-                    cartName: 'Hello world 1',
-                    cartItems: []
+                    name: 'Hello world 1',
+                    items: []
                 }
             );
 
             const newItem = new CartItemEntity(
                 {
-                    cartItemName: 'New Item 1'
+                    name: 'New Item 1'
                 }
             );
 
@@ -609,14 +603,14 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
             expect(savedItems?.length).toBe(1);
 
             const savedCartItem = savedItems[0] as any;
-            expect(savedCartItem?.cartItemId).toBeDefined();
-            expect(savedCartItem?.cartItemName).toBe('New Item 1');
+            expect(savedCartItem?.id).toBeDefined();
+            expect(savedCartItem?.name).toBe('New Item 1');
 
             const savedCart = savedCartItem?.cart as any;
             expect(savedCart).toBeDefined();
-            expect(savedCart?.cartName).toBe('Hello world 1');
-            expect(savedCart?.cartItems).toBeArray();
-            expect(savedCart?.cartItems?.length).toBe(1);
+            expect(savedCart?.name).toBe('Hello world 1');
+            expect(savedCart?.items).toBeArray();
+            expect(savedCart?.items?.length).toBe(1);
 
         });
 
@@ -629,27 +623,27 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
             const newItem = new CartItemEntity(
                 {
-                    cartItemName: 'New Item 1'
+                    name: 'New Item 1'
                 }
             );
 
             const newEntity = new CartEntity(
                 {
-                    cartName: 'Hello world',
-                    cartItems: [newItem]
+                    name: 'Hello world',
+                    items: [newItem]
                 }
             );
 
             const savedCart = await cartRepository.save(newEntity);
             expect(savedCart).toBeDefined();
-            expect(savedCart?.cartName).toBe('Hello world');
-            expect(savedCart?.cartItems).toBeArray();
-            expect(savedCart?.cartItems?.length).toBe(1);
+            expect(savedCart?.name).toBe('Hello world');
+            expect(savedCart?.items).toBeArray();
+            expect(savedCart?.items?.length).toBe(1);
 
-            const savedCartItem = savedCart?.cartItems[0];
+            const savedCartItem = savedCart?.items[0];
 
-            expect(savedCartItem?.cartItemId).toBeDefined();
-            expect(savedCartItem?.cartItemName).toBe('New Item 1');
+            expect(savedCartItem?.id).toBeDefined();
+            expect(savedCartItem?.name).toBe('New Item 1');
 
         });
 
@@ -658,111 +652,112 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
             const newEntity = new CartEntity(
                 {
-                    cartName: 'Hello world',
-                    cartItems: []
+                    name: 'Hello world',
+                    items: []
                 }
             );
 
             const newItem = new CartItemEntity(
                 {
-                    cartItemName: 'New Item 1'
+                    name: 'New Item 1'
                 }
             );
 
             const savedCartItem = await cartItemRepository.save(newItem);
-            expect(savedCartItem?.cartItemId).toBeDefined();
-            expect(savedCartItem?.cartItemName).toBe('New Item 1');
+            expect(savedCartItem?.id).toBeDefined();
+            expect(savedCartItem?.name).toBe('New Item 1');
 
             const savedCart = savedCartItem?.cart;
             expect(savedCart).toBeDefined();
-            expect(savedCart?.cartName).toBe('Hello world');
-            expect(savedCart?.cartItems).toBeArray();
-            expect(savedCart?.cartItems?.length).toBe(1);
+            expect(savedCart?.name).toBe('Hello world');
+            expect(savedCart?.items).toBeArray();
+            expect(savedCart?.items?.length).toBe(1);
 
         });
 
     });
 
-    describe('#findAllByCartName', () => {
+    describe('#findAllByName', () => {
 
         it('returns related cart mapped by @OneToMany to cart item entities', async () => {
-            const items = await cartRepository.findAllByCartName(cartA_name);
+
+            const items = await cartRepository.findAllByName(cartA_name);
             expect(items).toBeArray();
             expect(items?.length).toBe(1);
 
             const cartEntity = items[0] as any;
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartId).toBe(cartA_id);
-            expect(cartEntity?.cartName).toBe(cartA_name);
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(3);
-            expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.id).toBe(cartA_id);
+            expect(cartEntity?.name).toBe(cartA_name);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(3);
+            expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
 
         });
 
     });
 
-    describe('#findByCartName', () => {
+    describe('#findByName', () => {
 
         it('returns related cart mapped by @OneToMany to cart item entities', async () => {
-            const cartEntity : CartEntity | undefined = await cartRepository.findByCartName(cartA_name);
+            const cartEntity : CartEntity | undefined = await cartRepository.findByName(cartA_name);
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartId).toBe(cartA_id);
-            expect(cartEntity?.cartName).toBe(cartA_name);
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(3);
-            expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.id).toBe(cartA_id);
+            expect(cartEntity?.name).toBe(cartA_name);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(3);
+            expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
         });
 
     });
 
-    describe('#findAllByCartItemName', () => {
+    describe('#findAllByName', () => {
 
         it('returns related cart items mapped by @ManyToOne to the cart entity', async () => {
-            const items = await cartItemRepository.findAllByCartItemName(cartA_item1_name);
+            const items = await cartItemRepository.findAllByName(cartA_item1_name);
             expect(items).toBeArray();
             expect(items?.length).toBe(1);
 
             const cartItemEntity = items[0] as any;
-            expect( cartItemEntity?.cartItemId ).toBe(cartA_item1_id);
-            expect( cartItemEntity?.cartItemName ).toBe(cartA_item1_name);
+            expect( cartItemEntity?.id ).toBe(cartA_item1_id);
+            expect( cartItemEntity?.name ).toBe(cartA_item1_name);
 
             const cartEntity = cartItemEntity?.cart as any;
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartId).toBe(cartA_id);
-            expect(cartEntity?.cartName).toBe(cartA_name);
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(0);
-            // expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.id).toBe(cartA_id);
+            expect(cartEntity?.name).toBe(cartA_name);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(0);
+            // expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
 
         });
 
     });
 
-    describe('#findByCartItemName', () => {
+    describe('#findByName', () => {
 
         it('returns related cart items mapped by @ManyToOne to the cart entity', async () => {
-            const cartItemEntity : CartItemEntity | undefined = await cartItemRepository.findByCartItemName(cartA_item1_name);
+            const cartItemEntity : CartItemEntity | undefined = await cartItemRepository.findByName(cartA_item1_name);
             expect( cartItemEntity ).toBeDefined();
-            expect( cartItemEntity?.cartItemId ).toBe(cartA_item1_id);
-            expect( cartItemEntity?.cartItemName ).toBe(cartA_item1_name);
+            expect( cartItemEntity?.id ).toBe(cartA_item1_id);
+            expect( cartItemEntity?.name ).toBe(cartA_item1_name);
 
             const cartEntity = cartItemEntity?.cart as any;
 
             expect(cartEntity).toBeDefined();
-            expect(cartEntity?.cartId).toBe(cartA_id);
-            expect(cartEntity?.cartName).toBe(cartA_name);
-            expect(cartEntity?.cartItems).toBeArray();
-            expect(cartEntity?.cartItems?.length).toBe(0);
-            // expect((cartEntity?.cartItems as any)[0]?.cartItemId).toBe(cartA_item1_id);
-            // expect((cartEntity?.cartItems as any)[1]?.cartItemId).toBe(cartA_item2_id);
-            // expect((cartEntity?.cartItems as any)[2]?.cartItemId).toBe(cartA_item3_id);
+            expect(cartEntity?.id).toBe(cartA_id);
+            expect(cartEntity?.name).toBe(cartA_name);
+            expect(cartEntity?.items).toBeArray();
+            expect(cartEntity?.items?.length).toBe(0);
+            // expect((cartEntity?.items as any)[0]?.id).toBe(cartA_item1_id);
+            // expect((cartEntity?.items as any)[1]?.id).toBe(cartA_item2_id);
+            // expect((cartEntity?.items as any)[2]?.id).toBe(cartA_item3_id);
         });
 
     });

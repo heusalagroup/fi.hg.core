@@ -18,36 +18,38 @@ describe('MemoryPersister', () => {
 
     @Table('foos')
     class FooEntity extends Entity {
-        constructor (dto ?: {fooName: string}) {
+
+        constructor (dto ?: {name: string}) {
             super()
-            this.fooId = undefined;
-            this.fooName = dto?.fooName;
+            this.id = undefined;
+            this.name = dto?.name;
         }
 
         @Id()
         @Column('foo_id')
-        public fooId ?: string;
+        public id ?: string;
 
         @Column('foo_name')
-        public fooName ?: string;
+        public name ?: string;
 
     }
 
 
     @Table('bars')
     class BarEntity extends Entity {
-        constructor (dto ?: {barName: string}) {
+
+        constructor (dto ?: {name: string}) {
             super()
-            this.barId = undefined;
-            this.barName = dto?.barName;
+            this.id = undefined;
+            this.name = dto?.name;
         }
 
         @Id()
         @Column('bar_id')
-        public barId ?: string;
+        public id ?: string;
 
         @Column('bar_name')
-        public barName ?: string;
+        public name ?: string;
 
     }
 
@@ -70,10 +72,10 @@ describe('MemoryPersister', () => {
             persister = new MemoryPersister();
             fooMetadata = createEntityMetadata(
                 'foos',
-                'fooId',
+                'id',
                 [
-                    createEntityField('fooId', 'foo_id'),
-                    createEntityField('fooName', 'foo_name')
+                    createEntityField('id', 'foo_id'),
+                    createEntityField('name', 'foo_name')
                 ],
                 [],
                 [],
@@ -82,10 +84,10 @@ describe('MemoryPersister', () => {
             );
             barMetadata = createEntityMetadata(
                 'bars',
-                'barId',
+                'id',
                 [
-                    createEntityField('barId', 'bar_id'),
-                    createEntityField('barName', 'bar_name')
+                    createEntityField('id', 'bar_id'),
+                    createEntityField('name', 'bar_name')
                 ],
                 [],
                 [],
@@ -94,15 +96,15 @@ describe('MemoryPersister', () => {
             );
             barEntity1 = await persister.insert(
                 barMetadata,
-                new BarEntity({barName: 'Bar 123'}),
+                new BarEntity({name: 'Bar 123'}),
             );
             barEntity2 = await persister.insert(
                 barMetadata,
-                new BarEntity({barName: 'Bar 456'}),
+                new BarEntity({name: 'Bar 456'}),
             );
             barEntity3 = await persister.insert(
                 barMetadata,
-                new BarEntity({barName: 'Bar 789'}),
+                new BarEntity({name: 'Bar 789'}),
             );
         });
 
@@ -116,21 +118,21 @@ describe('MemoryPersister', () => {
             });
 
             it('can count items by property when there is none', async () => {
-                expect( await persister.count(fooMetadata, Where.propertyEquals('fooName', 'Foo 123')) ).toBe(0);
+                expect( await persister.count(fooMetadata, Where.propertyEquals('name', 'Foo 123')) ).toBe(0);
             });
 
             it('can count items by property when there is three', async () => {
-                expect( await persister.count(barMetadata, Where.propertyEquals('barName', 'Bar 456')) ).toBe(1);
+                expect( await persister.count(barMetadata, Where.propertyEquals('name', 'Bar 456')) ).toBe(1);
             });
 
         });
 
         describe('#existsBy', () => {
             it('can detect there is no matches', async () => {
-                expect( await persister.existsBy(fooMetadata, Where.propertyEquals('barName', 'Bar 456')) ).toBe(false);
+                expect( await persister.existsBy(fooMetadata, Where.propertyEquals('name', 'Bar 456')) ).toBe(false);
             });
             it('can detect there is one match', async () => {
-                expect( await persister.existsBy(barMetadata, Where.propertyEquals('barName', 'Bar 456')) ).toBe(true);
+                expect( await persister.existsBy(barMetadata, Where.propertyEquals('name', 'Bar 456')) ).toBe(true);
             });
         });
 
@@ -150,42 +152,42 @@ describe('MemoryPersister', () => {
             });
 
             it('can delete items by property when there is none', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                await persister.deleteAll(fooMetadata, Where.propertyEquals(fooMetadata.idPropertyName, barEntity2.barId as string));
+                expect(barEntity2.id).toBeDefined();
+                await persister.deleteAll(fooMetadata, Where.propertyEquals(fooMetadata.idPropertyName, barEntity2.id as string));
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
                 expect( await persister.count(barMetadata, undefined) ).toBe(3);
             });
 
             it('can delete items by property when there is three', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                await persister.deleteAll(barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.barId as string));
+                expect(barEntity2.id).toBeDefined();
+                await persister.deleteAll(barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.id as string));
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
                 expect( await persister.count(barMetadata, undefined) ).toBe(2);
             });
 
             it('can delete items by property list when there is none', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                await persister.deleteAll(fooMetadata, Where.propertyListEquals(fooMetadata.idPropertyName, [barEntity2.barId as string]));
+                expect(barEntity2.id).toBeDefined();
+                await persister.deleteAll(fooMetadata, Where.propertyListEquals(fooMetadata.idPropertyName, [barEntity2.id as string]));
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
                 expect( await persister.count(barMetadata, undefined) ).toBe(3);
             });
             it('can delete items by property list when there is three', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                await persister.deleteAll(barMetadata, Where.propertyListEquals(barMetadata.idPropertyName, [barEntity2.barId as string]));
+                expect(barEntity2.id).toBeDefined();
+                await persister.deleteAll(barMetadata, Where.propertyListEquals(barMetadata.idPropertyName, [barEntity2.id as string]));
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
                 expect( await persister.count(barMetadata, undefined) ).toBe(2);
             });
 
             it('can delete items by named property when there is none', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                await persister.deleteAll(fooMetadata, Where.propertyEquals('barName', 'Bar 456'));
+                expect(barEntity2.id).toBeDefined();
+                await persister.deleteAll(fooMetadata, Where.propertyEquals('name', 'Bar 456'));
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
                 expect( await persister.count(barMetadata, undefined) ).toBe(3);
             });
 
             it('can delete items by named property when there is three', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                await persister.deleteAll(barMetadata, Where.propertyEquals('barName', 'Bar 456'));
+                expect(barEntity2.id).toBeDefined();
+                await persister.deleteAll(barMetadata, Where.propertyEquals('name', 'Bar 456'));
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
                 expect( await persister.count(barMetadata, undefined) ).toBe(2);
             });
@@ -201,36 +203,36 @@ describe('MemoryPersister', () => {
             it('can detect there is three matches', async () => {
                 const list : BarEntity[] = await persister.findAll(barMetadata, undefined, undefined);
                 expect(list?.length).toBe(3);
-                expect(list[0].barId).toBe(barEntity1.barId);
-                expect(list[1].barId).toBe(barEntity2.barId);
-                expect(list[2].barId).toBe(barEntity3.barId);
-                expect(list[0].barName).toBe(barEntity1.barName);
-                expect(list[1].barName).toBe(barEntity2.barName);
-                expect(list[2].barName).toBe(barEntity3.barName);
+                expect(list[0].id).toBe(barEntity1.id);
+                expect(list[1].id).toBe(barEntity2.id);
+                expect(list[2].id).toBe(barEntity3.id);
+                expect(list[0].name).toBe(barEntity1.name);
+                expect(list[1].name).toBe(barEntity2.name);
+                expect(list[2].name).toBe(barEntity3.name);
             });
 
             it('can find by id when there is no matches', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                expect( await persister.findAll(fooMetadata, Where.propertyEquals(fooMetadata.idPropertyName, barEntity2.barId as string), undefined) ).toStrictEqual([]);
+                expect(barEntity2.id).toBeDefined();
+                expect( await persister.findAll(fooMetadata, Where.propertyEquals(fooMetadata.idPropertyName, barEntity2.id as string), undefined) ).toStrictEqual([]);
             });
 
             it('can find by id when there is one match', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                const list : BarEntity[] = await persister.findAll(barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.barId as string), undefined);
+                expect(barEntity2.id).toBeDefined();
+                const list : BarEntity[] = await persister.findAll(barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.id as string), undefined);
                 expect(list?.length).toBe(1);
-                expect(list[0].barId).toBe(barEntity2.barId);
-                expect(list[0].barName).toBe(barEntity2.barName);
+                expect(list[0].id).toBe(barEntity2.id);
+                expect(list[0].name).toBe(barEntity2.name);
             });
 
             it('can find by property when there is no matches', async () => {
-                expect( await persister.findAll(fooMetadata, Where.propertyEquals('barName', 'Bar 456'), undefined) ).toStrictEqual([]);
+                expect( await persister.findAll(fooMetadata, Where.propertyEquals('name', 'Bar 456'), undefined) ).toStrictEqual([]);
             });
 
             it('can find by property when detect there is one match', async () => {
-                const list : BarEntity[] = await persister.findAll(barMetadata, Where.propertyEquals('barName', 'Bar 456'), undefined);
+                const list : BarEntity[] = await persister.findAll(barMetadata, Where.propertyEquals('name', 'Bar 456'), undefined);
                 expect(list?.length).toBe(1);
-                expect(list[0].barId).toBe(barEntity2.barId);
-                expect(list[0].barName).toBe(barEntity2.barName);
+                expect(list[0].id).toBe(barEntity2.id);
+                expect(list[0].name).toBe(barEntity2.name);
             });
 
         });
@@ -238,27 +240,27 @@ describe('MemoryPersister', () => {
         describe('#findBy', () => {
 
             it('can find by id when there is no matches', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                expect( await persister.findBy(fooMetadata, Where.propertyEquals(fooMetadata.idPropertyName, barEntity2.barId as string), undefined) ).toBeUndefined();
+                expect(barEntity2.id).toBeDefined();
+                expect( await persister.findBy(fooMetadata, Where.propertyEquals(fooMetadata.idPropertyName, barEntity2.id as string), undefined) ).toBeUndefined();
             });
 
             it('can find by id when there is one match', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                const item : BarEntity | undefined = await persister.findBy(barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.barId as string), undefined);
+                expect(barEntity2.id).toBeDefined();
+                const item : BarEntity | undefined = await persister.findBy(barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.id as string), undefined);
                 expect(item).toBeDefined();
-                expect(item?.barId).toBe(barEntity2.barId);
-                expect(item?.barName).toBe(barEntity2.barName);
+                expect(item?.id).toBe(barEntity2.id);
+                expect(item?.name).toBe(barEntity2.name);
             });
 
             it('can find by property name when there is no matches', async () => {
-                expect( await persister.findBy(fooMetadata, Where.propertyEquals('barName', 'Bar 456'), undefined) ).toBeUndefined();
+                expect( await persister.findBy(fooMetadata, Where.propertyEquals('name', 'Bar 456'), undefined) ).toBeUndefined();
             });
 
             it('can find by property name there is one match', async () => {
-                const item : BarEntity | undefined = await persister.findBy(barMetadata, Where.propertyEquals('barName', 'Bar 456'), undefined);
+                const item : BarEntity | undefined = await persister.findBy(barMetadata, Where.propertyEquals('name', 'Bar 456'), undefined);
                 expect(item).toBeDefined();
-                expect(item?.barId).toBe(barEntity2.barId);
-                expect(item?.barName).toBe(barEntity2.barName);
+                expect(item?.id).toBe(barEntity2.id);
+                expect(item?.name).toBe(barEntity2.name);
             });
 
         });
@@ -266,10 +268,10 @@ describe('MemoryPersister', () => {
         describe('#insert', () => {
             it('can insert new item', async () => {
                 expect( await persister.count(fooMetadata, undefined) ).toBe(0);
-                const entity = await persister.insert(fooMetadata, new FooEntity({fooName: 'Hello world'}));
+                const entity = await persister.insert(fooMetadata, new FooEntity({name: 'Hello world'}));
                 expect(entity).toBeDefined();
-                expect(entity.fooName).toBe('Hello world');
-                expect(entity.fooId).toBeDefined();
+                expect(entity.name).toBe('Hello world');
+                expect(entity.id).toBeDefined();
                 expect( await persister.count(fooMetadata, undefined) ).toBe(1);
             });
         });
@@ -277,22 +279,22 @@ describe('MemoryPersister', () => {
         describe('#update', () => {
 
             it('can update an item', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                barEntity2.barName = 'Hello world';
+                expect(barEntity2.id).toBeDefined();
+                barEntity2.name = 'Hello world';
                 const entity = await persister.update(barMetadata, barEntity2);
                 expect(entity).toBeDefined();
-                expect(entity.barName).toBe('Hello world');
-                expect(entity.barId).toBe(barEntity2.barId);
+                expect(entity.name).toBe('Hello world');
+                expect(entity.id).toBe(barEntity2.id);
                 expect( await persister.count(barMetadata, undefined) ).toBe(3);
             });
 
             it('cannot update an item without update call', async () => {
-                expect(barEntity2.barId).toBeDefined();
-                barEntity2.barName = 'Hello world';
-                const entity : BarEntity | undefined = await persister.findBy( barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.barId as string), undefined );
+                expect(barEntity2.id).toBeDefined();
+                barEntity2.name = 'Hello world';
+                const entity : BarEntity | undefined = await persister.findBy( barMetadata, Where.propertyEquals(barMetadata.idPropertyName, barEntity2.id as string), undefined );
                 expect(entity).toBeDefined();
-                expect(entity?.barName).toBe('Bar 456');
-                expect(entity?.barId).toBe(barEntity2.barId);
+                expect(entity?.name).toBe('Bar 456');
+                expect(entity?.id).toBe(barEntity2.id);
             });
 
         });

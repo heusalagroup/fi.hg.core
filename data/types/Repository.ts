@@ -15,6 +15,28 @@ export interface StaticRepository <T extends Entity, ID extends EntityIdTypes> {
 
 }
 
+const RESERVED_REPOSITORY_METHOD_NAMES : readonly string[] = [
+    "setup",
+    "count",
+    "existsBy",
+    "delete",
+    "deleteById",
+    "deleteAll",
+    "deleteAllById",
+    "existsById",
+    "findAll",
+    "findAllById",
+    "findById",
+    "find",
+    "save",
+    "saveAll",
+    "__getPersister",
+];
+
+export function isReservedRepositoryMethodName (name: string) : boolean {
+    return RESERVED_REPOSITORY_METHOD_NAMES.includes(name);
+}
+
 export interface Repository<T extends Entity, ID extends EntityIdTypes> {
 
     setup () : Promise<void>;
