@@ -12,15 +12,31 @@ export class PgFunctionBuilder implements QueryBuilder {
      * @private
      */
     protected readonly _name : string;
+
+    /**
+     * This is used in aggregate functions
+     *
+     * @private
+     */
+    protected readonly _distinct : boolean;
+
     protected _builder : QueryBuilder | undefined;
 
-    public constructor (name : string) {
-        this._name = name;
+    protected constructor (
+        distinct : boolean,
+        name     : string
+    ) {
+        this._name = name ?? '';
         this._builder = undefined;
+        this._distinct = distinct;
     }
 
-    public static create (builder: QueryBuilder, name: string) : PgFunctionBuilder {
-        const f = new PgFunctionBuilder(name);
+    public static create (
+        builder: QueryBuilder,
+        distinct: boolean,
+        name: string
+    ) : PgFunctionBuilder {
+        const f = new PgFunctionBuilder(distinct, name);
         f.setFormulaFromQueryBuilder(builder);
         return f;
     }
@@ -47,7 +63,7 @@ export class PgFunctionBuilder implements QueryBuilder {
 
     public buildQueryString (): string {
         if (!this._builder) throw new TypeError(`Could not build ${this._name}() query string: Query builder not initialized`);
-        return `${this._name}(${this._builder.buildQueryString()})`;
+        return `${this._name}(${this._distinct ? 'DISTINCT ': ''}${this._builder.buildQueryString()})`;
     }
 
     public buildQueryValues (): readonly any[] {

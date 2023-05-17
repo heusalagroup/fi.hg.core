@@ -4,12 +4,24 @@ import { PgFunctionBuilder } from "./PgFunctionBuilder";
 import { QueryBuilder } from "../../../query/types/QueryBuilder";
 
 /**
- * This generates formulas like `array_agg(formula)`
+ * This generates formulas like `array_agg([DISTINCT] formula)`
  */
 export class PgJsonAggBuilder extends PgFunctionBuilder {
 
-    public constructor () {
-        super('json_agg');
+    protected constructor (
+        distinct : boolean,
+        name     : string
+    ) {
+        super(distinct, name);
+    }
+
+    public static create (
+        builder: QueryBuilder,
+        distinct: boolean
+    ) : PgJsonAggBuilder {
+        const f = new PgJsonAggBuilder(distinct, 'jsonb_agg');
+        f.setFormulaFromQueryBuilder(builder);
+        return f;
     }
 
     public valueOf () {
@@ -18,12 +30,6 @@ export class PgJsonAggBuilder extends PgFunctionBuilder {
 
     public toString () : string {
         return `PgJsonAggBuilder "${this.buildQueryString()}" with ${this.buildQueryValues().map(item=>item()).join(' ')}`;
-    }
-
-    public static create (builder: QueryBuilder) : PgJsonAggBuilder {
-        const f = new PgJsonAggBuilder();
-        f.setFormulaFromQueryBuilder(builder);
-        return f;
     }
 
 }

@@ -9,7 +9,7 @@ import { QueryBuilder } from "../../../query/types/QueryBuilder";
 export class PgUnnestBuilder extends PgFunctionBuilder {
 
     public constructor () {
-        super('unnest');
+        super(false,'unnest');
     }
 
     public valueOf () {

@@ -12,9 +12,13 @@ export class PgJsonBuildObjectBuilder extends PgFunctionBuilder {
     protected _arguments : PgArgumentListBuilder;
 
     public constructor () {
-        super('json_build_object');
+        super(false,'jsonb_build_object');
         this._arguments = new PgArgumentListBuilder();
         this.setFormulaFromQueryBuilder(this._arguments);
+    }
+
+    public static create (builder: QueryBuilder) : PgJsonBuildObjectBuilder {
+        return new PgJsonBuildObjectBuilder();
     }
 
     public valueOf () {
@@ -50,10 +54,6 @@ export class PgJsonBuildObjectBuilder extends PgFunctionBuilder {
     ) : void {
         this._arguments.setParamAsText(propertyName);
         this._arguments.setTableColumnAsTimestamp(tableName, columnName);
-    }
-
-    public static create (builder: QueryBuilder) : PgJsonBuildObjectBuilder {
-        return new PgJsonBuildObjectBuilder();
     }
 
 }

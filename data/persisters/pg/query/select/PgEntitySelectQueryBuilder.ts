@@ -83,7 +83,8 @@ export class PgEntitySelectQueryBuilder
                     this.getTableNameWithPrefix(targetTableName),
                     fields,
                     temporalProperties
-                )
+                ),
+                true
             ),
             propertyName
         );
@@ -113,7 +114,8 @@ export class PgEntitySelectQueryBuilder
                         this.getTableNameWithPrefix(targetTableName),
                         fields,
                         temporalProperties
-                    )
+                    ),
+                    true
                 ),
                 0
             ),

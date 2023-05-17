@@ -16,14 +16,20 @@ import { Table } from "../Table";
 import { Entity } from "../Entity";
 import { Id } from "../Id";
 import { Column } from "../Column";
+import { PgPersister } from "../../../pg/PgPersister";
 
 export const entityRelationshipTests = (context : RepositoryTestContext) : void => {
 
     @Table('carts')
     class CartEntity extends Entity {
 
-        constructor (dto ?: {readonly cartItems ?: readonly CartItemEntity[], readonly cartName ?: string}) {
+        constructor (dto ?: {
+            readonly cartItems ?: readonly CartItemEntity[],
+            readonly cartName ?: string,
+            readonly contacts ?: readonly ContactEntity[]
+        }) {
             super();
+            this.contacts = dto?.contacts ?? [];
             this.cartItems = dto?.cartItems ?? [];
             this.cartName = dto?.cartName;
         }
@@ -35,8 +41,38 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         @Column('cart_name')
         public cartName ?: string;
 
+        // We need two one to many -mappings to test that it works correctly
+        // with multiple of these
+        @OneToMany('contacts', "cart")
+        public contacts : readonly ContactEntity[];
+
         @OneToMany('cart_items', "cart")
         public cartItems : readonly CartItemEntity[];
+
+    }
+
+    @Table('contacts')
+    class ContactEntity extends Entity {
+
+        constructor (dto ?: {readonly cartId ?: string, readonly contactName ?: string}) {
+            super();
+            this.cartId = dto?.cartId;
+            this.contactName = dto?.contactName;
+        }
+
+        @Id()
+        @Column('contact_id', 'BIGINT')
+        public contactId ?: string;
+
+        @Column('cart_id', 'BIGINT')
+        public cartId ?: string;
+
+        @Column('contact_name')
+        public contactName ?: string;
+
+        @ManyToOne(CartEntity)
+        @JoinColumn('cart_id', false)
+        public cart ?: CartEntity;
 
     }
 
@@ -79,9 +115,17 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
     }
 
+    interface ContactRepository extends Repository<ContactEntity, string> {
+
+        findAllByContactName (name: string) : Promise<ContactEntity[]>;
+        findByContactName (name: string): Promise<ContactEntity | undefined>;
+
+    }
+
     let persister : Persister;
     let cartRepository : CartRepository;
     let cartItemRepository : CartItemRepository;
+    let contactRepository : ContactRepository;
 
     /**
      * Our main test entity
@@ -89,6 +133,7 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     let cartA : CartEntity;
     let cartA_id : string;
     let cartA_name : string = 'Cart A';
+
     let cartA_item1 : CartItemEntity;
     let cartA_item1_id : string;
     let cartA_item1_name : string = 'Cart A item 1';
@@ -99,12 +144,23 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     let cartA_item3_id : string;
     let cartA_item3_name : string = 'Cart A item 3';
 
+    let cartA_contact1 : ContactEntity;
+    let cartA_contact1_id : string;
+    let cartA_contact1_name : string = 'Cart A contact 1';
+    let cartA_contact2 : ContactEntity;
+    let cartA_contact2_id : string;
+    let cartA_contact2_name : string = 'Cart A contact 2';
+    let cartA_contact3 : ContactEntity;
+    let cartA_contact3_id : string;
+    let cartA_contact3_name : string = 'Cart A contact 3';
+
     /**
      * Another cart entity so that there is data in the database beside our test data
      */
     let cartB : CartEntity;
     let cartB_id : string;
     let cartB_name : string = 'Cart B';
+
     let cartB_item1 : CartItemEntity;
     let cartB_item1_id : string;
     let cartB_item1_name : string = 'Cart B item 1';
@@ -114,6 +170,16 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
     let cartB_item3 : CartItemEntity;
     let cartB_item3_id : string;
     let cartB_item3_name : string = 'Cart B item 3';
+
+    let cartB_contact1 : ContactEntity;
+    let cartB_contact1_id : string;
+    let cartB_contact1_name : string = 'Cart B contact 1';
+    let cartB_contact2 : ContactEntity;
+    let cartB_contact2_id : string;
+    let cartB_contact2_name : string = 'Cart B contact 2';
+    let cartB_contact3 : ContactEntity;
+    let cartB_contact3_id : string;
+    let cartB_contact3_name : string = 'Cart B contact 3';
 
     beforeEach( async () => {
 
@@ -131,8 +197,14 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
             persister
         );
 
+        contactRepository = createCrudRepositoryWithPersister<ContactEntity, string, ContactRepository>(
+            new ContactEntity(),
+            persister
+        );
+
         await cartRepository.deleteAll();
         await cartItemRepository.deleteAll();
+        await contactRepository.deleteAll();
 
         // LOG.debug(`Step 1`)
         cartA = new CartEntity({cartName: cartA_name});
@@ -142,6 +214,7 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         );
         cartA_id = cartA?.cartId as string;
         if (!isString(cartA_id)) throw new TypeError(`cartA_id failed to initialize: ${JSON.stringify(cartA_id)}`);
+
 
         // LOG.debug(`Step 2`)
         cartA_item1 = new CartItemEntity({cartId: cartA_id, cartItemName: cartA_item1_name});
@@ -170,6 +243,35 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         cartA_item3_id = cartA_item3?.cartItemId as string;
         if (!isString(cartA_item3_id)) throw new TypeError(`cartItemA3_id failed to initialize: ${JSON.stringify(cartA_item3_id)}`);
 
+
+        // LOG.debug(`Step 2`)
+        cartA_contact1 = new ContactEntity({cartId: cartA_id, contactName: cartA_contact1_name});
+        cartA_contact1 = await persister.insert(
+            cartA_contact1.getMetadata(),
+            cartA_contact1,
+        );
+        cartA_contact1_id = cartA_contact1?.contactId as string;
+        if (!isString(cartA_contact1_id)) throw new TypeError(`contactA1_id failed to initialize: ${JSON.stringify(cartA_contact1_id)}`);
+
+        // LOG.debug(`Step 3`)
+        cartA_contact2 = new ContactEntity({cartId: cartA_id, contactName: cartA_contact2_name});
+        cartA_contact2 = await persister.insert(
+            cartA_contact2.getMetadata(),
+            cartA_contact2,
+        );
+        cartA_contact2_id = cartA_contact2?.contactId as string;
+        if (!isString(cartA_contact2_id)) throw new TypeError(`contactA2_id failed to initialize: ${JSON.stringify(cartA_contact2_id)}`);
+
+        // LOG.debug(`Step 4`)
+        cartA_contact3 = new ContactEntity({cartId: cartA_id, contactName: cartA_contact3_name});
+        cartA_contact3 = await persister.insert(
+            cartA_contact3.getMetadata(),
+            cartA_contact3,
+        );
+        cartA_contact3_id = cartA_contact3?.contactId as string;
+        if (!isString(cartA_contact3_id)) throw new TypeError(`contactA3_id failed to initialize: ${JSON.stringify(cartA_contact3_id)}`);
+
+
         // LOG.debug(`Step 5`)
         cartB = new CartEntity({cartName: cartB_name});
         cartB = await persister.insert(
@@ -178,6 +280,7 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         );
         cartB_id = cartB?.cartId as string;
         if (!isString(cartB_id)) throw new TypeError(`cartB_id failed to initialize: ${JSON.stringify(cartB_id)}`);
+
 
         // LOG.debug(`Step 6`)
         cartB_item1 = new CartItemEntity({cartId: cartB_id, cartItemName: cartB_item1_name});
@@ -206,6 +309,35 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         cartB_item3_id = cartB_item3?.cartItemId as string;
         if (!isString(cartB_item3_id)) throw new TypeError(`cartB_item3_id failed to initialize: ${JSON.stringify(cartB_item3_id)}`);
 
+
+        // LOG.debug(`Step 6`)
+        cartB_contact1 = new ContactEntity({cartId: cartB_id, contactName: cartB_contact1_name});
+        cartB_contact1 = await persister.insert(
+            cartB_contact1.getMetadata(),
+            cartB_contact1,
+        );
+        cartB_contact1_id = cartB_contact1?.contactId as string;
+        if (!isString(cartB_contact1_id)) throw new TypeError(`cartB_contact1_id failed to initialize: ${JSON.stringify(cartB_contact1_id)}`);
+
+        // LOG.debug(`Step 7`)
+        cartB_contact2 = new ContactEntity({cartId: cartB_id, contactName: cartB_contact2_name});
+        cartB_contact2 = await persister.insert(
+            cartB_contact2.getMetadata(),
+            cartB_contact2,
+        );
+        cartB_contact2_id = cartB_contact2?.contactId as string;
+        if (!isString(cartB_contact2_id)) throw new TypeError(`cartB_contact2_id failed to initialize: ${JSON.stringify(cartB_contact2_id)}`);
+
+        // LOG.debug(`Step 8`)
+        cartB_contact3 = new ContactEntity({cartId: cartB_id, contactName: cartB_contact3_name});
+        cartB_contact3 = await persister.insert(
+            cartB_contact3.getMetadata(),
+            cartB_contact3,
+        );
+        cartB_contact3_id = cartB_contact3?.contactId as string;
+        if (!isString(cartB_contact3_id)) throw new TypeError(`cartB_contact3_id failed to initialize: ${JSON.stringify(cartB_contact3_id)}`);
+
+
         // LOG.debug(`Step 9`)
 
     });
@@ -214,32 +346,36 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
 
         it('returns related cart items mapped by @OneToMany', async () => {
 
+            PgPersister.setLogLevel(LogLevel.DEBUG);
+
             const items = await cartRepository.findAll();
             expect(items).toBeArray();
-            expect(items?.length).toBe(2);
+            expect(items?.length).toBeGreaterThanOrEqual(2);
 
             const cart1 = find(items, (item) : boolean => item.cartId === cartA_id);
             const cart2 = find(items, (item) : boolean => item.cartId === cartB_id);
             expect(cart1?.cartId).toBe(cartA_id);
             expect(cart2?.cartId).toBe(cartB_id);
 
-            expect((cart1?.cartItems as any)?.length).toBe(3);
-
+            expect((cart1?.cartItems as any)?.length).toBeGreaterThanOrEqual(3);
             const cart1_item1 = find(cart1?.cartItems, (item) => item.cartItemId === cartA_item1_id);
             const cart1_item2 = find(cart1?.cartItems, (item) => item.cartItemId === cartA_item2_id);
             const cart1_item3 = find(cart1?.cartItems, (item) => item.cartItemId === cartA_item3_id);
             expect(cart1_item1?.cartItemId).toBe(cartA_item1_id);
             expect(cart1_item2?.cartItemId).toBe(cartA_item2_id);
             expect(cart1_item3?.cartItemId).toBe(cartA_item3_id);
+            expect((cart1?.cartItems as any)?.length).toBe(3);
 
-            expect((cart2?.cartItems as any)?.length).toBe(3);
-
+            expect((cart2?.cartItems as any)?.length).toBeGreaterThanOrEqual(3);
             const cart2_item1 = find(cart2?.cartItems, (item) => item.cartItemId === cartB_item1_id);
             const cart2_item2 = find(cart2?.cartItems, (item) => item.cartItemId === cartB_item2_id);
             const cart2_item3 = find(cart2?.cartItems, (item) => item.cartItemId === cartB_item3_id);
             expect(cart2_item1?.cartItemId).toBe(cartB_item1_id);
             expect(cart2_item2?.cartItemId).toBe(cartB_item2_id);
             expect(cart2_item3?.cartItemId).toBe(cartB_item3_id);
+            expect((cart2?.cartItems as any)?.length).toBe(3);
+
+            expect(items?.length).toBe(2);
 
         });
 

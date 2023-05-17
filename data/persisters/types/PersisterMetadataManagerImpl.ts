@@ -44,8 +44,8 @@ export class PersisterMetadataManagerImpl implements PersisterMetadataManager {
         const tableName = metadata.tableName;
         if (tableName) {
             this._metadata[tableName] = metadata;
+            this._updateRelations();
         }
-        this._updateRelations();
     }
 
     /**

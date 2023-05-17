@@ -11,7 +11,7 @@ export class PgRowBuilder extends PgFunctionBuilder {
     private readonly _arguments : PgArgumentListBuilder;
 
     public constructor () {
-        super('ROW');
+        super(false, 'ROW');
         this._arguments = new PgArgumentListBuilder();
         this.setFormulaFromQueryBuilder(this._arguments);
     }
@@ -36,7 +36,8 @@ export class PgRowBuilder extends PgFunctionBuilder {
         this._arguments.setTableColumn(tableName, columnName);
     }
 
-    public static create () : PgRowBuilder {
+    public static create (
+    ) : PgRowBuilder {
         return new PgRowBuilder();
     }
 
