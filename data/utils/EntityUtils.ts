@@ -26,8 +26,8 @@ import { every } from "../../functions/every";
 import { PersisterMetadataManager } from "../persisters/types/PersisterMetadataManager";
 import { LogLevel } from "../../types/LogLevel";
 import { TemporalProperty } from "../types/TemporalProperty";
-import { parseIsoDateString } from "../../types/IsoDateString";
 import { isJsonColumnDefinition, isTimeColumnDefinition } from "../types/ColumnDefinition";
+import { parseIsoDateString } from "../../types/Date";
 
 const LOG = LogService.createLogger('EntityUtils');
 

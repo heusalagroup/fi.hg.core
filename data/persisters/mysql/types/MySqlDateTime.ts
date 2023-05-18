@@ -2,7 +2,7 @@
 
 import { MySqlUtils } from "../utils/MySqlUtils";
 import { JsonAny } from "../../../../Json";
-import { isIsoDateString, parseIsoDateString } from "../../../../types/IsoDateString";
+import { isIsoDateString, parseIsoDateString } from "../../../../types/Date";
 
 export class MySqlDateTime {
 

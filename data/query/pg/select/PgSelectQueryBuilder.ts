@@ -2,9 +2,8 @@
 
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
 import { SelectQueryBuilder } from "../../sql/select/SelectQueryBuilder";
-import { PgQueryUtils } from "../utils/PgQueryUtils";
+import { PgQueryUtils, PG_PH_AS, PG_PH_LEFT_JOIN } from "../utils/PgQueryUtils";
 import { BaseSelectQueryBuilder } from "../../sql/select/BaseSelectQueryBuilder";
-import { PG_PH_AS, PG_PH_LEFT_JOIN } from "../constants/pg-queries";
 
 export class PgSelectQueryBuilder extends BaseSelectQueryBuilder implements SelectQueryBuilder {
 
