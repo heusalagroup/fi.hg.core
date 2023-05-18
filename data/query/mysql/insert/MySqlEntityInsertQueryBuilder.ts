@@ -11,12 +11,11 @@ import { find } from "../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { filter } from "../../../../functions/filter";
 import { QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
-import { MY_JSON_COLUMN_DEFINITIONS, MY_TIME_COLUMN_DEFINITIONS } from "../constants/mysql-queries";
 import { LogService } from "../../../../LogService";
 import { EntityFieldType } from "../../../types/EntityFieldType";
 import { LogLevel } from "../../../../types/LogLevel";
 import { EntityUtils } from "../../../utils/EntityUtils";
-import { ColumnDefinition } from "../../../types/ColumnDefinition";
+import { ColumnDefinition, isJsonColumnDefinition, isTimeColumnDefinition } from "../../../types/ColumnDefinition";
 
 const LOG = LogService.createLogger( 'MySqlEntityInsertQueryBuilder' );
 
@@ -58,8 +57,6 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly ColumnDefinition[] = MY_TIME_COLUMN_DEFINITIONS;
-        const jsonDefinitions : readonly ColumnDefinition[] = MY_JSON_COLUMN_DEFINITIONS;
 
         const properties : string[] = map(
             filter(
@@ -99,14 +96,14 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
 
                 const value : any = EntityUtils.getPropertyFromEntity(entity, propertyName) ?? null;
 
-                const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
+                const isTime : boolean = !!temporalType || !!(isTimeColumnDefinition(columnDefinition));
                 LOG.debug(`appendEntity: isTime: `, isTime);
                 if ( isTime ) {
                     itemBuilder.setParamFromTimestampString(value);
                     return;
                 }
 
-                const isJson : boolean = !isTime && columnDefinition ? jsonDefinitions.includes(columnDefinition) : false;
+                const isJson : boolean = !isTime ? isJsonColumnDefinition(columnDefinition) : false;
                 if (isJson) {
                     itemBuilder.setParamFromJson(value);
                     return;

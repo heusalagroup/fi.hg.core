@@ -7,7 +7,9 @@ import { explainEnum, isEnum, parseEnum, stringifyEnum } from "../../types/Enum"
 export enum ColumnDefinition {
     JSON = "JSON",
     JSONB = "JSONB",
+
     BIGINT = "BIGINT",
+
     TIMESTAMP = "TIMESTAMP",
     TIMESTAMPTZ = "TIMESTAMPTZ",
     DATE = "DATE",
@@ -16,6 +18,40 @@ export enum ColumnDefinition {
     DATETIMETZ = "DATETIMETZ",
     TIME = "TIME",
     TIMETZ = "TIMETZ",
+
+}
+
+const JSON_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [
+    ColumnDefinition.JSON,
+    ColumnDefinition.JSONB
+];
+
+const TIME_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [
+    ColumnDefinition.TIMESTAMP,
+    ColumnDefinition.TIMESTAMPTZ,
+    ColumnDefinition.DATE,
+    ColumnDefinition.DATETZ,
+    ColumnDefinition.DATETIME,
+    ColumnDefinition.DATETIMETZ,
+    ColumnDefinition.TIME,
+    ColumnDefinition.TIMETZ,
+];
+
+export function isJsonColumnDefinition (value: unknown) : value is ColumnDefinition.JSON | ColumnDefinition.JSONB {
+    return isColumnDefinition(value) && JSON_COLUMN_DEFINITIONS.includes(value);
+}
+
+export function isTimeColumnDefinition (value: unknown) : value is (
+    ColumnDefinition.TIMESTAMP
+    | ColumnDefinition.TIMESTAMPTZ
+    | ColumnDefinition.DATE
+    | ColumnDefinition.DATETZ
+    | ColumnDefinition.DATETIME
+    | ColumnDefinition.DATETIMETZ
+    | ColumnDefinition.TIME
+    | ColumnDefinition.TIMETZ
+) {
+    return isColumnDefinition(value) && TIME_COLUMN_DEFINITIONS.includes(value);
 }
 
 export function isColumnDefinition (value: unknown) : value is ColumnDefinition {

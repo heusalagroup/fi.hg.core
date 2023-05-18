@@ -10,7 +10,7 @@ import { has } from "../../../../functions/has";
 import { find } from "../../../../functions/find";
 import { PgListQueryBuilder } from "../types/PgListQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../types/QueryBuilder";
-import { PG_TIME_COLUMN_DEFINITIONS } from "../constants/pg-queries";
+import { isTimeColumnDefinition } from "../../../types/ColumnDefinition";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -44,7 +44,6 @@ export class PgEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly string[] = PG_TIME_COLUMN_DEFINITIONS;
         const setAssigmentBuilder = PgListQueryBuilder.create();
         forEach(
             fields,
@@ -59,7 +58,7 @@ export class PgEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
                 );
                 const temporalType = temporalProperty?.temporalType;
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
-                if ( temporalType || (columnDefinition && timeDefinitions.includes(columnDefinition)) ) {
+                if ( temporalType || isTimeColumnDefinition(columnDefinition) ) {
                     setAssigmentBuilder.setAssignmentWithParamAsTimestamp(columnName, value);
                 } else {
                     setAssigmentBuilder.setAssignmentWithParam(columnName, value);

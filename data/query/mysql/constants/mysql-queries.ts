@@ -1,10 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { SortDirection } from "../../../types/SortDirection";
-import { ColumnDefinition } from "../../../types/ColumnDefinition";
-
-export const MY_TIME_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.TIMESTAMP, ColumnDefinition.DATETIME, ColumnDefinition.DATE, ColumnDefinition.TIME];
-export const MY_JSON_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.JSON, ColumnDefinition.JSONB];
 
 export const MY_PH_VALUE = `?`;
 export const MY_PH_ASSIGN_VALUE = `?? = ?`;
@@ -38,6 +34,8 @@ export const MY_PH_TABLE_COLUMN_BETWEEN_RANGE = `??.?? BETWEEN ? AND ?`;
 export const MY_PH_TABLE_COLUMN_AFTER = `??.?? > ?`;
 export const MY_PH_TABLE_COLUMN_BEFORE = `??.?? < ?`;
 export const MY_PH_TABLE_COLUMN_EQUAL = `??.?? = ?`;
+export const MY_PH_TABLE_COLUMN_EQUAL_AS_JSON = `??.?? = CAST(? AS JSON)`;
+export const MY_PH_TABLE_COLUMN_IS_NULL = `??.?? IS NULL`;
 export const MY_PH_TABLE_COLUMN_IN = `??.?? IN (?)`;
 
 export const MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME = `??.?? BETWEEN ${MY_PH_VALUE_TO_DATETIME} AND ${MY_PH_VALUE_TO_DATETIME}`;

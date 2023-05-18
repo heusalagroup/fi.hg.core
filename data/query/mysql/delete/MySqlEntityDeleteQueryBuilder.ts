@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { MySqlDeleteQueryBuilder } from "./MySqlDeleteQueryBuilder";
-import { DeleteQueryBuilder } from "../../sql/delete/DeleteQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
 import { EntityField } from "../../../types/EntityField";
 import { Where } from "../../../Where";
@@ -11,7 +10,6 @@ import { MySqlOrChainBuilder } from "../formulas/MySqlOrChainBuilder";
 import { EntityDeleteQueryBuilder } from "../../sql/delete/EntityDeleteQueryBuilder";
 import { ChainQueryBuilder } from "../../types/ChainQueryBuilder";
 import { TemporalProperty } from "../../../types/TemporalProperty";
-import { MY_TIME_COLUMN_DEFINITIONS } from "../constants/mysql-queries";
 
 export class MySqlEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
 
@@ -35,7 +33,6 @@ export class MySqlEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
             completeTableName,
             fields,
             temporalProperties,
-            MY_TIME_COLUMN_DEFINITIONS,
             () => MySqlAndChainBuilder.create(),
             () => MySqlOrChainBuilder.create()
         );

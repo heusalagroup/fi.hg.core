@@ -22,6 +22,8 @@ describe('ChainQueryBuilderUtils', () => {
                 toString: jest.fn().mockReturnValue('and'),
                 setColumnInList: jest.fn(),
                 setColumnEquals: jest.fn(),
+                setColumnEqualsAsJson: jest.fn(),
+                setColumnIsNull: jest.fn(),
                 setColumnBetween: jest.fn(),
                 setColumnAfter: jest.fn(),
                 setColumnBefore: jest.fn(),
@@ -43,6 +45,8 @@ describe('ChainQueryBuilderUtils', () => {
                 toString: jest.fn().mockReturnValue('or'),
                 setColumnInList: jest.fn(),
                 setColumnEquals: jest.fn(),
+                setColumnEqualsAsJson: jest.fn(),
+                setColumnIsNull: jest.fn(),
                 setColumnBetween: jest.fn(),
                 setColumnAfter: jest.fn(),
                 setColumnBefore: jest.fn(),
@@ -67,7 +71,7 @@ describe('ChainQueryBuilderUtils', () => {
             const fields: EntityField[] = [{ propertyName: 'city', columnName: 'city_column' } as EntityField];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, [], mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockAndBuilder.setColumnEquals).toHaveBeenCalledWith(completeTableName, 'city_column', 'New York');
             expect(mockAndBuilder.setColumnEquals).toHaveBeenCalledTimes(1);
@@ -85,7 +89,7 @@ describe('ChainQueryBuilderUtils', () => {
             const fields: EntityField[] = [{ propertyName: 'age', columnName: 'age_column' } as EntityField];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, [], mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockAndBuilder.setColumnBefore).toHaveBeenCalledWith(completeTableName, 'age_column', 30);
             expect(mockAndBuilder.setColumnBefore).toHaveBeenCalledTimes(1);
@@ -105,7 +109,7 @@ describe('ChainQueryBuilderUtils', () => {
             const fields: EntityField[] = [{ propertyName: 'age', columnName: 'age_column' } as EntityField];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, [], mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockAndBuilder.setColumnAfter).toHaveBeenCalledWith(completeTableName, 'age_column', 30);
             expect(mockAndBuilder.setColumnAfter).toHaveBeenCalledTimes(1);
@@ -125,7 +129,7 @@ describe('ChainQueryBuilderUtils', () => {
             const fields: EntityField[] = [{ propertyName: 'age', columnName: 'age_column' } as EntityField];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, [], mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockAndBuilder.setColumnBetween).toHaveBeenCalledWith(completeTableName, 'age_column', 18, 30);
             expect(mockAndBuilder.setColumnBetween).toHaveBeenCalledTimes(1);
@@ -149,7 +153,7 @@ describe('ChainQueryBuilderUtils', () => {
             ];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, [], mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockAndBuilder, where, completeTableName, fields, temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockAndBuilder.setColumnEquals).toHaveBeenNthCalledWith(1, "tableName", "city_column", "New York");
             expect(mockAndBuilder.setColumnEquals).toHaveBeenNthCalledWith(2, "tableName", "age_column", 25);
@@ -171,7 +175,7 @@ describe('ChainQueryBuilderUtils', () => {
             const fields: EntityField[] = [{ propertyName: 'city', columnName: 'city_column' } as EntityField];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockOrBuilder, where, completeTableName, fields,temporalProperties, [],  mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockOrBuilder, where, completeTableName, fields,temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockOrBuilder.setFromQueryBuilder).toHaveBeenCalledTimes(1);
             expect(mockOrBuilderFactory).toHaveBeenCalledTimes(1);
@@ -200,7 +204,7 @@ describe('ChainQueryBuilderUtils', () => {
             ];
             const temporalProperties : TemporalProperty[] = [];
 
-            ChainQueryBuilderUtils.buildChain(mockOrBuilder, where, completeTableName, fields, temporalProperties, [], mockAndBuilderFactory, mockOrBuilderFactory);
+            ChainQueryBuilderUtils.buildChain(mockOrBuilder, where, completeTableName, fields, temporalProperties, mockAndBuilderFactory, mockOrBuilderFactory);
 
             expect(mockAndBuilder.setColumnEquals).toHaveBeenNthCalledWith(1, "tableName", "city_column", "New York");
             expect(mockAndBuilder.setColumnEquals).toHaveBeenNthCalledWith(2, "tableName", "city_column", "Los Angeles");

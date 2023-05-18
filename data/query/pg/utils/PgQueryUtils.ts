@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { PG_AS_COLUMN_NAME, PG_ESCAPE_TABLE_OR_COLUMN, PG_TO_CHAR_TIMESTAMP, PG_TO_TEXT, PG_TO_TIMESTAMP } from "../constants/pg-queries";
+import { PG_AS_COLUMN_NAME, PG_ESCAPE_TABLE_OR_COLUMN, PG_TO_CHAR_TIMESTAMP, PG_TO_JSONB, PG_TO_TEXT, PG_TO_TIMESTAMP } from "../constants/pg-queries";
 
 export class PgQueryUtils {
 
@@ -15,6 +15,10 @@ export class PgQueryUtils {
 
     public static quoteTableAndColumn (tableName: string, columnName: string) : string {
         return `${PgQueryUtils.quoteTableName(tableName)}.${PgQueryUtils.quoteColumnName(columnName)}`;
+    }
+
+    public static quoteTableAndColumnAsJsonB (tableName: string, columnName: string) : string {
+        return `${PgQueryUtils.quoteTableName(tableName)}.${PgQueryUtils.quoteColumnName(columnName)}::jsonb`;
     }
 
     public static quoteTableAndColumnAsText (tableName: string, columnName: string) : string {
@@ -49,6 +53,10 @@ export class PgQueryUtils {
 
     public static getValuePlaceholderAsText () : string {
         return PG_TO_TEXT(this.getValuePlaceholder());
+    }
+
+    public static getValuePlaceholderAsJsonB () : string {
+        return PG_TO_JSONB(this.getValuePlaceholder());
     }
 
     public static getValuePlaceholderAsTimestamp () : string {

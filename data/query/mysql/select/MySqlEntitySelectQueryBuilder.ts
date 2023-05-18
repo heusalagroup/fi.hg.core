@@ -18,7 +18,6 @@ import { MySqlOrChainBuilder } from "../formulas/MySqlOrChainBuilder";
 import { TemporalProperty } from "../../../types/TemporalProperty";
 import { EntitySelectQueryUtils } from "../../utils/EntitySelectQueryUtils";
 import { EntitySelectQueryBuilder, TableFieldInfoCallback } from "../../sql/select/EntitySelectQueryBuilder";
-import { MY_TIME_COLUMN_DEFINITIONS } from "../constants/mysql-queries";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -285,7 +284,6 @@ export class MySqlEntitySelectQueryBuilder implements EntitySelectQueryBuilder {
             completeTableName,
             fields,
             temporalProperties,
-            MY_TIME_COLUMN_DEFINITIONS,
             () => MySqlAndChainBuilder.create(),
             () => MySqlOrChainBuilder.create()
         );

@@ -49,6 +49,22 @@ export class PgAndChainBuilder implements ChainQueryBuilder {
         this._formulaValues.push(() => value);
     }
 
+    public setColumnEqualsAsJson (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) : void {
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumnAsJsonB(tableName, columnName)} = ${PgQueryUtils.getValuePlaceholderAsJsonB()}` );
+        this._formulaValues.push(() => value);
+    }
+
+    public setColumnIsNull (
+        tableName : string,
+        columnName : string
+    ) : void {
+        this._formulaQuery.push( () => `${PgQueryUtils.quoteTableAndColumn(tableName, columnName)} IS NULL` );
+    }
+
     public setColumnBetween (
         tableName : string,
         columnName : string,

@@ -445,23 +445,7 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
      * @see {@link SelectQueryBuilder.buildQueryValues}
      */
     public buildQueryValues () : readonly any[] {
-        const fromTableName = this.getTableName();
-        const groupByColumn = this.getGroupByColumn();
-        const fieldValues = map(this.getResultValueFactories(), (f) => f());
-        const leftJoinValues = map(this.getLeftJoinValueFactories(), (f) => f());
-        const orderByValues = map(this.getOrderValueFactories(), (f) => f());
-        const whereValues = map(this.getWhereValueFactories(), (f) => f());
-        return [
-            ...fieldValues,
-            ...( fromTableName ? [this.getTableNameWithPrefix(fromTableName)] : []),
-            ...leftJoinValues,
-            ...whereValues,
-            ...( fromTableName ? [
-                this.getTableNameWithPrefix(fromTableName),
-                groupByColumn
-            ] : []),
-            ...orderByValues
-        ];
+        return map(this.getQueryValueFactories(), (f) => f());
     }
 
     /**
@@ -480,7 +464,7 @@ export class MySqlSelectQueryBuilder extends BaseSelectQueryBuilder implements S
                 () => fromTableName ? this.getTableNameWithPrefix(fromTableName) : fromTableName,
                 () => groupByColumn
             ] : []),
-            ...this.getWhereValueFactories()
+            ...this.getOrderValueFactories()
         ]
     }
 

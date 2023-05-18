@@ -31,7 +31,8 @@ import { LogLevel } from "../../types/LogLevel";
 import { TemporalProperty } from "../types/TemporalProperty";
 import { find } from "../../functions/find";
 import { parseIsoDateString } from "../../types/IsoDateString";
-import { ColumnDefinition } from "../types/ColumnDefinition";
+import { ColumnDefinition, isJsonColumnDefinition, isTimeColumnDefinition } from "../types/ColumnDefinition";
+import { filter } from "../../functions/filter";
 
 const LOG = LogService.createLogger('EntityUtils');
 
@@ -227,8 +228,6 @@ export class EntityUtils {
         metadataManager: PersisterMetadataManager
     ): T {
 
-        const jsonDefinitions = [ColumnDefinition.JSON, ColumnDefinition.JSONB];
-
         if (!dbEntity) {
             throw new TypeError(`The dbEntity must be defined: ${dbEntity}`);
         }
@@ -249,14 +248,14 @@ export class EntityUtils {
                     const temporalProperty : TemporalProperty | undefined = find(temporalProperties, item => item.propertyName === propertyName);
                     const temporalType = temporalProperty?.temporalType;
 
-                    const isTime : boolean = !!temporalType || !!(columnDefinition && [ColumnDefinition.TIMESTAMP, ColumnDefinition.DATETIME, ColumnDefinition.DATE, ColumnDefinition.TIME].includes(columnDefinition));
+                    const isTime : boolean = !!temporalType || isTimeColumnDefinition(columnDefinition);
                     if (isTime) {
                         LOG.debug(`toEntity: "${propertyName}": as string "${dbEntity[columnName]}": `, dbEntity[columnName]);
                         (ret as any)[propertyName] = EntityUtils.parseDateAsString(dbEntity[columnName]);
                         return;
                     }
 
-                    const isJson : boolean = columnDefinition ? jsonDefinitions.includes(columnDefinition) : false;
+                    const isJson : boolean = isJsonColumnDefinition(columnDefinition);
                     if (isJson) {
                         LOG.debug(`toEntity: "${propertyName}": as string "${dbEntity[columnName]}": `, dbEntity[columnName]);
                         (ret as any)[propertyName] = EntityUtils.parseJsonObject(dbEntity[columnName]);
@@ -303,9 +302,12 @@ export class EntityUtils {
                         throw new TypeError(`Expected the dbValue for property "${propertyName}" to be an array: ${dbValue}`);
                     }
                     (ret as any)[propertyName] = map(
-                        dbValue,
+                        filter(
+                            dbValue,
+                            (value) => !isNull(value)
+                        ),
                         (value: any) => {
-                            if (value === undefined) throw new TypeError(`Unexpected undefined item in an array for property "${propertyName}"`);
+                            if (!value) throw new TypeError(`Unexpected undefined item in an array for property "${propertyName}"`);
                             return this.toEntity(value, mappedMetadata, metadataManager);
                         }
                     );
@@ -339,10 +341,13 @@ export class EntityUtils {
                         dbValue = parseJson(jsonString);
                         if (dbValue === undefined) throw new TypeError(`Failed to parse JSON: "${jsonString}"`)
                     }
+                    if (isNull(dbValue)) {
+                        (ret as any)[propertyName] = undefined;
+                        return;
+                    }
                     LOG.debug(`manyToOne: db value=`, dbValue);
                     (ret as any)[propertyName] = this.toEntity(dbValue, mappedMetadata, metadataManager);
                 }
-
             }
         );
 

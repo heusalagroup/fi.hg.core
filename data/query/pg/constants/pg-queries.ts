@@ -3,9 +3,6 @@
 import { PgQueryUtils } from "../utils/PgQueryUtils";
 import { ColumnDefinition } from "../../../types/ColumnDefinition";
 
-export const PG_TIME_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.TIMESTAMP, ColumnDefinition.TIMESTAMPTZ, ColumnDefinition.DATETIME, ColumnDefinition.TIME];
-export const PG_JSON_COLUMN_DEFINITIONS : readonly ColumnDefinition[] = [ColumnDefinition.JSON, ColumnDefinition.JSONB];
-
 function assertExists (value: string, message: string) : string {
     if (!value) throw new TypeError(message);
     return value;
@@ -40,6 +37,7 @@ export const PG_TO_TIMESTAMP = (value: string) => `${value}`;
 export const PG_AS_COLUMN_NAME = (value: string, asColumnName: string) => `${value} AS ${qc( asColumnName )}`;
 
 export const PG_TO_TEXT = (value: string) => `${value}::text`;
+export const PG_TO_JSONB = (value: string) => `${value}::jsonb`;
 
 export const PG_ESCAPE_TABLE_OR_COLUMN = (value: string): string => {
     const doubleQuote = '"';

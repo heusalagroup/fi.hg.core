@@ -249,11 +249,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#countByDataJson', () => {
 
-            // TODO: Skipped: We don't have reliable solution to implement equality
-            //       query for the whole JSON object or array right now. Maybe that
-            //       is not a good idea anyway. It probably works for some JSON
-            //       types like JSONB in PostgreSQL.
-            it.skip('can count entities by dataJson', async () => {
+            it('can count entities by dataJson', async () => {
                 expect( await dataRepository.countByDataJson(jsonDataEntity2) ).toBe(1);
                 await dataRepository.deleteAllByDataJson(jsonDataEntity2);
                 expect( await dataRepository.countByDataJson(jsonDataEntity2) ).toBe(0);
@@ -262,11 +258,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
         });
 
 
-        // TODO: Skipped: We don't have reliable solution to implement equality
-        //       query for the whole JSON object or array right now. Maybe that
-        //       is not a good idea anyway. It probably works for some JSON
-        //       types like JSONB in PostgreSQL.
-        describe.skip('#existsByDataJson', () => {
+        describe('#existsByDataJson', () => {
 
             it('can find if entity exists by dataJson', async () => {
                 expect( await dataRepository.existsByDataJson(jsonDataEntity2) ).toBe(true);
@@ -313,7 +305,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: Requires JSON property matching in Sorting
             it.skip('can find all entities sorted by name and id in ascending order', async () => {
 
                 const items = await dataRepository.findAll( Sort.by('dataJson.name', 'dataId') );
@@ -338,7 +330,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: Requires JSON property matching in Sorting
             it.skip('can find all entities sorted by name and id in desc order', async () => {
 
                 const items = await dataRepository.findAll( Sort.by(Sort.Direction.DESC, 'dataJson.name', 'dataId') );
@@ -365,11 +357,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
         });
 
-        // TODO: Skipped: We don't have reliable solution to implement equality
-        //       query for the whole JSON object or array right now. Maybe that
-        //       is not a good idea anyway. It probably works for some JSON
-        //       types like JSONB in PostgreSQL.
-        describe.skip('#findAllByDataJson', () => {
+        describe('#findAllByDataJson', () => {
 
             it('can fetch single entity by dataJson property unsorted', async () => {
                 const items = await dataRepository.findAllByDataJson(jsonDataEntity2);
@@ -380,7 +368,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (property based sorting not implemented)
             it.skip('can fetch single entity by dataJson property in asc order', async () => {
                 const items = await dataRepository.findAllByDataJson(jsonDataEntity2, Sort.by('dataJson.name'));
                 expect(items).toBeArray();
@@ -390,7 +378,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (property based sorting not implemented)
             it.skip('can fetch single entity by dataJson property in desc order', async () => {
                 const items = await dataRepository.findAllByDataJson(jsonDataEntity2, Sort.by(Sort.Direction.DESC,'dataJson.name'));
                 expect(items).toBeArray();
@@ -430,7 +418,8 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
             });
 
-            it('can fetch multiple entities by dataId property in asc order', async () => {
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (JSON sorting not implemented)
+            it.skip('can fetch multiple entities by dataId property in asc order', async () => {
 
                 // Initialize as same as entity 1
                 dataEntity5 = await persister.insert(
@@ -455,7 +444,8 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[1]?.dataJson).toStrictEqual(jsonDataEntity5);
             });
 
-            it('can fetch multiple entities by dataId property in desc order', async () => {
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (JSON sorting not implemented)
+            it.skip('can fetch multiple entities by dataId property in desc order', async () => {
 
                 // Initialize as same as entity 1
                 dataEntity5 = await persister.insert(
@@ -496,7 +486,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[1]?.dataJson).toStrictEqual(jsonDataEntity3);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (property in json sorting not implemented)
             it.skip('can find all entities by id in ascending order', async () => {
                 const items = await dataRepository.findAllById([dataEntityId2, dataEntityId3], Sort.by('dataJson.name') );
                 expect(items).toBeArray();
@@ -509,7 +499,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[1]?.dataJson).toStrictEqual(jsonDataEntity3);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (property in json sorting not implemented)
             it.skip('can find all entities by id in desc order', async () => {
                 const items = await dataRepository.findAllById([dataEntityId2, dataEntityId3], Sort.by(Sort.Direction.DESC,'dataJson.name') );
                 expect(items).toBeArray();
@@ -527,8 +517,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#find', () => {
 
-            // FIXME: We don't yet have reliable way to match by JSON on the SQL side. It works on some SQL servers and types, like PostgreSQL with JSONB.
-            it.skip('can find entities by property unsorted', async () => {
+            it('can find entities by property unsorted', async () => {
                 const items = await dataRepository.find("dataJson", jsonDataEntity2);
                 expect(items).toBeArray();
                 expect(items?.length).toBe(1);
@@ -536,7 +525,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: We don't yet have reliable way to match by JSON on the SQL side. It works on some SQL servers and types, like PostgreSQL with JSONB.
+            // FIXME: This requires JSON property matching
             it.skip('can find entities by property in asc order', async () => {
                 const items = await dataRepository.find("dataJson", jsonDataEntity2, Sort.by('dataJson.name'));
                 expect(items).toBeArray();
@@ -545,7 +534,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: We don't yet have reliable way to match by JSON on the SQL side. It works on some SQL servers and types, like PostgreSQL with JSONB.
+            // FIXME: This requires JSON property sorting
             it.skip('can find entities by property in desc order', async () => {
                 const items = await dataRepository.find("dataJson", jsonDataEntity2, Sort.by(Sort.Direction.DESC,'dataJson.name'));
                 expect(items).toBeArray();
@@ -554,7 +543,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (json property sorting not implemented)
             it.skip('can find entities by child property unsorted', async () => {
                 const items = await dataRepository.find("dataJson.name", jsonDataName2);
                 expect(items).toBeArray();
@@ -563,7 +552,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson?.name).toStrictEqual(jsonDataName2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (json property matching not implemented)
             it.skip('can find entities by child property in asc order', async () => {
                 const items = await dataRepository.find("dataJson.name", jsonDataName2, Sort.by('dataJson.name'));
                 expect(items).toBeArray();
@@ -572,7 +561,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson?.name).toStrictEqual(jsonDataName2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (json property matching not implemented)
             it.skip('can find entities by child property in desc order', async () => {
                 const items = await dataRepository.find("dataJson.name", jsonDataName2, Sort.by(Sort.Direction.DESC,'dataJson.name'));
                 expect(items).toBeArray();
@@ -583,11 +572,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
         });
 
-        // TODO: Skipped: We don't have reliable solution to implement equality
-        //       query for the whole JSON object or array right now. Maybe that
-        //       is not a good idea anyway. It probably works for some JSON
-        //       types like JSONB in PostgreSQL.
-        describe.skip('#findByDataJson', () => {
+        describe('#findByDataJson', () => {
 
             it('can find entity by dataJson property unsorted', async () => {
                 const entity : DataEntity | undefined = await dataRepository.findByDataJson(jsonDataEntity2);
@@ -596,7 +581,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(entity?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (sorting not implemented)
             it.skip('can find entity by dataJson property in asc order', async () => {
                 const entity : DataEntity | undefined = await dataRepository.findByDataJson(jsonDataEntity2, Sort.by('dataJson.name'));
                 expect(entity).toBeDefined();
@@ -604,7 +589,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(entity?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (sorting not implemented)
             it.skip('can find entity by dataJson property in desc order', async () => {
                 const entity : DataEntity | undefined = await dataRepository.findByDataJson(jsonDataEntity2, Sort.by(Sort.Direction.DESC,'dataJson.name'));
                 expect(entity).toBeDefined();
@@ -623,7 +608,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(item?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (sorting not implemented)
             it.skip('can find entity by id by asc order', async () => {
                 const item = await dataRepository.findById(dataEntityId2, Sort.by('dataJson.name'));
                 expect(item).toBeDefined();
@@ -631,7 +616,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(item?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (sorting not implemented)
             it.skip('can find entity by id by desc order', async () => {
                 const item = await dataRepository.findById(dataEntityId2, Sort.by(Sort.Direction.DESC,'dataJson.name'));
                 expect(item).toBeDefined();
@@ -810,11 +795,7 @@ export const typeJsonTests = (context : RepositoryTestContext) : void => {
 
         });
 
-        // TODO: Skipped: We don't have reliable solution to implement equality
-        //       query for the whole JSON object or array right now. Maybe that
-        //       is not a good idea anyway. It probably works for some JSON
-        //       types like JSONB in PostgreSQL.
-        describe.skip('#deleteAllByDataJson', () => {
+        describe('#deleteAllByDataJson', () => {
 
             it('can delete all properties by dataJson', async () => {
                 await dataRepository.deleteAllByDataJson(jsonDataEntity2);

@@ -9,7 +9,6 @@ import { ChainQueryBuilderUtils } from "../../utils/ChainQueryBuilderUtils";
 import { PgOrChainBuilder } from "../formulas/PgOrChainBuilder";
 import { EntityDeleteQueryBuilder } from "../../sql/delete/EntityDeleteQueryBuilder";
 import { TemporalProperty } from "../../../types/TemporalProperty";
-import { PG_TIME_COLUMN_DEFINITIONS } from "../constants/pg-queries";
 
 export class PgEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
 
@@ -34,7 +33,7 @@ export class PgEntityDeleteQueryBuilder implements EntityDeleteQueryBuilder {
     ) : PgAndChainBuilder {
         const completeTableName = this.getTableNameWithPrefix(tableName);
         const andBuilder = PgAndChainBuilder.create();
-        ChainQueryBuilderUtils.buildChain(andBuilder, where, completeTableName, fields, temporalProperties, PG_TIME_COLUMN_DEFINITIONS, () => PgAndChainBuilder.create(), () => PgOrChainBuilder.create());
+        ChainQueryBuilderUtils.buildChain(andBuilder, where, completeTableName, fields, temporalProperties, () => PgAndChainBuilder.create(), () => PgOrChainBuilder.create());
         return andBuilder;
     }
 

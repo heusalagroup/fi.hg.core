@@ -54,6 +54,33 @@ export interface ChainQueryBuilder extends QueryBuilder {
     ) : void;
 
     /**
+     * This will add an expression like `table.column::jsonb = value::jsonb`
+     * in PostgreSQL, e.g. the table column's value must match the value in JSONB format which
+     * support logical matching of JSON objects.
+     *
+     * @param tableName
+     * @param columnName
+     * @param value
+     */
+    setColumnEqualsAsJson (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) : void;
+
+    /**
+     * This will add an expression like `table.column IS NULL`, e.g. the table
+     * column's value must be null.
+     *
+     * @param tableName The table name for the column
+     * @param columnName The column name
+     */
+    setColumnIsNull (
+        tableName : string,
+        columnName : string
+    ) : void;
+
+    /**
      * This will add an expression like `table.column = value`, e.g. the table
      * column's value must match the value.
      *

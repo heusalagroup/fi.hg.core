@@ -15,7 +15,7 @@ import { isBeforeCondition } from "../../conditions/BeforeCondition";
 import { isAfterCondition } from "../../conditions/AfterCondition";
 import { ChainQueryBuilder, ChainQueryBuilderFactory } from "../types/ChainQueryBuilder";
 import { TemporalProperty } from "../../types/TemporalProperty";
-import { ColumnDefinition } from "../../types/ColumnDefinition";
+import { isJsonColumnDefinition, isTimeColumnDefinition } from "../../types/ColumnDefinition";
 
 export class ChainQueryBuilderUtils {
 
@@ -36,7 +36,6 @@ export class ChainQueryBuilderUtils {
         completeTableName     : string,
         fields                : readonly EntityField[],
         temporalProperties    : readonly TemporalProperty[],
-        timeColumnDefinitions : readonly ColumnDefinition[],
         buildAndChain         : ChainQueryBuilderFactory,
         buildOrChain          : ChainQueryBuilderFactory
     ) : void {
@@ -49,14 +48,14 @@ export class ChainQueryBuilderUtils {
 
                     if (isAndCondition(item)) {
                         const and : ChainQueryBuilder = buildAndChain();
-                        ChainQueryBuilderUtils.buildChain(and, item.getWhere(), completeTableName, fields, temporalProperties, timeColumnDefinitions, buildAndChain, buildOrChain);
+                        ChainQueryBuilderUtils.buildChain(and, item.getWhere(), completeTableName, fields, temporalProperties, buildAndChain, buildOrChain);
                         builder.setFromQueryBuilder(and);
                         return;
                     }
 
                     if (isOrCondition(item)) {
                         const or : ChainQueryBuilder = buildOrChain();
-                        ChainQueryBuilderUtils.buildChain(or, item.getWhere(), completeTableName, fields, temporalProperties, timeColumnDefinitions, buildAndChain, buildOrChain);
+                        ChainQueryBuilderUtils.buildChain(or, item.getWhere(), completeTableName, fields, temporalProperties, buildAndChain, buildOrChain);
                         builder.setFromQueryBuilder(or);
                         return;
                     }
@@ -76,12 +75,15 @@ export class ChainQueryBuilderUtils {
                     const temporalProperty = find(temporalProperties, item => item.propertyName === propertyName);
                     const temporalType = temporalProperty?.temporalType;
 
-                    const isTime : boolean = !!temporalType || !!(columnDefinition && timeColumnDefinitions.includes(columnDefinition));
+                    const isTime : boolean = !!temporalType || isTimeColumnDefinition(columnDefinition);
+                    const isJson : boolean = isTime ? false : isJsonColumnDefinition(columnDefinition);
 
                     if (isEqualCondition(item)) {
                         const value = item.getValue();
                         if (isTime) {
                             builder.setColumnEqualsAsTime(completeTableName, columnName, value);
+                        } else if (isJson) {
+                            builder.setColumnEqualsAsJson(completeTableName, columnName, value);
                         } else {
                             builder.setColumnEquals(completeTableName, columnName, value);
                         }

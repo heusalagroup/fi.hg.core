@@ -10,8 +10,7 @@ import { has } from "../../../../functions/has";
 import { find } from "../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../types/QueryBuilder";
-import { MY_JSON_COLUMN_DEFINITIONS, MY_TIME_COLUMN_DEFINITIONS } from "../constants/mysql-queries";
-import { ColumnDefinition } from "../../../types/ColumnDefinition";
+import { ColumnDefinition, isJsonColumnDefinition, isTimeColumnDefinition } from "../../../types/ColumnDefinition";
 
 /**
  * Defines an interface for a builder of MySQL database read query from
@@ -45,8 +44,6 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly ColumnDefinition[] = MY_TIME_COLUMN_DEFINITIONS;
-        const jsonDefinitions : readonly ColumnDefinition[] = MY_JSON_COLUMN_DEFINITIONS;
         const setAssigmentBuilder = MySqlListQueryBuilder.create();
         forEach(
             fields,
@@ -65,14 +62,14 @@ export class MySqlEntityUpdateQueryBuilder implements EntityUpdateQueryBuilder {
                 const temporalType = temporalProperty?.temporalType;
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : null;
 
-                const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
+                const isTime : boolean = !!temporalType || isTimeColumnDefinition(columnDefinition);
 
                 if ( isTime ) {
                     setAssigmentBuilder.setAssignmentWithParamAsTimestamp(columnName, value);
                     return;
                 }
 
-                const isJson : boolean = !isTime && columnDefinition ? jsonDefinitions.includes(columnDefinition) : false;
+                const isJson : boolean = !isTime ? isJsonColumnDefinition(columnDefinition) : false;
                 if (isJson) {
                     setAssigmentBuilder.setAssignmentWithParamAsJson(columnName, value);
                     return;

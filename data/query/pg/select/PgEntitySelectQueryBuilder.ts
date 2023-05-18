@@ -24,7 +24,6 @@ import { SortOrder } from "../../../types/SortOrder";
 import { PgQueryUtils } from "../utils/PgQueryUtils";
 import { EntityUtils } from "../../../utils/EntityUtils";
 import { SortDirection } from "../../../types/SortDirection";
-import { PG_TIME_COLUMN_DEFINITIONS } from "../constants/pg-queries";
 
 /**
  * Defines an interface for a builder of PostgreSQL database read query from
@@ -214,7 +213,6 @@ export class PgEntitySelectQueryBuilder
             completeTableName,
             fields,
             temporalProperties,
-            PG_TIME_COLUMN_DEFINITIONS,
             () => PgAndChainBuilder.create(),
             () => PgOrChainBuilder.create()
         );

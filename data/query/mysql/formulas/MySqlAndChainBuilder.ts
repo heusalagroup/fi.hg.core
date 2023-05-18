@@ -3,7 +3,7 @@
 import { map } from "../../../../functions/map";
 import { ChainQueryBuilder } from "../../types/ChainQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
-import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_AFTER_AS_TIME, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BEFORE_AS_TIME, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUAL_AS_TIME, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN, MY_PH_TABLE_COLUMN_IN_AS_TIME } from "../constants/mysql-queries";
+import { MY_PH_TABLE_COLUMN_AFTER, MY_PH_TABLE_COLUMN_AFTER_AS_TIME, MY_PH_TABLE_COLUMN_BEFORE, MY_PH_TABLE_COLUMN_BEFORE_AS_TIME, MY_PH_TABLE_COLUMN_BETWEEN_RANGE, MY_PH_TABLE_COLUMN_BETWEEN_RANGE_AS_TIME, MY_PH_TABLE_COLUMN_EQUAL, MY_PH_TABLE_COLUMN_EQUAL_AS_JSON, MY_PH_TABLE_COLUMN_EQUAL_AS_TIME, MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID, MY_PH_TABLE_COLUMN_IN, MY_PH_TABLE_COLUMN_IN_AS_TIME, MY_PH_TABLE_COLUMN_IS_NULL } from "../constants/mysql-queries";
 import { EntityUtils } from "../../../utils/EntityUtils";
 
 export class MySqlAndChainBuilder implements ChainQueryBuilder {
@@ -21,13 +21,8 @@ export class MySqlAndChainBuilder implements ChainQueryBuilder {
     }
 
 
-    public valueOf () {
-        return this.toString();
-    }
+    ///////////////////////         ChainQueryBuilder         ///////////////////////
 
-    public toString () : string {
-        return `"${this._formulaQuery.map(item => item.toString()).join(' OR ')}" with ${this._formulaValues.map(item=>item()).join(' ')}`;
-    }
 
     public setColumnInList (
         tableName : string,
@@ -49,6 +44,27 @@ export class MySqlAndChainBuilder implements ChainQueryBuilder {
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
         this._formulaValues.push(() => value);
+    }
+
+    public setColumnEqualsAsJson (
+        tableName : string,
+        columnName : string,
+        value : any
+    ) {
+        // FIXME: This requires imolementation for https://github.com/heusalagroup/fi.hg.core/issues/67
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_EQUAL_AS_JSON );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
+        this._formulaValues.push(() => JSON.stringify(value));
+    }
+
+    public setColumnIsNull (
+        tableName : string,
+        columnName : string
+    ) {
+        this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_IS_NULL );
+        this._formulaValues.push(() => tableName);
+        this._formulaValues.push(() => columnName);
     }
 
     public setColumnBetween (
@@ -152,6 +168,18 @@ export class MySqlAndChainBuilder implements ChainQueryBuilder {
         this._formulaQuery.push( () => MY_PH_TABLE_COLUMN_EQUALS_LAST_INSERT_ID );
         this._formulaValues.push(() => tableName);
         this._formulaValues.push(() => columnName);
+    }
+
+
+    ///////////////////////         QueryBuilder         ///////////////////////
+
+
+    public valueOf () {
+        return this.toString();
+    }
+
+    public toString () : string {
+        return `"${this._formulaQuery.map(item => item.toString()).join(' OR ')}" with ${this._formulaValues.map(item=>item()).join(' ')}`;
     }
 
     public build (): QueryBuildResult {

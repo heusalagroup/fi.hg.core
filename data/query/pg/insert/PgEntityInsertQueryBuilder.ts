@@ -5,7 +5,6 @@ import { map } from "../../../../functions/map";
 import { has } from "../../../../functions/has";
 import { find } from "../../../../functions/find";
 import { filter } from "../../../../functions/filter";
-import { PG_TIME_COLUMN_DEFINITIONS } from "../constants/pg-queries";
 import { EntityField } from "../../../types/EntityField";
 import { TemporalProperty } from "../../../types/TemporalProperty";
 import { PgInsertQueryBuilder } from "./PgInsertQueryBuilder";
@@ -16,6 +15,7 @@ import { QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
 import { LogService } from "../../../../LogService";
 import { EntityFieldType } from "../../../types/EntityFieldType";
 import { LogLevel } from "../../../../types/LogLevel";
+import { isTimeColumnDefinition } from "../../../types/ColumnDefinition";
 
 const LOG = LogService.createLogger( 'PgEntityInsertQueryBuilder' );
 
@@ -57,7 +57,6 @@ export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
         temporalProperties  : readonly TemporalProperty[],
         ignoreProperties    : readonly string[],
     ) : void {
-        const timeDefinitions : readonly string[] = PG_TIME_COLUMN_DEFINITIONS;
 
         const properties : string[] = map(
             filter(
@@ -93,7 +92,7 @@ export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
                 );
                 const temporalType = temporalProperty?.temporalType;
 
-                const isTime : boolean = !!temporalType || !!(columnDefinition && timeDefinitions.includes(columnDefinition));
+                const isTime : boolean = !!temporalType || !!(isTimeColumnDefinition(columnDefinition));
                 LOG.debug(`appendEntity: isTime: `, isTime, propertyName);
 
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : undefined;

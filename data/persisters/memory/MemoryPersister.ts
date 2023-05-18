@@ -516,7 +516,10 @@ export class MemoryPersister implements Persister {
                         LOG.debug(`ManyToOneRelations: 5. mappedId = `, mappedId);
 
                         const relatedMemoryItem : MemoryItem | undefined = find(this._data[mappedTable].items, (item: MemoryItem) : boolean => item.id === mappedId);
-                        if ( !relatedMemoryItem ) throw new TypeError(`Could not find related memory item by property "${propertyName}"`);
+                        if ( !relatedMemoryItem ) {
+                            (entity as any)[propertyName] = undefined;
+                            return;
+                        }
 
                         LOG.debug(`ManyToOneRelations: 5. relatedMemoryItem = `, relatedMemoryItem);
 

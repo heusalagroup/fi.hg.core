@@ -183,15 +183,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#save', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can save fresh entity', async () => {
+            it('can save fresh entity', async () => {
 
                 expect( await dataRepository.count() ).toBe(4);
 
@@ -217,15 +209,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#saveAll', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can save multiple fresh entities', async () => {
+            it('can save multiple fresh entities', async () => {
 
                 expect( await dataRepository.count() ).toBe(4);
 
@@ -267,31 +251,15 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#count', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can count entities', async () => {
+            it('can count entities', async () => {
                 expect( await dataRepository.count() ).toBe(4);
             });
 
         });
 
-        // TODO: We don't have reliable solution to implement equality
-        //       query for all persisters right now.
-        //       .
-        //       Status:
-        //       - Memory: Passed
-        //       - PostgreSQL: Passed
-        //       - MySQL: Failed
-        //
         describe('#countByDataJson', () => {
 
-            (isMySql ? it.skip : it)('can count entities by dataJson', async () => {
+            it('can count entities by dataJson', async () => {
                 expect( await dataRepository.countByDataJson(jsonDataEntity2) ).toBe(1);
                 await dataRepository.deleteAllByDataJson(jsonDataEntity2);
                 expect( await dataRepository.countByDataJson(jsonDataEntity2) ).toBe(0);
@@ -299,17 +267,9 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         });
 
-        // TODO: We don't have reliable solution to implement equality
-        //       query for all persisters right now.
-        //       .
-        //       Status:
-        //       - Memory: Passed
-        //       - PostgreSQL: Passed
-        //       - MySQL: Failed
-        //
         describe('#existsByDataJson', () => {
 
-            (isMySql ? it.skip : it)('can find if entity exists by dataJson', async () => {
+            it('can find if entity exists by dataJson', async () => {
                 expect( await dataRepository.existsByDataJson(jsonDataEntity2) ).toBe(true);
                 await dataRepository.deleteAllByDataJson(jsonDataEntity2);
                 expect( await dataRepository.existsByDataJson(jsonDataEntity2) ).toBe(false);
@@ -319,15 +279,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#existsById', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can find if entity exists', async () => {
+            it('can find if entity exists', async () => {
                 expect( await dataRepository.existsById( dataEntityId2 ) ).toBe(true);
                 await dataRepository.deleteAllById( [dataEntityId2] );
                 expect( await dataRepository.existsById( dataEntityId2 ) ).toBe(false);
@@ -338,15 +290,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#findAll', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can find all entities unsorted', async () => {
+            it('can find all entities unsorted', async () => {
                 const items = await dataRepository.findAll();
                 expect(items).toBeArray();
                 expect(items?.length).toBe(4);
@@ -370,7 +314,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (sorting not implemented)
             it.skip('can find all entities sorted by name and id in ascending order', async () => {
 
                 const items = await dataRepository.findAll( Sort.by('dataJson.name', 'dataId') );
@@ -395,7 +339,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
             });
 
-            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (not implemented)
+            // FIXME: This would be nice, but fails on MySQL and PostgreSQL still (sorting not implemented)
             it.skip('can find all entities sorted by name and id in desc order', async () => {
 
                 const items = await dataRepository.findAll( Sort.by(Sort.Direction.DESC, 'dataJson.name', 'dataId') );
@@ -424,16 +368,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#findAllByDataJson', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL:
-            //       - MySQL: Failed
-            //
-            (isMySql ? it.skip : it)('can fetch single entity by dataJson property unsorted', async () => {
+            it('can fetch single entity by dataJson property unsorted', async () => {
                 const items = await dataRepository.findAllByDataJson(jsonDataEntity2);
                 expect(items).toBeArray();
                 expect(items?.length).toBe(1);
@@ -442,9 +377,8 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
+            // TODO: We don't have implementation for matching JSON child
+            //       properties in SQL persisters.
             //       .
             //       Status:
             //       - Memory: Passed
@@ -460,9 +394,8 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
+            // TODO: We don't have implementation for matching JSON child
+            //       properties in SQL persisters.
             //       .
             //       Status:
             //       - Memory: Passed
@@ -478,15 +411,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
                 expect(items[0]?.dataJson).toStrictEqual(jsonDataEntity2);
             });
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            //
-            (isMySql ? it.skip : it)('can fetch multiple entities by dataJson property unsorted', async () => {
+            it('can fetch multiple entities by dataJson property unsorted', async () => {
 
                 // Initialize as same as entity 1
                 dataEntity5 = await persister.insert(
@@ -516,7 +441,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
             });
 
-            // TODO: We don't have reliable implementation to equality
+            // TODO: We don't have reliable implementation to sorting
             //       query for all persisters right now.
             //       .
             //       Status:
@@ -589,15 +514,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#findAllById', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can find all entities by id unsorted', async () => {
+            it('can find all entities by id unsorted', async () => {
                 const items = await dataRepository.findAllById([dataEntityId2, dataEntityId3]);
                 expect(items).toBeArray();
                 expect(items?.length).toBe(2);
@@ -652,15 +569,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#find', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can find entities by property unsorted', async () => {
+            it('can find entities by property unsorted', async () => {
                 const items = await dataRepository.find("dataJson", jsonDataEntity2);
                 expect(items).toBeArray();
                 expect(items?.length).toBe(1);
@@ -752,15 +661,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#findByDataJson', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can find entity by dataJson property unsorted', async () => {
+            it('can find entity by dataJson property unsorted', async () => {
                 const entity : DataEntity | undefined = await dataRepository.findByDataJson(jsonDataEntity2);
                 expect(entity).toBeDefined();
                 expect(entity?.dataId).toBe(dataEntityId2);
@@ -801,15 +702,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#findById', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can find entity by id unsorted', async () => {
+            it('can find entity by id unsorted', async () => {
                 const item = await dataRepository.findById(dataEntityId2);
                 expect(item).toBeDefined();
                 expect(item?.dataId).toBe(dataEntityId2);
@@ -840,15 +733,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#save', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can save older entity', async () => {
+            it('can save older entity', async () => {
 
                 expect( await dataRepository.count() ).toBe(4);
 
@@ -875,15 +760,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#saveAll', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can save multiple older entities', async () => {
+            it('can save multiple older entities', async () => {
 
                 expect( await dataRepository.count() ).toBe(4);
 
@@ -922,15 +799,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#delete', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can delete entity by entity object', async () => {
+            it('can delete entity by entity object', async () => {
 
                 expect( await dataRepository.count() ).toBe(4);
                 await dataRepository.delete(dataEntity2);
@@ -945,15 +814,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#deleteById', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can delete entity by id', async () => {
+            it('can delete entity by id', async () => {
 
                 expect( await dataRepository.count() ).toBe(4);
                 await dataRepository.deleteById(dataEntityId2);
@@ -968,15 +829,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#deleteAll', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can delete all entities', async () => {
+            it('can delete all entities', async () => {
                 expect( await dataRepository.count() ).toBe(4);
                 await dataRepository.deleteAll();
                 expect( await dataRepository.count() ).toBe(0);
@@ -1019,29 +872,13 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#deleteAllById', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can delete all entities by id', async () => {
+            it('can delete all entities by id', async () => {
                 expect( await dataRepository.count() ).toBe(4);
                 await dataRepository.deleteAllById( [dataEntityId2] );
                 expect( await dataRepository.count() ).toBe(3);
             });
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can delete all entities by few ids', async () => {
+            it('can delete all entities by few ids', async () => {
                 expect( await dataRepository.count() ).toBe(4);
                 await dataRepository.deleteAllById(
                     [
@@ -1069,15 +906,7 @@ export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 
         describe('#deleteAllByDataJson', () => {
 
-            // TODO: We don't have reliable implementation to equality
-            //       query for all persisters right now. This could be done
-            //       though.
-            //       .
-            //       Status:
-            //       - Memory: Passed
-            //       - PostgreSQL: Passed
-            //       - MySQL: Failed
-            (isMySql ? it.skip : it)('can delete all properties by dataJson', async () => {
+            it('can delete all properties by dataJson', async () => {
                 await dataRepository.deleteAllByDataJson(jsonDataEntity2);
                 const entity : DataEntity | undefined = await dataRepository.findByDataJson(jsonDataEntity2);
                 expect(entity).not.toBeDefined();
