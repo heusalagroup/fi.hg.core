@@ -1,24 +1,22 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2023 Sendanor. All rights reserved.
 
+import { map } from "../../functions/map";
+import { find } from "../../functions/find";
+import { filter } from "../../functions/filter";
+import { trim } from "../../functions/trim";
+import { forEach } from "../../functions/forEach";
+import { has } from "../../functions/has";
 import { Entity, EntityIdTypes, isEntity } from "../Entity";
 import { EntityMetadata } from "../types/EntityMetadata";
 import { RepositoryError } from "../types/RepositoryError";
-import { trim } from "../../functions/trim";
 import { isString } from "../../types/String";
 import { MySqlDateTime } from "../persisters/mysql/types/MySqlDateTime";
-import { cloneJson, isJsonAny, isReadonlyJsonAny, parseJson, parseReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
+import { parseJson, parseReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
 import { isNumber } from "../../types/Number";
-import { reduce } from "../../functions/reduce";
 import { LogService } from "../../LogService";
-import { CreateEntityLikeCallback } from "../types/EntityLike";
-import { isFunction } from "../../types/Function";
-import { forEach } from "../../functions/forEach";
-import { isUndefined } from "../../types/undefined";
 import { isNull } from "../../types/Null";
-import { isBoolean } from "../../types/Boolean";
-import { isArray, isArrayOf } from "../../types/Array";
-import { map } from "../../functions/map";
+import { isArray } from "../../types/Array";
 import { EntityField } from "../types/EntityField";
 import { KeyValuePairs } from "../types/KeyValuePairs";
 import { EntityRelationOneToMany } from "../types/EntityRelationOneToMany";
@@ -26,13 +24,10 @@ import { EntityRelationManyToOne } from "../types/EntityRelationManyToOne";
 import { EntityFieldType } from "../types/EntityFieldType";
 import { every } from "../../functions/every";
 import { PersisterMetadataManager } from "../persisters/types/PersisterMetadataManager";
-import { has } from "../../functions/has";
 import { LogLevel } from "../../types/LogLevel";
 import { TemporalProperty } from "../types/TemporalProperty";
-import { find } from "../../functions/find";
 import { parseIsoDateString } from "../../types/IsoDateString";
-import { ColumnDefinition, isJsonColumnDefinition, isTimeColumnDefinition } from "../types/ColumnDefinition";
-import { filter } from "../../functions/filter";
+import { isJsonColumnDefinition, isTimeColumnDefinition } from "../types/ColumnDefinition";
 
 const LOG = LogService.createLogger('EntityUtils');
 
@@ -60,155 +55,6 @@ export class EntityUtils {
             return field.propertyName;
         }
         throw new RepositoryError(RepositoryError.Code.PROPERTY_NAME_NOT_FOUND, `Column not found: "${columnName}"`);
-    }
-
-    public static toJSON (
-        entity: Entity,
-        metadata: EntityMetadata
-    ) : ReadonlyJsonObject {
-
-        let json = reduce(
-            metadata.fields,
-            (prev: ReadonlyJsonObject, field: EntityField) : ReadonlyJsonObject => {
-                const propertyName = field?.propertyName;
-                if (!propertyName) throw new TypeError(`The field did not have propertyName defined`);
-                const value : unknown = (entity as any)[propertyName];
-                if (value === undefined) return prev;
-                if (!isReadonlyJsonAny(value)) {
-                    LOG.warn(`Could not convert property "${propertyName}" as JSON: Value not compatible for JSON:`, value);
-                    return prev;
-                }
-                return {
-                    ...prev,
-                    [propertyName]: value
-                };
-            },
-            {} as ReadonlyJsonObject
-        );
-
-        json = reduce(
-            metadata.oneToManyRelations,
-            (prev: ReadonlyJsonObject, oneToMany: EntityRelationOneToMany) : ReadonlyJsonObject => {
-                const { propertyName } = oneToMany;
-                if (propertyName) {
-                    const value : unknown = (entity as any)[propertyName];
-                    if (value === undefined) return prev;
-                    if (!isArrayOf<Entity>(value, isEntity)) {
-                        LOG.warn(`Could not convert property "${propertyName}" as JSON: Value not entity array:`, value);
-                        return prev;
-                    }
-                    return {
-                        ...prev,
-                        [propertyName]: map(value, (item : Entity) : ReadonlyJsonObject => item.toJSON())
-                    };
-                }
-                return prev;
-            },
-            json
-        );
-
-        json = reduce(
-            metadata.manyToOneRelations,
-            (prev: ReadonlyJsonObject, manyToOne: EntityRelationManyToOne) : ReadonlyJsonObject => {
-                const { propertyName } = manyToOne;
-                if (propertyName) {
-                    const value : unknown = (entity as any)[propertyName];
-                    if (value === undefined) return prev;
-                    if (!isEntity(value)) {
-                        LOG.warn(`Could not convert property "${propertyName}" as JSON: Value not entity:`, value);
-                        return prev;
-                    }
-                    return {
-                        ...prev,
-                        [propertyName]: value.toJSON()
-                    };
-                }
-                return prev;
-            },
-            json
-        );
-
-        return json;
-    }
-
-    public static clone (
-        entity: Entity,
-        metadata: EntityMetadata
-    ) : Entity {
-        const idPropertyName = metadata?.idPropertyName;
-        if (!idPropertyName) throw new TypeError(`The entity metadata did not have id property name defined`);
-        const createEntity : CreateEntityLikeCallback | undefined = metadata?.createEntity;
-        if (!isFunction(createEntity)) {
-            throw new TypeError(`The entity metadata did not have ability to create new entities. Did you forget '@table()' annotation?`);
-        }
-        const clonedEntity = createEntity();
-
-        // We need to copy all normal fields because entity constructor might not
-        // initialize everything same way
-        forEach(
-            metadata?.fields,
-            (field: EntityField) => {
-                const propertyName = field.propertyName;
-                // Note: Joined entities will be copied below at manyToOneRelations
-                if (propertyName && field.fieldType !== EntityFieldType.JOINED_ENTITY) {
-                    (clonedEntity as any)[propertyName] = EntityUtils.cloneValue((entity as any)[propertyName]);
-                }
-            }
-        );
-
-        // We also need to copy @OneToMany relations
-        forEach(
-            metadata.oneToManyRelations,
-            (oneToMany: EntityRelationOneToMany) : void => {
-                const { propertyName } = oneToMany;
-                if (propertyName) {
-                    (clonedEntity as any)[propertyName] = EntityUtils.cloneValue((entity as any)[propertyName]);
-                }
-            },
-        );
-
-        // We also need to copy @ManyToOne relations
-        forEach(
-            metadata.manyToOneRelations,
-            (manyToOne: EntityRelationManyToOne) : void => {
-                const { propertyName } = manyToOne;
-                if (propertyName) {
-                    (clonedEntity as any)[propertyName] = EntityUtils.cloneValue((entity as any)[propertyName]);
-                }
-            },
-        );
-
-        return clonedEntity;
-    }
-
-    public static cloneValue<T = any> (value: T) : T {
-
-        if ( isString(value)
-            || isNumber(value)
-            || isBoolean(value)
-            || isUndefined(value)
-            || isNull(value)
-        ) {
-            return value;
-        }
-
-        if ( isArray(value) ) {
-            return map(
-                value,
-                (item: any) => EntityUtils.cloneValue(item)
-            ) as unknown as T;
-        }
-
-        if ( isEntity(value) ) {
-            return value.clone() as unknown as T;
-        }
-
-        if ( isJsonAny(value) ) {
-            return cloneJson(value) as unknown as T;
-        }
-
-        LOG.debug(`value = `, value);
-        throw new TypeError(`Could not clone value: ${value}`);
     }
 
     /**
