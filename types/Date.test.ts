@@ -1,8 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createIsoDateString, isIsoDateString, IsoDateString, parseIsoDateString } from "./Date";
+import { createIsoDateString, isIsoDateString, parseIsoDateString } from "./Date";
 
-describe('IsoDateString', () => {
+describe('Date', () => {
 
     describe('#isIsoDateString', () => {
 
