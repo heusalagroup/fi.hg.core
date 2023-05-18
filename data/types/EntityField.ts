@@ -5,8 +5,14 @@ import { EntityFieldType, parseEntityFieldType } from "./EntityFieldType";
 import { EntityMetadata } from "./EntityMetadata";
 import { ColumnDefinition, parseColumnDefinition } from "./ColumnDefinition";
 
+/**
+ * Entity field information
+ */
 export interface EntityField {
 
+    /**
+     * The type of field
+     */
     fieldType : EntityFieldType;
 
     /**
@@ -54,6 +60,18 @@ export interface EntityField {
 
 }
 
+/**
+ *
+ * @param propertyName
+ * @param columnName
+ * @param columnDefinition
+ * @param nullable
+ * @param fieldType
+ * @param metadata
+ * @param insertable
+ * @param updatable
+ * @returns {{nullable: boolean, propertyName: string, updatable: boolean, fieldType: EntityFieldType, columnName: string, insertable: boolean}}
+ */
 export function createEntityField (
     propertyName       : string,
     columnName         : string,

@@ -284,7 +284,7 @@ export class EntityUtils {
                 const mappedMetadata = metadataManager.getMetadataByTable(mappedTable);
                 if (!mappedMetadata) {
                     LOG.debug(`oneToMany: "${propertyName}": mappedMetadata=`, mappedMetadata);
-                    throw new TypeError(`Could not find metadata for property "${propertyName}" from table "${mappedTable}"`);
+                    throw new TypeError(`Could not find metadata for table "${mappedTable}" (for property ${propertyName}) -- Check that your table names in @OneToMany and @Table match exactly`);
                 }
 
                 let dbValue : any = has(dbEntity, propertyName) ? dbEntity[propertyName] : undefined;
@@ -293,6 +293,10 @@ export class EntityUtils {
                         const jsonString = dbValue;
                         dbValue = parseJson(jsonString);
                         if (dbValue === undefined) throw new TypeError(`Failed to parse JSON: "${jsonString}"`)
+                    }
+                    if (isNull(dbValue)) {
+                        (ret as any)[propertyName] = [];
+                        return;
                     }
                     if (!isArray(dbValue)) {
                         LOG.debug(`dbValue for property "${propertyName}" = `, dbValue);
