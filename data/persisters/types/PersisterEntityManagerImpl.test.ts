@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { PersisterEntityManager } from "./PersisterEntityManager";
+import { PersisterEntityManagerImpl } from "./PersisterEntityManagerImpl";
 import { EntityField } from "../../types/EntityField";
 import { EntityFieldType } from "../../types/EntityFieldType";
 import { EntityLike } from "../../types/EntityLike";
@@ -41,16 +41,16 @@ describe('PersisterEntityManager', () => {
 
     }
 
-    let persisterEntityManager: PersisterEntityManager;
+    let persisterEntityManager: PersisterEntityManagerImpl;
 
     beforeEach(() => {
-        persisterEntityManager = PersisterEntityManager.create();
+        persisterEntityManager = PersisterEntityManagerImpl.create();
     });
 
     describe('#create', () => {
 
         it('should create a new instance', () => {
-            expect(persisterEntityManager).toBeInstanceOf(PersisterEntityManager);
+            expect(persisterEntityManager).toBeInstanceOf(PersisterEntityManagerImpl);
         });
 
     });
@@ -207,7 +207,7 @@ describe('PersisterEntityManager', () => {
         });
 
         it('should return all updatable fields if no previous state was saved', () => {
-            PersisterEntityManager.setLogLevel(LogLevel.NONE);
+            PersisterEntityManagerImpl.setLogLevel(LogLevel.NONE);
             const entity = new MockEntity('foo1', 'bar2');
             const changedFields = persisterEntityManager.getChangedFields(entity, mockFields);
             expect(changedFields).toStrictEqual(mockFields); // As 'foo' updatable

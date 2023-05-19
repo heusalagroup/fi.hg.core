@@ -26,6 +26,8 @@ import { createMemoryTable, MemoryTable } from "./types/MemoryTable";
 import { MemoryIdType } from "./types/MemoryIdType";
 import { MemoryValueUtils } from "./utils/MemoryValueUtils";
 import { PersisterType } from "../types/PersisterType";
+import { PersisterEntityManager } from "../types/PersisterEntityManager";
+import { PersisterEntityManagerImpl } from "../types/PersisterEntityManagerImpl";
 
 const LOG = LogService.createLogger('MemoryPersister');
 
@@ -53,6 +55,7 @@ export class MemoryPersister implements Persister {
     private readonly _idType : MemoryIdType;
     private readonly _data : { [tableName: string] : MemoryTable };
     private readonly _metadataManager : PersisterMetadataManager;
+    private readonly _entityManager : PersisterEntityManager;
 
     /**
      *
@@ -65,6 +68,7 @@ export class MemoryPersister implements Persister {
         this._data = {};
         this._idType = idType ?? MemoryIdType.STRING;
         this._metadataManager = new PersisterMetadataManagerImpl();
+        this._entityManager = PersisterEntityManagerImpl.create();
     }
 
     /**
@@ -167,6 +171,7 @@ export class MemoryPersister implements Persister {
         const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
         const ret : T[] = this._populateRelationsToList(items, metadata);
         LOG.debug(`findAll: returns: items 2: ${ret.length}`);
+        this._entityManager.saveLastEntityListState<T>(ret);
         return ret;
     }
 
@@ -187,7 +192,9 @@ export class MemoryPersister implements Persister {
         const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
         const item : T | undefined = first(items);
         if (item === undefined) return undefined;
-        return this._populateRelations( item, metadata );
+        const entity = this._populateRelations( item, metadata );
+        this._entityManager.saveLastEntityState<T>(entity);
+        return entity;
     }
 
     /**
@@ -241,7 +248,9 @@ export class MemoryPersister implements Persister {
         // FIXME: We should return more than one if there were more than one
         const firstItem = first(newItems);
         if (!firstItem) throw new TypeError(`Could not add items`);
-        return this._populateRelations( this._prepareItem<T>(firstItem, metadata, true), metadata);
+        const addedEntity = this._populateRelations( this._prepareItem<T>(firstItem, metadata, true), metadata);
+        this._entityManager.saveLastEntityState<T>(addedEntity);
+        return addedEntity;
     }
 
     /**
@@ -252,25 +261,60 @@ export class MemoryPersister implements Persister {
         metadata: EntityMetadata,
         entity: T,
     ): Promise<T> {
+
+        const { tableName, fields, idPropertyName } = metadata;
+
+        const idField = find(fields, item => item.propertyName === idPropertyName);
+        if (!idField) throw new TypeError(`Could not find id field using property "${idPropertyName}"`);
+        const entityId = has(entity,idPropertyName) ? (entity as any)[idPropertyName] : undefined;
+        if (!entityId) throw new TypeError(`Could not find entity id column using property "${idPropertyName}"`);
+
+        const updateFields = this._entityManager.getChangedFields(
+            entity,
+            fields
+        );
+
+        if (updateFields.length === 0) {
+            LOG.debug(`Entity did not any updatable properties changed. Saved nothing.`);
+            const item : T | undefined = await this.findBy(
+                metadata,
+                Where.propertyEquals(idPropertyName, entityId),
+                Sort.by(idPropertyName)
+            );
+            if (!item) {
+                throw new TypeError(`Entity was not stored in this persister for ID: ${entityId}`);
+            }
+            return item;
+        }
+
         entity = entity.clone() as T;
-        const tableName = metadata.tableName;
+
         if (!has(this._data, tableName)) {
             this._data[tableName] = createMemoryTable();
         }
-        const idPropertyName = metadata.idPropertyName;
-        if (!(idPropertyName && has(entity, idPropertyName))) throw new TypeError(`The entity did not have a property for id: "${idPropertyName}"`);
-        const id : ID = (entity as any)[idPropertyName];
-        if (!id) throw new TypeError(`The entity did not have a valid entity id at property: "${idPropertyName}": ${id}`);
-        const savedItem : MemoryItem | undefined = find(
+
+        let savedItem : MemoryItem | undefined = find(
             this._data[tableName].items,
-            (item: MemoryItem) : boolean => item.id === id
+            (item: MemoryItem) : boolean => item.id === entityId
         );
         if (savedItem) {
-            savedItem.value = entity;
+            const savedValue = savedItem.value.clone() as T;
+            forEach(
+                updateFields,
+                (field: EntityField) : void => {
+                    const { propertyName } = field;
+                    (savedValue as any)[propertyName] = (entity as any)[propertyName];
+                }
+            );
+            savedItem.value = savedValue;
         } else {
-            this._data[tableName].items.push( createMemoryItem(id, entity) );
+            savedItem = createMemoryItem(entityId, entity);
+            this._data[tableName].items.push( savedItem );
         }
-        return this._populateRelations(entity, metadata);
+
+        const savedEntity = this._populateRelations(savedItem.value.clone(), metadata);
+        this._entityManager.saveLastEntityState<T>(savedEntity);
+        return savedEntity as unknown as T;
     }
 
     /**

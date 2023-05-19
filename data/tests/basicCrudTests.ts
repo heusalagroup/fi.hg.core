@@ -21,14 +21,15 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
      */
     @Table('foos')
     class FooEntity extends Entity {
-        constructor (dto ?: {fooName: string, fooDate: string}) {
+        constructor (dto ?: {fooName: string, fooDate: string, nonUpdatable : string}) {
             super()
             this.fooName = dto?.fooName;
             this.fooDate = dto?.fooDate;
+            this.nonUpdatable = dto?.nonUpdatable ?? '';
         }
 
         @Id()
-        @Column('foo_id', 'BIGINT')
+        @Column('foo_id', 'BIGINT', {updatable: false})
         public fooId ?: string;
 
         @Column('foo_date', 'timestamp')
@@ -37,6 +38,9 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
         @Column('foo_name')
         public fooName ?: string;
+
+        @Column('non_updatable', undefined, {updatable: false})
+        public nonUpdatable ?: string;
 
     }
 
@@ -55,7 +59,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         }
 
         @Id()
-        @Column('bar_id', 'BIGINT')
+        @Column('bar_id', 'BIGINT', {updatable: false})
         public barId ?: string;
 
         @Temporal(TemporalType.TIMESTAMP)
@@ -508,7 +512,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
             expect( await fooRepository.count() ).toBe(0);
 
-            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: '2023-05-12T15:42:09+03:00'});
+            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: '2023-05-12T15:42:09+03:00', nonUpdatable: 'hello'});
 
             const savedItem = await fooRepository.save(newEntity);
             expect(savedItem).toBeDefined();
@@ -523,6 +527,30 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
             expect(foundItem).toBeDefined();
             expect(foundItem?.fooId).toBe(addedId);
             expect(foundItem?.fooName).toBe('Hello world');
+
+        });
+
+        it('can save fresh entity with non-updatable column', async () => {
+
+            expect( await fooRepository.count() ).toBe(0);
+
+            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: '2023-05-12T15:42:09+03:00', nonUpdatable: 'hello'});
+
+            const savedItem = await fooRepository.save(newEntity);
+            expect(savedItem).toBeDefined();
+            expect(savedItem.fooId).toBeDefined();
+            expect(savedItem.fooName).toBe('Hello world');
+            expect(savedItem.nonUpdatable).toBe('hello');
+
+            const addedId : string = savedItem?.fooId as string;
+
+            expect( await fooRepository.count() ).toBe(1);
+
+            const foundItem = await fooRepository.findById(addedId);
+            expect(foundItem).toBeDefined();
+            expect(foundItem?.fooId).toBe(addedId);
+            expect(foundItem?.fooName).toBe('Hello world');
+            expect(foundItem?.nonUpdatable).toBe('hello');
 
         });
 
@@ -546,6 +574,95 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
         });
 
+        it('cannot save older entity with non-updatable field when no other field has changed', async () => {
+
+            expect( await fooRepository.count() ).toBe(0);
+
+            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: '2023-05-12T15:42:09+03:00', nonUpdatable: 'hello'});
+
+            let savedItem = await fooRepository.save(newEntity);
+            expect(savedItem).toBeDefined();
+            expect(savedItem.fooId).toBeDefined();
+            expect(savedItem.fooName).toBe('Hello world');
+            expect(savedItem.nonUpdatable).toBe('hello');
+
+            let addedId : string = savedItem?.fooId as string;
+
+            expect( await fooRepository.count() ).toBe(1);
+
+            let foundItem : FooEntity | undefined = await fooRepository.findById(addedId);
+            expect(foundItem).toBeDefined();
+            expect(foundItem?.fooId).toBe(addedId);
+            expect(foundItem?.fooName).toBe('Hello world');
+            expect(foundItem?.nonUpdatable).toBe('hello');
+
+            if (!foundItem) throw new TypeError(`foundItem not defined`);
+
+            foundItem.nonUpdatable = 'Something else';
+
+            savedItem = await fooRepository.save(foundItem);
+            expect(savedItem).toBeDefined();
+            expect(savedItem.fooId).toBeDefined();
+            expect(savedItem.fooName).toBe('Hello world');
+            expect(savedItem.nonUpdatable).toBe('hello');
+
+            addedId = savedItem?.fooId as string;
+
+            expect( await fooRepository.count() ).toBe(1);
+
+            foundItem = await fooRepository.findById(addedId);
+            expect(foundItem).toBeDefined();
+            expect(foundItem?.fooId).toBe(addedId);
+            expect(foundItem?.fooName).toBe('Hello world');
+            expect(foundItem?.nonUpdatable).toBe('hello');
+
+        });
+
+        it('cannot save older entity with non-updatable field when some other field has changed', async () => {
+
+            expect( await fooRepository.count() ).toBe(0);
+
+            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: '2023-05-12T15:42:09+03:00', nonUpdatable: 'hello'});
+
+            let savedItem = await fooRepository.save(newEntity);
+            expect(savedItem).toBeDefined();
+            expect(savedItem.fooId).toBeDefined();
+            expect(savedItem.fooName).toBe('Hello world');
+            expect(savedItem.nonUpdatable).toBe('hello');
+
+            let addedId : string = savedItem?.fooId as string;
+
+            expect( await fooRepository.count() ).toBe(1);
+
+            let foundItem : FooEntity | undefined = await fooRepository.findById(addedId);
+            expect(foundItem).toBeDefined();
+            expect(foundItem?.fooId).toBe(addedId);
+            expect(foundItem?.fooName).toBe('Hello world');
+            expect(foundItem?.nonUpdatable).toBe('hello');
+
+            if (!foundItem) throw new TypeError(`foundItem not defined`);
+
+            foundItem.nonUpdatable = 'Something else';
+            foundItem.fooName = 'New name';
+
+            savedItem = await fooRepository.save(foundItem);
+            expect(savedItem).toBeDefined();
+            expect(savedItem.fooId).toBeDefined();
+            expect(savedItem.fooName).toBe('New name');
+            expect(savedItem.nonUpdatable).toBe('hello');
+
+            addedId = savedItem?.fooId as string;
+
+            expect( await fooRepository.count() ).toBe(1);
+
+            foundItem = await fooRepository.findById(addedId);
+            expect(foundItem).toBeDefined();
+            expect(foundItem?.fooId).toBe(addedId);
+            expect(foundItem?.fooName).toBe('New name');
+            expect(foundItem?.nonUpdatable).toBe('hello');
+
+        });
+
     });
 
     describe('#saveAll', () => {
@@ -554,8 +671,8 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
             expect( await fooRepository.count() ).toBe(0);
 
-            const newEntity1 = new FooEntity({fooName: 'Hello world 1', fooDate: '2023-05-12T10:22:32+03:00'});
-            const newEntity2 = new FooEntity({fooName: 'Hello world 2', fooDate: '2023-05-12T15:42:09+03:00'});
+            const newEntity1 = new FooEntity({fooName: 'Hello world 1', fooDate: '2023-05-12T10:22:32+03:00', nonUpdatable: 'hello'});
+            const newEntity2 = new FooEntity({fooName: 'Hello world 2', fooDate: '2023-05-12T15:42:09+03:00', nonUpdatable: 'hello'});
 
             const savedItems = await fooRepository.saveAll([newEntity1, newEntity2]);
             expect(savedItems).toBeArray();
@@ -614,7 +731,6 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
             expect(foundItem3?.barName).toBe('Hello world 2');
 
         });
-
 
     });
 
