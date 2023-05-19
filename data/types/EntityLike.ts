@@ -8,7 +8,20 @@ export interface CreateEntityLikeCallback {
 }
 
 export interface EntityLike {
+
+    /**
+     * Get the metadata for this entity
+     */
     getMetadata (): EntityMetadata;
+
+    /**
+     * Make a copy of this entity
+     */
     clone (): EntityLike;
+
+    /**
+     * Get JSON presentation of this entity.
+     */
     toJSON (): ReadonlyJsonObject;
+
 }

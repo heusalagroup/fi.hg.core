@@ -34,14 +34,23 @@ export interface EntityConstructor {
 
 export class Entity implements EntityLike {
 
+    /**
+     * @inheritDoc
+     */
     public getMetadata (): EntityMetadata {
         return EntityMetadataUtils.getMetadata(this.constructor);
     }
 
+    /**
+     * @inheritDoc
+     */
     public toJSON () : ReadonlyJsonObject {
         return entityToJSON(this, this.getMetadata());
     }
 
+    /**
+     * @inheritDoc
+     */
     public clone () : Entity {
         return cloneEntity(this, this.getMetadata());
     }
