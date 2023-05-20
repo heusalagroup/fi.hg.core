@@ -2,7 +2,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import { RequestMappingObject, isRequestMappingObject} from "./RequestMappingObject";
-import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
+import { RequestInterfaceUtils } from "../utils/RequestInterfaceUtils";
 import { forEach } from "../../functions/forEach";
 import { has } from "../../functions/has";
 import { reduce } from "../../functions/reduce";
@@ -17,8 +17,7 @@ import { getOpenApiMethodFromRequestMethod, RequestMethod } from "./RequestMetho
 import { isArray } from "../../types/Array";
 import { isObject } from "../../types/Object";
 import { every } from "../../functions/every";
-
-const LOG = LogService.createLogger('RequestControllerMappingObject');
+import { LogLevel } from "../../types/LogLevel";
 
 export interface InternalRequestControllerMappingObject {
 
@@ -95,6 +94,8 @@ export function explainRequestControllerMappingObject (value: any) : string {
     return "ok";
 
 }
+
+const LOG = LogService.createLogger('getOpenApiDocumentFromRequestControllerMappingObject');
 
 export function getOpenApiDocumentFromRequestControllerMappingObject (
     data: RequestControllerMappingObject
@@ -177,6 +178,10 @@ export function getOpenApiDocumentFromRequestControllerMappingObject (
         }
     );
 }
+
+getOpenApiDocumentFromRequestControllerMappingObject.setLogLevel = (level: LogLevel) : void => {
+    LOG.setLogLevel(level);
+};
 
 function setOpenApiDocumentPathOperationsObject (
     obj           : OpenAPIV3.PathsObject,

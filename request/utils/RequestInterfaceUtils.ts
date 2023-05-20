@@ -1,14 +1,14 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import { has } from "../functions/has";
-import { map } from "../functions/map";
-import { filter } from "../functions/filter";
-import { TestCallback } from "../types/TestCallback";
-import { isFunction } from "../types/Function";
-import { isObject } from "../types/Object";
-import { keys } from "../functions/keys";
-import { every } from "../functions/every";
-import { some } from "../functions/some";
+import { has } from "../../functions/has";
+import { map } from "../../functions/map";
+import { filter } from "../../functions/filter";
+import { TestCallback } from "../../types/TestCallback";
+import { isFunction } from "../../types/Function";
+import { isObject } from "../../types/Object";
+import { keys } from "../../functions/keys";
+import { every } from "../../functions/every";
+import { some } from "../../functions/some";
 
 export class RequestInterfaceUtils {
 

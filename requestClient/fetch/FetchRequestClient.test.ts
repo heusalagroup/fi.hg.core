@@ -2,7 +2,7 @@
 
 import { FetchInterface, FetchRequestClient } from "./FetchRequestClient";
 import { RequestMethod } from "../../request/types/RequestMethod";
-import { ContentType } from "../../request/ContentType";
+import { ContentType } from "../../request/types/ContentType";
 
 describe("FetchRequestClient", () => {
 

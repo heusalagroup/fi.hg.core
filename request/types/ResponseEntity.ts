@@ -1,15 +1,15 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import { RequestStatus, stringifyRequestStatus} from "./types/RequestStatus";
-import { map } from "../functions/map";
+import { RequestStatus, stringifyRequestStatus} from "./RequestStatus";
+import { map } from "../../functions/map";
 import { Headers, isHeaders} from "./Headers";
-import { HeadersObject } from "./types/HeadersObject";
-import { isReadonlyJsonAny} from "../Json";
-import { StringUtils } from "../StringUtils";
-import { parseRequestMethod, RequestMethod, stringifyRequestMethod} from "./types/RequestMethod";
-import { TestCallbackNonStandard } from "../types/TestCallback";
-import { isNumber } from "../types/Number";
+import { HeadersObject } from "./HeadersObject";
+import { isReadonlyJsonAny} from "../../Json";
+import { StringUtils } from "../../StringUtils";
+import { parseRequestMethod, RequestMethod, stringifyRequestMethod} from "./RequestMethod";
+import { TestCallbackNonStandard } from "../../types/TestCallback";
+import { isNumber } from "../../types/Number";
 
 export type EntityStatusTypes = RequestStatus | number;
 
@@ -144,6 +144,10 @@ export class ResponseEntity<T> {
         return this._body;
     }
 
+    public valueOf () : string {
+        return this.toString();
+    }
+
     public toString () : string {
 
         const status : string = stringifyRequestStatus(this._status);
@@ -176,7 +180,6 @@ export class ResponseEntity<T> {
         } else {
             return `ResponseEntity(${status}, Body(${bodyDisplayValue}))`;
         }
-
     }
 
     public static accepted<T>                   () : ResponseEntity<T> { return new ResponseEntity<T>(RequestStatus.Accepted); }

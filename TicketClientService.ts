@@ -9,7 +9,7 @@ import { isTicketDTO, TicketDTO } from "./store/types/ticket/TicketDTO";
 import { AuthorizationUtils } from "./AuthorizationUtils";
 import { isTicketListDTO, TicketListDTO } from "./store/types/ticket/TicketListDTO";
 import { NewTicketDTO } from "./store/types/ticket/NewTicketDTO";
-import { ResponseEntity } from "./request/ResponseEntity";
+import { ResponseEntity } from "./request/types/ResponseEntity";
 
 const LOG = LogService.createLogger('TicketClientService');
 

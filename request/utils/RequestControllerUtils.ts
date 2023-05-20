@@ -6,32 +6,32 @@ import {
     getInternalRequestMappingObject,
     isRequestController,
     setInternalRequestMappingObject
-} from "./types/RequestController";
-import { RequestMappingObject } from "./types/RequestMappingObject";
-import { isRequestMethod} from "./types/RequestMethod";
-import { concat } from "../functions/concat";
-import { filter } from "../functions/filter";
-import { has } from "../functions/has";
-import { RequestControllerMappingObject } from "./types/RequestControllerMappingObject";
-import { RequestParamValueType } from "./types/RequestParamValueType";
-import { RequestParamObject } from "./types/RequestParamObject";
-import { RequestBodyParamObject } from "./types/RequestBodyParamObject";
-import { RequestHeaderParamObject } from "./types/RequestHeaderParamObject";
-import { RequestQueryParamObject } from "./types/RequestQueryParamObject";
-import { RequestHeaderMapParamObject } from "./types/RequestHeaderMapParamObject";
-import { RequestParamObjectType } from "./types/RequestParamObjectType";
-import { RequestPathVariableParamObject } from "./types/RequestPathVariableParamObject";
-import { RequestPathVariableMapParamObject } from "./types/RequestPathVariableMapParamObject";
-import { DefaultHeaderMapValuesType } from "./types/DefaultHeaderMapValuesType";
-import { DefaultPathVariableMapValuesType } from "./types/DefaultPathVariableMapValuesType";
-import { RequestModelAttributeParamObject } from "./types/RequestModelAttributeParamObject";
-import { LogService } from "../LogService";
-import { LogLevel } from "../types/LogLevel";
-import { RequestMapping } from "./types/RequestMapping";
-import { OpenAPIV3 } from "../types/openapi";
-import { isString } from "../types/String";
-import { isFunction } from "../types/Function";
-import { isObject } from "../types/Object";
+} from "../types/RequestController";
+import { RequestMappingObject } from "../types/RequestMappingObject";
+import { isRequestMethod} from "../types/RequestMethod";
+import { concat } from "../../functions/concat";
+import { filter } from "../../functions/filter";
+import { has } from "../../functions/has";
+import { RequestControllerMappingObject } from "../types/RequestControllerMappingObject";
+import { RequestParamValueType } from "../types/RequestParamValueType";
+import { RequestParamObject } from "../types/RequestParamObject";
+import { RequestBodyParamObject } from "../types/RequestBodyParamObject";
+import { RequestHeaderParamObject } from "../types/RequestHeaderParamObject";
+import { RequestQueryParamObject } from "../types/RequestQueryParamObject";
+import { RequestHeaderMapParamObject } from "../types/RequestHeaderMapParamObject";
+import { RequestParamObjectType } from "../types/RequestParamObjectType";
+import { RequestPathVariableParamObject } from "../types/RequestPathVariableParamObject";
+import { RequestPathVariableMapParamObject } from "../types/RequestPathVariableMapParamObject";
+import { DefaultHeaderMapValuesType } from "../types/DefaultHeaderMapValuesType";
+import { DefaultPathVariableMapValuesType } from "../types/DefaultPathVariableMapValuesType";
+import { RequestModelAttributeParamObject } from "../types/RequestModelAttributeParamObject";
+import { LogService } from "../../LogService";
+import { LogLevel } from "../../types/LogLevel";
+import { RequestMappingValue } from "../types/RequestMappingValue";
+import { OpenAPIV3 } from "../../types/openapi";
+import { isString } from "../../types/String";
+import { isFunction } from "../../types/Function";
+import { isObject } from "../../types/Object";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
@@ -47,7 +47,7 @@ export class RequestControllerUtils {
      * @param value Array of paths (string) or methods (RequestMethod e.g. numbers)
      * @returns RequestMappingObject with methods and paths separated
      */
-    public static parseRequestMappings (value : readonly RequestMapping[]) : RequestMappingObject {
+    public static parseRequestMappings (value : readonly RequestMappingValue[]) : RequestMappingObject {
         return {
             methods : filter(value, isRequestMethod),
             paths   : filter(value, isString)
@@ -62,7 +62,7 @@ export class RequestControllerUtils {
      */
     public static attachControllerMapping (
         controller : RequestController,
-        config     : readonly RequestMapping[]
+        config     : readonly RequestMappingValue[]
     ) {
 
         const parsedObject = RequestControllerUtils.parseRequestMappings(config);
@@ -101,7 +101,7 @@ export class RequestControllerUtils {
      */
     public static attachControllerMethodMapping (
         controller  : RequestController,
-        config      : readonly RequestMapping[],
+        config      : readonly RequestMappingValue[],
         propertyKey : string
     ) {
 

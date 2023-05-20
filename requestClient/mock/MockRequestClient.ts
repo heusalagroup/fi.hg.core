@@ -3,7 +3,7 @@
 import { RequestClientInterface } from "../RequestClientInterface";
 import { RequestMethod } from "../../request/types/RequestMethod";
 import { JsonAny } from "../../Json";
-import { ResponseEntity } from "../../request/ResponseEntity";
+import { ResponseEntity } from "../../request/types/ResponseEntity";
 
 export class MockRequestClient implements RequestClientInterface {
 

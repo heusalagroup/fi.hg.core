@@ -3,7 +3,7 @@
 import { RequestClient } from "./RequestClient";
 import { RequestMethod } from "./request/types/RequestMethod";
 import { RequestClientInterface } from "./requestClient/RequestClientInterface";
-import { ResponseEntity } from "./request/ResponseEntity";
+import { ResponseEntity } from "./request/types/ResponseEntity";
 import { JsonAny } from "./Json";
 import { LogLevel } from "./types/LogLevel";
 

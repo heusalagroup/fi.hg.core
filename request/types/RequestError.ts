@@ -5,7 +5,7 @@ import { RequestStatus, stringifyRequestStatus} from "./RequestStatus";
 import { JsonAny, ReadonlyJsonAny, ReadonlyJsonObject } from "../../Json";
 import { RequestType } from "./RequestType";
 import { RequestMethod } from "./RequestMethod";
-import { Headers } from "../Headers";
+import { Headers } from "./Headers";
 
 export class RequestError extends Error {
 
@@ -83,13 +83,85 @@ export class RequestError extends Error {
         return this.headers;
     }
 
+    public static create (
+        status  : RequestStatus,
+        message : string | undefined = undefined
+    ) : RequestError {
+        return new RequestError(status, message);
+    }
+
+    public static createBadRequestError (message : string) {
+        return createRequestError(RequestStatus.BadRequest, message);
+    }
+
+    public static createNotFoundRequestError (message : string) {
+        return createRequestError(RequestStatus.NotFound, message);
+    }
+
+    public static createMethodNotAllowedRequestError (message : string) {
+        return createRequestError(RequestStatus.MethodNotAllowed, message);
+    }
+
+    public static createConflictRequestError (message : string) {
+        return createRequestError(RequestStatus.Conflict, message);
+    }
+
+    public static createInternalErrorRequestError (message : string) {
+        return createRequestError(RequestStatus.InternalServerError, message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwBadRequestError (message : string) {
+        throw RequestError.createBadRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwNotFoundRequestError (message : string) {
+        throw RequestError.createNotFoundRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwMethodNotAllowedRequestError (message : string) {
+        throw RequestError.createMethodNotAllowedRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwConflictRequestError (message : string) {
+        throw RequestError.createConflictRequestError(message);
+    }
+
+    /**
+     *
+     * @param message
+     * @throws
+     */
+    public static throwInternalErrorRequestError (message : string) {
+        throw RequestError.createInternalErrorRequestError(message);
+    }
+
 }
 
 export function createRequestError (
     status  : RequestStatus,
     message : string | undefined = undefined
 ) : RequestError {
-    return new RequestError(status, message);
+    return RequestError.create(status, message);
 }
 
 export function isRequestError (value : any) : value is RequestError {

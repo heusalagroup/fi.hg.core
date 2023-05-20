@@ -1,6 +1,6 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
+import { RequestInterfaceUtils } from "../utils/RequestInterfaceUtils";
 import {
     RequestControllerMappingObject,
     explainRequestControllerMappingObject,

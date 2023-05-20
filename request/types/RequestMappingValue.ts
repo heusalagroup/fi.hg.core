@@ -5,12 +5,12 @@ import { RequestMethod, isRequestMethod} from "./RequestMethod";
 import { isString } from "../../types/String";
 import { isArrayOf } from "../../types/Array";
 
-export type RequestMapping = RequestMethod|string;
+export type RequestMappingValue = RequestMethod|string;
 
-export function isRequestMapping (value : any) : value is RequestMapping {
+export function isRequestMappingValue (value : any) : value is RequestMappingValue {
     return isString(value) || isRequestMethod(value);
 }
 
-export function isRequestMappingArray (value : any) : value is RequestMapping[] {
-    return isArrayOf<RequestMapping>(value, isRequestMapping);
+export function isRequestMappingValueArray (value : any) : value is RequestMappingValue[] {
+    return isArrayOf<RequestMappingValue>(value, isRequestMappingValue);
 }

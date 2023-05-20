@@ -6,7 +6,7 @@ import { JsonAny } from "./Json";
 import { RequestClientInterface } from "./requestClient/RequestClientInterface";
 import { LogService } from "./LogService";
 import { LogLevel } from "./types/LogLevel";
-import { ResponseEntity } from "./request/ResponseEntity";
+import { ResponseEntity } from "./request/types/ResponseEntity";
 
 const LOG = LogService.createLogger('RequestClient');
 

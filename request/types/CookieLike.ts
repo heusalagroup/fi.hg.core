@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { SameSite } from "../types/SameSite";
+import { SameSite } from "../../types/SameSite";
 
 export interface CookieLike {
 

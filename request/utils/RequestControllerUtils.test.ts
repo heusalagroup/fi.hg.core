@@ -1,12 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { RequestMappingObject } from "./types/RequestMappingObject";
+import { RequestMappingObject } from "../types/RequestMappingObject";
 import { RequestControllerUtils } from "./RequestControllerUtils";
-import { RequestMethod } from "./types/RequestMethod";
-import { getInternalRequestMappingObject, RequestController } from "./types/RequestController";
-import { RequestParamValueType } from "./types/RequestParamValueType";
-import { RequestParamObjectType } from "./types/RequestParamObjectType";
-import { LogLevel } from "../types/LogLevel";
+import { RequestMethod } from "../types/RequestMethod";
+import { getInternalRequestMappingObject, RequestController } from "../types/RequestController";
+import { RequestParamValueType } from "../types/RequestParamValueType";
+import { RequestParamObjectType } from "../types/RequestParamObjectType";
+import { LogLevel } from "../../types/LogLevel";
 
 RequestControllerUtils.setLogLevel(LogLevel.NONE);
 

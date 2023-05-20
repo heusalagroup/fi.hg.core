@@ -5,7 +5,7 @@ import { RequestClient } from "./RequestClient";
 import { Observer,  ObserverCallback, ObserverDestructor } from "./Observer";
 import { LogService } from "./LogService";
 import { LogLevel } from "./types/LogLevel";
-import { ResponseEntity } from "./request/ResponseEntity";
+import { ResponseEntity } from "./request/types/ResponseEntity";
 import { isRequestError } from "./request/types/RequestError";
 import { getNextRetryDelay, HttpRetryPolicy, shouldRetry } from "./request/types/HttpRetryPolicy";
 import { Method } from "./types/Method";

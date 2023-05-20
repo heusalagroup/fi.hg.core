@@ -61,9 +61,9 @@ import { explainZendeskSuspendedTicketListDTO, isZendeskSuspendedTicketListDTO, 
 import { explainZendeskSuspendedTicketDTO, isZendeskSuspendedTicketDTO } from "./dto/ZendeskSuspendedTicketDTO";
 import { createDefaultHttpRetryPolicy, HttpRetryPolicy } from "../request/types/HttpRetryPolicy";
 import { isNumber, parseInteger } from "../types/Number";
-import { ResponseEntity } from "../request/ResponseEntity";
+import { ResponseEntity } from "../request/types/ResponseEntity";
 import { JsonAny } from "../Json";
-import { Headers } from "../request/Headers";
+import { Headers } from "../request/types/Headers";
 import { isRequestError } from "../request/types/RequestError";
 import { PromiseUtils } from "../PromiseUtils";
 

@@ -4,9 +4,9 @@ import { RequestMethod, stringifyRequestMethod } from "../../request/types/Reque
 import { JsonAny } from "../../Json";
 import { RequestClientInterface } from "../RequestClientInterface";
 import { RequestError } from "../../request/types/RequestError";
-import { ContentType } from "../../request/ContentType";
-import { ResponseEntity } from "../../request/ResponseEntity";
-import { Headers } from "../../request/Headers";
+import { ContentType } from "../../request/types/ContentType";
+import { ResponseEntity } from "../../request/types/ResponseEntity";
+import { Headers } from "../../request/types/Headers";
 
 export interface FetchInterface {
     (input: string, init?: RequestInit): Promise<Response>;

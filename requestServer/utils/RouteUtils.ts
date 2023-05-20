@@ -1,12 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
-import { RequestRouterMappingObject } from "./types/RequestRouterMappingObject";
-import { BaseRoutes } from "./types/BaseRoutes";
-import { ParamRoutes } from "./types/ParamRoutes";
-import { StaticRoutes } from "./types/StaticRoutes";
-import { keys } from "../functions/keys";
-import { some } from "../functions/some";
+import { RequestRouterMappingObject } from "../types/RequestRouterMappingObject";
+import { BaseRoutes } from "../types/BaseRoutes";
+import { ParamRoutes } from "../types/ParamRoutes";
+import { StaticRoutes } from "../types/StaticRoutes";
+import { keys } from "../../functions/keys";
+import { some } from "../../functions/some";
 
 export class RouteUtils {
 

@@ -1,10 +1,10 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { CalendarDTO, createCalendarDTO } from "./types/CalendarDTO";
+import { CalendarDTO } from "./types/CalendarDTO";
 import { HttpService } from "./HttpService";
 import { LogService } from "./LogService";
 import { CalendarUtils } from "./CalendarUtils";
-import { ContentType } from "./request/ContentType";
+import { ContentType } from "./request/types/ContentType";
 
 const LOG = LogService.createLogger('CalendarService');
 
@@ -17,8 +17,8 @@ export class CalendarService {
                 'Accept': ContentType.CALENDAR
             }
         );
-        // LOG.debug(`responseString = `, responseString);
         if (!responseString) {
+            LOG.error(`Response was not calendar data: `, responseString);
             throw new TypeError(`CalendarService.fetchFromUrl: Response was not calendar data`);
         }
         return CalendarUtils.parseCalendarDTOFromInternetCalendar(responseString);

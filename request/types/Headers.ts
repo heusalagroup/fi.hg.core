@@ -1,17 +1,17 @@
 // Copyright (c) 2023 Heusala Group. All rights reserved.
 // Copyright (c) 2020-2023 Sendanor. All rights reserved.
 
-import { HeadersObject, ChangeableHeadersObject } from "./types/HeadersObject";
-import { concat } from "../functions/concat";
-import { forEach } from "../functions/forEach";
-import { has } from "../functions/has";
-import { map } from "../functions/map";
-import { LogService } from "../LogService";
-import { isReadonlyJsonArray } from "../Json";
-import { LogLevel } from "../types/LogLevel";
-import { isArray } from "../types/Array";
-import { isString } from "../types/String";
-import { keys } from "../functions/keys";
+import { HeadersObject, ChangeableHeadersObject } from "./HeadersObject";
+import { concat } from "../../functions/concat";
+import { forEach } from "../../functions/forEach";
+import { has } from "../../functions/has";
+import { map } from "../../functions/map";
+import { LogService } from "../../LogService";
+import { isReadonlyJsonArray } from "../../Json";
+import { LogLevel } from "../../types/LogLevel";
+import { isArray } from "../../types/Array";
+import { isString } from "../../types/String";
+import { keys } from "../../functions/keys";
 
 const LOG = LogService.createLogger('Headers');
 
@@ -25,10 +25,12 @@ export class Headers {
     private _uninitializedValue : HeadersObject | undefined;
 
     constructor (value ?: HeadersObject) {
-
         this._value              = undefined;
         this._uninitializedValue = value;
+    }
 
+    public static create (value ?: HeadersObject) : Headers {
+        return new Headers(value);
     }
 
     private _initializeValue () {

@@ -3,7 +3,7 @@
 
 import { RequestMappingObject, isRequestMappingObject } from "./RequestMappingObject";
 import { isRequestParamObject, RequestParamObject } from "./RequestParamObject";
-import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
+import { RequestInterfaceUtils } from "../utils/RequestInterfaceUtils";
 import { filter } from "../../functions/filter";
 import { isNull } from "../../types/Null";
 import { map } from "../../functions/map";

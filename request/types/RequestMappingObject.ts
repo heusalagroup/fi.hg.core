@@ -2,7 +2,7 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
 import { RequestMethod, isRequestMethod} from "./RequestMethod";
-import { RequestInterfaceUtils } from "../RequestInterfaceUtils";
+import { RequestInterfaceUtils } from "../utils/RequestInterfaceUtils";
 import { isArray } from "../../types/Array";
 import { isString } from "../../types/String";
 import { every } from "../../functions/every";
