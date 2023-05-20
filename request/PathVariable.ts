@@ -127,5 +127,6 @@ export function PathVariable (
 }
 
 PathVariable.setLogLevel = (level: LogLevel) : void => {
+    RequestControllerUtils.setLogLevel(level);
     LOG.setLogLevel(level);
 };

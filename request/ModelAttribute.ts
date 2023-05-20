@@ -48,5 +48,6 @@ export function ModelAttribute (
 }
 
 ModelAttribute.setLogLevel = (level: LogLevel) : void => {
+    RequestControllerUtils.setLogLevel(level);
     LOG.setLogLevel(level);
 };
