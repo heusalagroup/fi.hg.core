@@ -16,12 +16,13 @@ import { Operation } from "./Operation";
 import { OpenAPIV3 } from "../types/openapi";
 import { ApiResponse } from "./ApiResponse";
 import { RequestStatus } from "./types/RequestStatus";
+import { getOpenApiDocumentFromRequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 
-PathVariable.setLogLevel(LogLevel.NONE);
-ParamRoutes.setLogLevel(LogLevel.NONE);
 RequestHeader.setLogLevel(LogLevel.NONE);
+ApiResponse.setLogLevel(LogLevel.NONE);
+PathVariable.setLogLevel(LogLevel.NONE);
 
-describe('RequestHeader', () => {
+describe('ApiResponse', () => {
 
     beforeAll( () => {
         RequestRouterImpl.setLogLevel(LogLevel.NONE);
@@ -43,9 +44,10 @@ describe('RequestHeader', () => {
                     class Controller {
 
                         @GetMapping('/hello')
+                        @ApiResponse(RequestStatus.OK, 'Successful operation')
                         public static getHello (
                             @RequestHeader('Authorization')
-                            authorization: string
+                                authorization: string
                         ) : string {
                             return `The Authorization header is ${authorization}`;
                         }
@@ -59,17 +61,32 @@ describe('RequestHeader', () => {
                         router = RequestRouterImpl.create(Controller);
                     } );
 
-                    it('can create GET mapping for string response', async () => {
-                        const response = await router.handleRequest(
-                            RequestMethod.GET,
-                            '/hello',
-                            undefined,
-                            Headers.create({
-                                'Authorization': '1234'
-                            })
-                        );
-                        expect(response.getStatusCode()).toBe(200);
-                        expect(response.getBody()).toBe('The Authorization header is 1234');
+                    it('can set OpenAPI responses', async () => {
+
+                        const expected : OpenAPIV3.Document = {
+                            "components": {},
+                            "info": {
+                                "title": "API Reference",
+                                "version": "0.0.0"
+                            },
+                            "openapi": "3.0.0",
+                            "paths": {
+                                "/hello": {
+                                    "get": {
+                                        "operationId": "getHello",
+                                        "responses": {
+                                            "200": {
+                                                "description": "Successful operation"
+                                            },
+                                        }
+                                    }
+                                }
+                            },
+                            "security": [],
+                            "tags": []
+                        };
+
+                        expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual( expected );
                     });
 
                 });
@@ -110,20 +127,71 @@ describe('RequestHeader', () => {
                         router = RequestRouterImpl.create(Controller);
                     } );
 
-                    it('can create GET mapping for string response', async () => {
-                        const response = await router.handleRequest(
-                            RequestMethod.GET,
-                            '/hello/something',
-                            undefined,
-                            Headers.create({
-                                'Authorization': '1234'
-                            })
-                        );
-                        expect(response.getStatusCode()).toBe(200);
-                        expect(response.getBody()).toBe('The Authorization header is 1234');
+                    it('can set OpenAPI responses', async () => {
+
+                        const expected : OpenAPIV3.Document = {
+                            "components": {},
+                            "info": {
+                                "title": "API Reference",
+                                "version": "0.0.0"
+                            },
+                            "openapi": "3.0.0",
+                            "paths": {
+                                "/hello/{param}": {
+                                    "get": {
+                                        "operationId": "getHello",
+                                        "summary": "Get a test response using GET",
+                                        "parameters": [
+                                            {
+                                                "name": "param",
+                                                "in": "path"
+                                            }
+                                        ],
+                                        "responses": {
+                                            "200": {
+                                                "description": "Successful operation"
+                                            },
+                                        }
+                                    }
+                                }
+                            },
+                            "security": [],
+                            "tags": []
+                        };
+
+                        expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual( expected );
                     });
 
-                    it('can set OpenAPI parameters information', async () => {
+                });
+
+                describe('GET with multiple responses', () => {
+
+                    @RequestMapping('/')
+                    class Controller {
+
+                        @Operation({summary: 'Get a test response using GET'})
+                        @GetMapping('/hello/{param}')
+                        @ApiResponse(RequestStatus.OK, 'Successful operation')
+                        @ApiResponse(RequestStatus.InternalServerError, 'If error happens')
+                        public static getHello (
+                            @PathVariable('param')
+                                param: string,
+                            @RequestHeader('Authorization')
+                                authorization: string
+                        ) : string {
+                            return `The Authorization header is ${authorization}`;
+                        }
+
+                    }
+
+                    let router : RequestRouter;
+
+                    beforeEach( () => {
+                        // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
+                        router = RequestRouterImpl.create(Controller);
+                    } );
+
+                    it.only('can set multiple OpenAPI responses', async () => {
 
                         const expected : OpenAPIV3.Document = {
                             "components": {},
@@ -148,11 +216,14 @@ describe('RequestHeader', () => {
                                                 "schema": {
                                                     "type": "string"
                                                 }
-                                            },
+                                            }
                                         ],
                                         "responses": {
                                             "200": {
                                                 "description": "Successful operation"
+                                            },
+                                            "500": {
+                                                "description": "If error happens"
                                             },
                                         }
                                     }
@@ -164,6 +235,7 @@ describe('RequestHeader', () => {
 
                         expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual( expected );
                     });
+
 
                 });
 

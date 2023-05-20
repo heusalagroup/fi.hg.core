@@ -5,7 +5,7 @@ import { RequestController } from "./types/RequestController";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";
 import { isString } from "../types/String";
 import { isNumber } from "../types/Number";
-import { RequestParamValueType } from "./types/RequestParamValueType";
+import { getOpenApiTypeStringFromRequestParamValueType, RequestParamValueType } from "./types/RequestParamValueType";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
 
@@ -18,7 +18,22 @@ export function RequestBody (
 ): void {
     const requestController: RequestController | undefined = RequestControllerUtils.findController( target );
     if ( requestController !== undefined && isString( propertyKey ) && isNumber( paramIndex ) ) {
+
         RequestControllerUtils.setControllerMethodBodyParam( requestController, propertyKey, paramIndex, RequestParamValueType.JSON );
+
+        RequestControllerUtils.attachControllerOperation( requestController, propertyKey, {
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: getOpenApiTypeStringFromRequestParamValueType( RequestParamValueType.JSON )
+                        }
+                    }
+                }
+            }
+        } );
+
     } else {
         LOG.warn( 'body: Unrecognized configuration: ',
             "; target=", target,

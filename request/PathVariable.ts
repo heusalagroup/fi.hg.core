@@ -14,6 +14,7 @@ import { isObject } from "../types/Object";
 import { RequestParamValueType } from "./types/RequestParamValueType";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
+import { getOpenApiDocumentFromRequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 
 const LOG = LogService.createLogger( 'PathVariable' );
 
@@ -47,6 +48,7 @@ export function PathVariable (
         const requestController: RequestController | undefined = RequestControllerUtils.findController( target );
         if ( requestController !== undefined ) {
             RequestControllerUtils.setControllerMethodPathVariableMap( requestController, propertyKey, paramIndex, defaultValues );
+
             return;
         }
         LOG.warn( '_setPathVariableMap: Unrecognized configuration: ',
@@ -57,6 +59,7 @@ export function PathVariable (
     }
 
     LOG.debug( 'pathVariable: ', arg1, arg2, arg3 );
+
     if ( isString( arg2 ) && isNumber( arg3 ) ) {
         const target: any | Function = arg1;
         const propertyKey: string = arg2;
@@ -64,7 +67,9 @@ export function PathVariable (
         _setPathVariableMap( target, propertyKey, paramIndex, undefined );
         return;
     }
+
     const variableName: string | RequestPathVariableListOptions | undefined = arg1;
+
     if ( isString( variableName ) ) {
         if ( !isRequestPathVariableOptionsOrUndefined( arg2 ) ) {
             throw new TypeError( `PathVariable: Argument 2 is not type of RequestPathVariableOptions: ${arg2}` );
@@ -93,6 +98,14 @@ export function PathVariable (
                 const requestController: RequestController | undefined = RequestControllerUtils.findController( target );
                 if ( requestController !== undefined ) {
                     RequestControllerUtils.setControllerMethodPathVariable( requestController, propertyKey, paramIndex, variableName, RequestParamValueType.STRING, isRequired, decodeValue, defaultValue );
+
+                    RequestControllerUtils.attachControllerOperation( requestController, propertyKey, {
+                        parameters: [{
+                            name: variableName,
+                            in: 'path'
+                        }]
+                    } );
+
                     return;
                 }
             }
@@ -103,6 +116,7 @@ export function PathVariable (
             );
         };
     }
+
     let opts: RequestPathVariableListOptions | undefined = variableName;
     if ( opts === undefined || isObject( opts?.defaultValues ) ) {
     } else {
@@ -114,8 +128,11 @@ export function PathVariable (
         propertyKey ?: string,
         paramIndex  ?: number
     ) => {
+
         if ( isString( propertyKey ) && isNumber( paramIndex ) ) {
+
             _setPathVariableMap( target, propertyKey, paramIndex, defaultValues );
+
         } else {
             LOG.warn( 'pathVariable: Unrecognized configuration: ',
                 "; target=", target,
@@ -123,10 +140,12 @@ export function PathVariable (
                 "; paramIndex=", paramIndex
             );
         }
+
     };
 }
 
 PathVariable.setLogLevel = (level: LogLevel) : void => {
     RequestControllerUtils.setLogLevel(level);
+    getOpenApiDocumentFromRequestControllerMappingObject.setLogLevel(level);
     LOG.setLogLevel(level);
 };

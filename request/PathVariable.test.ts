@@ -10,6 +10,8 @@ import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
 import { ParamRoutes } from "../requestServer/types/ParamRoutes";
 import { GetMapping } from "./GetMapping";
+import { Operation } from "./Operation";
+import { getOpenApiDocumentFromRequestController } from "./types/RequestController";
 
 PathVariable.setLogLevel(LogLevel.NONE);
 ParamRoutes.setLogLevel(LogLevel.NONE);
@@ -35,6 +37,7 @@ describe('PathVariable', () => {
                     class Controller {
 
                         @GetMapping('/hello/{param}')
+                        @Operation({summary: 'Get a test response using GET'})
                         public static getHello (
                             @PathVariable('param')
                                 param: string
@@ -60,6 +63,35 @@ describe('PathVariable', () => {
                         );
                         expect(response.getStatusCode()).toBe(200);
                         expect(response.getBody()).toBe('Hello something');
+                    });
+
+                    it('can set OpenAPI parameters information', async () => {
+                        expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual(
+                            {
+                                "components": {},
+                                "info": {
+                                    "title": "API Reference",
+                                    "version": "0.0.0"
+                                },
+                                "openapi": "3.0.0",
+                                "paths": {
+                                    "/hello/{param}": {
+                                        "get": {
+                                            "operationId": "getHello",
+                                            "summary": "Get a test response using GET",
+                                            "parameters": [
+                                                {
+                                                    "name": "param",
+                                                    "in": "path"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "security": [],
+                                "tags": []
+                            }
+                        );
                     });
 
                 });

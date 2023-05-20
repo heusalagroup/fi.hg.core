@@ -8,7 +8,8 @@ export enum RequestParamValueType {
     JSON,
     STRING,
     INTEGER,
-    NUMBER
+    NUMBER,
+    // BOOLEAN,
 
 }
 
@@ -21,6 +22,7 @@ export function isRequestParamValueType (value : any) : value is RequestParamVal
         case RequestParamValueType.STRING:
         case RequestParamValueType.INTEGER:
         case RequestParamValueType.NUMBER:
+        // case RequestParamValueType.BOOLEAN:
             return true;
     }
 
@@ -43,6 +45,7 @@ export function parseRequestParamValueType (value: any) : RequestParamValueType 
             case 'string'  : return RequestParamValueType.STRING;
             case 'integer' : return RequestParamValueType.INTEGER;
             case 'number'  : return RequestParamValueType.NUMBER;
+            // case 'boolean'  : return RequestParamValueType.BOOLEAN;
         }
     }
 
@@ -57,10 +60,20 @@ export function stringifyRequestParamValueType (value : RequestParamValueType) :
         case RequestParamValueType.STRING   : return 'string';
         case RequestParamValueType.INTEGER  : return 'integer';
         case RequestParamValueType.NUMBER   : return 'number';
+        // case RequestParamValueType.BOOLEAN  : return 'boolean';
     }
 
     throw new TypeError(`Unsupported value: "${value}"`);
 
 }
 
-
+export function getOpenApiTypeStringFromRequestParamValueType (value: RequestParamValueType) : "object" | "string" | "integer" | "number" {
+    switch (value) {
+        case RequestParamValueType.JSON    : return 'object';
+        case RequestParamValueType.STRING  : return 'string';
+        case RequestParamValueType.INTEGER : return 'integer';
+        case RequestParamValueType.NUMBER  : return 'number';
+        // case RequestParamValueType.BOOLEAN : return 'boolean';
+    }
+    throw new TypeError(`Unknown RequestParamValueType supplied to getOpenApiTypeString(): ${value}`);
+}

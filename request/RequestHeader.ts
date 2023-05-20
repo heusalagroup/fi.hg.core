@@ -96,7 +96,19 @@ export function RequestHeader (
             if ( isString( propertyKey ) && isNumber( paramIndex ) ) {
                 const requestController: RequestController | undefined = RequestControllerUtils.findController( target );
                 if ( requestController !== undefined ) {
+
                     RequestControllerUtils.setControllerMethodHeader( requestController, propertyKey, paramIndex, headerName, RequestParamValueType.STRING, isRequired, defaultValue );
+
+                    RequestControllerUtils.attachControllerOperation( requestController, propertyKey, {
+                        parameters: [{
+                            "name": headerName,
+                            "in": "header",
+                            schema: {
+                                type: "string"
+                            }
+                        }]
+                    } );
+
                     return;
                 }
             }

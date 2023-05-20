@@ -768,6 +768,7 @@ describe('RequestControllerUtils', () => {
                 TestController as RequestController,
                 'getEcho',
                 {
+                    "operationId": "getEcho",
                     summary: 'Returns echo of the parameter provided'
                 }
             );
@@ -780,6 +781,7 @@ describe('RequestControllerUtils', () => {
             expect(internalMapping?.controllerProperties?.getEcho?.operations?.length).toBe(1);
             expect((internalMapping?.controllerProperties?.getEcho?.operations??[])[0]).toStrictEqual(
                 {
+                    "operationId": "getEcho",
                     summary: 'Returns echo of the parameter provided'
                 }
             );
@@ -803,6 +805,7 @@ describe('RequestControllerUtils', () => {
                 TestController as RequestController,
                 'getEcho',
                 {
+                    "operationId": "getEcho",
                     summary: 'Returns echo of the parameter provided'
                 }
             );
@@ -829,6 +832,7 @@ describe('RequestControllerUtils', () => {
             expect(internalMapping?.controllerProperties?.getEcho?.operations?.length).toBe(1);
             expect((internalMapping?.controllerProperties?.getEcho?.operations??[])[0]).toStrictEqual(
                 {
+                    "operationId": "getEcho",
                     summary: 'Returns echo of the parameter provided'
                 }
             );
@@ -861,6 +865,7 @@ describe('RequestControllerUtils', () => {
                 TestController as RequestController,
                 'getEcho',
                 {
+                    "operationId": "getEcho",
                     summary: 'Returns echo of the parameter provided'
                 }
             );
@@ -903,6 +908,7 @@ describe('RequestControllerUtils', () => {
             expect(internalMapping?.controllerProperties?.getEcho?.operations?.length).toBe(1);
             expect((internalMapping?.controllerProperties?.getEcho?.operations??[])[0]).toStrictEqual(
                 {
+                    "operationId": "getEcho",
                     summary: 'Returns echo of the parameter provided'
                 }
             );

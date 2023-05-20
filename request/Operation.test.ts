@@ -104,11 +104,19 @@ describe('Operation', () => {
                                 "paths": {
                                     "/hello/{param}": {
                                         "get": {
+                                            "operationId": "getHello",
+                                            "parameters": [
+                                                {
+                                                    in: "path",
+                                                    name: "param"
+                                                }
+                                            ],
                                             "summary": "Returns a hello string"
                                         }
                                     },
                                     "/openapi": {
                                         "get": {
+                                            "operationId": "getOpenApi",
                                             "summary": "Get openAPI v3 document describing test API"
                                         }
                                     }

@@ -12,6 +12,11 @@ import { PathVariable } from "./PathVariable";
 import { ParamRoutes } from "../requestServer/types/ParamRoutes";
 import { GetMapping } from "./GetMapping";
 import { RequestParam } from "./RequestParam";
+import { OpenAPIV3 } from "../types/openapi";
+import { getOpenApiDocumentFromRequestController } from "./types/RequestController";
+import { Operation } from "./Operation";
+import { ApiResponse } from "./ApiResponse";
+import { RequestStatus } from "./types/RequestStatus";
 
 PathVariable.setLogLevel(LogLevel.NONE);
 ParamRoutes.setLogLevel(LogLevel.NONE);
@@ -36,7 +41,9 @@ describe('RequestParam', () => {
                     @RequestMapping('/')
                     class Controller {
 
+                        @Operation({summary: 'Get a test response using GET'})
                         @GetMapping('/hello')
+                        @ApiResponse(RequestStatus.OK, 'Successful operation')
                         public static getHello (
                             @RequestParam('q')
                                 q: string
@@ -63,6 +70,45 @@ describe('RequestParam', () => {
                         expect(response.getStatusCode()).toBe(200);
                         expect(response.getBody()).toBe('Hello something');
                     });
+
+                    it('can set OpenAPI parameters information', async () => {
+
+                        const expected : OpenAPIV3.Document = {
+                            "components": {},
+                            "info": {
+                                "title": "API Reference",
+                                "version": "0.0.0"
+                            },
+                            "openapi": "3.0.0",
+                            "paths": {
+                                "/hello": {
+                                    "get": {
+                                        "operationId": "getHello",
+                                        "summary": "Get a test response using GET",
+                                        "parameters": [
+                                            {
+                                                "name": "q",
+                                                "in": "query",
+                                                "schema": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                        ],
+                                        "responses": {
+                                            "200": {
+                                                "description": "Successful operation"
+                                            },
+                                        }
+                                    }
+                                }
+                            },
+                            "security": [],
+                            "tags": []
+                        };
+
+                        expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual( expected );
+                    });
+
 
                 });
 

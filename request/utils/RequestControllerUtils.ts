@@ -7,11 +7,20 @@ import {
     isRequestController,
     setInternalRequestMappingObject
 } from "../types/RequestController";
-import { RequestMappingObject } from "../types/RequestMappingObject";
-import { isRequestMethod} from "../types/RequestMethod";
 import { concat } from "../../functions/concat";
 import { filter } from "../../functions/filter";
 import { has } from "../../functions/has";
+import { find } from "../../functions/find";
+import { merge } from "../../functions/merge";
+import { LogService } from "../../LogService";
+import { LogLevel } from "../../types/LogLevel";
+import { OpenAPIV3 } from "../../types/openapi";
+import { isString } from "../../types/String";
+import { isFunction } from "../../types/Function";
+import { isObject } from "../../types/Object";
+import { RequestMappingObject } from "../types/RequestMappingObject";
+import { isRequestMethod} from "../types/RequestMethod";
+import { RequestMappingValue } from "../types/RequestMappingValue";
 import { RequestControllerMappingObject } from "../types/RequestControllerMappingObject";
 import { RequestParamValueType } from "../types/RequestParamValueType";
 import { RequestParamObject } from "../types/RequestParamObject";
@@ -25,13 +34,6 @@ import { RequestPathVariableMapParamObject } from "../types/RequestPathVariableM
 import { DefaultHeaderMapValuesType } from "../types/DefaultHeaderMapValuesType";
 import { DefaultPathVariableMapValuesType } from "../types/DefaultPathVariableMapValuesType";
 import { RequestModelAttributeParamObject } from "../types/RequestModelAttributeParamObject";
-import { LogService } from "../../LogService";
-import { LogLevel } from "../../types/LogLevel";
-import { RequestMappingValue } from "../types/RequestMappingValue";
-import { OpenAPIV3 } from "../../types/openapi";
-import { isString } from "../../types/String";
-import { isFunction } from "../../types/Function";
-import { isObject } from "../../types/Object";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
@@ -466,6 +468,15 @@ export class RequestControllerUtils {
         config      : Partial<OpenAPIV3.OperationObject>
     ) : void {
 
+        const operationId = config?.operationId ?? propertyKey;
+
+        if ( !config?.operationId && operationId ) {
+            config = {
+                ...config,
+                operationId
+            };
+        }
+
         let mappingObject : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
         if (mappingObject === undefined) {
             // ...when no previous mapping found at all, we'll create from stretch
@@ -531,7 +542,64 @@ export class RequestControllerUtils {
             return;
         }
 
-        const operations : readonly Partial<OpenAPIV3.OperationObject>[] = mappingObject?.controllerProperties[propertyKey]?.operations ?? [];
+        let operations : readonly Partial<OpenAPIV3.OperationObject>[] = mappingObject?.controllerProperties[propertyKey]?.operations ?? [];
+
+        if (operationId) {
+            let operation : any = find(operations, (op: Partial<OpenAPIV3.OperationObject>) => op.operationId === operationId);
+            if (operation) {
+
+                operations = filter(
+                    operations,
+                    (op: Partial<OpenAPIV3.OperationObject>) : boolean => op.operationId !== operationId
+                );
+
+                // tags?: string[];
+                // summary?: string;
+                // description?: string;
+                // externalDocs?: ExternalDocumentationObject;
+                // operationId?: string;
+                // parameters?: (ReferenceObject | ParameterObject)[];
+                // requestBody?: ReferenceObject | RequestBodyObject;
+                // responses: ResponsesObject;
+                // callbacks?: { [callback: string]: ReferenceObject | CallbackObject };
+                // deprecated?: boolean;
+                // security?: SecurityRequirementObject[];
+                // servers?: ServerObject[];
+
+                operation = {
+                    ...(operation?.tags          || config?.tags          ? { tags         : concat([], config?.tags ?? [], operation?.tags ?? [])                    } : {}),
+                    ...(config?.summary                                   ? { summary      : config?.summary                                                          } : {}),
+                    ...(config?.description                               ? { description  : config?.description                                                      } : {}),
+                    ...(operation?.externalDocs  || config?.externalDocs  ? { externalDocs : merge({}, config?.externalDocs ?? {}, operation?.externalDocs ?? {})     } : {}),
+                    ...(config?.operationId                               ? { operationId  : config?.operationId                                                      } : {}),
+                    ...(operation?.parameters    || config?.parameters    ? { parameters   : concat([], config?.parameters ?? [], operation?.parameters ?? [])        } : {}),
+                    ...(operation?.requestBody   || config?.requestBody   ? { requestBody  : config?.requestBody ?? operation?.requestBody                            } : {}),
+                    ...(operation?.responses     || config?.responses     ? { responses    : merge({}, config?.responses ?? {}, operation?.responses ?? {} )          } : {}),
+                    ...(operation?.callbacks     || config?.callbacks     ? { callbacks    : merge({}, config?.callbacks ?? {}, operation?.callbacks ?? {} )          } : {}),
+                    ...(operation?.deprecated    || config?.deprecated    ? { deprecated   : config?.deprecated ?? operation?.deprecated                              } : {}),
+                    ...(operation?.security      || config?.security      ? { security     : concat([], config?.security ?? [], operation?.security ?? [] )           } : {}),
+                    ...(operation?.servers       || config?.servers       ? { servers      : concat([], config?.servers ?? [], operation?.servers ?? [] )             } : {}),
+                };
+
+                setInternalRequestMappingObject(
+                    controller,
+                    {
+                        ...mappingObject,
+                        controllerProperties: {
+                            ...mappingObject.controllerProperties,
+                            [propertyKey] : {
+                                ...mappingObject.controllerProperties[propertyKey],
+                                operations: [
+                                    operation,
+                                    ...operations
+                                ]
+                            }
+                        }
+                    }
+                );
+                return;
+            }
+        }
 
         setInternalRequestMappingObject(
             controller,

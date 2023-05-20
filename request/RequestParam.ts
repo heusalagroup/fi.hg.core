@@ -1,7 +1,7 @@
 // Copyright (c) 2022-2023 Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
-import { isRequestParamValueTypeOrUndefined, RequestParamValueType } from "./types/RequestParamValueType";
+import { getOpenApiTypeStringFromRequestParamValueType, isRequestParamValueTypeOrUndefined, RequestParamValueType } from "./types/RequestParamValueType";
 import { ParameterDecoratorFunction } from "./types/ParameterDecoratorFunction";
 import { RequestController } from "./types/RequestController";
 import { isString } from "../types/String";
@@ -52,7 +52,19 @@ export function RequestParam (
     ) {
         const requestController = _getRequestController( target, propertyKey, paramIndex );
         if ( requestController !== undefined ) {
+
             RequestControllerUtils.setControllerMethodQueryParam( requestController, propertyKey, paramIndex, queryParam, paramType );
+
+            RequestControllerUtils.attachControllerOperation( requestController, propertyKey, {
+                parameters: [ {
+                    "name": queryParam,
+                    "in": "query",
+                    schema: {
+                        type: getOpenApiTypeStringFromRequestParamValueType( paramType )
+                    }
+                } ]
+            } );
+
         } else {
             LOG.warn(
                 '_param: Unrecognized configuration: ',
