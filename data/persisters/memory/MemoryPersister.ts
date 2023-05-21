@@ -22,12 +22,15 @@ import { EntityRelationManyToOne } from "../../types/EntityRelationManyToOne";
 import { Sort } from "../../Sort";
 import { Where } from "../../Where";
 import { createMemoryItem, MemoryItem } from "./types/MemoryItem";
-import { createMemoryTable, MemoryTable } from "./types/MemoryTable";
+import { createMemoryTable } from "./types/MemoryTable";
 import { MemoryIdType } from "./types/MemoryIdType";
 import { MemoryValueUtils } from "./utils/MemoryValueUtils";
 import { PersisterType } from "../types/PersisterType";
 import { PersisterEntityManager } from "../types/PersisterEntityManager";
 import { PersisterEntityManagerImpl } from "../types/PersisterEntityManagerImpl";
+import { cloneMemoryDatabase, MemoryDatabase } from "./types/MemoryDatabase";
+import { EntityCallbackUtils } from "../../utils/EntityCallbackUtils";
+import { EntityCallbackType } from "../../types/EntityCallbackType";
 
 const LOG = LogService.createLogger('MemoryPersister');
 
@@ -53,7 +56,7 @@ export class MemoryPersister implements Persister {
     }
 
     private readonly _idType : MemoryIdType;
-    private readonly _data : { [tableName: string] : MemoryTable };
+    private _data : MemoryDatabase;
     private readonly _metadataManager : PersisterMetadataManager;
     private readonly _entityManager : PersisterEntityManager;
 
@@ -103,16 +106,9 @@ export class MemoryPersister implements Persister {
         metadata : EntityMetadata,
         where    : Where | undefined,
     ): Promise<number> {
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return 0;
-        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
-        if (matcher) {
-            return filter(
-                this._data[tableName].items,
-                (item: MemoryItem) : boolean => matcher(item.value)
-            ).length;
-        }
-        return this._data[tableName].items.length;
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return this._count(db, metadata, where);
+        });
     }
 
     /**
@@ -123,13 +119,9 @@ export class MemoryPersister implements Persister {
         metadata : EntityMetadata,
         where    : Where,
     ): Promise<boolean> {
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return false;
-        const matcher = MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where);
-        return some(
-            this._data[tableName].items,
-            (item: MemoryItem) : boolean => matcher(item.value)
-        );
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return this._existsBy(db, metadata, where);
+        });
     }
 
     /**
@@ -140,17 +132,9 @@ export class MemoryPersister implements Persister {
         metadata : EntityMetadata,
         where    : Where | undefined,
     ): Promise<void> {
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return;
-        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
-        if ( matcher !== undefined ) {
-            this._data[tableName].items = filter(
-                this._data[tableName].items,
-                (item: MemoryItem) : boolean => !matcher(item.value)
-            );
-            return;
-        }
-        delete this._data[tableName];
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return await this._deleteAll(db, metadata, where);
+        });
     }
 
     /**
@@ -162,17 +146,9 @@ export class MemoryPersister implements Persister {
         where    : Where | undefined,
         sort     : Sort | undefined
     ): Promise<T[]> {
-        LOG.debug(`findAll: `, metadata, where, sort);
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return [];
-        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
-        const allItems = this._data[tableName].items;
-        const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
-        const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
-        const ret : T[] = this._populateRelationsToList(items, metadata);
-        LOG.debug(`findAll: returns: items 2: ${ret.length}`);
-        this._entityManager.saveLastEntityListState<T>(ret);
-        return ret;
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return await this._findAll(db, metadata, where, sort);
+        });
     }
 
     /**
@@ -184,17 +160,9 @@ export class MemoryPersister implements Persister {
         where    : Where,
         sort     : Sort | undefined
     ): Promise<T | undefined> {
-        const tableName = metadata.tableName;
-        if (!has(this._data, tableName)) return undefined;
-        const matcher = MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where);
-        const allItems = this._data[tableName].items;
-        const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
-        const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
-        const item : T | undefined = first(items);
-        if (item === undefined) return undefined;
-        const entity = this._populateRelations( item, metadata );
-        this._entityManager.saveLastEntityState<T>(entity);
-        return entity;
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return await this._findBy<T, ID>(db, metadata, where, sort);
+        });
     }
 
     /**
@@ -205,18 +173,178 @@ export class MemoryPersister implements Persister {
         metadata: EntityMetadata,
         entity: T | readonly T[],
     ): Promise<T> {
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return await this._insert( db, metadata, entity );
+        });
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link Persister.update}
+     */
+    public async update<T extends Entity, ID extends EntityIdTypes> (
+        metadata: EntityMetadata,
+        entity: T,
+    ): Promise<T> {
+        return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
+            return await this._update(db, metadata, entity);
+        });
+    }
+
+    private async _transaction<T = any> (
+        callback: (db: MemoryDatabase) => Promise<T> | T
+    ) : Promise<any> {
+        let ret : any = undefined;
+        // FIXME: This is ugly but works for now. CoW-approach would be faster.
+        const backup = cloneMemoryDatabase(this._data);
+        try {
+            ret = await callback(backup);
+            this._data = backup;
+        } catch (err) {
+            throw err;
+        }
+        return ret;
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link Persister.deleteAll}
+     */
+    private async _deleteAll<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
+        metadata : EntityMetadata,
+        where    : Where | undefined,
+    ): Promise<void> {
+        let entities : T[] = [];
+
+        const { tableName, fields, temporalProperties, callbacks, idPropertyName } = metadata;
+
+        if (!has(db, tableName)) return;
+
+        const hasPreRemoveCallbacks = EntityCallbackUtils.hasCallbacks(callbacks, EntityCallbackType.PRE_REMOVE);
+        const hasPostRemoveCallbacks = EntityCallbackUtils.hasCallbacks(callbacks, EntityCallbackType.POST_REMOVE);
+
+        if (hasPreRemoveCallbacks || hasPostRemoveCallbacks) {
+            entities = await this._findAll<T, ID>(db, metadata, where, undefined);
+            if ( hasPreRemoveCallbacks && entities?.length ) {
+                await EntityCallbackUtils.runPreRemoveCallbacks(
+                    entities,
+                    callbacks
+                );
+            }
+        }
+
+        if ( !hasPreRemoveCallbacks && !hasPostRemoveCallbacks ) {
+
+            const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd( where ) : undefined;
+            if ( matcher !== undefined ) {
+                db[tableName].items = filter(
+                    db[tableName].items,
+                    (item: MemoryItem): boolean => !matcher( item.value )
+                );
+                return;
+            } else {
+                delete db[tableName];
+            }
+
+        } else {
+
+            const entityIds = map(entities, item => (item as any)[idPropertyName]);
+
+            db[tableName].items = filter(
+                db[tableName].items,
+                (item: MemoryItem): boolean => !entityIds.includes(item.id)
+            );
+
+            if (hasPostRemoveCallbacks) {
+                await EntityCallbackUtils.runPostRemoveCallbacks(
+                    entities,
+                    callbacks
+                );
+            }
+
+        }
+
+    }
+
+    private async _findAll<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
+        metadata : EntityMetadata,
+        where    : Where | undefined,
+        sort     : Sort | undefined
+    ): Promise<T[]> {
+        LOG.debug(`findAll: `, metadata, where, sort);
+        const {tableName, callbacks} = metadata;
+        if (!has(db, tableName)) return [];
+        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
+        const allItems = db[tableName].items;
+        const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
+        const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
+        const ret : T[] = this._populateRelationsToList(db, items, metadata);
+        LOG.debug(`findAll: returns: items 2: ${ret.length}`);
+        this._entityManager.saveLastEntityListState<T>(ret);
+
+        if (ret?.length) {
+            await EntityCallbackUtils.runPostLoadCallbacks(
+                ret,
+                callbacks
+            );
+        }
+
+        return ret;
+    }
+
+    private async _findBy<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
+        metadata : EntityMetadata,
+        where    : Where,
+        sort     : Sort | undefined
+    ): Promise<T | undefined> {
+        const {tableName, callbacks} = metadata;
+        if (!has(db, tableName)) return undefined;
+        const matcher = MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where);
+        const allItems = db[tableName].items;
+        const matchedItems = matcher !== undefined ? filter(allItems, (item: MemoryItem) : boolean => matcher(item.value)) : allItems;
+        const items : T[] = this._prepareItemList(matchedItems, metadata, true, sort);
+        const item : T | undefined = first(items);
+        if (item === undefined) return undefined;
+        const entity = this._populateRelations( db, item, metadata );
+        this._entityManager.saveLastEntityState<T>(entity);
+        if (entity) {
+            await EntityCallbackUtils.runPostLoadCallbacks(
+                [entity],
+                callbacks
+            );
+        }
+        return entity;
+    }
+
+    /**
+     * @inheritDoc
+     * @see {@link Persister.insert}
+     */
+    private async _insert<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
+        metadata: EntityMetadata,
+        entity: T | readonly T[],
+    ): Promise<T> {
 
         const list = map(
             isArray(entity) ? entity : [entity],
             (item : T) : T => item.clone() as T
         );
 
-        const tableName = metadata.tableName;
-        const idPropertyName = metadata.idPropertyName;
-        if(!has(this._data, tableName)) {
-            this._data[tableName] = createMemoryTable();
+        const { tableName, idPropertyName, callbacks } = metadata;
+
+        await EntityCallbackUtils.runPrePersistCallbacks(
+            list,
+            callbacks
+        );
+
+        if (!has(db, tableName)) {
+            db[tableName] = createMemoryTable();
         }
-        const allIds = map(this._data[tableName].items, (item) => item.id);
+        const allIds = map(db[tableName].items, (item) => item.id);
 
         const newItems : MemoryItem[] = map(
             list,
@@ -241,15 +369,27 @@ export class MemoryPersister implements Persister {
         forEach(
             newItems,
             (item) => {
-                this._data[tableName].items.push(item);
+                db[tableName].items.push(item);
             }
         );
 
         // FIXME: We should return more than one if there were more than one
         const firstItem = first(newItems);
         if (!firstItem) throw new TypeError(`Could not add items`);
-        const addedEntity = this._populateRelations( this._prepareItem<T>(firstItem, metadata, true), metadata);
+        const addedEntity = this._populateRelations(db, this._prepareItem<T>(firstItem, metadata, true), metadata);
         this._entityManager.saveLastEntityState<T>(addedEntity);
+
+        await EntityCallbackUtils.runPostLoadCallbacks(
+            [addedEntity],
+            callbacks
+        );
+
+        // FIXME: Only single item is returned even if multiple are added {@see https://github.com/heusalagroup/fi.hg.core/issues/72}
+        await EntityCallbackUtils.runPostPersistCallbacks(
+            [addedEntity],
+            callbacks
+        );
+
         return addedEntity;
     }
 
@@ -257,12 +397,13 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.update}
      */
-    public async update<T extends Entity, ID extends EntityIdTypes> (
+    private async _update<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
         metadata: EntityMetadata,
         entity: T,
     ): Promise<T> {
 
-        const { tableName, fields, idPropertyName } = metadata;
+        const { tableName, fields, idPropertyName, callbacks } = metadata;
 
         const idField = find(fields, item => item.propertyName === idPropertyName);
         if (!idField) throw new TypeError(`Could not find id field using property "${idPropertyName}"`);
@@ -276,7 +417,8 @@ export class MemoryPersister implements Persister {
 
         if (updateFields.length === 0) {
             LOG.debug(`Entity did not any updatable properties changed. Saved nothing.`);
-            const item : T | undefined = await this.findBy(
+            const item : T | undefined = await this._findBy(
+                db,
                 metadata,
                 Where.propertyEquals(idPropertyName, entityId),
                 Sort.by(idPropertyName)
@@ -284,17 +426,28 @@ export class MemoryPersister implements Persister {
             if (!item) {
                 throw new TypeError(`Entity was not stored in this persister for ID: ${entityId}`);
             }
+
+            await EntityCallbackUtils.runPostUpdateCallbacks(
+                [item],
+                callbacks
+            );
+
             return item;
         }
 
         entity = entity.clone() as T;
 
-        if (!has(this._data, tableName)) {
-            this._data[tableName] = createMemoryTable();
+        await EntityCallbackUtils.runPreUpdateCallbacks(
+            [entity],
+            callbacks
+        );
+
+        if (!has(db, tableName)) {
+            db[tableName] = createMemoryTable();
         }
 
         let savedItem : MemoryItem | undefined = find(
-            this._data[tableName].items,
+            db[tableName].items,
             (item: MemoryItem) : boolean => item.id === entityId
         );
         if (savedItem) {
@@ -309,28 +462,73 @@ export class MemoryPersister implements Persister {
             savedItem.value = savedValue;
         } else {
             savedItem = createMemoryItem(entityId, entity);
-            this._data[tableName].items.push( savedItem );
+            db[tableName].items.push( savedItem );
         }
 
-        const savedEntity = this._populateRelations(savedItem.value.clone(), metadata);
+        const savedEntity = this._populateRelations(db, savedItem.value.clone(), metadata);
         this._entityManager.saveLastEntityState<T>(savedEntity);
+
+        await EntityCallbackUtils.runPostLoadCallbacks(
+            [savedEntity],
+            callbacks
+        );
+
+        await EntityCallbackUtils.runPostUpdateCallbacks(
+            [savedEntity],
+            callbacks
+        );
+
         return savedEntity as unknown as T;
     }
+
+    private _count<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
+        metadata : EntityMetadata,
+        where    : Where | undefined,
+    ): number {
+        const tableName = metadata.tableName;
+        if (!has(db, tableName)) return 0;
+        const matcher = where !== undefined ? MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where) : undefined;
+        if (matcher) {
+            return filter(
+                db[tableName].items,
+                (item: MemoryItem) : boolean => matcher(item.value)
+            ).length;
+        }
+        return db[tableName].items.length;
+    }
+
+    private _existsBy<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
+        metadata : EntityMetadata,
+        where    : Where,
+    ): boolean {
+        const tableName = metadata.tableName;
+        if (!has(db, tableName)) return false;
+        const matcher = MemoryValueUtils.buildMatcherFunctionFromWhereUsingAnd(where);
+        return some(
+            db[tableName].items,
+            (item: MemoryItem) : boolean => matcher(item.value)
+        );
+    }
+
 
     /**
      * Find previously saved memory item from internal memory.
      *
+     * @param db The database
      * @param callback The match callback
      * @param tableName The table to use for
      * @returns The item if found, otherwise `undefined`
      * @private
      */
     private _findItem<T extends Entity, ID extends EntityIdTypes> (
+        db       : MemoryDatabase,
         callback: (item: MemoryItem) => boolean,
         tableName: string
     ) : MemoryItem | undefined {
-        if (!has(this._data, tableName)) return undefined;
-        const item = find(this._data[tableName].items, callback);
+        if (!has(db, tableName)) return undefined;
+        const item = find(db[tableName].items, callback);
         if (!item) return undefined;
         return item;
     }
@@ -338,17 +536,19 @@ export class MemoryPersister implements Persister {
     /**
      * Filters memory items based on the callback result
      *
+     * @param db The database
      * @param callback The test callback
      * @param tableName The table to use
      * @returns The filtered items
      * @private
      */
     private _filterItems (
+        db       : MemoryDatabase,
         callback : (item: MemoryItem) => boolean,
         tableName : string
     ): MemoryItem[] {
-        if (!has(this._data, tableName)) return [];
-        return filter(this._data[tableName].items, callback);
+        if (!has(db, tableName)) return [];
+        return filter(db[tableName].items, callback);
     }
 
     /**
@@ -399,12 +599,13 @@ export class MemoryPersister implements Persister {
      * Populates relations to complete list of entities
      */
     private _populateRelationsToList<T extends Entity> (
+        db       : MemoryDatabase,
         list: readonly T[],
         metadata: EntityMetadata
     ) : T[] {
         return map(
             list,
-            (item) => this._populateRelations(item, metadata)
+            (item) => this._populateRelations(db, item, metadata)
         );
     }
 
@@ -413,19 +614,21 @@ export class MemoryPersister implements Persister {
      *
      * This will also populate relate linked resources.
      *
+     * @param db
      * @param entity The item to populate.
      * @param metadata
      * @private
      */
     private _populateRelations<T extends Entity> (
+        db       : MemoryDatabase,
         entity: T,
         metadata: EntityMetadata
     ) : T {
         entity = entity.clone() as T;
         LOG.debug(`_populateRelations: entity = `, entity);
-        entity = this._populateOneToManyRelations(entity, metadata);
+        entity = this._populateOneToManyRelations(db, entity, metadata);
         LOG.debug(`_populateRelations: oneToMany: `, entity);
-        entity = this._populateManyToOneRelations(entity, metadata);
+        entity = this._populateManyToOneRelations(db, entity, metadata);
         LOG.debug(`_populateRelations: returns: `, entity);
         return entity;
     }
@@ -437,9 +640,11 @@ export class MemoryPersister implements Persister {
      *
      * @param entity The item to populate. Note! We don't clone this!
      * @param metadata
+     * @param db
      * @private
      */
     private _populateOneToManyRelations<T extends Entity> (
+        db       : MemoryDatabase,
         entity: T,
         metadata: EntityMetadata
     ) : T {
@@ -481,6 +686,7 @@ export class MemoryPersister implements Persister {
 
                     LOG.debug( `_populateOneToManyRelations: "${propertyName}": 6. Searching related items for column name "${joinColumnName}" and inner property "${joinPropertyName}" mapped to table "${mappedTable}" by id "${entityId}"` );
                     const linkedEntities: MemoryItem[] = this._filterItems(
+                        db,
                         (relatedItem: MemoryItem): boolean => {
                             const relatedEntity = relatedItem.value;
                             LOG.debug( `_populateOneToManyRelations: "${propertyName}": 7. relatedEntity = `, relatedEntity );
@@ -515,9 +721,11 @@ export class MemoryPersister implements Persister {
      *
      * @param entity The item to populate. Note! We don't clone this!
      * @param metadata
+     * @param db
      * @private
      */
     private _populateManyToOneRelations<T extends Entity> (
+        db       : MemoryDatabase,
         entity: T,
         metadata: EntityMetadata
     ) : T {
@@ -559,7 +767,7 @@ export class MemoryPersister implements Persister {
                         if ( !mappedId ) throw new TypeError(`Could not find related entity id ("${joinPropertyName}" from "${joinColumnName}") by property "${propertyName}"`);
                         LOG.debug(`ManyToOneRelations: 5. mappedId = `, mappedId);
 
-                        const relatedMemoryItem : MemoryItem | undefined = find(this._data[mappedTable].items, (item: MemoryItem) : boolean => item.id === mappedId);
+                        const relatedMemoryItem : MemoryItem | undefined = find(db[mappedTable].items, (item: MemoryItem) : boolean => item.id === mappedId);
                         if ( !relatedMemoryItem ) {
                             (entity as any)[propertyName] = undefined;
                             return;
@@ -581,6 +789,7 @@ export class MemoryPersister implements Persister {
                         // const relatedTableName = mappedToMetadata.tableName;
                         LOG.debug(`ManyToOneRelations: 8. Searching for #${mappedId} from tableq ${mappedTable}`);
                         const storedRelatedItem : MemoryItem | undefined = this._findItem(
+                            db,
                             (item: MemoryItem) : boolean => item.id === mappedId,
                             mappedTable
                         );

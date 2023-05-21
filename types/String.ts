@@ -1,6 +1,7 @@
 // Copyright (c) 2020-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { default as _isString } from "lodash/isString";
+import { default as _isSymbol } from "lodash/isSymbol";
 import { isUndefined } from "./undefined";
 import { explainNot, explainOk, explainOr } from "./explain";
 import { isNull } from "lodash";
@@ -174,6 +175,26 @@ export function isStringOrNull (value: unknown): value is string | null {
  */
 export function explainStringOrNull (value: any): string {
     return isStringOrNull(value) ? explainOk() : explainNot(explainOr([ 'string', 'null' ]));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isStringOrSymbol (value: unknown): value is string {
+    return _isString(value) || _isSymbol(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainStringOrSymbol (value: any): string {
+    return isStringOrSymbol(value) ? explainOk() : explainNot('string | symbol');
 }
 
 /**

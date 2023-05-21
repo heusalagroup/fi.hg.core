@@ -6,6 +6,7 @@ import { EntityField } from "./EntityField";
 import { EntityRelationOneToMany } from "./EntityRelationOneToMany";
 import { EntityRelationManyToOne } from "./EntityRelationManyToOne";
 import { TemporalProperty } from "./TemporalProperty";
+import { EntityCallback } from "./EntityCallback";
 
 export interface EntityMetadata {
 
@@ -34,6 +35,8 @@ export interface EntityMetadata {
 
     createEntity : CreateEntityLikeCallback | undefined;
 
+    callbacks : EntityCallback[];
+
 }
 
 export function createEntityMetadata (
@@ -44,6 +47,7 @@ export function createEntityMetadata (
     manyToOneRelations : EntityRelationManyToOne[],
     temporalProperties : TemporalProperty[],
     createEntity       : CreateEntityLikeCallback | undefined,
+    callbacks          : EntityCallback[]
 ) : EntityMetadata {
     return {
         tableName,
@@ -52,6 +56,7 @@ export function createEntityMetadata (
         oneToManyRelations,
         manyToOneRelations,
         temporalProperties,
-        createEntity
+        createEntity,
+        callbacks
     };
 }

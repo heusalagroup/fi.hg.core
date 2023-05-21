@@ -16,3 +16,13 @@ export function createMemoryItem (
         value
     };
 }
+
+export function cloneMemoryItem (
+    item: MemoryItem
+) : MemoryItem {
+    const { id, value } = item;
+    return {
+        id,
+        value: value.clone()
+    };
+}

@@ -116,7 +116,8 @@ describe('MySqlEntityInsertQueryBuilder', () => {
             oneToManyRelations,
             manyToOneRelations,
             temporalProperties,
-            createEntity
+            createEntity,
+            []
         );
 
         carEntity1 = new CarEntity('1', 'Car A', 13, true);

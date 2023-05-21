@@ -168,3 +168,13 @@ We are also planning to implement `HttpPersister`, which would make it possible
 to use the API without a local dependency for these modules. It would 
 connect over an HTTP REST interface to a separate microservice with the real 
 MySQL or PostgreSQL pool (including the dependency).
+
+### Life cycle annotations
+
+* `@PostLoad()` -- Registers a callback to be executed after loading an entity.
+* `@PostPersist()` -- Registers a callback to be executed after persisting an entity.
+* `@PostRemove()` -- Registers a callback to be executed after removing an entity.
+* `@PostUpdate()` -- Registers a callback to be executed after updating an entity.
+* `@PrePersist()` -- Registers a callback to be executed before persisting an entity.
+* `@PreRemove()` -- Registers a callback to be executed before removing an entity.
+* `@PreUpdate()` -- Registers a callback to be executed before updating an entity.

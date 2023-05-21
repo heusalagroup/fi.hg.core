@@ -27,7 +27,8 @@ describe('PersisterEntityManager', () => {
                 [],
                 [],
                 [],
-                undefined
+                undefined,
+                []
             );
         }
 

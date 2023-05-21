@@ -80,7 +80,8 @@ describe('MemoryPersister', () => {
                 [],
                 [],
                 [],
-                (dto?: any) => new FooEntity(dto)
+                (dto?: any) => new FooEntity(dto),
+                []
             );
             barMetadata = createEntityMetadata(
                 'bars',
@@ -92,7 +93,8 @@ describe('MemoryPersister', () => {
                 [],
                 [],
                 [],
-                (dto?: any) => new BarEntity(dto)
+                (dto?: any) => new BarEntity(dto),
+                []
             );
             barEntity1 = await persister.insert(
                 barMetadata,

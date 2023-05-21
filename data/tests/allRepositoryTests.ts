@@ -7,6 +7,7 @@ import { Persister } from "../types/Persister";
 import { typeJsonTests } from "./typeJsonTests";
 import { typeNativeJsonTests } from "./typeNativeJsonTests";
 import { PersisterType } from "../persisters/types/PersisterType";
+import { basicLifeCycleTests } from "./basicLifeCycleTests";
 
 export const allRepositoryTests = (
     persisterType   : PersisterType,
@@ -26,6 +27,10 @@ export const allRepositoryTests = (
 
     describe('CRUD operations', () => {
         basicCrudTests(context);
+    });
+
+    describe('Life cycle operations', () => {
+        basicLifeCycleTests(context);
     });
 
     describe('Entity relationships', () => {

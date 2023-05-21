@@ -223,7 +223,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         const id = (entity as KeyValuePairs)[metadata.idPropertyName];
         LOG.debug(`save: id = `, id);
         if ( !id ) return await this._persister.insert(metadata, entity);
-        const current = await this.findById(id);
+        const current = await this.existsById(id);
         LOG.debug(`save: current = `, current);
         if (!current) {
             throw new RepositoryEntityError(id, RepositoryEntityError.Code.ENTITY_NOT_FOUND, `Entity "${id}" not found in table: ${metadata.tableName}`);

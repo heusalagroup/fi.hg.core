@@ -22,7 +22,8 @@ export class EntityMetadataUtils {
             [],
             [],
             [],
-            undefined
+            undefined,
+            []
         );
         setValue(metadata);
         Reflect.defineMetadata(METADATA_KEY, metadata, target);
