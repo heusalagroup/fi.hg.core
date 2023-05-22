@@ -47,7 +47,7 @@ describe('EntityUtils', () => {
     describe('#getColumnName', () => {
 
         it('can get column name', () => {
-            expect( EntityUtils.getColumnName('fooBar', [{fieldType: EntityFieldType.UNKNOWN, propertyName: 'fooBar', columnName: 'foo_bar', nullable: false}])).toBe('foo_bar');
+            expect( EntityUtils.getColumnName('fooBar', [{fieldType: EntityFieldType.UNKNOWN, propertyName: 'fooBar', columnName: 'foo_bar', nullable: false, updatable: true, insertable: true}])).toBe('foo_bar');
         })
 
     });

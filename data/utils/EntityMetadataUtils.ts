@@ -23,6 +23,8 @@ export class EntityMetadataUtils {
             [],
             [],
             undefined,
+            [],
+            [],
             []
         );
         setValue(metadata);

@@ -7,7 +7,7 @@ import { EntityLike } from "../../types/EntityLike";
 import { createEntityMetadata, EntityMetadata } from "../../types/EntityMetadata";
 import { LogLevel } from "../../../types/LogLevel";
 
-describe('PersisterEntityManager', () => {
+describe('PersisterEntityManagerImpl', () => {
 
     // Simple mock class for the tests
     class MockEntity implements EntityLike {
@@ -28,6 +28,8 @@ describe('PersisterEntityManager', () => {
                 [],
                 [],
                 undefined,
+                [],
+                [],
                 []
             );
         }
@@ -105,6 +107,7 @@ describe('PersisterEntityManager', () => {
                     columnName: 'foo',
                     nullable: false,
                     updatable: true,
+                    insertable: true
                 },
                 {
                     fieldType: EntityFieldType.UNKNOWN,
@@ -112,6 +115,7 @@ describe('PersisterEntityManager', () => {
                     columnName: 'bar',
                     nullable: false,
                     updatable: true,
+                    insertable: true
                 },
             ];
         })
@@ -131,6 +135,7 @@ describe('PersisterEntityManager', () => {
                     columnName: 'foo',
                     nullable: false,
                     updatable: true,
+                    insertable: true
                 }
             ]);
 
@@ -153,6 +158,7 @@ describe('PersisterEntityManager', () => {
                     columnName: 'foo',
                     nullable: false,
                     updatable: false,
+                    insertable: true
                 },
                 {
                     fieldType: EntityFieldType.UNKNOWN,
@@ -160,6 +166,7 @@ describe('PersisterEntityManager', () => {
                     columnName: 'bar',
                     nullable: false,
                     updatable: false,
+                    insertable: true
                 },
             ];
 
@@ -181,12 +188,15 @@ describe('PersisterEntityManager', () => {
                     columnName: 'foo',
                     nullable: false,
                     updatable: false,
+                    insertable: true
                 },
                 {
                     fieldType: EntityFieldType.UNKNOWN,
                     propertyName: 'bar',
                     columnName: 'bar',
-                    nullable: false
+                    nullable: false,
+                    updatable: true,
+                    insertable: true
                 },
             ];
 
@@ -202,7 +212,9 @@ describe('PersisterEntityManager', () => {
                     fieldType: EntityFieldType.UNKNOWN,
                     propertyName: 'bar',
                     columnName: 'bar',
-                    nullable: false
+                    nullable: false,
+                    updatable: true,
+                    insertable: true
                 },
             ]);
         });

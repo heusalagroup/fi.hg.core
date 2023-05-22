@@ -169,6 +169,8 @@ describe('Entity', () => {
                 [],
                 [],
                 (dto?: any) => new FooEntity(dto),
+                [],
+                [],
                 []
             );
 
@@ -232,6 +234,8 @@ describe('Entity', () => {
                 [],
                 [],
                 (dto?: any) => new FooEntity(dto),
+                [],
+                [],
                 []
             );
 
@@ -252,6 +256,8 @@ describe('Entity', () => {
                 [],
                 [],
                 (dto?: any) => new BarEntity(dto),
+                [],
+                [],
                 []
             );
 

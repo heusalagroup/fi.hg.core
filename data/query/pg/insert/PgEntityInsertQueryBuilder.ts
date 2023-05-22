@@ -58,29 +58,20 @@ export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
         ignoreProperties    : readonly string[],
     ) : void {
 
-        const properties : string[] = map(
-            filter(
-                fields,
-                (field: EntityField) : boolean => {
-                    const { propertyName, fieldType, insertable } = field;
-                    return !!insertable && !ignoreProperties.includes(propertyName) && fieldType !== EntityFieldType.JOINED_ENTITY;
-                }
-            ),
-            (field: EntityField) : string => {
-                const { propertyName, columnName } = field;
-                LOG.debug(`appendEntity: columnName: `, columnName);
-                this._builder.addColumnName(columnName);
-                return propertyName;
+        const filteredFields : EntityField[] = filter(
+            fields,
+            (field: EntityField) : boolean => {
+                const { propertyName, fieldType, insertable } = field;
+                return insertable && !ignoreProperties.includes( propertyName ) && fieldType !== EntityFieldType.JOINED_ENTITY;
             }
         );
 
         const itemBuilder = PgListQueryBuilder.create();
         forEach(
-            properties,
-            (propertyName : string) => {
+            filteredFields,
+            (field: EntityField) => {
 
-                const field = find(fields, (item) => item.propertyName === propertyName);
-                if (!field) throw new TypeError(`Field info not found for property "${propertyName}"`);
+                const {propertyName, columnName} = field;
 
                 LOG.debug(`appendEntity: field: `, field);
 
@@ -98,8 +89,10 @@ export class PgEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
                 const value : any = has(entity, propertyName) ? (entity as any)[propertyName] : undefined;
                 if (value !== undefined) {
                     if ( isTime ) {
+                        this._builder.addColumnName(columnName);
                         itemBuilder.setParamFromTimestampString(value);
                     } else {
+                        this._builder.addColumnName(columnName);
                         itemBuilder.setParam(value);
                     }
                 }

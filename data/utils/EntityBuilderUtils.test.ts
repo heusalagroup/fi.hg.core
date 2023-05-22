@@ -31,7 +31,14 @@ describe('EntityBuilderUtils', () => {
         it('calls the correct callback based on the UNKNOWN field without columnDefinition', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'dateTime', columnName: 'date_time', nullable: false },
+                {
+                    fieldType: EntityFieldType.UNKNOWN,
+                    propertyName: 'dateTime',
+                    columnName: 'date_time',
+                    nullable: false,
+                    insertable: true,
+                    updatable: true
+                },
             ];
 
             const temporalProperties: TemporalProperty[] = [
@@ -63,7 +70,15 @@ describe('EntityBuilderUtils', () => {
         it('calls the correct callback based on the UNKNOWN field with columnDefinition as TIMESTAMP', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: ColumnDefinition.TIMESTAMP },
+                {
+                    fieldType: EntityFieldType.UNKNOWN,
+                    propertyName: 'dateTime',
+                    columnName: 'date_time',
+                    nullable: false,
+                    insertable: true,
+                    updatable: true,
+                    columnDefinition: ColumnDefinition.TIMESTAMP
+                },
             ];
 
             const temporalProperties: TemporalProperty[] = [
@@ -93,7 +108,14 @@ describe('EntityBuilderUtils', () => {
         it('calls the correct callback based on the UNKNOWN field with temporal property as TIMESTAMP', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'dateTime', columnName: 'date_time', nullable: false },
+                {
+                    fieldType: EntityFieldType.UNKNOWN,
+                    propertyName: 'dateTime',
+                    columnName: 'date_time',
+                    nullable: false,
+                    updatable: true,
+                    insertable: true
+                },
             ];
 
             const temporalProperties: TemporalProperty[] = [
@@ -126,7 +148,7 @@ describe('EntityBuilderUtils', () => {
         it('calls the correct callback based on the BIGINT column definition', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'fooId', columnName: 'foo_id', nullable: false, columnDefinition: ColumnDefinition.BIGINT },
+                { fieldType: EntityFieldType.UNKNOWN, propertyName: 'fooId', columnName: 'foo_id', nullable: false, columnDefinition: ColumnDefinition.BIGINT, updatable: true, insertable: true },
             ];
 
             const temporalProperties: TemporalProperty[] = [
@@ -158,9 +180,9 @@ describe('EntityBuilderUtils', () => {
         it('calls multiple correct callbacks based on the field and temporal properties', () => {
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.DATE_TIME, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: ColumnDefinition.TIMESTAMP },
-                { fieldType: EntityFieldType.STRING, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: ColumnDefinition.BIGINT },
-                { fieldType: EntityFieldType.NUMBER, propertyName: 'number', columnName: 'number_column', nullable: false },
+                { fieldType: EntityFieldType.DATE_TIME, propertyName: 'dateTime', columnName: 'date_time', nullable: false, columnDefinition: ColumnDefinition.TIMESTAMP, updatable: true, insertable: true },
+                { fieldType: EntityFieldType.STRING, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: ColumnDefinition.BIGINT, updatable: true, insertable: true },
+                { fieldType: EntityFieldType.NUMBER, propertyName: 'number', columnName: 'number_column', nullable: false, updatable: true, insertable: true },
                 // Add more field types as needed
             ];
 

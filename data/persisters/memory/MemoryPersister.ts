@@ -334,7 +334,7 @@ export class MemoryPersister implements Persister {
             (item : T) : T => item.clone() as T
         );
 
-        const { tableName, idPropertyName, callbacks } = metadata;
+        const { tableName, idPropertyName, callbacks, creationTimestamps, updateTimestamps } = metadata;
 
         await EntityCallbackUtils.runPrePersistCallbacks(
             list,
@@ -346,13 +346,18 @@ export class MemoryPersister implements Persister {
         }
         const allIds = map(db[tableName].items, (item) => item.id);
 
+        const now = (new Date()).toISOString();
+
         const newItems : MemoryItem[] = map(
             list,
             (item: T) : MemoryItem => {
+
+                // Prepare the ID field
                 if ( !( has(item, idPropertyName) && (item as any)[idPropertyName]) ) {
                     const newId : number = ++ID_SEQUENCER;
                     (item as any)[idPropertyName] = this._idType === MemoryIdType.STRING ? `${newId}` : newId;
                 }
+
                 const id = (item as any)[idPropertyName];
                 if (!id) {
                     throw new TypeError(`Entity cannot be saved with id as "${id}"`);
@@ -361,6 +366,23 @@ export class MemoryPersister implements Persister {
                     throw new TypeError(`Entity already stored with id "${id}"`);
                 }
                 allIds.push(id);
+
+                // Prepare the creation timestamp
+                forEach(
+                    creationTimestamps,
+                    (propertyName) : void => {
+                        (item as any)[propertyName] = now;
+                    }
+                );
+
+                // Prepare the update timestamp
+                forEach(
+                    updateTimestamps,
+                    (propertyName) : void => {
+                        (item as any)[propertyName] = now;
+                    }
+                );
+
                 return createMemoryItem(id, item);
             }
         );
@@ -399,11 +421,11 @@ export class MemoryPersister implements Persister {
      */
     private async _update<T extends Entity, ID extends EntityIdTypes> (
         db       : MemoryDatabase,
-        metadata: EntityMetadata,
-        entity: T,
+        metadata : EntityMetadata,
+        entity   : T,
     ): Promise<T> {
 
-        const { tableName, fields, idPropertyName, callbacks } = metadata;
+        const { tableName, fields, idPropertyName, callbacks, updateTimestamps } = metadata;
 
         const idField = find(fields, item => item.propertyName === idPropertyName);
         if (!idField) throw new TypeError(`Could not find id field using property "${idPropertyName}"`);
@@ -441,6 +463,17 @@ export class MemoryPersister implements Persister {
             [entity],
             callbacks
         );
+
+        // Prepare the update timestamp
+        if (updateTimestamps?.length) {
+            const now = (new Date()).toISOString();
+            forEach(
+                updateTimestamps,
+                (propertyName) : void => {
+                    (entity as any)[propertyName] = now;
+                }
+            );
+        }
 
         if (!has(db, tableName)) {
             db[tableName] = createMemoryTable();

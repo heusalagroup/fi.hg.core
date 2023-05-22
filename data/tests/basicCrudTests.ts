@@ -13,6 +13,7 @@ import { Id } from "../Id";
 import { Column } from "../Column";
 import { Temporal } from "../Temporal";
 import { TemporalType } from "../types/TemporalType";
+import { CreationTimestamp } from "../CreationTimestamp";
 
 export const basicCrudTests = (context : RepositoryTestContext) : void => {
 
@@ -21,7 +22,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
      */
     @Table('foos')
     class FooEntity extends Entity {
-        constructor (dto ?: {fooName: string, fooDate: string, nonUpdatable : string}) {
+        constructor (dto ?: {fooName: string, fooDate: string | undefined, nonUpdatable : string}) {
             super()
             this.fooName = dto?.fooName;
             this.fooDate = dto?.fooDate;
@@ -32,6 +33,7 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
         @Column('foo_id', 'BIGINT', {updatable: false})
         public fooId ?: string;
 
+        @CreationTimestamp()
         @Column('foo_date', 'timestamp')
         @Temporal(TemporalType.TIMESTAMP)
         public fooDate ?: string;
@@ -527,6 +529,22 @@ export const basicCrudTests = (context : RepositoryTestContext) : void => {
             expect(foundItem).toBeDefined();
             expect(foundItem?.fooId).toBe(addedId);
             expect(foundItem?.fooName).toBe('Hello world');
+
+        });
+
+        it('can save fresh entity with undefined field', async () => {
+
+            expect( await fooRepository.count() ).toBe(0);
+
+            const newEntity = new FooEntity({fooName: 'Hello world', fooDate: undefined, nonUpdatable: 'hello'});
+
+            const savedItem = await fooRepository.save(newEntity);
+            expect(savedItem).toBeDefined();
+            expect(savedItem.fooId).toBeDefined();
+            expect(savedItem.fooName).toBe('Hello world');
+            expect(savedItem.fooDate).toBeDefined();
+
+            expect( await fooRepository.count() ).toBe(1);
 
         });
 

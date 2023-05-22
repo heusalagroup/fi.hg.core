@@ -44,14 +44,14 @@ export interface EntityField {
      *
      * Default is `true`.
      */
-    insertable ?: boolean;
+    insertable : boolean;
 
     /**
      * If enabled, this field will be included in UPDATE queries.
      *
      * Default is `true`.
      */
-    updatable ?: boolean;
+    updatable : boolean;
 
     /**
      * The field metadata if this field is an entity

@@ -117,6 +117,8 @@ describe('MySqlEntityInsertQueryBuilder', () => {
             manyToOneRelations,
             temporalProperties,
             createEntity,
+            [],
+            [],
             []
         );
 

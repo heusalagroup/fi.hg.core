@@ -58,31 +58,22 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
         ignoreProperties    : readonly string[],
     ) : void {
 
-        const properties : string[] = map(
-            filter(
-                fields,
-                (field: EntityField) : boolean => {
-                    const { propertyName, fieldType, insertable } = field;
-                    return !!insertable && !ignoreProperties.includes(propertyName) && fieldType !== EntityFieldType.JOINED_ENTITY;
-                }
-            ),
-            (field: EntityField) : string => {
-                const { propertyName, columnName } = field;
-                LOG.debug(`appendEntity: columnName: `, columnName);
-                this._builder.addColumnName(columnName);
-                return propertyName;
+        const filteredFields : EntityField[] = filter(
+            fields,
+            (field: EntityField) : boolean => {
+                const { propertyName, fieldType, insertable } = field;
+                return insertable && !ignoreProperties.includes( propertyName ) && fieldType !== EntityFieldType.JOINED_ENTITY;
             }
         );
 
         const itemBuilder = MySqlListQueryBuilder.create();
         forEach(
-            properties,
-            (propertyName : string) => {
+            filteredFields,
+            (field: EntityField) => {
+
+                const { propertyName, columnName } = field;
 
                 // FIXME: This code is almost identical to the MySqlEntityInsertQueryBuilder. Consider moving it as a utility function.
-
-                const field = find(fields, (item) => item.propertyName === propertyName);
-                if (!field) throw new TypeError(`Field info not found for property "${propertyName}"`);
 
                 LOG.debug(`appendEntity: field: `, field);
 
@@ -99,16 +90,19 @@ export class MySqlEntityInsertQueryBuilder implements EntityInsertQueryBuilder {
                 const isTime : boolean = !!temporalType || !!(isTimeColumnDefinition(columnDefinition));
                 LOG.debug(`appendEntity: isTime: `, isTime);
                 if ( isTime ) {
+                    this._builder.addColumnName(columnName);
                     itemBuilder.setParamFromTimestampString(value);
                     return;
                 }
 
                 const isJson : boolean = !isTime ? isJsonColumnDefinition(columnDefinition) : false;
                 if (isJson) {
+                    this._builder.addColumnName(columnName);
                     itemBuilder.setParamFromJson(value);
                     return;
                 }
 
+                this._builder.addColumnName(columnName);
                 itemBuilder.setParam(value);
 
             }

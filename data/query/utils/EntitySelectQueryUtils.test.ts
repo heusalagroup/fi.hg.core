@@ -25,8 +25,8 @@ describe('EntitySelectQueryUtils', () => {
             const tableName = 'testTable';
 
             const fields: EntityField[] = [
-                { fieldType: EntityFieldType.DATE_TIME, propertyName: 'datetime', columnName: 'date_time', nullable: false },
-                { fieldType: EntityFieldType.BIGINT, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: ColumnDefinition.BIGINT },
+                { fieldType: EntityFieldType.DATE_TIME, propertyName: 'datetime', columnName: 'date_time', nullable: false, updatable: true, insertable: true },
+                { fieldType: EntityFieldType.BIGINT, propertyName: 'string', columnName: 'string_column', nullable: false, columnDefinition: ColumnDefinition.BIGINT, updatable: true, insertable: true },
             ];
 
             const temporalProperties: TemporalProperty[] = [
