@@ -2,14 +2,14 @@
 
 import { MySqlUtils } from "../utils/MySqlUtils";
 import { JsonAny } from "../../../../Json";
-import { isIsoDateString, parseIsoDateString } from "../../../../types/Date";
+import { isIsoDateStringWithMilliseconds, parseIsoDateStringWithMilliseconds } from "../../../../types/Date";
 
 export class MySqlDateTime {
 
     private readonly _time : string;
 
     public constructor (time: string) {
-        if (!isIsoDateString(time)) throw new TypeError(`Time was not valid ISO date string: '${time}'`);
+        if (!isIsoDateStringWithMilliseconds(time)) throw new TypeError(`Time was not valid ISO date string: '${time}'`);
         this._time = time;
     }
 
@@ -34,7 +34,7 @@ export class MySqlDateTime {
     }
 
     public static parse (time : unknown) : MySqlDateTime | undefined {
-        const value = parseIsoDateString(time);
+        const value = parseIsoDateStringWithMilliseconds(time);
         return value ? new MySqlDateTime(value) : undefined;
     }
 

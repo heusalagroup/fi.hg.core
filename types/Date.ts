@@ -29,13 +29,6 @@ export function isValidDate (time: any) : time is Date {
     }
 }
 
-export function isIsoDateString (value: unknown): value is IsoDateString {
-    if ( !isString( value ) ) return false;
-    if ( !/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/.test( value ) ) return false;
-    const d = new Date( value );
-    return d.toISOString() === value;
-}
-
 export function parseValidDate (value : unknown) : Date | undefined {
     if ( isValidDate(value) ) return value;
     if ( isNumber(value) ) {
@@ -43,7 +36,7 @@ export function parseValidDate (value : unknown) : Date | undefined {
         date.setTime(value);
         return isValidDate(date) ? date : undefined;
     }
-    if ( isIsoDateString(value) ) {
+    if ( isIsoDateStringWithMilliseconds(value) ) {
         const date = new Date(value);
         return isValidDate(date) ? date : undefined;
     }
@@ -54,13 +47,24 @@ export function parseValidDate (value : unknown) : Date | undefined {
     return undefined;
 }
 
-export type IsoDateString = string;
 
-export function parseIsoDateString (
+////////////////////// IsoDateStringWithMilliseconds ///////////////////////////
+
+
+export type IsoDateStringWithMilliseconds = string;
+
+export function isIsoDateStringWithMilliseconds (value: unknown): value is IsoDateStringWithMilliseconds {
+    if ( !isString( value ) ) return false;
+    if ( !/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/.test( value ) ) return false;
+    const d = new Date( value );
+    return d.toISOString() === value;
+}
+
+export function parseIsoDateStringWithMilliseconds (
     value: any,
     trimFractions ?: boolean
-): IsoDateString | undefined {
-    if ( isIsoDateString( value ) ) return value;
+): IsoDateStringWithMilliseconds | undefined {
+    if ( isIsoDateStringWithMilliseconds( value ) ) return value;
     const date = parseValidDate( value );
     if ( !date ) return undefined;
     const str = date.toISOString();
@@ -73,6 +77,56 @@ export function parseIsoDateString (
     }
 }
 
+export function createIsoDateStringWithMilliseconds (
+    value: string | Date
+): IsoDateStringWithMilliseconds {
+    const parsedValue = parseIsoDateStringWithMilliseconds( value );
+    if ( !parsedValue ) throw new TypeError( `Value is not ISO data string: '${value}'` );
+    return parsedValue;
+}
+
+export function explainIsoDateStringWithMilliseconds (value: unknown): string {
+    return isIsoDateStringWithMilliseconds( value ) ? explainOk() : explainNot( `Expected '${value}' to be a valid IsoDateString` );
+}
+
+export function isIsoDateStringWithMillisecondsOrUndefined (value: unknown): value is IsoDateStringWithMilliseconds | undefined {
+    return isUndefined( value ) || isIsoDateStringWithMilliseconds( value );
+}
+
+export function explainIsoDateStringWithMillisecondsOrUndefined (value: unknown): string {
+    return isIsoDateStringWithMillisecondsOrUndefined( value ) ? explainOk() : explainNot( explainOr( [ 'IsoDateStringWithMilliseconds', 'undefined' ] ) );
+}
+
+
+////////////////////// IsoDateString ///////////////////////////
+
+
+export type IsoDateString = string;
+
+export function isIsoDateString (value: unknown): value is IsoDateString {
+    if ( !isString( value ) ) return false;
+    if ( !/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(\.\d+)?([+-][0-2]\d:[0-5]\d|Z)/.test( value ) ) return false;
+    const d = new Date( value );
+    return d.toISOString() === value || _trimFractions(d.toISOString()) === value;
+}
+
+export function parseIsoDateString (
+    value: any,
+    trimFractions ?: boolean
+): IsoDateString | undefined {
+    if ( isIsoDateString( value ) ) return value;
+    const date = parseValidDate( value );
+    if ( !date ) return undefined;
+    const str = date.toISOString();
+    return trimFractions !== true ? str : _trimFractions( str );
+}
+
+function _trimFractions (str : string) : string {
+    const i = str.lastIndexOf( '.' );
+    if ( i < 0 ) return str;
+    return str.substring( 0, i ) + trimStart( str.substring( i + 1 ), '0123456789' );
+}
+
 export function createIsoDateString (
     value: string | Date
 ): IsoDateString {
@@ -83,10 +137,6 @@ export function createIsoDateString (
 
 export function explainIsoDateString (value: unknown): string {
     return isIsoDateString( value ) ? explainOk() : explainNot( `Expected '${value}' to be a valid IsoDateString` );
-}
-
-export function stringifyIsoDateString (value: IsoDateString): string {
-    return `IsoDateString(${value})`;
 }
 
 export function isIsoDateStringOrUndefined (value: unknown): value is IsoDateString | undefined {

@@ -27,7 +27,7 @@ import { PersisterMetadataManager } from "../persisters/types/PersisterMetadataM
 import { LogLevel } from "../../types/LogLevel";
 import { TemporalProperty } from "../types/TemporalProperty";
 import { isJsonColumnDefinition, isTimeColumnDefinition } from "../types/ColumnDefinition";
-import { parseIsoDateString } from "../../types/Date";
+import { parseIsoDateStringWithMilliseconds } from "../../types/Date";
 
 const LOG = LogService.createLogger('EntityUtils');
 
@@ -269,7 +269,7 @@ export class EntityUtils {
 
     public static parseDateAsString (input : Date | string | undefined) : string | undefined {
         if ( (isString(input) && trim(input)) === '' || input === undefined ) return undefined;
-        return `${parseIsoDateString(input, true)}`;
+        return `${parseIsoDateStringWithMilliseconds(input, true)}`;
     }
 
     public static parseMySQLDateAsIsoString (value : any) : string | undefined {
