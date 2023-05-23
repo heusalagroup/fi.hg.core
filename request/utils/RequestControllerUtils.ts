@@ -34,6 +34,10 @@ import { RequestPathVariableMapParamObject } from "../types/RequestPathVariableM
 import { DefaultHeaderMapValuesType } from "../types/DefaultHeaderMapValuesType";
 import { DefaultPathVariableMapValuesType } from "../types/DefaultPathVariableMapValuesType";
 import { RequestModelAttributeParamObject } from "../types/RequestModelAttributeParamObject";
+import { keys } from "../../functions/keys";
+import { uniq } from "../../functions/uniq";
+import { reduce } from "../../functions/reduce";
+import { map } from "../../functions/map";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
@@ -567,18 +571,18 @@ export class RequestControllerUtils {
                 // servers?: ServerObject[];
 
                 operation = {
-                    ...(operation?.tags          || config?.tags          ? { tags         : concat([], config?.tags ?? [], operation?.tags ?? [])                    } : {}),
+                    ...(operation?.tags          || config?.tags          ? { tags         : uniq(concat([], config?.tags ?? [], operation?.tags ?? []))            } : {}),
                     ...(config?.summary                                   ? { summary      : config?.summary                                                          } : {}),
                     ...(config?.description                               ? { description  : config?.description                                                      } : {}),
                     ...(operation?.externalDocs  || config?.externalDocs  ? { externalDocs : merge({}, config?.externalDocs ?? {}, operation?.externalDocs ?? {})     } : {}),
                     ...(config?.operationId                               ? { operationId  : config?.operationId                                                      } : {}),
-                    ...(operation?.parameters    || config?.parameters    ? { parameters   : concat([], config?.parameters ?? [], operation?.parameters ?? [])        } : {}),
-                    ...(operation?.requestBody   || config?.requestBody   ? { requestBody  : config?.requestBody ?? operation?.requestBody                            } : {}),
+                    ...(operation?.parameters    || config?.parameters    ? { parameters   : mergeConcatByProperty('name', config?.parameters ?? [], operation?.parameters ?? [])        } : {}),
+                    ...(operation?.requestBody   || config?.requestBody   ? { requestBody  : merge({}, config?.requestBody, operation?.requestBody)                   } : {}),
                     ...(operation?.responses     || config?.responses     ? { responses    : merge({}, config?.responses ?? {}, operation?.responses ?? {} )          } : {}),
                     ...(operation?.callbacks     || config?.callbacks     ? { callbacks    : merge({}, config?.callbacks ?? {}, operation?.callbacks ?? {} )          } : {}),
                     ...(operation?.deprecated    || config?.deprecated    ? { deprecated   : config?.deprecated ?? operation?.deprecated                              } : {}),
                     ...(operation?.security      || config?.security      ? { security     : concat([], config?.security ?? [], operation?.security ?? [] )           } : {}),
-                    ...(operation?.servers       || config?.servers       ? { servers      : concat([], config?.servers ?? [], operation?.servers ?? [] )             } : {}),
+                    ...(operation?.servers       || config?.servers       ? { servers      : mergeConcatByProperty("url", config?.servers ?? [], operation?.servers ?? [] )             } : {}),
                 };
 
                 setInternalRequestMappingObject(
@@ -753,4 +757,28 @@ export class RequestControllerUtils {
         return params;
     }
 
+}
+
+function mergeConcatByProperty<T = any> (propertyName : string, newValues: T[], prevValues: T[]) : T[] {
+    const allPropertyValues : string[] = uniq([
+        ...map(newValues  , (item: T) => has(item, propertyName) ? (item as any)[propertyName] : undefined ),
+        ...map(prevValues , (item: T) => has(item, propertyName) ? (item as any)[propertyName] : undefined ),
+    ]);
+    return reduce(
+        allPropertyValues,
+        (list: T[], propertyValue: string) : T[] => {
+            const newValue  : T | undefined = find(newValues , (item: T) : boolean => has(item, propertyName) ? (item as any)[propertyName] === propertyValue : false);
+            const prevValue : T | undefined = find(prevValues, (item: T) : boolean => has(item, propertyName) ? (item as any)[propertyName] === propertyValue : false);
+            if (newValue === undefined) {
+                if (prevValue === undefined) return list;
+                list.push( prevValue );
+            } else if (prevValue === undefined) {
+                list.push( newValue );
+            } else {
+                list.push( merge(prevValue, newValue) );
+            }
+            return list;
+        },
+        []
+    )
 }
