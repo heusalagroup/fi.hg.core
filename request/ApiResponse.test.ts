@@ -1,14 +1,12 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
 import { RequestMapping } from "./RequestMapping";
-import { RequestMethod } from "./types/RequestMethod";
 import { RequestRouterImpl } from "../requestServer/RequestRouterImpl";
 import { Headers } from "./types/Headers";
-import { RequestRouter } from "../requestServer/RequestRouter";import { ResponseEntity } from "./types/ResponseEntity";
+import { RequestRouter } from "../requestServer/RequestRouter";
 import { LogLevel } from "../types/LogLevel";
 import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
-import { ParamRoutes } from "../requestServer/types/ParamRoutes";
 import { GetMapping } from "./GetMapping";
 import { RequestHeader } from "./RequestHeader";
 import { getOpenApiDocumentFromRequestController } from "./types/RequestController";
@@ -16,7 +14,6 @@ import { Operation } from "./Operation";
 import { OpenAPIV3 } from "../types/openapi";
 import { ApiResponse } from "./ApiResponse";
 import { RequestStatus } from "./types/RequestStatus";
-import { getOpenApiDocumentFromRequestControllerMappingObject } from "./types/RequestControllerMappingObject";
 
 RequestHeader.setLogLevel(LogLevel.NONE);
 ApiResponse.setLogLevel(LogLevel.NONE);
@@ -74,6 +71,15 @@ describe('ApiResponse', () => {
                                 "/hello": {
                                     "get": {
                                         "operationId": "getHello",
+                                        "parameters": [
+                                            {
+                                                "in": "header",
+                                                "name": "Authorization",
+                                                "schema": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        ],
                                         "responses": {
                                             "200": {
                                                 "description": "Successful operation"
@@ -145,6 +151,13 @@ describe('ApiResponse', () => {
                                             {
                                                 "name": "param",
                                                 "in": "path"
+                                            },
+                                            {
+                                                "name": "Authorization",
+                                                "in": "header",
+                                                "schema": {
+                                                    "type": "string"
+                                                }
                                             }
                                         ],
                                         "responses": {
@@ -191,7 +204,7 @@ describe('ApiResponse', () => {
                         router = RequestRouterImpl.create(Controller);
                     } );
 
-                    it.only('can set multiple OpenAPI responses', async () => {
+                    it('can set multiple OpenAPI responses', async () => {
 
                         const expected : OpenAPIV3.Document = {
                             "components": {},
