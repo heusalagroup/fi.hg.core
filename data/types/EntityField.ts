@@ -1,9 +1,14 @@
 // Copyright (c) 2022-2023. Heusala Group Oy. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor. All rights reserved.
 
-import { EntityFieldType, parseEntityFieldType } from "./EntityFieldType";
-import { EntityMetadata } from "./EntityMetadata";
-import { ColumnDefinition, parseColumnDefinition } from "./ColumnDefinition";
+import { EntityFieldType, explainEntityFieldType, isEntityFieldType, parseEntityFieldType } from "./EntityFieldType";
+import { EntityMetadata, explainEntityMetadataOrUndefined, isEntityMetadataOrUndefined } from "./EntityMetadata";
+import { ColumnDefinition, explainColumnDefinition, isColumnDefinition, parseColumnDefinition } from "./ColumnDefinition";
+import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { explainString, isString } from "../../types/String";
+import { explain, explainProperty } from "../../types/explain";
+import { explainBoolean, isBoolean } from "../../types/Boolean";
 
 /**
  * Entity field information
@@ -92,4 +97,63 @@ export function createEntityField (
         fieldType : parseEntityFieldType(fieldType) ?? EntityFieldType.UNKNOWN,
         ...(metadata ? {metadata} : {})
     };
+}
+
+export function isEntityField (value: unknown) : value is EntityField {
+    return (
+        isRegularObject(value)
+        && hasNoOtherKeysInDevelopment(value, [
+            'fieldType',
+            'propertyName',
+            'columnName',
+            'columnDefinition',
+            'nullable',
+            'insertable',
+            'updatable',
+            'metadata'
+        ])
+        && isEntityFieldType(value?.fieldType)         // EntityFieldType;
+        && isString(value?.propertyName)      // string;
+        && isString(value?.columnName)        // string;
+        && isColumnDefinition(value?.columnDefinition)  // ColumnDefinition;
+        && isBoolean(value?.nullable)          // boolean;
+        && isBoolean(value?.insertable)        // boolean;
+        && isBoolean(value?.updatable)         // boolean;
+        && isEntityMetadataOrUndefined(value?.metadata)          // EntityMetadata | undefined;
+    );
+}
+
+export function explainEntityField (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'fieldType',
+                'propertyName',
+                'columnName',
+                'columnDefinition',
+                'nullable',
+                'insertable',
+                'updatable',
+                'metadata'
+            ])
+            , explainProperty("fieldType", explainEntityFieldType(value?.fieldType))
+            , explainProperty("propertyName", explainString(value?.propertyName))
+            , explainProperty("columnName", explainString(value?.columnName))
+            , explainProperty("columnDefinition", explainColumnDefinition(value?.columnDefinition))
+            , explainProperty("nullable", explainBoolean(value?.nullable))
+            , explainProperty("insertable", explainBoolean(value?.insertable))
+            , explainProperty("updatable", explainBoolean(value?.updatable))
+            , explainProperty("metadata", explainEntityMetadataOrUndefined(value?.metadata))
+        ]
+    );
+}
+
+export function stringifyEntityField (value : EntityField) : string {
+    return `EntityField(${value})`;
+}
+
+export function parseEntityField (value: unknown) : EntityField | undefined {
+    if (isEntityField(value)) return value;
+    return undefined;
 }

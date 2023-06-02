@@ -8,6 +8,7 @@ export enum PersisterType {
     MEMORY = "MEMORY",
     POSTGRESQL = "POSTGRESQL",
     MYSQL = "MYSQL",
+    HTTP = "HTTP",
     MOCK = "MOCK",
     OTHER = "OTHER",
 }

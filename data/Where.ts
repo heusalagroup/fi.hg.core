@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { Condition } from "./conditions/types/Condition";
+import { Condition, isCondition } from "./conditions/types/Condition";
 import { BetweenCondition } from "./conditions/BetweenCondition";
 import { PropertyNameTarget } from "./conditions/types/PropertyNameTarget";
 import { EqualCondition } from "./conditions/EqualCondition";
@@ -9,6 +9,10 @@ import { OrCondition } from "./conditions/OrCondition";
 import { AndCondition } from "./conditions/AndCondition";
 import { BeforeCondition } from "./conditions/BeforeCondition";
 import { AfterCondition } from "./conditions/AfterCondition";
+import { isUndefined } from "../types/undefined";
+import { explainNot, explainOk, explainOr } from "../types/explain";
+import { ReadonlyJsonArray, ReadonlyJsonObject } from "../Json";
+import { isArrayOf } from "../types/Array";
 
 export class Where {
 
@@ -22,6 +26,20 @@ export class Where {
 
     public valueOf () : string {
         return this.toString();
+    }
+
+    public toJSON () : ReadonlyJsonObject {
+        return {
+            conditions: map(this._list, item => item) as unknown as ReadonlyJsonArray
+        };
+    }
+
+    public static fromJSON (value : ReadonlyJsonObject) : Where {
+        const conditions = value?.conditions;
+        if (!isArrayOf<Condition>(conditions, isCondition)) {
+            throw new TypeError(`Where.fromJSON: The value was not valid: ${value}`);
+        }
+        return new Where(conditions);
     }
 
     public toString () : string {
@@ -159,4 +177,12 @@ export class Where {
 
 export function isWhere (value: unknown): value is Where {
     return value instanceof Where;
+}
+
+export function isWhereOrUndefined (value: unknown): value is Where | undefined {
+    return isUndefined(value) || isWhere(value);
+}
+
+export function explainWhereOrUndefined (value: unknown): string {
+    return isWhereOrUndefined(value) ? explainOk() : explainNot(explainOr(['Where', 'undefined']));
 }
