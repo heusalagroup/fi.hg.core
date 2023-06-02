@@ -6,6 +6,7 @@ import { Entity, EntityIdTypes } from "../Entity";
 import { Sort } from "../Sort";
 import { Where } from "../Where";
 import { PersisterType } from "../persisters/types/PersisterType";
+import { Disposable } from "../../types/Disposable";
 
 /**
  * Implements interface for relational database entity persister.
@@ -35,7 +36,7 @@ import { PersisterType } from "../persisters/types/PersisterType";
  * @see {@link MemoryPersister}
  * @see {@link MockPersister}
  */
-export interface Persister {
+export interface Persister extends Disposable {
 
     /**
      * Get the type of the persister.

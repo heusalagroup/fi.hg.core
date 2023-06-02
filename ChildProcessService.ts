@@ -1,6 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { ReadonlyJsonObject } from "./Json";
+import { Disposable } from "./types/Disposable";
+import { DisposeAware } from "./types/DisposeAware";
 
 export interface CommandEnvironment {
     readonly [key: string]: string;
@@ -36,7 +38,7 @@ export interface CommandResponse {
  *
  * @see {@link NodeChildProcessService}
  */
-export interface ChildProcessService {
+export interface ChildProcessService extends Disposable, DisposeAware {
 
     /**
      * Destroy the service and free any resources. Do not use the service

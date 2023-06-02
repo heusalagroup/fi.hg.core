@@ -4,8 +4,9 @@ import { ColorScheme } from "./style/types/ColorScheme";
 import { StyleLayout } from "./style/StyleLayout";
 import { StyleUtils } from "./StyleUtils";
 import { Styles } from "./style/Styles";
+import { Disposable } from "./types/Disposable";
 
-export class StyleCompiler {
+export class StyleCompiler implements Disposable {
 
     private _preferredColorScheme : ColorScheme | undefined;
     private _layouts              : readonly StyleLayout[];

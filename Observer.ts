@@ -3,6 +3,7 @@
 import { filter } from "./functions/filter";
 import { forEach } from "./functions/forEach";
 import { has } from "./functions/has";
+import { Disposable } from "./types/Disposable";
 
 // NOTICE! THIS LIBRARY INTENTIONALLY DOES NOT USE HG LOGGER BECAUSE IT IS USED
 // IN LOWER LEVEL CALLS
@@ -92,7 +93,7 @@ export type ObserverRecord<EventName extends keyof any> = Record<EventName, Obse
  * ```
  *
  */
-export class Observer<EventName extends keyof any> {
+export class Observer<EventName extends keyof any> implements Disposable {
 
     private _name      : string;
     private _callbacks : ObserverRecord<EventName>;

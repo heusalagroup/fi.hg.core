@@ -6,6 +6,7 @@ import { LogService } from "./LogService";
 import { CurrencyRates } from "./types/CurrencyRates";
 import { CurrencyUtils } from "./CurrencyUtils";
 import { Observer, ObserverCallback, ObserverDestructor } from "./Observer";
+import { Disposable } from "./types/Disposable";
 
 const LOG = LogService.createLogger('CurrencyService');
 
@@ -20,7 +21,7 @@ export enum CurrencyServiceEvent {
 
 export type CurrencyServiceDestructor = ObserverDestructor;
 
-export class CurrencyService {
+export class CurrencyService implements Disposable {
 
     public static Event = CurrencyServiceEvent;
 
