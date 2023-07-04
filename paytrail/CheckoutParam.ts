@@ -1,9 +1,11 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { iCheckoutParam } from "./iCheckoutParam";
 
 export class CheckoutParam implements iCheckoutParam {
 
-    private _name: string;
-    private _value: string;
+    private readonly _name: string;
+    private readonly _value: string;
 
     public constructor(key: string, value: string) {
         this._name = key;

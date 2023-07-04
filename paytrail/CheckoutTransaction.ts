@@ -1,15 +1,17 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { iCheckoutProvider } from "./iCheckoutProvider";
 import { iCheckoutTransaction } from "./iCheckoutTransaction";
 
 export class CheckoutTransaction implements iCheckoutTransaction {
-    private _transactionId: string;
-    private _href: string;
-    private _terms: string;
-    private _reference: string;
-    private _providers: iCheckoutProvider[];
-    private _raw: any[];
+    private readonly _transactionId: string;
+    private readonly _href: string;
+    private readonly _terms: string;
+    private readonly _reference: string;
+    private readonly _providers: iCheckoutProvider[];
+    private readonly _raw: any[];
 
-    constructor(
+    public constructor(
         transaction_id: string,
         href: string,
         terms: string,

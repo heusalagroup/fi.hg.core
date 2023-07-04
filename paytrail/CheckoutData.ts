@@ -1,12 +1,15 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { iCheckoutItem } from "./iCheckoutItem";
-import { CONFIG_WEB_ADDRESS } from "./constants";
+import { CONFIG_WEB_ADDRESS } from "./paytrail-constants";
 import { iCheckoutData } from "./iCheckoutData";
 
 export class CheckoutData implements iCheckoutData {
-    private _data: { [key: string]: any };
-    private _items: iCheckoutItem[];
 
-    constructor(webSecret: string, invoice: any, invoice_rows: iCheckoutItem[]) {
+    private readonly _data: { [key: string]: any };
+    private readonly _items: iCheckoutItem[];
+
+    public constructor (webSecret: string, invoice: any, invoice_rows: iCheckoutItem[]) {
         this._items = invoice_rows;
 
         this._data = {
@@ -103,4 +106,5 @@ export class CheckoutData implements iCheckoutData {
     getItems(): iCheckoutItem[] {
         return this._items;
     }
+
 }

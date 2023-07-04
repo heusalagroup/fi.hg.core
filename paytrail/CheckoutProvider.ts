@@ -1,14 +1,17 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { iCheckoutParam } from "./iCheckoutParam";
 import { iCheckoutProvider } from "./iCheckoutProvider";
 
 export class CheckoutProvider implements iCheckoutProvider {
-    private _name: string;
-    private _icon: string;
-    private _url: string;
 
-    private _params: iCheckoutParam[];
+    private readonly _name: string;
+    private readonly _icon: string;
+    private readonly _url: string;
 
-    constructor(url: string, name: string, icon: string, params: iCheckoutParam[]) {
+    private readonly _params: iCheckoutParam[];
+
+    public constructor(url: string, name: string, icon: string, params: iCheckoutParam[]) {
         if (!url) throw new Error('URL not provided: ' + url);
         if (!name) throw new Error('Name not provided: ' + name);
         if (!icon) throw new Error('Icon not provided: ' + icon);
@@ -35,4 +38,5 @@ export class CheckoutProvider implements iCheckoutProvider {
     getIcon(): string {
         return this._icon;
     }
+
 }

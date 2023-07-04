@@ -1,3 +1,5 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import { iCheckoutItem } from "./iCheckoutItem";
 
 export interface iCheckoutData {
@@ -17,4 +19,6 @@ export interface iCheckoutData {
     getPhone(): string;
     getItems(): iCheckoutItem[];
     getVatId(): string;
+    isCompany(): boolean;
+    getCompany(): string;
 }
