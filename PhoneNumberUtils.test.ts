@@ -4,11 +4,10 @@ describe('PhoneNumberUtils', () => {
     describe('getTelLink', () => {
         it('should return the tel link with the provided phone number and default country code', () => {
             const phone = '123456789';
-            const countryCode = '+358';
             const expectedTelLink = 'tel:+358123456789';
-            const telLink = PhoneNumberUtils.getTelLink(phone);
 
-            expect(telLink).toBe(expectedTelLink);
+            expect(PhoneNumberUtils.getTelLink(phone)).toBe(expectedTelLink);
+
         });
 
         it('should return the tel link with the provided phone number and custom country code', () => {
@@ -18,6 +17,7 @@ describe('PhoneNumberUtils', () => {
             const telLink = PhoneNumberUtils.getTelLink(phone, countryCode);
 
             expect(telLink).toBe(expectedTelLink);
+
         });
     });
 
@@ -28,6 +28,7 @@ describe('PhoneNumberUtils', () => {
             const telLabel = PhoneNumberUtils.getTelLabel(phone);
 
             expect(telLabel).toBe(expectedTelLabel);
+
         });
     });
 
@@ -37,6 +38,7 @@ describe('PhoneNumberUtils', () => {
             const isValid = PhoneNumberUtils.validatePhoneNumber(phone);
 
             expect(isValid).toBe(true);
+
         });
 
         it('should return false for an invalid phone number', () => {
@@ -44,6 +46,7 @@ describe('PhoneNumberUtils', () => {
             const isValid = PhoneNumberUtils.validatePhoneNumber(phone);
 
             expect(isValid).toBe(false);
+
         });
     });
 });
