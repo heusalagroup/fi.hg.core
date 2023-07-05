@@ -4,8 +4,8 @@ import { explainRegularObject, isRegularObject } from "../../types/RegularObject
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
-import { isPaytrailStatus, PaytrailStatus } from "./PaytrailStatus";
-import { explainPaytrailCurrency, isPaytrailCurrency, PaytrailCurrency } from "./PaytrailCurrency";
+import { isPaytrailStatus, PaytrailStatus } from "../types/PaytrailStatus";
+import { explainPaytrailCurrency, isPaytrailCurrency, PaytrailCurrency } from "../types/PaytrailCurrency";
 import { explainNumber, isNumber } from "../../types/Number";
 
 /**

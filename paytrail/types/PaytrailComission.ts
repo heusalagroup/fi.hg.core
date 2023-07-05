@@ -65,10 +65,6 @@ export function explainPaytrailComission (value: any) : string {
     );
 }
 
-export function stringifyPaytrailComission (value : PaytrailComission) : string {
-    return `PaytrailComission(${value})`;
-}
-
 export function parsePaytrailComission (value: unknown) : PaytrailComission | undefined {
     if (isPaytrailComission(value)) return value;
     return undefined;

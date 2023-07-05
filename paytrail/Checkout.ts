@@ -9,7 +9,7 @@ import { iCheckoutProvider } from "./iCheckoutProvider";
 import { CheckoutTransaction } from "./CheckoutTransaction";
 import { iCheckoutItem } from "./iCheckoutItem";
 import { startsWith } from "../functions/startsWith";
-import { isPaytrailPaymentDTO, PaytrailPaymentDTO } from "./types/PaytrailPaymentDTO";
+import { isPaytrailPaymentDTO, PaytrailPaymentDTO } from "./dtos/PaytrailPaymentDTO";
 
 export class Checkout implements iCheckout {
 

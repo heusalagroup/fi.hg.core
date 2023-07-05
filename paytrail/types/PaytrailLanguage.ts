@@ -27,7 +27,7 @@ export function parsePaytrailLanguage (value: any) : PaytrailLanguage | undefine
 }
 
 export function isPaytrailLanguageOrUndefined (value: unknown): value is PaytrailLanguage | undefined {
-    return isUndefined(PaytrailLanguage) || isPaytrailLanguage(value);
+    return isUndefined(value) || isPaytrailLanguage(value);
 }
 
 export function explainPaytrailLanguageOrUndefined (value: unknown): string {

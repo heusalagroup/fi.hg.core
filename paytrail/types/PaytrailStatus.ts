@@ -32,7 +32,7 @@ export function parsePaytrailStatus (value: any) : PaytrailStatus | undefined {
 }
 
 export function isPaytrailStatusOrUndefined (value: unknown): value is PaytrailStatus | undefined {
-    return isUndefined(PaytrailStatus) || isPaytrailStatus(value);
+    return isUndefined(value) || isPaytrailStatus(value);
 }
 
 export function explainPaytrailStatusOrUndefined (value: unknown): string {

@@ -3,7 +3,8 @@
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainString, isString } from "../../types/String";
-import { explain, explainProperty } from "../../types/explain";
+import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
+import { isUndefined } from "../../types/undefined";
 
 /**
  * @see https://docs.paytrail.com/#/?id=callbackurl
@@ -49,11 +50,15 @@ export function explainPaytrailCallbackUrl (value: any) : string {
     );
 }
 
-export function stringifyPaytrailCallbackUrl (value : PaytrailCallbackUrl) : string {
-    return `PaytrailCallbackUrl(${value})`;
-}
-
 export function parsePaytrailCallbackUrl (value: unknown) : PaytrailCallbackUrl | undefined {
     if (isPaytrailCallbackUrl(value)) return value;
     return undefined;
+}
+
+export function isPaytrailCallbackUrlOrUndefined (value: unknown): value is PaytrailCallbackUrl | undefined {
+    return isUndefined(value) || isPaytrailCallbackUrl(value);
+}
+
+export function explainPaytrailCallbackUrlOrUndefined (value: unknown): string {
+    return isPaytrailCallbackUrlOrUndefined(value) ? explainOk() : explainNot(explainOr(['PaytrailCallbackUrl', 'undefined']));
 }

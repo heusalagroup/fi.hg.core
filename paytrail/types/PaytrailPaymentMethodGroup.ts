@@ -28,7 +28,7 @@ export function parsePaytrailPaymentMethodGroup (value: any) : PaytrailPaymentMe
 }
 
 export function isPaytrailPaymentMethodGroupOrUndefined (value: unknown): value is PaytrailPaymentMethodGroup | undefined {
-    return isUndefined(PaytrailPaymentMethodGroup) || isPaytrailPaymentMethodGroup(value);
+    return isUndefined(value) || isPaytrailPaymentMethodGroup(value);
 }
 
 export function explainPaytrailPaymentMethodGroupOrUndefined (value: unknown): string {

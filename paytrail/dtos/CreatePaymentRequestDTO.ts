@@ -2,17 +2,18 @@
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainString, isString, isStringOrUndefined } from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
-import { isPaytrailCurrency, PaytrailCurrency } from "./PaytrailCurrency";
-import { isPaytrailLanguage, PaytrailLanguage } from "./PaytrailLanguage";
-import { isPaytrailItem, PaytrailItem } from "./PaytrailItem";
-import { isPaytrailCustomer, PaytrailCustomer } from "./PaytrailCustomer";
-import { isPaytrailAddress, PaytrailAddress } from "./PaytrailAddress";
-import { PaytrailCallbackUrl } from "./PaytrailCallbackUrl";
-import { PaytrailPaymentMethodGroup } from "./PaytrailPaymentMethodGroup";
-import { isNumber } from "../../types/Number";
-import { isArrayOf, isArrayOfOrUndefined } from "../../types/Array";
+import { explainPaytrailCurrency, isPaytrailCurrency, PaytrailCurrency } from "../types/PaytrailCurrency";
+import { explainPaytrailLanguage, isPaytrailLanguage, PaytrailLanguage } from "../types/PaytrailLanguage";
+import { explainPaytrailItem, isPaytrailItem, PaytrailItem } from "../types/PaytrailItem";
+import { explainPaytrailCustomer, isPaytrailCustomer, PaytrailCustomer } from "../types/PaytrailCustomer";
+import { explainPaytrailAddressOrUndefined, isPaytrailAddressOrUndefined, PaytrailAddress } from "../types/PaytrailAddress";
+import { explainPaytrailCallbackUrl, explainPaytrailCallbackUrlOrUndefined, isPaytrailCallbackUrl, isPaytrailCallbackUrlOrUndefined, PaytrailCallbackUrl } from "../types/PaytrailCallbackUrl";
+import { explainPaytrailPaymentMethodGroup, isPaytrailPaymentMethodGroup, PaytrailPaymentMethodGroup } from "../types/PaytrailPaymentMethodGroup";
+import { explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../types/Number";
+import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../types/Array";
+import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../types/Boolean";
 
 /**
  * @see https://docs.paytrail.com/#/?id=payloads
@@ -183,14 +184,14 @@ export function isCreatePaymentRequestDTO (value: unknown) : value is CreatePaym
         && isStringOrUndefined(value?.orderId)
         && isArrayOfOrUndefined<PaytrailItem>(value?.items, isPaytrailItem)
         && isPaytrailCustomer(value?.customer)
-        && isPaytrailAddress(value?.deliveryAddress)
-        && isString(value?.invoicingAddress)
-        && isString(value?.manualInvoiceActivation)
-        && isString(value?.redirectUrls)
-        && isString(value?.callbackUrls)
-        && isString(value?.callbackDelay)
-        && isString(value?.groups)
-        && isString(value?.usePricesWithoutVat)
+        && isPaytrailAddressOrUndefined(value?.deliveryAddress)
+        && isPaytrailAddressOrUndefined(value?.invoicingAddress)
+        && isBooleanOrUndefined(value?.manualInvoiceActivation)
+        && isPaytrailCallbackUrl(value?.redirectUrls)
+        && isPaytrailCallbackUrlOrUndefined(value?.callbackUrls)
+        && isNumberOrUndefined(value?.callbackDelay)
+        && isArrayOfOrUndefined<PaytrailPaymentMethodGroup>(value?.groups, isPaytrailPaymentMethodGroup)
+        && isBooleanOrUndefined(value?.usePricesWithoutVat)
     );
 }
 
@@ -218,26 +219,22 @@ export function explainCreatePaymentRequestDTO (value: any) : string {
             ])
             , explainProperty("stamp", explainString(value?.stamp))
             , explainProperty("reference", explainString(value?.reference))
-            , explainProperty("amount", explainString(value?.amount))
-            , explainProperty("currency", explainString(value?.currency))
-            , explainProperty("language", explainString(value?.language))
-            , explainProperty("orderId", explainString(value?.orderId))
-            , explainProperty("items", explainString(value?.items))
-            , explainProperty("customer", explainString(value?.customer))
-            , explainProperty("deliveryAddress", explainString(value?.deliveryAddress))
-            , explainProperty("invoicingAddress", explainString(value?.invoicingAddress))
-            , explainProperty("manualInvoiceActivation", explainString(value?.manualInvoiceActivation))
-            , explainProperty("redirectUrls", explainString(value?.redirectUrls))
-            , explainProperty("callbackUrls", explainString(value?.callbackUrls))
-            , explainProperty("callbackDelay", explainString(value?.callbackDelay))
-            , explainProperty("groups", explainString(value?.groups))
-            , explainProperty("usePricesWithoutVat", explainString(value?.usePricesWithoutVat))
+            , explainProperty("amount", explainNumber(value?.amount))
+            , explainProperty("currency", explainPaytrailCurrency(value?.currency))
+            , explainProperty("language", explainPaytrailLanguage(value?.language))
+            , explainProperty("orderId", explainStringOrUndefined(value?.orderId))
+            , explainProperty("items", explainArrayOfOrUndefined<PaytrailItem>("PaytrailItem", explainPaytrailItem, value?.items, isPaytrailItem))
+            , explainProperty("customer", explainPaytrailCustomer(value?.customer))
+            , explainProperty("deliveryAddress", explainPaytrailAddressOrUndefined(value?.deliveryAddress))
+            , explainProperty("invoicingAddress", explainPaytrailAddressOrUndefined(value?.invoicingAddress))
+            , explainProperty("manualInvoiceActivation", explainBooleanOrUndefined(value?.manualInvoiceActivation))
+            , explainProperty("redirectUrls", explainPaytrailCallbackUrl(value?.redirectUrls))
+            , explainProperty("callbackUrls", explainPaytrailCallbackUrlOrUndefined(value?.callbackUrls))
+            , explainProperty("callbackDelay", explainNumberOrUndefined(value?.callbackDelay))
+            , explainProperty("groups", explainArrayOfOrUndefined<PaytrailPaymentMethodGroup>("PaytrailPaymentMethodGroup", explainPaytrailPaymentMethodGroup, value?.groups, isPaytrailPaymentMethodGroup))
+            , explainProperty("usePricesWithoutVat", explainBooleanOrUndefined(value?.usePricesWithoutVat))
         ]
     );
-}
-
-export function stringifyCreatePaymentRequestDTO (value : CreatePaymentRequestDTO) : string {
-    return `CreatePaymentRequestDTO(${value})`;
 }
 
 export function parseCreatePaymentRequestDTO (value: unknown) : CreatePaymentRequestDTO | undefined {

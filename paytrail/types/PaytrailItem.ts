@@ -1,11 +1,11 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explain, explainProperty } from "../../types/explain";
-import { explainString, isString, isStringOrUndefined } from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { isPaytrailComission, PaytrailComission } from "./PaytrailComission";
-import { isNumber } from "../../types/Number";
+import { explainPaytrailComission, explainPaytrailComissionOrUndefined, isPaytrailComission, isPaytrailComissionOrUndefined, PaytrailComission } from "./PaytrailComission";
+import { explainNumber, isNumber } from "../../types/Number";
 
 /**
  * @see https://docs.paytrail.com/#/?id=item
@@ -161,7 +161,7 @@ export function isPaytrailItem (value: unknown) : value is PaytrailItem {
         && isStringOrUndefined(value?.stamp)
         && isStringOrUndefined(value?.reference)
         && isStringOrUndefined(value?.merchant)
-        && isPaytrailComission(value?.commission)
+        && isPaytrailComissionOrUndefined(value?.commission)
         && isStringOrUndefined(value?.deliveryDate)
     );
 }
@@ -171,15 +171,33 @@ export function explainPaytrailItem (value: any) : string {
         [
             explainRegularObject(value),
             explainNoOtherKeysInDevelopment(value, [
+                'unitPrice',
+                'units',
+                'vatPercentage',
                 'productCode',
+                'description',
+                'category',
+                'orderId',
+                'stamp',
+                'reference',
+                'merchant',
+                'commission',
+                'deliveryDate'
             ])
+            , explainProperty("unitPrice", explainNumber(value?.unitPrice))
+            , explainProperty("units", explainNumber(value?.units))
+            , explainProperty("vatPercentage", explainNumber(value?.vatPercentage))
             , explainProperty("productCode", explainString(value?.productCode))
+            , explainProperty("description", explainStringOrUndefined(value?.description))
+            , explainProperty("category", explainStringOrUndefined(value?.category))
+            , explainProperty("orderId", explainStringOrUndefined(value?.orderId))
+            , explainProperty("stamp", explainStringOrUndefined(value?.stamp))
+            , explainProperty("reference", explainStringOrUndefined(value?.reference))
+            , explainProperty("merchant", explainStringOrUndefined(value?.merchant))
+            , explainProperty("commission", explainPaytrailComissionOrUndefined(value?.commission))
+            , explainProperty("deliveryDate", explainStringOrUndefined(value?.deliveryDate))
         ]
     );
-}
-
-export function stringifyPaytrailItem (value : PaytrailItem) : string {
-    return `PaytrailItem(${value})`;
 }
 
 export function parsePaytrailItem (value: unknown) : PaytrailItem | undefined {

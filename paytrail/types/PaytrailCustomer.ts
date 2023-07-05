@@ -12,33 +12,45 @@ export interface PaytrailCustomer {
 
     /**
      * Email. Maximum of 200 characters.
+     *
+     * Example: `john.doe@example.org`
      */
     readonly email : string;
 
     /**
      * First name (required for OPLasku and Walley/Collector). Maximum of 50
      * characters.
+     *
+     * Example: `John`
      */
     readonly firstName ?: string;
 
     /**
      * Last name (required for OPLasku and Walley/Collector). Maximum of 50
      * characters.
+     *
+     * Example: `Doe`
      */
     readonly lastName ?: string;
 
     /**
      * Phone number
+     *
+     * Example: `358451031234`
      */
     readonly phone ?: string;
 
     /**
      * VAT ID, if any
+     *
+     * Example: `FI02454583`
      */
     readonly vatId ?: string;
 
     /**
      * Company name, if any
+     *
+     * Example: `Example company`
      */
     readonly companyName ?: string;
 
@@ -102,10 +114,6 @@ export function explainPaytrailCustomer (value: any) : string {
             , explainProperty("companyName", explainStringOrUndefined(value?.companyName))
         ]
     );
-}
-
-export function stringifyPaytrailCustomer (value : PaytrailCustomer) : string {
-    return `PaytrailCustomer(${value})`;
 }
 
 export function parsePaytrailCustomer (value: unknown) : PaytrailCustomer | undefined {

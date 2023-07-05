@@ -88,10 +88,6 @@ export function explainPaytrailAddress (value: any) : string {
     );
 }
 
-export function stringifyPaytrailAddress (value : PaytrailAddress) : string {
-    return `PaytrailAddress(${value})`;
-}
-
 export function parsePaytrailAddress (value: unknown) : PaytrailAddress | undefined {
     if (isPaytrailAddress(value)) return value;
     return undefined;
