@@ -6,9 +6,12 @@ import { explainString, isString } from "../../types/String";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainPaytrailPaymentMethodGroup, isPaytrailPaymentMethodGroup, PaytrailPaymentMethodGroup } from "./PaytrailPaymentMethodGroup";
+import { explainPaytrailProvider, isPaytrailProvider, PaytrailProvider } from "./PaytrailProvider";
+import { explainArrayOfOrUndefined, isArrayOf, isArrayOfOrUndefined } from "../../types/Array";
 
 /**
  * @see https://docs.paytrail.com/#/?id=paymentmethodgroupdata
+ * @see https://docs.paytrail.com/#/?id=paymentmethodgroupdatawithproviders
  */
 export interface PaytrailPaymentMethodGroupData {
 
@@ -32,6 +35,12 @@ export interface PaytrailPaymentMethodGroupData {
      */
     readonly svg: string;
 
+    /**
+     * Providers for the payment group
+     * @see https://docs.paytrail.com/#/?id=paymentmethodgroupdatawithproviders
+     */
+    readonly providers ?: readonly PaytrailProvider[];
+
 }
 
 export function createPaytrailPaymentMethodGroupData (
@@ -39,12 +48,14 @@ export function createPaytrailPaymentMethodGroupData (
     name : string,
     icon : string,
     svg : string,
+    providers ?: readonly PaytrailProvider[]
 ) : PaytrailPaymentMethodGroupData {
     return {
         id,
         name,
         icon,
         svg,
+        providers
     };
 }
 
@@ -56,11 +67,13 @@ export function isPaytrailPaymentMethodGroupData (value: unknown) : value is Pay
             'name',
             'icon',
             'svg',
+            'providers',
         ])
         && isPaytrailPaymentMethodGroup(value?.id)
         && isString(value?.name)
         && isString(value?.icon)
         && isString(value?.svg)
+        && isArrayOfOrUndefined<PaytrailProvider>(value?.providers, isPaytrailProvider)
     );
 }
 
@@ -73,11 +86,13 @@ export function explainPaytrailPaymentMethodGroupData (value: any) : string {
                 'name',
                 'icon',
                 'svg',
+                'providers',
             ])
             , explainProperty("id", explainPaytrailPaymentMethodGroup(value?.id))
             , explainProperty("name", explainString(value?.name))
             , explainProperty("icon", explainString(value?.icon))
             , explainProperty("svg", explainString(value?.svg))
+            , explainProperty("providers", explainArrayOfOrUndefined<PaytrailProvider>("PaytrailProvider", explainPaytrailProvider, value?.providers, isPaytrailProvider))
         ]
     );
 }

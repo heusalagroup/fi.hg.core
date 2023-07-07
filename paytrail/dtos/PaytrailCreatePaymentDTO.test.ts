@@ -1,10 +1,10 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { createCreatePaymentResponseDTO, explainCreatePaymentResponseDTO, explainCreatePaymentResponseDTOOrUndefined, isCreatePaymentResponseDTO, isCreatePaymentResponseDTOOrUndefined, parseCreatePaymentResponseDTO } from "./CreatePaymentResponseDTO";
+import { createPaytrailCreatePaymentDTO, explainPaytrailCreatePaymentDTO, explainPaytrailCreatePaymentDTOOrUndefined, isPaytrailCreatePaymentDTO, isPaytrailCreatePaymentDTOOrUndefined, parsePaytrailCreatePaymentDTO } from "./PaytrailCreatePaymentDTO";
 import { PaytrailPaymentMethodGroup } from "../types/PaytrailPaymentMethodGroup";
 import { PaytrailProvider } from "../types/PaytrailProvider";
 
-describe('CreatePaymentResponseDTO', () => {
+describe('PaytrailCreatePaymentDTO', () => {
 
     const mockedPaytrailProvider : PaytrailProvider = {
         url: 'https://testurl.com',
@@ -28,7 +28,7 @@ describe('CreatePaymentResponseDTO', () => {
         value: 'testValue',
     };
 
-    const mockedCreatePaymentResponseDTO = {
+    const mockedPaytrailCreatePaymentDTO = {
         transactionId: 'testTransactionId',
         href: 'https://testhref.com',
         terms: 'testTerms',
@@ -38,9 +38,9 @@ describe('CreatePaymentResponseDTO', () => {
         customProviders: mockedReadonlyJsonObject,
     };
 
-    describe('createCreatePaymentResponseDTO', () => {
-        it('creates CreatePaymentResponseDTO correctly', () => {
-            const result = createCreatePaymentResponseDTO(
+    describe('createPaytrailCreatePaymentDTO', () => {
+        it('creates PaytrailCreatePaymentDTO correctly', () => {
+            const result = createPaytrailCreatePaymentDTO(
                 'testTransactionId',
                 'https://testhref.com',
                 'testTerms',
@@ -54,19 +54,19 @@ describe('CreatePaymentResponseDTO', () => {
                 [mockedPaytrailProvider],
                 mockedReadonlyJsonObject
             );
-            expect(result).toEqual(mockedCreatePaymentResponseDTO);
+            expect(result).toEqual(mockedPaytrailCreatePaymentDTO);
         });
     });
 
-    describe('isCreatePaymentResponseDTO', () => {
+    describe('isPaytrailCreatePaymentDTO', () => {
 
-        it('validates if an object is CreatePaymentResponseDTO', () => {
-            const result = isCreatePaymentResponseDTO(mockedCreatePaymentResponseDTO);
+        it('validates if an object is PaytrailCreatePaymentDTO', () => {
+            const result = isPaytrailCreatePaymentDTO(mockedPaytrailCreatePaymentDTO);
             expect(result).toBe(true);
         });
 
-        it('returns false if the object is not CreatePaymentResponseDTO', () => {
-            const result = isCreatePaymentResponseDTO({
+        it('returns false if the object is not PaytrailCreatePaymentDTO', () => {
+            const result = isPaytrailCreatePaymentDTO({
                 transactionId: 'testTransactionId',
                 // Missing other properties.
             });
@@ -75,9 +75,9 @@ describe('CreatePaymentResponseDTO', () => {
 
     });
 
-    describe('explainCreatePaymentResponseDTO', () => {
-        it('explains why an object cannot be parsed into CreatePaymentResponseDTO', () => {
-            const result = explainCreatePaymentResponseDTO({
+    describe('explainPaytrailCreatePaymentDTO', () => {
+        it('explains why an object cannot be parsed into PaytrailCreatePaymentDTO', () => {
+            const result = explainPaytrailCreatePaymentDTO({
                 transactionId: 'testTransactionId',
                 // Missing other properties.
             });
@@ -90,14 +90,14 @@ describe('CreatePaymentResponseDTO', () => {
         });
     });
 
-    describe('parseCreatePaymentResponseDTO', () => {
-        it('parses object into CreatePaymentResponseDTO if it is valid', () => {
-            const result = parseCreatePaymentResponseDTO(mockedCreatePaymentResponseDTO);
-            expect(result).toEqual(mockedCreatePaymentResponseDTO);
+    describe('parsePaytrailCreatePaymentDTO', () => {
+        it('parses object into PaytrailCreatePaymentDTO if it is valid', () => {
+            const result = parsePaytrailCreatePaymentDTO(mockedPaytrailCreatePaymentDTO);
+            expect(result).toEqual(mockedPaytrailCreatePaymentDTO);
         });
 
-        it('returns undefined if the object cannot be parsed into CreatePaymentResponseDTO', () => {
-            const result = parseCreatePaymentResponseDTO({
+        it('returns undefined if the object cannot be parsed into PaytrailCreatePaymentDTO', () => {
+            const result = parsePaytrailCreatePaymentDTO({
                 transactionId: 'testTransactionId',
                 // Missing other properties.
             });
@@ -105,18 +105,18 @@ describe('CreatePaymentResponseDTO', () => {
         });
     });
 
-    describe('isCreatePaymentResponseDTOOrUndefined', () => {
-        it('validates if a value is CreatePaymentResponseDTO or undefined', () => {
-            expect(isCreatePaymentResponseDTOOrUndefined(mockedCreatePaymentResponseDTO)).toBe(true);
-            expect(isCreatePaymentResponseDTOOrUndefined(undefined)).toBe(true);
-            expect(isCreatePaymentResponseDTOOrUndefined({ transactionId: 'testTransactionId' })).toBe(false); // Missing other properties.
+    describe('isPaytrailCreatePaymentDTOOrUndefined', () => {
+        it('validates if a value is PaytrailCreatePaymentDTO or undefined', () => {
+            expect(isPaytrailCreatePaymentDTOOrUndefined(mockedPaytrailCreatePaymentDTO)).toBe(true);
+            expect(isPaytrailCreatePaymentDTOOrUndefined(undefined)).toBe(true);
+            expect(isPaytrailCreatePaymentDTOOrUndefined({ transactionId: 'testTransactionId' })).toBe(false); // Missing other properties.
         });
     });
 
-    describe('explainCreatePaymentResponseDTOOrUndefined', () => {
-        it('explains why a value is not CreatePaymentResponseDTO or undefined', () => {
-            const result = explainCreatePaymentResponseDTOOrUndefined({ transactionId: 'testTransactionId' }); // Missing other properties.
-            expect(result).toContain('not CreatePaymentResponseDTO or undefined');
+    describe('explainPaytrailCreatePaymentDTOOrUndefined', () => {
+        it('explains why a value is not PaytrailCreatePaymentDTO or undefined', () => {
+            const result = explainPaytrailCreatePaymentDTOOrUndefined({ transactionId: 'testTransactionId' }); // Missing other properties.
+            expect(result).toContain('not PaytrailCreatePaymentDTO or undefined');
         });
     });
 

@@ -9,21 +9,109 @@ import { explainPaytrailCurrency, isPaytrailCurrency, PaytrailCurrency } from ".
 import { explainNumber, isNumber } from "../../types/Number";
 
 /**
+ * HTTP GET /payments/{transactionId} returns payment information.
+ *
+ * Get transaction info. Payments are reported primarily via callbacks, and
+ * implementations should mainly rely on receiving the info via them. All
+ * received payments will be eventually reported.
+ *
+ * Note! The transaction id needs to be sent on checkout-transaction-id header
+ * as well.
+ *
+ * @example
+ *     {
+ *       "transactionId": "681538c4-fc84-11e9-83bc-2ffcef4c3453",
+ *       "status": "new",
+ *       "amount": 1689,
+ *       "currency": "EUR",
+ *       "reference": "4940046476",
+ *       "stamp": "15725981193483",
+ *       "createdAt": "2019-11-01T10:48:39.979Z",
+ *       "href": "https://pay.paytrail.com/pay/681538c4-fc84-11e9-83bc-2ffcef4c3453"
+ *     }
+ *
  * @see https://docs.paytrail.com/#/?id=get
  */
 export interface PaytrailPaymentDTO {
+
+    /**
+     * Assigned transaction ID for the payment
+     *
+     * Example: `"681538c4-fc84-11e9-83bc-2ffcef4c3453"`
+     */
     readonly transactionId: string;
+
+    /**
+     * new, ok, fail, pending, or delayed.
+     *
+     * Example: `"new"`
+     */
     readonly status: PaytrailStatus;
+
+    /**
+     * Total amount of the payment in currency's minor units, e.g. for Euros use
+     * cents
+     *
+     * Example: `1689`
+     */
     readonly amount: number;
+
+    /**
+     * Currency
+     *
+     * Example: `"EUR"`
+     */
     readonly currency: PaytrailCurrency;
+
+    /**
+     * Merchant unique identifier for the order
+     *
+     * Example: `"15725981193483"`
+     */
     readonly stamp : string;
+
+    /**
+     * Order reference
+     *
+     * Example: `"4940046476"`
+     */
     readonly reference : string;
+
+    /**
+     * Transaction creation timestamp
+     *
+     * Example: `"2019-11-01T10:48:39.979Z"`
+     */
     readonly createdAt : string;
+
+    /**
+     * If transaction is in status new, link to the hosted payment gateway
+     *
+     * Example: `"https://pay.paytrail.com/pay/681538c4-fc84-11e9-83bc-2ffcef4c3453"`
+     */
     readonly href ?: string;
+
+    /**
+     * If processed, the name of the payment method provider
+     */
     readonly provider ?: string;
+
+    /**
+     * If paid, the filing code issued by the payment method provider if any.
+     * Some providers do not return the filing code.
+     */
     readonly fillingCode ?: string;
+
+    /**
+     * Timestamp when the transaction was paid
+     */
     readonly paidAt ?: string;
+
+    /**
+     * If payment is settled, corresponding settlement reference is included
+     */
     readonly settlementReference ?: string;
+
 }
 
 export function createPaytrailPaymentDTO (
@@ -120,10 +208,6 @@ export function explainPaytrailPaymentDTO (value: any) : string {
             , explainProperty("settlementReference", explainStringOrUndefined(value?.settlementReference))
         ]
     );
-}
-
-export function stringifyPaytrailPaymentDTO (value : PaytrailPaymentDTO) : string {
-    return `PaytrailPaymentDTO(${value})`;
 }
 
 export function parsePaytrailPaymentDTO (value: unknown) : PaytrailPaymentDTO | undefined {

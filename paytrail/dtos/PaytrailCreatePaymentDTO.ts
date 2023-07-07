@@ -22,7 +22,7 @@ import { explainPaytrailPaymentMethodGroupData, isPaytrailPaymentMethodGroupData
  * headers and cof-request-id header. Storing or logging the request ID header
  * is advised for possible debug needs.
  */
-export interface CreatePaymentResponseDTO {
+export interface PaytrailCreatePaymentDTO {
 
     /**
      * Assigned transaction ID for the payment
@@ -64,7 +64,7 @@ export interface CreatePaymentResponseDTO {
 
 }
 
-export function createCreatePaymentResponseDTO (
+export function createPaytrailCreatePaymentDTO (
     transactionId: string,
     href: string,
     terms: string,
@@ -72,7 +72,7 @@ export function createCreatePaymentResponseDTO (
     reference: string,
     providers: readonly PaytrailProvider[],
     customProviders: ReadonlyJsonObject
-) : CreatePaymentResponseDTO {
+) : PaytrailCreatePaymentDTO {
     return {
         transactionId,
         href,
@@ -84,7 +84,7 @@ export function createCreatePaymentResponseDTO (
     };
 }
 
-export function isCreatePaymentResponseDTO (value: unknown) : value is CreatePaymentResponseDTO {
+export function isPaytrailCreatePaymentDTO (value: unknown) : value is PaytrailCreatePaymentDTO {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
@@ -106,7 +106,7 @@ export function isCreatePaymentResponseDTO (value: unknown) : value is CreatePay
     );
 }
 
-export function explainCreatePaymentResponseDTO (value: any) : string {
+export function explainPaytrailCreatePaymentDTO (value: any) : string {
     return explain(
         [
             explainRegularObject(value),
@@ -130,16 +130,16 @@ export function explainCreatePaymentResponseDTO (value: any) : string {
     );
 }
 
-export function parseCreatePaymentResponseDTO (value: unknown) : CreatePaymentResponseDTO | undefined {
-    if (isCreatePaymentResponseDTO(value)) return value;
+export function parsePaytrailCreatePaymentDTO (value: unknown) : PaytrailCreatePaymentDTO | undefined {
+    if (isPaytrailCreatePaymentDTO(value)) return value;
     return undefined;
 }
 
-export function isCreatePaymentResponseDTOOrUndefined (value: unknown): value is CreatePaymentResponseDTO | undefined {
-    return isUndefined(value) || isCreatePaymentResponseDTO(value);
+export function isPaytrailCreatePaymentDTOOrUndefined (value: unknown): value is PaytrailCreatePaymentDTO | undefined {
+    return isUndefined(value) || isPaytrailCreatePaymentDTO(value);
 }
 
-export function explainCreatePaymentResponseDTOOrUndefined (value: unknown): string {
-    return isCreatePaymentResponseDTOOrUndefined(value) ? explainOk() : explainNot(explainOr(['CreatePaymentResponseDTO', 'undefined']));
+export function explainPaytrailCreatePaymentDTOOrUndefined (value: unknown): string {
+    return isPaytrailCreatePaymentDTOOrUndefined(value) ? explainOk() : explainNot(explainOr(['PaytrailCreatePaymentDTO', 'undefined']));
 }
 

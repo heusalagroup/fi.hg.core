@@ -6,18 +6,29 @@ import { explainString, isString } from "../../types/String";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainPaytrailPaymentMethodGroup, isPaytrailPaymentMethodGroup, PaytrailPaymentMethodGroup } from "./PaytrailPaymentMethodGroup";
-import { explainPaytrailFormField, isPaytrailFormField, PaytrailFormField } from "./PaytrailFormField";
-import { explainArrayOf, explainArrayOfOrUndefined, isArrayOf, isArrayOfOrUndefined } from "../../types/Array";
 
 /**
+ * @example
+ *       {
+ *         "id": "pivo",
+ *         "name": "Pivo",
+ *         "icon": "https://resources.paytrail.com/images/payment-method-logos/pivo.png",
+ *         "svg": "https://resources.paytrail.com/images/payment-method-logos/pivo.svg",
+ *         "group": "mobile"
+ *       }
  * @see https://docs.paytrail.com/#/?id=provider
  */
-export interface PaytrailProvider {
+export interface PaytrailLimitedProvider {
 
     /**
-     * Form target URL. Use POST as method.
+     * ID of the provider
      */
-    readonly url: string;
+    readonly id : string;
+
+    /**
+     * Display name of the provider.
+     */
+    readonly name : string;
 
     /**
      * URL to PNG version of the provider icon
@@ -36,100 +47,71 @@ export interface PaytrailProvider {
      */
     readonly group: PaytrailPaymentMethodGroup;
 
-    /**
-     * Display name of the provider.
-     */
-    readonly name : string;
-
-    /**
-     * ID of the provider
-     */
-    readonly id : string;
-
-    /**
-     * Array of form fields
-     *
-     * May be undefined for `.getMerchantsPaymentProviders()` end-point
-     */
-    readonly parameters ?: readonly PaytrailFormField[];
-
 }
 
-export function createPaytrailProvider (
-    url: string,
+export function createPaytrailLimitedProvider (
+    id : string,
+    name : string,
+    group: PaytrailPaymentMethodGroup,
     icon: string,
     svg: string,
-    group: PaytrailPaymentMethodGroup,
-    name : string,
-    id : string,
-    parameters ?: readonly PaytrailFormField[],
-) : PaytrailProvider {
+) : PaytrailLimitedProvider {
     return {
-        url,
         icon,
         svg,
         group,
         name,
         id,
-        parameters,
     };
 }
 
-export function isPaytrailProvider (value: unknown) : value is PaytrailProvider {
+export function isPaytrailLimitedProvider (value: unknown) : value is PaytrailLimitedProvider {
     return (
         isRegularObject(value)
         && hasNoOtherKeysInDevelopment(value, [
-            'url',
             'icon',
             'svg',
             'group',
             'name',
             'id',
-            'parameters',
         ])
-        && isString(value?.url)
         && isString(value?.icon)
         && isString(value?.svg)
         && isPaytrailPaymentMethodGroup(value?.group)
         && isString(value?.name)
         && isString(value?.id)
-        && isArrayOfOrUndefined<PaytrailFormField>(value?.parameters, isPaytrailFormField)
     );
 }
 
-export function explainPaytrailProvider (value: any) : string {
+export function explainPaytrailLimitedProvider (value: any) : string {
     return explain(
         [
             explainRegularObject(value),
             explainNoOtherKeysInDevelopment(value, [
-                'url',
                 'icon',
                 'svg',
                 'group',
                 'name',
                 'id',
-                'parameters',
             ])
-            , explainProperty("url", explainString(value?.url))
             , explainProperty("icon", explainString(value?.icon))
             , explainProperty("svg", explainString(value?.svg))
             , explainProperty("group", explainPaytrailPaymentMethodGroup(value?.group))
             , explainProperty("name", explainString(value?.name))
             , explainProperty("id", explainString(value?.id))
-            , explainProperty("parameters", explainArrayOfOrUndefined<PaytrailFormField>("PaytrailFormField", explainPaytrailFormField, value?.parameters, isPaytrailFormField))
         ]
     );
 }
 
-export function parsePaytrailProvider (value: unknown) : PaytrailProvider | undefined {
-    if (isPaytrailProvider(value)) return value;
+export function parsePaytrailLimitedProvider (value: unknown) : PaytrailLimitedProvider | undefined {
+    if (isPaytrailLimitedProvider(value)) return value;
     return undefined;
 }
 
-export function isPaytrailProviderOrUndefined (value: unknown): value is PaytrailProvider | undefined {
-    return isUndefined(value) || isPaytrailProvider(value);
+export function isPaytrailLimitedProviderOrUndefined (value: unknown): value is PaytrailLimitedProvider | undefined {
+    return isUndefined(value) || isPaytrailLimitedProvider(value);
 }
 
-export function explainPaytrailProviderOrUndefined (value: unknown): string {
-    return isPaytrailProviderOrUndefined(value) ? explainOk() : explainNot(explainOr(['PaytrailProvider', 'undefined']));
+export function explainPaytrailLimitedProviderOrUndefined (value: unknown): string {
+    return isPaytrailLimitedProviderOrUndefined(value) ? explainOk() : explainNot(explainOr(['PaytrailLimitedProvider', 'undefined']));
 }
