@@ -24,12 +24,12 @@ describe('PaytrailProvider', () => {
 
         it('creates PaytrailProvider correctly', () => {
             const result = createPaytrailProvider(
-                'https://testurl.com',
                 'https://testiconurl.com',
                 'https://testsvgurl.com',
                 PaytrailPaymentMethodGroup.MOBILE,
                 'testName',
                 'testId',
+                'https://testurl.com',
                 [mockedPaytrailFormField]
             );
             expect(result).toEqual(mockedPaytrailProvider);

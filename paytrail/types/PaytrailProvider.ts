@@ -2,7 +2,7 @@
 
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
-import { explainString, isString } from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainPaytrailPaymentMethodGroup, isPaytrailPaymentMethodGroup, PaytrailPaymentMethodGroup } from "./PaytrailPaymentMethodGroup";
@@ -17,7 +17,7 @@ export interface PaytrailProvider {
     /**
      * Form target URL. Use POST as method.
      */
-    readonly url: string;
+    readonly url ?: string;
 
     /**
      * URL to PNG version of the provider icon
@@ -56,16 +56,16 @@ export interface PaytrailProvider {
 }
 
 export function createPaytrailProvider (
-    url: string,
     icon: string,
     svg: string,
     group: PaytrailPaymentMethodGroup,
     name : string,
     id : string,
+    url ?: string,
     parameters ?: readonly PaytrailFormField[],
 ) : PaytrailProvider {
     return {
-        url,
+        ...(url !== undefined ? {url} : {}),
         icon,
         svg,
         group,
@@ -87,7 +87,7 @@ export function isPaytrailProvider (value: unknown) : value is PaytrailProvider 
             'id',
             'parameters',
         ])
-        && isString(value?.url)
+        && isStringOrUndefined(value?.url)
         && isString(value?.icon)
         && isString(value?.svg)
         && isPaytrailPaymentMethodGroup(value?.group)
@@ -110,7 +110,7 @@ export function explainPaytrailProvider (value: any) : string {
                 'id',
                 'parameters',
             ])
-            , explainProperty("url", explainString(value?.url))
+            , explainProperty("url", explainStringOrUndefined(value?.url))
             , explainProperty("icon", explainString(value?.icon))
             , explainProperty("svg", explainString(value?.svg))
             , explainProperty("group", explainPaytrailPaymentMethodGroup(value?.group))

@@ -129,12 +129,12 @@ const TEST_CREATE_RESPONSE : PaytrailCreatePaymentDTO = {
     ],
     "providers": [
         createPaytrailProvider(
-            "https://maksu.pivo.fi/api/payments",
             "https://static.paytrail.com/static/img/pivo_140x75.png",
             "https://static.paytrail.com/static/img/payment-methods/pivo-siirto.svg",
             PaytrailPaymentMethodGroup.MOBILE,
             "Pivo",
             "pivo",
+            "https://maksu.pivo.fi/api/payments",
             [
                 createPaytrailFormField("amount", "base64 MTUyNQ==")
             ]

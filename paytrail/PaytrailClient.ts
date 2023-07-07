@@ -102,4 +102,29 @@ export interface PaytrailClient {
         groups ?: readonly PaytrailPaymentMethodGroup[]
     ) : Promise<readonly PaytrailLimitedProvider[]>;
 
+    /**
+     * HTTP GET /merchants/grouped-payment-providers is similar to the List
+     * providers-endpoint, but in addition of returning a flat list of
+     * providers, it returns payment group data containing localized group
+     * names, icons for the groups and grouped providers. Returns also a
+     * localized text with a link to the terms of payment.
+     *
+     * @see https://docs.paytrail.com/#/?id=list-grouped-providers
+     * @param amount Purchase amount in currency's minor unit. Some payment
+     *               methods have minimum or maximum purchase limits. When the
+     *               amount is provided, only the methods suitable for the
+     *               amount are returned. Otherwise, all merchant's payment
+     *               methods are returned.
+     * @param groups Comma separated list of payment method groups to include.
+     *               Otherwise all enabled methods are returned.
+     * @param language Code of the language the terms of payment and the payment
+     *                 group names will be displayed in. Supports only FI, EN
+     *                 and SV. FI is the default if left undefined.
+     */
+    getMerchantsGroupedPaymentProviders (
+        language ?: PaytrailLanguage,
+        amount   ?: number,
+        groups   ?: readonly PaytrailPaymentMethodGroup[]
+    ) : Promise<PaytrailPaymentProviderListDTO>;
+
 }

@@ -148,6 +148,33 @@ export class HttpPaytrailClient implements PaytrailClient {
         return result;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public async getMerchantsGroupedPaymentProviders (
+        language ?: PaytrailLanguage,
+        amount   ?: number,
+        groups   ?: readonly PaytrailPaymentMethodGroup[]
+    ) : Promise<PaytrailPaymentProviderListDTO> {
+        const queryParams = [
+            ...(amount !== undefined? [`amount=${amount}`] : []),
+            ...(groups !== undefined? [`groups=${groups.join(',')}`] : []),
+            ...(language !== undefined? [`language=${language}`] : []),
+        ];
+        const headers = this._createHeaders('GET');
+        headers['signature'] = this._calculateHmac(this._secret, headers);
+        const resultString = await RequestClient.getText(
+            `${this._url}/merchants/grouped-payment-providers${queryParams?.length ? `?${queryParams.join('&')}`: ''}`,
+            headers
+        );
+        const result = parseJson(resultString);
+        if (!isPaytrailPaymentProviderListDTO(result)) {
+            throw new Error(`Response was not PaytrailPaymentProviderListDTO: ${explainPaytrailPaymentProviderListDTO(result)}: ${JSON.stringify(result, null , 2)}`);
+        }
+        LOG.debug(`getMerchantsGroupedPaymentProviders: result = `, result);
+        return result;
+    }
+
     //////////////////////////// PRIVATE METHODS ///////////////////////////////
 
     private _createHeaders (

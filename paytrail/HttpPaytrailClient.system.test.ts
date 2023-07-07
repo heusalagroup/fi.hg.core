@@ -8,11 +8,6 @@ import { createPaytrailItem } from "./types/PaytrailItem";
 import { createPaytrailCallbackUrl } from "./types/PaytrailCallbackUrl";
 import { PaytrailCurrency } from "./types/PaytrailCurrency";
 import { PaytrailLanguage } from "./types/PaytrailLanguage";
-import { PaytrailCreatePaymentDTO } from "./dtos/PaytrailCreatePaymentDTO";
-import { createPaytrailPaymentMethodGroupData } from "./types/PaytrailPaymentMethodGroupData";
-import { PaytrailPaymentMethodGroup } from "./types/PaytrailPaymentMethodGroup";
-import { createPaytrailProvider } from "./types/PaytrailProvider";
-import { createPaytrailFormField } from "./types/PaytrailFormField";
 import { createPaytrailAddress } from "./types/PaytrailAddress";
 import { LogLevel } from "../types/LogLevel";
 import { HgNode } from "../../node/HgNode";
@@ -25,8 +20,6 @@ import { every } from "../functions/every";
 const TEST_API_URL = 'https://services.paytrail.com';
 const TEST_MERCHANT_ID = '375917';
 const TEST_MERCHANT_SECRET_KEY = 'SAIPPUAKAUPPIAS';
-
-const TEST_WEB_URL = 'https://test.hg.fi/payments';
 
 // Test constants
 const TEST_STAMP = '29858472953';
@@ -58,121 +51,8 @@ const TEST_INVOICING_ADDRESS_POSTAL_CODE = "00510";
 const TEST_INVOICING_ADDRESS_CITY = "Helsinki";
 const TEST_INVOICING_ADDRESS_COUNTY = "Uusimaa";
 const TEST_INVOICING_ADDRESS_COUNTRY = "FI";
-const TEST_REDIRECT_URL_SUCCESS = "https://ecom.example.org/success";
-const TEST_REDIRECT_URL_CANCEL = "https://ecom.example.org/cancel";
 const TEST_CALLBACK_URL_SUCCESS = "https://ecom.example.org/success";
 const TEST_CALLBACK_URL_CANCEL = "https://ecom.example.org/cancel";
-
-const TEST_TIME = '2023-07-07T09:09:47.213Z';
-
-// Request for the createPayment function
-const TEST_CREATE_REQUEST = {
-    "stamp": TEST_STAMP,
-    "reference": TEST_REFERENCE,
-    "amount": TEST_AMOUNT,
-    "currency": TEST_CURRENCY,
-    "language": TEST_LANGUAGE,
-    "items": [
-        {
-            "unitPrice": TEST_UNIT_PRICE,
-            "units": TEST_UNITS,
-            "vatPercentage": TEST_VAT_PERCENTAGE,
-            "productCode": TEST_PRODUCT_CODE,
-            "deliveryDate": TEST_DELIVERY_DATE,
-            "description": TEST_DESCRIPTION,
-            "category": TEST_CATEGORY
-        }
-    ],
-    "customer": {
-        "email": TEST_CUSTOMER_EMAIL,
-        "firstName": TEST_CUSTOMER_FIRST_NAME,
-        "lastName": TEST_CUSTOMER_LAST_NAME,
-        "phone": TEST_CUSTOMER_PHONE,
-        "vatId": TEST_CUSTOMER_VAT_ID
-    },
-    "deliveryAddress": {
-        "streetAddress": TEST_DELIVERY_ADDRESS_STREET,
-        "postalCode": TEST_DELIVERY_ADDRESS_POSTAL_CODE,
-        "city": TEST_DELIVERY_ADDRESS_CITY,
-        "county": TEST_DELIVERY_ADDRESS_COUNTY,
-        "country": TEST_DELIVERY_ADDRESS_COUNTRY
-    },
-    "invoicingAddress": {
-        "streetAddress": TEST_INVOICING_ADDRESS_STREET,
-        "postalCode": TEST_INVOICING_ADDRESS_POSTAL_CODE,
-        "city": TEST_INVOICING_ADDRESS_CITY,
-        "county": TEST_INVOICING_ADDRESS_COUNTY,
-        "country": TEST_INVOICING_ADDRESS_COUNTRY
-    },
-    "redirectUrls": {
-        "success": TEST_REDIRECT_URL_SUCCESS,
-        "cancel": TEST_REDIRECT_URL_CANCEL
-    },
-    "callbackUrls": {
-        "success": TEST_CALLBACK_URL_SUCCESS,
-        "cancel": TEST_CALLBACK_URL_CANCEL
-    }
-};
-
-const TEST_CREATE_PARAMS = {
-    "checkout-account": TEST_MERCHANT_ID,
-    "checkout-algorithm": "sha256",
-    "checkout-method": "POST",
-    "checkout-nonce": "b800e31d15e9262ce69c23a21478ad38494775cf36a895e4fad8075c2e535995",
-    "checkout-timestamp": "2023-07-07T09:09:47.213Z",
-    "content-type": "application/json; charset=utf-8",
-    "signature": "c0403add6d437861923a68ab06d400dc72a03e5ec77aa1936054b13af3d0b2a8",
-};
-
-// Response from the createPayment function
-const TEST_CREATE_RESPONSE : PaytrailCreatePaymentDTO = {
-    "transactionId": "5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
-    "href": "https://services.paytrail.com/pay/5770642a-9a02-4ca2-8eaa-cc6260a78eb6",
-    "reference": TEST_REFERENCE,
-    "terms": "By continuing with your payment, you agree to our <a href=\"https://www.checkout.fi/ehdot-ja-sopimukset/maksuehdot\" target=\"_blank\">payment terms & conditions</a>",
-    groups: [
-        createPaytrailPaymentMethodGroupData(
-            PaytrailPaymentMethodGroup.MOBILE,
-            "Mobile payment methods",
-            "https://static.paytrail.com/static/img/payment-groups/mobile.png",
-            "https://static.paytrail.com/static/img/payment-groups/mobile.svg"
-        )
-    ],
-    "providers": [
-        createPaytrailProvider(
-            "https://maksu.pivo.fi/api/payments",
-            "https://static.paytrail.com/static/img/pivo_140x75.png",
-            "https://static.paytrail.com/static/img/payment-methods/pivo-siirto.svg",
-            PaytrailPaymentMethodGroup.MOBILE,
-            "Pivo",
-            "pivo",
-            [
-                createPaytrailFormField("amount", "base64 MTUyNQ==")
-            ]
-        )
-    ],
-    "customProviders": {
-        "applepay": {
-            "parameters": [
-                {
-                    "name": "amount",
-                    "value": "15.25"
-                }
-            ]
-        }
-    }
-};
-
-const TEST_FETCH_RESPONSE = {
-    "transactionId": "681538c4-fc84-11e9-83bc-2ffcef4c3453",
-    "status": "new",
-    "amount": 1689,
-    "currency": "EUR",
-    "reference": "4940046476",
-    "stamp": "15725981193483",
-    "createdAt": "2019-11-01T10:48:39.979Z",
-    "href": "https://pay.paytrail.com/pay/681538c4-fc84-11e9-83bc-2ffcef4c3453"
-};
 
 describe('system', () => {
 
@@ -648,6 +528,60 @@ describe('system', () => {
                 // ```
 
                 // expect(dto).toBeRegularObject();
+
+            });
+
+        });
+
+        describe('#getMerchantsGroupedPaymentProviders', () => {
+
+            it('should return a successful response with valid input', async () => {
+
+                const dto = await client.getMerchantsGroupedPaymentProviders();
+
+                expect(dto).toBeRegularObject();
+                expect(dto?.terms).toBe('Valitsemalla maksutavan hyväksyt <a href="https://www.paytrail.com/kuluttaja/maksupalveluehdot" target="_blank">maksupalveluehdot</a>');
+
+                expect(dto?.providers).toBeArray();
+                expect(dto?.providers[0]).toStrictEqual({
+                    "group": "mobile",
+                    "icon": "https://resources.paytrail.com/images/payment-method-logos/pivo.png",
+                    "id": "pivo",
+                    "name": "Pivo",
+                    "svg": "https://resources.paytrail.com/images/payment-method-logos/pivo.svg",
+                });
+
+                expect(dto?.groups).toBeArray();
+                expect( dto?.groups[0] ).toStrictEqual(
+                    {
+                        "icon": "https://resources.paytrail.com/images/payment-group-icons/mobile.png",
+                        "id": "mobile",
+                        "name": "Mobiilimaksutavat",
+                        "providers": [
+                            {
+                                "group": "mobile",
+                                "icon": "https://resources.paytrail.com/images/payment-method-logos/pivo.png",
+                                "id": "pivo",
+                                "name": "Pivo",
+                                "svg": "https://resources.paytrail.com/images/payment-method-logos/pivo.svg"
+                            }
+                        ],
+                        "svg": "https://resources.paytrail.com/images/payment-group-icons/mobile.svg"
+                    }
+                );
+
+                // expect(dto?.length).toBe(17);
+                // expect(dto[0]).toStrictEqual({
+                //     "group": "mobile",
+                //     "icon": "https://resources.paytrail.com/images/payment-method-logos/pivo.png",
+                //     "id": "pivo",
+                //     "name": "Pivo",
+                //     "svg": "https://resources.paytrail.com/images/payment-method-logos/pivo.svg",
+                // });
+
+                // Like:
+                // ```
+                // ```
 
             });
 
