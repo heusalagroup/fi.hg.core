@@ -2,11 +2,14 @@
 
 import { Country, createCountry } from "./types/Country";
 import { Sovereignty } from "./types/Sovereignty";
-import { CountryCode } from "./types/CountryCode";
+import { CountryCode, isCountryCode } from "./types/CountryCode";
 import { map } from "./functions/map";
 import { getCountryNameTranslationKey } from "./translations/country-translation";
 import { TranslationFunction } from "./types/TranslationFunction";
 import { keys } from "./functions/keys";
+import { find } from "./functions/find";
+import { trim } from "./functions/trim";
+import { toLower } from "./functions/toLower";
 
 export type CountryAutoCompleteMapping = [CountryCode, string[]][];
 
@@ -307,6 +310,26 @@ export class CountryUtils {
                     item,
                     [ t(getCountryNameTranslationKey(item)) ]
                 ]
+        );
+    }
+
+    public static parseCountry (
+        name : string,
+        t    : TranslationFunction
+    ) : Country | undefined {
+        name = toLower(trim(name));
+        const allCountries = this.getCountryList();
+        return find(
+            allCountries,
+            (item: Country) : boolean => {
+                const iso2 = toLower(item.iso2);
+                const iso3 = toLower(item.iso3);
+                return (
+                    (iso2 === name)
+                    || (iso3 === name)
+                    || (isCountryCode(iso2) ? toLower(trim(t(getCountryNameTranslationKey(iso2)))) === name : false)
+                );
+            }
         );
     }
 
