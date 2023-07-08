@@ -11,6 +11,8 @@ import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/
 import { explain, explainNot, explainOk, explainProperty } from "../../../types/explain";
 import { isUndefined } from "../../../types/undefined";
 import { explainPaytrailPaymentProviderListDTOOrUndefined, isPaytrailPaymentProviderListDTOOrUndefined, PaytrailPaymentProviderListDTO } from "../../../paytrail/dtos/PaytrailPaymentProviderListDTO";
+import { explainPaytrailPaymentDTOOrUndefined, isPaytrailPaymentDTOOrUndefined, PaytrailPaymentDTO } from "../../../paytrail/dtos/PaytrailPaymentDTO";
+import { explainPaytrailCreatePaymentDTOOrUndefined, isPaytrailCreatePaymentDTOOrUndefined, PaytrailCreatePaymentDTO } from "../../../paytrail/dtos/PaytrailCreatePaymentDTO";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;
@@ -39,8 +41,9 @@ export interface InvoiceDTO {
     readonly dueDays           : number;
     readonly rows             ?: readonly InvoiceRowDTO[];
     readonly isPaid           ?: boolean | undefined;
-
-    readonly payment ?: PaytrailPaymentProviderListDTO;
+    readonly payment          ?: PaytrailPaymentProviderListDTO;
+    readonly newTransaction   ?: PaytrailCreatePaymentDTO;
+    readonly transaction      ?: PaytrailPaymentDTO;
 }
 
 export function createInvoiceDTO (
@@ -71,6 +74,8 @@ export function createInvoiceDTO (
     rows            ?: readonly InvoiceRowDTO[],
     isPaid          ?: boolean,
     payment         ?: PaytrailPaymentProviderListDTO,
+    newTransaction  ?: PaytrailCreatePaymentDTO,
+    transaction     ?: PaytrailPaymentDTO,
 ): InvoiceDTO {
     return {
         invoiceId,
@@ -100,6 +105,8 @@ export function createInvoiceDTO (
         rows,
         isPaid,
         ...(payment ? {payment}: {}),
+        ...(newTransaction ? {newTransaction}: {}),
+        ...(transaction ? {transaction}: {}),
     };
 }
 
@@ -134,6 +141,8 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
             'dueDays',
             'rows',
             'payment',
+            'newTransaction',
+            'transaction',
         ])
         && isString(value?.invoiceId)
         && isString(value?.clientId)
@@ -162,6 +171,8 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
         && isNumber(value?.dueDays)
         && isArrayOfOrUndefined<InvoiceRowDTO>(value?.rows, isInvoiceRowDTO)
         && isPaytrailPaymentProviderListDTOOrUndefined(value?.payment)
+        && isPaytrailCreatePaymentDTOOrUndefined(value?.newTransaction)
+        && isPaytrailPaymentDTOOrUndefined(value?.transaction)
     );
 }
 
@@ -197,6 +208,8 @@ export function explainInvoiceDTO (value: any) : string {
                 'dueDays',
                 'rows',
                 'payment',
+                'newTransaction',
+                'transaction',
             ])
             , explainProperty("invoiceId", explainString(value?.invoiceId))
             , explainProperty("clientId", explainString(value?.clientId))
@@ -225,6 +238,8 @@ export function explainInvoiceDTO (value: any) : string {
             , explainProperty("dueDays", explainNumber(value?.dueDays))
             , explainProperty("rows", explainArrayOfOrUndefined<InvoiceRowDTO>("InvoiceRowDTO", explainInvoiceRowDTO, value?.rows, isInvoiceRowDTO))
             , explainProperty("payment", explainPaytrailPaymentProviderListDTOOrUndefined(value?.payment))
+            , explainProperty("newTransaction", explainPaytrailCreatePaymentDTOOrUndefined(value?.newTransaction))
+            , explainProperty("transaction", explainPaytrailPaymentDTOOrUndefined(value?.transaction))
         ]
     );
 }

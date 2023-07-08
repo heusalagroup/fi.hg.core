@@ -40,6 +40,7 @@ export interface PaytrailClient {
      * @param language
      * @param deliveryAddress
      * @param invoicingAddress
+     * @param groups
      */
     createPayment (
         stamp         : string,
@@ -53,6 +54,7 @@ export interface PaytrailClient {
         language     ?: PaytrailLanguage,
         deliveryAddress  ?: PaytrailAddress,
         invoicingAddress ?: PaytrailAddress,
+        groups           ?: readonly PaytrailPaymentMethodGroup[],
     ): Promise<PaytrailCreatePaymentDTO>;
 
     /**

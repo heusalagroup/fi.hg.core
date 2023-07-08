@@ -3,10 +3,11 @@
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
-import { explain, explainProperty } from "../../types/explain";
+import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isPaytrailStatus, PaytrailStatus } from "../types/PaytrailStatus";
 import { explainPaytrailCurrency, isPaytrailCurrency, PaytrailCurrency } from "../types/PaytrailCurrency";
 import { explainNumber, isNumber } from "../../types/Number";
+import { isUndefined } from "../../types/undefined";
 
 /**
  * HTTP GET /payments/{transactionId} returns payment information.
@@ -174,6 +175,14 @@ export function isPaytrailPaymentDTO (value: unknown) : value is PaytrailPayment
         && isStringOrUndefined(value?.paidAt)
         && isStringOrUndefined(value?.settlementReference)
     );
+}
+
+export function isPaytrailPaymentDTOOrUndefined (value: unknown): value is PaytrailPaymentDTO | undefined {
+    return isUndefined(value) || isPaytrailPaymentDTO(value);
+}
+
+export function explainPaytrailPaymentDTOOrUndefined (value: unknown): string {
+    return isPaytrailPaymentDTOOrUndefined(value) ? explainOk() : explainNot(explainOr(['PaytrailPaymentDTO', 'undefined']));
 }
 
 export function explainPaytrailPaymentDTO (value: any) : string {

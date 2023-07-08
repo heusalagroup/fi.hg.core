@@ -70,6 +70,7 @@ export class HttpPaytrailClient implements PaytrailClient {
         language          : PaytrailLanguage = PaytrailLanguage.FI,
         deliveryAddress  ?: PaytrailAddress,
         invoicingAddress ?: PaytrailAddress,
+        groups           ?: readonly PaytrailPaymentMethodGroup[],
     ): Promise<PaytrailCreatePaymentDTO> {
         const body : CreatePaymentRequestDTO = this._getCreatePaymentRequestBody(
             stamp,
@@ -82,7 +83,8 @@ export class HttpPaytrailClient implements PaytrailClient {
             currency,
             language,
             deliveryAddress,
-            invoicingAddress
+            invoicingAddress,
+            groups
         );
         return this._createPayment( body );
     }
@@ -227,17 +229,18 @@ export class HttpPaytrailClient implements PaytrailClient {
     }
 
     private _getCreatePaymentRequestBody (
-        stamp         : string,
-        reference     : string,
-        amount        : number,
-        customer      : PaytrailCustomer,
-        items         : readonly PaytrailItem[],
-        redirectUrls  : PaytrailCallbackUrl,
-        callbackUrls ?: PaytrailCallbackUrl,
-        currency      : PaytrailCurrency = PaytrailCurrency.EUR,
-        language      : PaytrailLanguage = PaytrailLanguage.FI,
+        stamp             : string,
+        reference         : string,
+        amount            : number,
+        customer          : PaytrailCustomer,
+        items             : readonly PaytrailItem[],
+        redirectUrls      : PaytrailCallbackUrl,
+        callbackUrls     ?: PaytrailCallbackUrl,
+        currency          : PaytrailCurrency = PaytrailCurrency.EUR,
+        language          : PaytrailLanguage = PaytrailLanguage.FI,
         deliveryAddress  ?: PaytrailAddress,
         invoicingAddress ?: PaytrailAddress,
+        groups           ?: readonly PaytrailPaymentMethodGroup[],
     ): CreatePaymentRequestDTO {
         const dto : CreatePaymentRequestDTO = {
             stamp,
@@ -251,6 +254,7 @@ export class HttpPaytrailClient implements PaytrailClient {
             ...(callbackUrls ? {callbackUrls} : {}),
             ...(deliveryAddress ? {deliveryAddress} : {}),
             ...(invoicingAddress ? {invoicingAddress} : {}),
+            ...(groups ? {groups} : {}),
         };
         if (!isCreatePaymentRequestDTO(dto)) {
             throw new TypeError(`Invalid input CreatePaymentRequestDTO: ${explainCreatePaymentRequestDTO(dto)}`);
