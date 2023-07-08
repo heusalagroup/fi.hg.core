@@ -40,7 +40,7 @@ export interface InvoiceDTO {
     readonly rows             ?: readonly InvoiceRowDTO[];
     readonly isPaid           ?: boolean | undefined;
 
-    readonly paymentProviders ?: PaytrailPaymentProviderListDTO;
+    readonly payment ?: PaytrailPaymentProviderListDTO;
 }
 
 export function createInvoiceDTO (
@@ -70,7 +70,7 @@ export function createInvoiceDTO (
     dueDays          : number,
     rows            ?: readonly InvoiceRowDTO[],
     isPaid          ?: boolean,
-    paymentProviders ?: PaytrailPaymentProviderListDTO,
+    payment         ?: PaytrailPaymentProviderListDTO,
 ): InvoiceDTO {
     return {
         invoiceId,
@@ -99,7 +99,7 @@ export function createInvoiceDTO (
         dueDays,
         rows,
         isPaid,
-        ...(paymentProviders ? {paymentProviders}: {}),
+        ...(payment ? {payment}: {}),
     };
 }
 
@@ -133,7 +133,7 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
             'sendDocuments',
             'dueDays',
             'rows',
-            'paymentProviders',
+            'payment',
         ])
         && isString(value?.invoiceId)
         && isString(value?.clientId)
@@ -161,7 +161,7 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
         && isBoolean(value?.sendDocuments)
         && isNumber(value?.dueDays)
         && isArrayOfOrUndefined<InvoiceRowDTO>(value?.rows, isInvoiceRowDTO)
-        && isPaytrailPaymentProviderListDTOOrUndefined(value?.paymentProviders)
+        && isPaytrailPaymentProviderListDTOOrUndefined(value?.payment)
     );
 }
 
@@ -196,7 +196,7 @@ export function explainInvoiceDTO (value: any) : string {
                 'sendDocuments',
                 'dueDays',
                 'rows',
-                'paymentProviders',
+                'payment',
             ])
             , explainProperty("invoiceId", explainString(value?.invoiceId))
             , explainProperty("clientId", explainString(value?.clientId))
@@ -224,7 +224,7 @@ export function explainInvoiceDTO (value: any) : string {
             , explainProperty("sendDocuments", explainBoolean(value?.sendDocuments))
             , explainProperty("dueDays", explainNumber(value?.dueDays))
             , explainProperty("rows", explainArrayOfOrUndefined<InvoiceRowDTO>("InvoiceRowDTO", explainInvoiceRowDTO, value?.rows, isInvoiceRowDTO))
-            , explainProperty("paymentProviders", explainPaytrailPaymentProviderListDTOOrUndefined(value?.paymentProviders))
+            , explainProperty("payment", explainPaytrailPaymentProviderListDTOOrUndefined(value?.payment))
         ]
     );
 }
