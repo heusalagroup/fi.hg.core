@@ -10,9 +10,15 @@ import { PaytrailCurrency } from "./types/PaytrailCurrency";
 import { PaytrailLanguage } from "./types/PaytrailLanguage";
 import { createPaytrailAddress } from "./types/PaytrailAddress";
 import { LogLevel } from "../types/LogLevel";
+
+// Note: This is a system test intended to run on NodeJS but these imports will
+//       warn about error on frontend projects which do not have the node module
+// @ts-ignore
 import { HgNode } from "../../node/HgNode";
-import { RequestClient } from "../RequestClient";
+// @ts-ignore
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
+
+import { RequestClient } from "../RequestClient";
 import { keys } from "../functions/keys";
 import { isNonEmptyString } from "../types/String";
 import { every } from "../functions/every";
