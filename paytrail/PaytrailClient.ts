@@ -10,7 +10,6 @@ import { PaytrailPaymentDTO } from "./dtos/PaytrailPaymentDTO";
 import { PaytrailAddress } from "./types/PaytrailAddress";
 import { PaytrailPaymentMethodGroup } from "./types/PaytrailPaymentMethodGroup";
 import { PaytrailPaymentProviderListDTO } from "./dtos/PaytrailPaymentProviderListDTO";
-import { PaytrailProvider } from "./types/PaytrailProvider";
 import { PaytrailLimitedProvider } from "./types/PaytrailLimitedProvider";
 
 /**
