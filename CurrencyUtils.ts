@@ -20,6 +20,13 @@ export class CurrencyUtils {
         return this.getSumWithDiscount(amount * price, discountPercent);
     }
 
+    /**
+     * Returns the total sum including VAT
+     * @param price The price without VAT
+     * @param amount The amount of items
+     * @param vatPercent The VAT percentage
+     * @param discountPercent The discount percentage
+     */
     public static getSumWithVat (
         price      : number,
         amount     : number,

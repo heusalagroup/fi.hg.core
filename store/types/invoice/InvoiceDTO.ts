@@ -10,6 +10,7 @@ import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "..
 import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/Array";
 import { explain, explainNot, explainOk, explainProperty } from "../../../types/explain";
 import { isUndefined } from "../../../types/undefined";
+import { explainPaytrailPaymentProviderListDTOOrUndefined, isPaytrailPaymentProviderListDTO, isPaytrailPaymentProviderListDTOOrUndefined, PaytrailPaymentProviderListDTO } from "../../../paytrail/dtos/PaytrailPaymentProviderListDTO";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;
@@ -38,6 +39,8 @@ export interface InvoiceDTO {
     readonly dueDays           : number;
     readonly rows             ?: readonly InvoiceRowDTO[];
     readonly isPaid           ?: boolean | undefined;
+
+    readonly paymentProviders ?: PaytrailPaymentProviderListDTO;
 }
 
 export function createInvoiceDTO (
@@ -66,7 +69,8 @@ export function createInvoiceDTO (
     sendDocuments    : boolean,
     dueDays          : number,
     rows            ?: readonly InvoiceRowDTO[],
-    isPaid          ?: boolean
+    isPaid          ?: boolean,
+    paymentProviders ?: PaytrailPaymentProviderListDTO,
 ): InvoiceDTO {
     return {
         invoiceId,
@@ -94,7 +98,8 @@ export function createInvoiceDTO (
         sendDocuments,
         dueDays,
         rows,
-        isPaid
+        isPaid,
+        ...(paymentProviders ? {paymentProviders}: {}),
     };
 }
 
@@ -127,7 +132,8 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
             'buildDocuments',
             'sendDocuments',
             'dueDays',
-            'rows'
+            'rows',
+            'paymentProviders',
         ])
         && isString(value?.invoiceId)
         && isString(value?.clientId)
@@ -155,6 +161,7 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
         && isBoolean(value?.sendDocuments)
         && isNumber(value?.dueDays)
         && isArrayOfOrUndefined<InvoiceRowDTO>(value?.rows, isInvoiceRowDTO)
+        && isPaytrailPaymentProviderListDTOOrUndefined(value?.paymentProviders)
     );
 }
 
@@ -188,7 +195,8 @@ export function explainInvoiceDTO (value: any) : string {
                 'buildDocuments',
                 'sendDocuments',
                 'dueDays',
-                'rows'
+                'rows',
+                'paymentProviders',
             ])
             , explainProperty("invoiceId", explainString(value?.invoiceId))
             , explainProperty("clientId", explainString(value?.clientId))
@@ -216,6 +224,7 @@ export function explainInvoiceDTO (value: any) : string {
             , explainProperty("sendDocuments", explainBoolean(value?.sendDocuments))
             , explainProperty("dueDays", explainNumber(value?.dueDays))
             , explainProperty("rows", explainArrayOfOrUndefined<InvoiceRowDTO>("InvoiceRowDTO", explainInvoiceRowDTO, value?.rows, isInvoiceRowDTO))
+            , explainProperty("paymentProviders", explainPaytrailPaymentProviderListDTOOrUndefined(value?.paymentProviders))
         ]
     );
 }
@@ -226,10 +235,6 @@ export function isInvoiceDTOOrUndefined (value: unknown) : value is InvoiceDTO |
 
 export function explainInvoiceDTOOrUndefined (value: any) : string {
     return isInvoiceDTOOrUndefined(value) ? explainOk() : explainNot('InvoiceDTO | undefined');
-}
-
-export function stringifyInvoiceDTO (value: InvoiceDTO): string {
-    return `InvoiceDTO(${value})`;
 }
 
 export function parseInvoiceDTO (value: any): InvoiceDTO | undefined {

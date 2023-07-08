@@ -3,6 +3,7 @@
 import { explainEnum, isEnum, parseEnum, stringifyEnum } from "../../types/Enum";
 import { isUndefined } from "../../types/undefined";
 import { explainNot, explainOk, explainOr } from "../../types/explain";
+import { Language } from "../../types/Language";
 
 export enum PaytrailLanguage {
     FI = "FI",
@@ -32,4 +33,12 @@ export function isPaytrailLanguageOrUndefined (value: unknown): value is Paytrai
 
 export function explainPaytrailLanguageOrUndefined (value: unknown): string {
     return isPaytrailLanguageOrUndefined(value) ? explainOk() : explainNot(explainOr(['PaytrailLanguage', 'undefined']));
+}
+
+export function getPaytrailLanguageFromLanguage (value: Language) : PaytrailLanguage {
+    switch (value) {
+        case Language.FINNISH: return PaytrailLanguage.FI;
+        case Language.ENGLISH: return PaytrailLanguage.EN;
+        default: return PaytrailLanguage.EN;
+    }
 }
