@@ -311,7 +311,7 @@ describe('PaytrailPaymentProviderListDTO', () => {
     describe('explainPaytrailPaymentProviderListDTO', () => {
         it('explains why an object cannot be parsed into PaytrailPaymentProviderListDTO', () => {
             const result = explainPaytrailPaymentProviderListDTO({ ...mockedPaymentDTO, amount: 'invalid' }); // invalid amount property
-            expect(result).toContain('property "amount" not number');
+            expect(result).toContain('Value had extra properties: amount');
         });
     });
 

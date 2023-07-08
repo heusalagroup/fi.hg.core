@@ -44,10 +44,10 @@ export interface PaytrailPaymentMethodGroupData {
 }
 
 export function createPaytrailPaymentMethodGroupData (
-    id : PaytrailPaymentMethodGroup,
-    name : string,
-    icon : string,
-    svg : string,
+    id         : PaytrailPaymentMethodGroup,
+    name       : string,
+    icon       : string,
+    svg        : string,
     providers ?: readonly PaytrailProvider[]
 ) : PaytrailPaymentMethodGroupData {
     return {
@@ -55,7 +55,7 @@ export function createPaytrailPaymentMethodGroupData (
         name,
         icon,
         svg,
-        providers
+        ...(providers ? {providers} : {})
     };
 }
 

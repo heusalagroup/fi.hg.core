@@ -65,13 +65,13 @@ export function createPaytrailProvider (
     parameters ?: readonly PaytrailFormField[],
 ) : PaytrailProvider {
     return {
-        ...(url !== undefined ? {url} : {}),
         icon,
         svg,
         group,
         name,
         id,
-        parameters,
+        ...(url !== undefined ? {url} : {}),
+        ...(parameters ? {parameters}: {}),
     };
 }
 
