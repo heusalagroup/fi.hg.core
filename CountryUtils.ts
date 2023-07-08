@@ -317,18 +317,23 @@ export class CountryUtils {
         name : string,
         t    : TranslationFunction
     ) : Country | undefined {
-        name = toLower(trim(name));
+        name = toLower(trim(name)).replace(/ +/g, " ");
         const allCountries = this.getCountryList();
         return find(
             allCountries,
             (item: Country) : boolean => {
+
                 const iso2 = toLower(item.iso2);
+                if (iso2 === name) return true;
+
                 const iso3 = toLower(item.iso3);
-                return (
-                    (iso2 === name)
-                    || (iso3 === name)
-                    || (isCountryCode(iso2) ? toLower(trim(t(getCountryNameTranslationKey(iso2)))) === name : false)
-                );
+                if (iso3 === name) return true;
+
+                if (isCountryCode(iso2)) {
+                    return toLower(trim(t(getCountryNameTranslationKey(iso2)))).replace(/ +/g, " ") === name;
+                }
+
+                return false;
             }
         );
     }
