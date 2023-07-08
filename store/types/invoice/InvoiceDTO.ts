@@ -10,7 +10,7 @@ import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "..
 import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/Array";
 import { explain, explainNot, explainOk, explainProperty } from "../../../types/explain";
 import { isUndefined } from "../../../types/undefined";
-import { explainPaytrailPaymentProviderListDTOOrUndefined, isPaytrailPaymentProviderListDTO, isPaytrailPaymentProviderListDTOOrUndefined, PaytrailPaymentProviderListDTO } from "../../../paytrail/dtos/PaytrailPaymentProviderListDTO";
+import { explainPaytrailPaymentProviderListDTOOrUndefined, isPaytrailPaymentProviderListDTOOrUndefined, PaytrailPaymentProviderListDTO } from "../../../paytrail/dtos/PaytrailPaymentProviderListDTO";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;

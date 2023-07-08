@@ -7,7 +7,7 @@ import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "..
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainPaytrailPaymentMethodGroup, isPaytrailPaymentMethodGroup, PaytrailPaymentMethodGroup } from "./PaytrailPaymentMethodGroup";
 import { explainPaytrailFormField, isPaytrailFormField, PaytrailFormField } from "./PaytrailFormField";
-import { explainArrayOf, explainArrayOfOrUndefined, isArrayOf, isArrayOfOrUndefined } from "../../types/Array";
+import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../types/Array";
 
 /**
  * @see https://docs.paytrail.com/#/?id=provider
