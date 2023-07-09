@@ -277,7 +277,7 @@ export class RequestControllerUtils {
         controller  : RequestController,
         propertyKey : string,
         paramIndex  : number,
-        queryParam  : string,
+        queryParam  : string | undefined,
         paramType   : RequestParamValueType
     ) {
         // LOG.debug('setControllerMethodQueryParam: queryParam =', queryParam, paramType);

@@ -5,7 +5,6 @@ import { RequestMethod } from "./types/RequestMethod";
 import { RequestRouterImpl } from "../requestServer/RequestRouterImpl";
 import { Headers } from "./types/Headers";
 import { RequestRouter } from "../requestServer/RequestRouter";
-import { ResponseEntity } from "./types/ResponseEntity";
 import { LogLevel } from "../types/LogLevel";
 import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
@@ -109,6 +108,75 @@ describe('RequestParam', () => {
                         expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual( expected );
                     });
 
+                });
+
+            });
+
+            describe('All parameters', () => {
+
+                describe('GET', () => {
+
+                    @RequestMapping('/')
+                    class Controller {
+
+                        @Operation({summary: 'Get a test response using GET'})
+                        @GetMapping('/hello')
+                        @ApiResponse(RequestStatus.OK, 'Successful operation')
+                        public static getHello (
+                            @RequestParam()
+                                params: {[key: string]: string}
+                        ) : string {
+                            return 'Hello '+JSON.stringify(params);
+                        }
+
+                    }
+
+                    let router : RequestRouter;
+
+                    beforeEach( () => {
+                        // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
+                        router = RequestRouterImpl.create(Controller);
+                    } );
+
+                    it.only('can create GET mapping for string response', async () => {
+                        const response = await router.handleRequest(
+                            RequestMethod.GET,
+                            '/hello?q=something&other=bar',
+                            undefined,
+                            Headers.create()
+                        );
+                        expect(response.getStatusCode()).toBe(200);
+                        expect(response.getBody()).toBe('Hello {"q":"something","other":"bar"}');
+                    });
+
+                    it('can set OpenAPI parameters information', async () => {
+
+                        const expected : OpenAPIV3.Document = {
+                            "components": {},
+                            "info": {
+                                "title": "API Reference",
+                                "version": "0.0.0"
+                            },
+                            "openapi": "3.0.0",
+                            "paths": {
+                                "/hello": {
+                                    "get": {
+                                        "operationId": "getHello",
+                                        "summary": "Get a test response using GET",
+                                        "responses": {
+                                            "200": {
+                                                "description": "Successful operation"
+                                            },
+                                        }
+                                    }
+                                }
+                            },
+                            "security": [],
+                            "tags": []
+                        };
+
+                        expect( getOpenApiDocumentFromRequestController(Controller) ).toStrictEqual( expected );
+                    });
 
                 });
 

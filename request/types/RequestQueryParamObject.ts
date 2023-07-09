@@ -3,19 +3,24 @@
 
 import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
 import { RequestParamObjectType } from "./RequestParamObjectType";
-import { isString } from "../../types/String";
+import { isString, isStringOrUndefined } from "../../types/String";
 
 export interface RequestQueryParamObject {
     objectType : RequestParamObjectType.QUERY_PARAM;
     valueType  : RequestParamValueType;
-    queryParam : string;
+
+    /**
+     * If undefined, result will be an object of all query parameters provided
+     */
+    queryParam : string | undefined;
+
 }
 
 export function isRequestQueryParamObject(value: any): value is RequestQueryParamObject {
     return (
         !!value
         && value?.objectType === RequestParamObjectType.QUERY_PARAM
-        && isString(value?.queryParam)
+        && isStringOrUndefined(value?.queryParam)
         && isRequestParamValueType(value?.valueType)
     );
 }

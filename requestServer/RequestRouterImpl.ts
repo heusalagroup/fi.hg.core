@@ -205,7 +205,14 @@ export class RequestRouterImpl implements RequestRouter {
                         LOG.debug('propertyName: ', propertyName);
                         LOG.debug('propertyParams: ', propertyParams);
 
-                        const stepParams = RequestRouterImpl._bindRequestActionParams(requestQueryParams, requestBody, propertyParams, requestHeaders, pathVariables, modelAttributeValues );
+                        const stepParams = RequestRouterImpl._bindRequestActionParams(
+                            requestQueryParams,
+                            requestBody,
+                            propertyParams,
+                            requestHeaders,
+                            pathVariables,
+                            modelAttributeValues
+                        );
 
                         const stepResult : any = await routeController[propertyName](...stepParams);
 
@@ -215,7 +222,14 @@ export class RequestRouterImpl implements RequestRouter {
 
                 }
 
-                const stepParams = RequestRouterImpl._bindRequestActionParams(requestQueryParams, requestBody, routePropertyParams, requestHeaders, pathVariables, requestModelAttributes.get(routeController) ?? new Map<string, any>() );
+                const stepParams = RequestRouterImpl._bindRequestActionParams(
+                    requestQueryParams,
+                    requestBody,
+                    routePropertyParams,
+                    requestHeaders,
+                    pathVariables,
+                    requestModelAttributes.get(routeController) ?? new Map<string, any>()
+                );
                 LOG.debug('handleRequest: stepParams 1: ', stepParams);
 
                 if (!has(routeController, routePropertyName)) {
@@ -700,19 +714,15 @@ export class RequestRouterImpl implements RequestRouter {
                     return requestBody;
 
                 case RequestParamObjectType.QUERY_PARAM: {
-
                     const queryParamItem : RequestQueryParamObject = item as RequestQueryParamObject;
-
                     const key = queryParamItem.queryParam;
-
+                    if (key === undefined) {
+                        return RequestRouterImpl._castObjectParam(searchParams, queryParamItem.valueType);
+                    }
                     if (!has(searchParams, key)) return undefined;
-
                     const value : string | null = searchParams[key];
-
                     if (isNull(value)) return undefined;
-
-                    return RequestRouterImpl._castParam(value, queryParamItem.valueType);
-
+                    return RequestRouterImpl._castStringParam(value, queryParamItem.valueType);
                 }
 
                 case RequestParamObjectType.REQUEST_HEADER: {
@@ -735,7 +745,7 @@ export class RequestRouterImpl implements RequestRouter {
 
                     if ( headerValue === undefined ) return undefined;
 
-                    return RequestRouterImpl._castParam(headerValue, headerItem.valueType);
+                    return RequestRouterImpl._castStringParam(headerValue, headerItem.valueType);
 
                 }
 
@@ -813,12 +823,15 @@ export class RequestRouterImpl implements RequestRouter {
         });
     }
 
-    private static _castParam (
+    private static _castStringParam (
         value : string,
         type  : RequestParamValueType
     ) : any {
 
         switch (type) {
+
+            case RequestParamValueType.REGULAR_OBJECT:
+                throw new TypeError(`Incorrect value type for string value: ${type}`);
 
             case RequestParamValueType.JSON:
                 return JSON.parse(value);
@@ -834,6 +847,24 @@ export class RequestRouterImpl implements RequestRouter {
 
         }
 
+        throw new TypeError(`Unsupported type: ${type}`)
+    }
+
+    private static _castObjectParam (
+        value : {readonly [key:string]: string},
+        type  : RequestParamValueType
+    ) : any {
+        switch (type) {
+            case RequestParamValueType.REGULAR_OBJECT:
+                return JSON.parse(JSON.stringify(value));
+
+            case RequestParamValueType.JSON:
+            case RequestParamValueType.STRING:
+            case RequestParamValueType.INTEGER:
+            case RequestParamValueType.NUMBER:
+                throw new TypeError(`Incorrect value type for non-string value: ${type}`);
+
+        }
         throw new TypeError(`Unsupported type: ${type}`)
     }
 

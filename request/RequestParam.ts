@@ -12,6 +12,8 @@ import { LogLevel } from "../types/LogLevel";
 
 const LOG = LogService.createLogger( 'RequestParam' );
 
+export function RequestParam () : ParameterDecoratorFunction;
+
 export function RequestParam (
     queryParam  : string,
     paramType  ?: RequestParamValueType
@@ -26,7 +28,7 @@ export function RequestParam (
 // RequestHeader overloads & implementation
 
 export function RequestParam (
-    arg1: any | Function | string,
+    arg1 ?: any | Function | string,
     arg2 ?: string | RequestParamValueType | undefined,
     arg3 ?: number
 ): ParameterDecoratorFunction | void {
@@ -47,7 +49,7 @@ export function RequestParam (
         target: any,
         propertyKey: any,
         paramIndex: any,
-        queryParam: string,
+        queryParam: string | undefined,
         paramType: RequestParamValueType
     ) {
         const requestController = _getRequestController( target, propertyKey, paramIndex );
@@ -73,6 +75,18 @@ export function RequestParam (
                 "; paramIndex=", paramIndex
             );
         }
+    }
+
+    if ( arg1 === undefined && arg2 === undefined && arg3 === undefined ) {
+        const queryParam = undefined;
+        const paramType = RequestParamValueType.REGULAR_OBJECT;
+        return (
+            target: any | Function,
+            propertyKey ?: string,
+            paramIndex  ?: number
+        ) => {
+            _param( target, propertyKey, paramIndex, queryParam, paramType );
+        };
     }
 
     if ( isString( arg1 ) && (arg3 === undefined) && isRequestParamValueTypeOrUndefined( arg2 ) ) {

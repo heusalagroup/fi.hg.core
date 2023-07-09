@@ -366,7 +366,7 @@ export namespace OpenAPIV3 {
   }
 
   export interface ParameterObject extends ParameterBaseObject {
-    name: string;
+    name ?: string;
     in: string;
   }
 
