@@ -1,5 +1,9 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { explainEnum, isEnum, parseEnum, stringifyEnum } from "./Enum";
+import { explainNot, explainOk, explainOr } from "./explain";
+import { isUndefined } from "./undefined";
+
 export enum Sovereignty {
     DISPUTED_Z = 0,
     UN_MEMBER_STATE = 1,
@@ -19,33 +23,26 @@ export enum Sovereignty {
     CHINA = 15
 }
 
-export function isSovereignty (value: any): value is Sovereignty {
-    switch (value) {
-        case Sovereignty.UN_MEMBER_STATE:
-            return true;
-
-        default:
-            return false;
-
-    }
+export function isSovereignty (value: unknown) : value is Sovereignty {
+    return isEnum(Sovereignty, value);
 }
 
-export function stringifySovereignty (value: Sovereignty): string {
-    switch (value) {
-        case Sovereignty.UN_MEMBER_STATE  : return "UN member state";
-    }
-    throw new TypeError(`Unsupported Sovereignty value: ${value}`);
+export function explainSovereignty (value : unknown) : string {
+    return explainEnum("Sovereignty", Sovereignty, isSovereignty, value);
 }
 
-export function parseSovereignty (value: any): Sovereignty | undefined {
-    switch (`${value}`.toUpperCase().trim()) {
+export function stringifySovereignty (value : Sovereignty) : string {
+    return stringifyEnum(Sovereignty, value);
+}
 
-        case 'UN':
-        case 'UN MEMBER':
-        case 'UN MEMBER STATE':
-        case 'UN STATE':
-        case 'UN_MEMBER_STATE' : return Sovereignty.UN_MEMBER_STATE;
+export function parseSovereignty (value: any) : Sovereignty | undefined {
+    return parseEnum(Sovereignty, value, true, true) as Sovereignty | undefined;
+}
 
-        default     : return undefined;
-    }
+export function isSovereigntyOrUndefined (value: unknown): value is Sovereignty | undefined {
+    return isUndefined(value) || isSovereignty(value);
+}
+
+export function explainSovereigntyOrUndefined (value: unknown): string {
+    return isSovereigntyOrUndefined(value) ? explainOk() : explainNot(explainOr(['Sovereignty', 'undefined']));
 }

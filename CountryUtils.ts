@@ -1,15 +1,15 @@
 // Copyright (c) 2020-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { Country, createCountry } from "./types/Country";
-import { Sovereignty } from "./types/Sovereignty";
-import { CountryCode, isCountryCode } from "./types/CountryCode";
 import { map } from "./functions/map";
-import { getCountryNameTranslationKey } from "./translations/country-translation";
-import { TranslationFunction } from "./types/TranslationFunction";
-import { keys } from "./functions/keys";
 import { find } from "./functions/find";
 import { trim } from "./functions/trim";
 import { toLower } from "./functions/toLower";
+import { TranslationFunction } from "./types/TranslationFunction";
+import { Sovereignty } from "./types/Sovereignty";
+import { CountryCode, isCountryCode } from "./types/CountryCode";
+import { Country, createCountry } from "./types/Country";
+import { getCountryNameTranslationKey } from "./translations/country-translation";
+import { EnumUtils } from "./EnumUtils";
 
 export type CountryAutoCompleteMapping = [CountryCode, string[]][];
 
@@ -38,7 +38,7 @@ export class CountryUtils {
     }
 
     public static createCountryCodeList () : CountryCode[] {
-        return map(keys(CountryCode), (key: string) : CountryCode => {
+        return map(EnumUtils.getKeys(CountryCode), (key: string) : CountryCode => {
             // @ts-ignore
             return CountryCode[key];
         });

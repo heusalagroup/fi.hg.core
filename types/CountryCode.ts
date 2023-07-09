@@ -513,10 +513,6 @@ export function isCountryCode (value: any): value is CountryCode {
     }
 }
 
-export function stringifyCountryCode (value: CountryCode): string {
-    return value;
-}
-
 export function parseCountryCode (value: any): CountryCode | undefined {
     switch (trim(`${value}`.toUpperCase())) {
         case CountryCode.AF:

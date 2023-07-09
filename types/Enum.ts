@@ -2,13 +2,13 @@
 
 import { TestCallbackNonStandard } from "./TestCallback";
 import { EXPLAIN_OK } from "./explain";
-import { values } from "../functions/values";
 import { join } from "../functions/join";
 import { isString } from "./String";
 import { isNumber } from "./Number";
-import { keys } from "../functions/keys";
 import { indexOf } from "../functions/indexOf";
 import { map } from "../functions/map";
+import { trim } from "../functions/trim";
+import { EnumUtils } from "../EnumUtils";
 
 export interface Enum<T extends number | string> {
     readonly [key: string]: T;
@@ -27,7 +27,7 @@ export function isEnum<T extends number | string = string> (
     value: unknown
 ): value is T {
     if ( isNumber(value) || isString(value) ) {
-        return indexOf(values(type), value as T) >= 0;
+        return indexOf(EnumUtils.getValues(type), value as T) >= 0;
     } else {
         return false;
     }
@@ -50,7 +50,7 @@ export function explainEnum<T extends number | string = string> (
     value: unknown
 ): string {
     if ( !isType(value) ) {
-        return `incorrect enum value "${value}" for ${name}: Accepted values ${join(values(type), ', ')}`;
+        return `incorrect enum value "${value}" for ${name}: Accepted values ${join(EnumUtils.getValues(type), ', ')}`;
     } else {
         return EXPLAIN_OK;
     }
@@ -65,8 +65,8 @@ export function stringifyEnum<T extends number | string = string> (
     type  : Enum<T>,
     value : T
 ) : string {
-    const enumValues = values(type);
-    const enumKeys = keys(type);
+    const enumValues = EnumUtils.getValues(type);
+    const enumKeys = EnumUtils.getKeys(type);
     const index = indexOf(enumValues, value);
     if (index < 0) throw new TypeError(`Unsupported enum value: ${value}`);
     const key = enumKeys[index];
@@ -74,13 +74,18 @@ export function stringifyEnum<T extends number | string = string> (
 }
 
 /**
+ * Parse enum value
  *
- * @param type
- * @param value
+ * @param type The enum type
+ * @param value The expected value of an enum
+ * @param ignoreSpaces Ignore any space in the key when matching
+ * @param ignoreDashes Ignore any dash (`-`, or `_`) in the key when matching
  */
 export function parseEnum<T extends number | string = string> (
     type  : Enum<T>,
-    value : any
+    value : any,
+    ignoreSpaces : boolean = false,
+    ignoreDashes : boolean = false,
 ) : T | undefined {
 
     if (value === undefined) return undefined;
@@ -90,11 +95,24 @@ export function parseEnum<T extends number | string = string> (
     }
 
     if ( isString(value) ) {
-        value = value.toUpperCase();
-        const uppercaseKeys = map(keys(type), (key) => key.toUpperCase());
-        const index = indexOf(uppercaseKeys, value);
+
+        const normalize = (v: string) : string => {
+            v = trim(v).toUpperCase();
+            if (ignoreSpaces) {
+                v = v.replace(/\s+/g, "");
+            }
+            if (ignoreDashes) {
+                v = v.replace(/[_\-]+/g, "");
+            }
+            return v;
+        };
+
+        value = normalize(value);
+
+        const normalizedKeys = map(EnumUtils.getKeys(type), (key) => normalize(key));
+        const index = indexOf(normalizedKeys, value);
         if ( index >= 0 ) {
-            const enumValues = values(type);
+            const enumValues = EnumUtils.getValues(type);
             return enumValues[index];
         }
     }

@@ -2,7 +2,6 @@
 
 import { filter } from "./functions/filter";
 import { map } from "./functions/map";
-import { keys } from "./functions/keys";
 
 export interface EnumObject<T> {
     readonly [key: string]: T;
@@ -27,7 +26,10 @@ export class EnumUtils {
     public static getKeys<T> (
         obj: EnumObject<T>
     ) : readonly string[] {
-        return keys(obj);
+        return filter(
+            Object.keys(obj),
+            (k: string): boolean => k ? '0123456789'.indexOf( k[0] ) < 0 : true
+        );
     }
 
     public static createFilteredKeysFromValues<T> (
