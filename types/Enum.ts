@@ -102,7 +102,7 @@ export function parseEnum<T extends number | string = string> (
                 v = v.replace(/\s+/g, "");
             }
             if (ignoreDashes) {
-                v = v.replace(/[_\-]+/g, "");
+                v = v.replace(/[_-]+/g, "");
             }
             return v;
         };
