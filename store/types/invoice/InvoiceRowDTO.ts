@@ -145,11 +145,6 @@ export function explainInvoiceRowDTO (value: any) : string {
     );
 }
 
-
-export function stringifyInvoiceRowDTO (value: InvoiceRowDTO): string {
-    return `InvoiceRowDTO(${value})`;
-}
-
 export function parseInvoiceRowDTO (value: any): InvoiceRowDTO | undefined {
     if ( isInvoiceRowDTO(value) ) return value;
     return undefined;

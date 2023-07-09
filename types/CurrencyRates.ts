@@ -4,7 +4,7 @@ import { Currency } from "./Currency";
 import { explain, explainProperty } from "./explain";
 import { explainNumber, isNumber } from "./Number";
 import { explainRegularObject, isRegularObject } from "./RegularObject";
-import { explainNoOtherKeys, hasNoOtherKeys } from "./OtherKeys";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "./OtherKeys";
 
 export interface CurrencyRates {
     readonly [Currency.EUR]: number;
@@ -26,7 +26,7 @@ export function createCurrencyRates (
 export function isCurrencyRates (value: any): value is CurrencyRates {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             Currency.EUR,
             Currency.USD,
             Currency.GBP
@@ -40,15 +40,15 @@ export function isCurrencyRates (value: any): value is CurrencyRates {
 export function explainCurrencyRates (value: any): string {
     return explain(
         [
-            explainRegularObject(value)
-            && explainNoOtherKeys(value, [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
                 Currency.EUR,
                 Currency.USD,
                 Currency.GBP
-            ])
-            && explainProperty(Currency.EUR, explainNumber(value[Currency.EUR]))
-            && explainProperty(Currency.USD, explainNumber(value[Currency.USD]))
-            && explainProperty(Currency.GBP, explainNumber(value[Currency.GBP]))
+            ]),
+            explainProperty(Currency.EUR, explainNumber(value[Currency.EUR])),
+            explainProperty(Currency.USD, explainNumber(value[Currency.USD])),
+            explainProperty(Currency.GBP, explainNumber(value[Currency.GBP]))
         ]
     );
 }

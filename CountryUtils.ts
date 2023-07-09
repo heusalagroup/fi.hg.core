@@ -330,7 +330,7 @@ export class CountryUtils {
                 if (toLower(iso3) === name) return true;
 
                 if (isCountryCode(iso2) && toLower(trim(t(getCountryNameTranslationKey(iso2)))).replace(/ +/g, " ") === name) {
-                    console.log(`key =`, getCountryNameTranslationKey(iso2));
+                    // console.log(`key =`, getCountryNameTranslationKey(iso2));
                     return true;
                 }
 

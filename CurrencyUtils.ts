@@ -33,14 +33,15 @@ export class CurrencyUtils {
         vatPercent : number,
         discountPercent ?: number | undefined
     ): number {
-        return this.getSumWithDiscount(amount * price, discountPercent) * (1+vatPercent);
+        const sum = this.getSumWithDiscount(amount * price, discountPercent);
+        return Math.round( (sum*100) + (sum*100) * vatPercent ) / 100;
     }
 
     public static getSumWithDiscount (
         price           : number,
         discountPercent : number | undefined
     ): number {
-        return discountPercent ? price - price * discountPercent : price;
+        return discountPercent !== undefined && discountPercent > 0 && discountPercent <= 1 ? price - price * discountPercent : price;
     }
 
     public static getVatlessSum (
@@ -48,7 +49,8 @@ export class CurrencyUtils {
         vatPercent: number,
         discountPercent ?: number | undefined
     ) : number {
-        return this.getSumWithDiscount(sum / (1+vatPercent), discountPercent);
+        const realSum = this.getSumWithDiscount(sum, discountPercent);
+        return Math.round((realSum*100) / (1+vatPercent)) / 100;
     }
 
     public static roundByAccuracy (
@@ -71,6 +73,10 @@ export class CurrencyUtils {
         const fromRate = get(rates, from);
         if (fromRate === undefined) throw new TypeError(`CurrencyService: From: No exchange rate found: ${from}`);
         return CurrencyUtils.roundByAccuracy( (amount / fromRate) * toRate, accuracy);
+    }
+
+    public static getCents (value: number) : number {
+        return Math.round(value*100);
     }
 
 }
