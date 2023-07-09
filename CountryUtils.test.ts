@@ -6,7 +6,7 @@ import { isArray } from "./types/Array";
 
 describe('CountryUtils', () => {
 
-    const mockTranslationFunction = (key: string) => key;  // simple mock translation function for testing
+    const mockTranslationFunction = (key: string) => `lang.${key}`;  // simple mock translation function for testing
 
     describe('getCountryList', () => {
         it('should return a list of Country objects', () => {
@@ -46,8 +46,16 @@ describe('CountryUtils', () => {
     });
 
     describe('parseCountry', () => {
+
         it('should return Country object for a valid country name', () => {
             const countryName = 'af';
+            const country = CountryUtils.parseCountry(countryName, mockTranslationFunction);
+            expect(country).toBeDefined();
+            expect(country?.iso2).toEqual(CountryCode.AF);
+        });
+
+        it('should return Country object for a valid translated country name', () => {
+            const countryName = 'lang.countryCode.af.name';
             const country = CountryUtils.parseCountry(countryName, mockTranslationFunction);
             expect(country).toBeDefined();
             expect(country?.iso2).toEqual(CountryCode.AF);
@@ -58,6 +66,7 @@ describe('CountryUtils', () => {
             const country = CountryUtils.parseCountry(countryName, mockTranslationFunction);
             expect(country).toBeUndefined();
         });
+
     });
 
 });

@@ -323,14 +323,15 @@ export class CountryUtils {
             allCountries,
             (item: Country) : boolean => {
 
-                const iso2 = toLower(item.iso2);
-                if (iso2 === name) return true;
+                const iso2 = item.iso2;
+                if (toLower(iso2) === name) return true;
 
-                const iso3 = toLower(item.iso3);
-                if (iso3 === name) return true;
+                const iso3 = item.iso3;
+                if (toLower(iso3) === name) return true;
 
-                if (isCountryCode(iso2)) {
-                    return toLower(trim(t(getCountryNameTranslationKey(iso2)))).replace(/ +/g, " ") === name;
+                if (isCountryCode(iso2) && toLower(trim(t(getCountryNameTranslationKey(iso2)))).replace(/ +/g, " ") === name) {
+                    console.log(`key =`, getCountryNameTranslationKey(iso2));
+                    return true;
                 }
 
                 return false;
