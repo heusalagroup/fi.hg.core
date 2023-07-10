@@ -79,4 +79,8 @@ export class CurrencyUtils {
         return Math.round(value*100);
     }
 
+    public static fromCents (value: number) : number {
+        return Math.round(value) / 100;
+    }
+
 }
