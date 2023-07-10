@@ -5,9 +5,23 @@ import { createInvoiceRowDTO, explainInvoiceRowDTO, InvoiceRowDTO, isInvoiceRowD
 describe('InvoiceRowDTO', () => {
 
     const validInvoiceRow: InvoiceRowDTO = createInvoiceRowDTO(
-        'INV1', 'INV1', 'PAY1', 'CAM1', 'CAM_PAY1', 'PROD1',
-        '2023-01-01T00:00:00Z', '2023-01-01T00:00:00Z', '2023-01-01T00:00:00Z', '2023-12-31T00:00:00Z',
-        'Some Product', 'Internal note', 1, 100, 0.2, 0.1
+        'INV1',
+        'INV1',
+        'PAY1',
+        'CAM1',
+        'CAM_PAY1',
+        'PROD1',
+        '1234',
+        '2023-01-01T00:00:00Z',
+        '2023-01-01T00:00:00Z',
+        '2023-01-01T00:00:00Z',
+        '2023-12-31T00:00:00Z',
+        'Some Product',
+        'Internal note',
+        1,
+        100,
+        0.2,
+        0.1
     );
 
     const invalidInvoiceRow: any = {

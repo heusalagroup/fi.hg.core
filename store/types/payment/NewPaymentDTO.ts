@@ -14,6 +14,7 @@ export interface NewPaymentDTO {
     readonly billingPeriod    ?: number;
     readonly amount           ?: number;
     readonly bankAccountId    ?: string;
+    readonly inventoryItemId  ?: string;
     readonly refClientId      ?: string;
     readonly billingClientId  ?: string;
     readonly invoiceId        ?: string;
@@ -38,6 +39,7 @@ export function createNewPaymentDTO (
     productId         : string | undefined,
     groupId           : string | undefined,
     bankAccountId     : string | undefined,
+    inventoryItemId   : string | undefined,
     startDate         : string | undefined,
     endDate           : string | undefined,
     dueDate           : string | undefined,
@@ -51,7 +53,7 @@ export function createNewPaymentDTO (
     internalNote      : string | undefined,
     isRecurring       : boolean | undefined,
     onHold            : boolean | undefined,
-    isTerminated      : boolean | undefined
+    isTerminated      : boolean | undefined,
 ): NewPaymentDTO {
     return {
         clientId,
@@ -62,6 +64,7 @@ export function createNewPaymentDTO (
         productId,
         groupId,
         bankAccountId,
+        inventoryItemId,
         startDate,
         endDate,
         dueDate,
@@ -91,6 +94,7 @@ export function isNewPaymentDTO (value: any): value is NewPaymentDTO {
             'productId',
             'groupId',
             'bankAccountId',
+            'inventoryItemId',
             'startDate',
             'endDate',
             'dueDate',
@@ -114,6 +118,7 @@ export function isNewPaymentDTO (value: any): value is NewPaymentDTO {
         && isStringOrUndefined(value?.productId)
         && isStringOrUndefined(value?.groupId)
         && isStringOrUndefined(value?.bankAccountId)
+        && isStringOrUndefined(value?.inventoryItemId)
         && isStringOrUndefined(value?.startDate)
         && isStringOrUndefined(value?.endDate)
         && isStringOrUndefined(value?.dueDate)

@@ -11,6 +11,7 @@ export interface NewInvoiceRowDTO {
     readonly campaignId         ?: string;
     readonly campaignPaymentId  ?: string;
     readonly productId          ?: string;
+    readonly inventoryItemId    ?: string;
     readonly startDate          ?: string;
     readonly endDate            ?: string;
     readonly description        ?: string;
@@ -27,6 +28,7 @@ export function createNewInvoiceRowDTO (
     campaignId: string | undefined,
     campaignPaymentId: string | undefined,
     productId: string | undefined,
+    inventoryItemId: string | undefined,
     startDate: string | undefined,
     endDate: string | undefined,
     description: string | undefined,
@@ -42,6 +44,7 @@ export function createNewInvoiceRowDTO (
         campaignId,
         campaignPaymentId,
         productId,
+        inventoryItemId,
         startDate,
         endDate,
         description,
@@ -62,6 +65,7 @@ export function isNewInvoiceRowDTO (value: any): value is NewInvoiceRowDTO {
             'campaignId',
             'campaignPaymentId',
             'productId',
+            'inventoryItemId',
             'startDate',
             'endDate',
             'description',
@@ -76,6 +80,7 @@ export function isNewInvoiceRowDTO (value: any): value is NewInvoiceRowDTO {
         && isStringOrUndefined(value?.campaignId)
         && isStringOrUndefined(value?.campaignPaymentId)
         && isStringOrUndefined(value?.productId)
+        && isStringOrUndefined(value?.inventoryItemId)
         && isStringOrUndefined(value?.startDate)
         && isStringOrUndefined(value?.endDate)
         && isStringOrUndefined(value?.description)

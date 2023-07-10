@@ -13,6 +13,7 @@ export interface InvoiceRowDTO {
     readonly campaignId         : string;
     readonly campaignPaymentId  : string;
     readonly productId          : string;
+    readonly inventoryItemId    : string;
     readonly updated            : string;
     readonly created            : string;
     readonly startDate          : string;
@@ -32,6 +33,7 @@ export function createInvoiceRowDTO (
     campaignId         : string,
     campaignPaymentId  : string,
     productId          : string,
+    inventoryItemId          : string,
     updated            : string,
     created            : string,
     startDate          : string,
@@ -50,6 +52,7 @@ export function createInvoiceRowDTO (
         campaignId,
         campaignPaymentId,
         productId,
+        inventoryItemId,
         updated,
         created,
         startDate,
@@ -73,6 +76,7 @@ export function isInvoiceRowDTO (value: any): value is InvoiceRowDTO {
             'campaignId',
             'campaignPaymentId',
             'productId',
+            'inventoryItemId',
             'updated',
             'created',
             'startDate',
@@ -90,6 +94,7 @@ export function isInvoiceRowDTO (value: any): value is InvoiceRowDTO {
         && isString(value?.campaignId)
         && isString(value?.campaignPaymentId)
         && isString(value?.productId)
+        && isString(value?.inventoryItemId)
         && isString(value?.updated)
         && isString(value?.created)
         && isString(value?.startDate)
@@ -114,6 +119,7 @@ export function explainInvoiceRowDTO (value: any) : string {
                 'campaignId',
                 'campaignPaymentId',
                 'productId',
+                'inventoryItemId',
                 'updated',
                 'created',
                 'startDate',
@@ -131,6 +137,7 @@ export function explainInvoiceRowDTO (value: any) : string {
             , explainProperty("campaignId", explainString(value?.campaignId))
             , explainProperty("campaignPaymentId", explainString(value?.campaignPaymentId))
             , explainProperty("productId", explainString(value?.productId))
+            , explainProperty("inventoryItemId", explainString(value?.inventoryItemId))
             , explainProperty("updated", explainString(value?.updated))
             , explainProperty("created", explainString(value?.created))
             , explainProperty("startDate", explainString(value?.startDate))
