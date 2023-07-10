@@ -78,7 +78,7 @@ export function RequestParam (
     }
 
     if ( arg1 === undefined && arg2 === undefined && arg3 === undefined ) {
-        const queryParam = undefined;
+        const queryParam : string | undefined = undefined;
         const paramType = RequestParamValueType.REGULAR_OBJECT;
         return (
             target: any | Function,
