@@ -13,6 +13,7 @@ import { isUndefined } from "../../../types/undefined";
 import { explainPaytrailPaymentProviderListDTOOrUndefined, isPaytrailPaymentProviderListDTOOrUndefined, PaytrailPaymentProviderListDTO } from "../../../paytrail/dtos/PaytrailPaymentProviderListDTO";
 import { explainPaytrailPaymentDTOOrUndefined, isPaytrailPaymentDTOOrUndefined, PaytrailPaymentDTO } from "../../../paytrail/dtos/PaytrailPaymentDTO";
 import { explainPaytrailCreatePaymentDTOOrUndefined, isPaytrailCreatePaymentDTOOrUndefined, PaytrailCreatePaymentDTO } from "../../../paytrail/dtos/PaytrailCreatePaymentDTO";
+import { CurrencyUtils } from "../../../CurrencyUtils";
 
 export interface InvoiceDTO {
     readonly invoiceId         : string;
@@ -44,6 +45,11 @@ export interface InvoiceDTO {
     readonly payment          ?: PaytrailPaymentProviderListDTO;
     readonly newTransaction   ?: PaytrailCreatePaymentDTO;
     readonly transaction      ?: PaytrailPaymentDTO;
+    readonly totalSum             ?: number;
+    readonly totalVat             ?: number;
+    readonly totalSumIncludingVat ?: number;
+    readonly totalPaid            ?: number;
+    readonly totalOpen            ?: number;
 }
 
 export function createInvoiceDTO (
@@ -76,7 +82,37 @@ export function createInvoiceDTO (
     payment         ?: PaytrailPaymentProviderListDTO,
     newTransaction  ?: PaytrailCreatePaymentDTO,
     transaction     ?: PaytrailPaymentDTO,
+    totalSum             ?: number,
+    totalVat             ?: number,
+    totalSumIncludingVat ?: number,
+    totalPaid            ?: number,
+    totalOpen            ?: number,
 ): InvoiceDTO {
+
+    if ( (totalVat === undefined) && (totalSum !== undefined) && (totalSumIncludingVat !== undefined) ) {
+        totalVat = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalSum) );
+    }
+
+    if ( (totalSumIncludingVat === undefined) && (totalSum !== undefined) && (totalVat !== undefined) ) {
+        totalSumIncludingVat = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSum) + CurrencyUtils.getCents(totalVat) );
+    }
+
+    if ( (totalSum === undefined) && (totalSumIncludingVat !== undefined) && (totalVat !== undefined) ) {
+        totalSum = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalVat) );
+    }
+
+    if ( (totalOpen === undefined) && (totalSumIncludingVat !== undefined) && (totalPaid !== undefined) ) {
+        totalOpen = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalPaid) );
+    }
+
+    if ( (totalPaid === undefined) && (totalSumIncludingVat !== undefined) && (totalOpen !== undefined) ) {
+        totalPaid = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalOpen) );
+    }
+
+    if ( (isPaid === undefined) && (totalOpen !== undefined) ) {
+        isPaid = CurrencyUtils.getCents(totalOpen) <= 0;
+    }
+
     return {
         invoiceId,
         clientId,
@@ -103,10 +139,15 @@ export function createInvoiceDTO (
         sendDocuments,
         dueDays,
         rows,
-        isPaid,
+        ...(isPaid !== undefined ? {isPaid} : {} ),
         ...(payment ? {payment}: {}),
         ...(newTransaction ? {newTransaction}: {}),
         ...(transaction ? {transaction}: {}),
+        ...(totalSum !== undefined ? { totalSum }: {}),
+        ...(totalVat !== undefined ? { totalVat }: {}),
+        ...(totalSumIncludingVat !== undefined ? { totalSumIncludingVat }: {}),
+        ...(totalPaid !== undefined ? { totalPaid }: {}),
+        ...(totalOpen !== undefined ? { totalOpen }: {}),
     };
 }
 
