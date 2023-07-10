@@ -16,6 +16,7 @@ export interface PaymentDTO {
     readonly productId          : string;
     readonly groupId            : string;
     readonly bankAccountId      : string;
+    readonly inventoryItemId    : string;
     readonly updated            : string;
     readonly created            : string;
     readonly startDate          : string;
@@ -44,6 +45,7 @@ export function createPaymentDTO (
     productId        : string,
     groupId          : string,
     bankAccountId    : string,
+    inventoryItemId  : string,
     updated          : string,
     created          : string,
     startDate        : string,
@@ -71,6 +73,7 @@ export function createPaymentDTO (
         productId,
         groupId,
         bankAccountId,
+        inventoryItemId,
         updated,
         created,
         startDate,
@@ -103,6 +106,7 @@ export function isPaymentDTO (value: any): value is PaymentDTO {
             'productId',
             'groupId',
             'bankAccountId',
+            'inventoryItemId',
             'updated',
             'created',
             'startDate',
@@ -129,6 +133,7 @@ export function isPaymentDTO (value: any): value is PaymentDTO {
         && isString(value?.productId)
         && isString(value?.groupId)
         && isString(value?.bankAccountId)
+        && isString(value?.inventoryItemId)
         && isString(value?.updated)
         && isString(value?.created)
         && isString(value?.startDate)
