@@ -5,7 +5,7 @@ import { isUndefined } from "../../types/undefined";
 import { explainString, isString } from "../../types/String";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainReadonlyJsonObject, isReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
+import { explainReadonlyJsonObject, explainReadonlyJsonObjectOrUndefined, isReadonlyJsonObject, isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../Json";
 import { explainPaytrailProvider, isPaytrailProvider, PaytrailProvider } from "../types/PaytrailProvider";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 import { explainPaytrailPaymentMethodGroupData, isPaytrailPaymentMethodGroupData, PaytrailPaymentMethodGroupData } from "../types/PaytrailPaymentMethodGroupData";
@@ -60,7 +60,7 @@ export interface PaytrailCreatePaymentDTO {
      * Providers which require custom implementation. Currently used only by
      * Apple Pay.
      */
-    readonly customProviders: ReadonlyJsonObject;
+    readonly customProviders ?: ReadonlyJsonObject;
 
 }
 
@@ -71,7 +71,7 @@ export function createPaytrailCreatePaymentDTO (
     groups: readonly PaytrailPaymentMethodGroupData[],
     reference: string,
     providers: readonly PaytrailProvider[],
-    customProviders: ReadonlyJsonObject
+    customProviders: ReadonlyJsonObject | undefined
 ) : PaytrailCreatePaymentDTO {
     return {
         transactionId,
@@ -80,7 +80,7 @@ export function createPaytrailCreatePaymentDTO (
         groups,
         reference,
         providers,
-        customProviders,
+        ...(customProviders ? {customProviders} : {}),
     };
 }
 
@@ -102,7 +102,7 @@ export function isPaytrailCreatePaymentDTO (value: unknown) : value is PaytrailC
         && isArrayOf<PaytrailPaymentMethodGroupData>(value?.groups, isPaytrailPaymentMethodGroupData)
         && isString(value?.reference)
         && isArrayOf<PaytrailProvider>(value?.providers, isPaytrailProvider)
-        && isReadonlyJsonObject(value?.customProviders)
+        && isReadonlyJsonObjectOrUndefined(value?.customProviders)
     );
 }
 
@@ -125,7 +125,7 @@ export function explainPaytrailCreatePaymentDTO (value: any) : string {
             , explainProperty("groups", explainArrayOf<PaytrailPaymentMethodGroupData>("PaytrailPaymentMethodGroupData", explainPaytrailPaymentMethodGroupData, value?.groups, isPaytrailPaymentMethodGroupData))
             , explainProperty("reference", explainString(value?.reference))
             , explainProperty("providers", explainArrayOf<PaytrailProvider>("PaytrailProvider", explainPaytrailProvider, value?.providers, isPaytrailProvider))
-            , explainProperty("customProviders", explainReadonlyJsonObject(value?.customProviders))
+            , explainProperty("customProviders", explainReadonlyJsonObjectOrUndefined(value?.customProviders))
         ]
     );
 }
