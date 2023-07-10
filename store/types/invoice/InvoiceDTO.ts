@@ -90,23 +90,23 @@ export function createInvoiceDTO (
 ): InvoiceDTO {
 
     if ( (totalVat === undefined) && (totalSum !== undefined) && (totalSumIncludingVat !== undefined) ) {
-        totalVat = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalSum) );
+        totalVat = totalSumIncludingVat - totalSum;
     }
 
     if ( (totalSumIncludingVat === undefined) && (totalSum !== undefined) && (totalVat !== undefined) ) {
-        totalSumIncludingVat = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSum) + CurrencyUtils.getCents(totalVat) );
+        totalSumIncludingVat = Math.round(totalSum*100 + totalVat*100 ) / 100;
     }
 
     if ( (totalSum === undefined) && (totalSumIncludingVat !== undefined) && (totalVat !== undefined) ) {
-        totalSum = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalVat) );
+        totalSum = totalSumIncludingVat - totalVat;
     }
 
     if ( (totalOpen === undefined) && (totalSumIncludingVat !== undefined) && (totalPaid !== undefined) ) {
-        totalOpen = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalPaid) );
+        totalOpen = Math.round(totalSumIncludingVat*100 - totalPaid*100) / 100;
     }
 
     if ( (totalPaid === undefined) && (totalSumIncludingVat !== undefined) && (totalOpen !== undefined) ) {
-        totalPaid = CurrencyUtils.fromCents( CurrencyUtils.getCents(totalSumIncludingVat) - CurrencyUtils.getCents(totalOpen) );
+        totalPaid = totalSumIncludingVat - totalOpen;
     }
 
     if ( (isPaid === undefined) && (totalOpen !== undefined) ) {

@@ -50,7 +50,7 @@ export class CurrencyUtils {
         discountPercent ?: number | undefined
     ) : number {
         const realSum = this.getSumWithDiscount(sum, discountPercent);
-        return Math.round((realSum*100) / (1+vatPercent)) / 100;
+        return realSum / (1+vatPercent);
     }
 
     public static roundByAccuracy (
