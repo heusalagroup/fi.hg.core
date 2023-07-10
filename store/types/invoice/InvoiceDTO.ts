@@ -4,7 +4,7 @@ import { explainBoolean, explainBooleanOrUndefined, isBoolean } from "../../../t
 import { isInvoiceRowDTO, InvoiceRowDTO, explainInvoiceRowDTO } from "./InvoiceRowDTO";
 import { isBooleanOrUndefined } from "../../../types/Boolean";
 import { explainString, isString } from "../../../types/String";
-import { explainNumber, isNumber } from "../../../types/Number";
+import { explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../../types/Number";
 import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 import { explainArrayOfOrUndefined, isArrayOfOrUndefined } from "../../../types/Array";
@@ -184,6 +184,11 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
             'payment',
             'newTransaction',
             'transaction',
+            'totalSum',
+            'totalVat',
+            'totalSumIncludingVat',
+            'totalPaid',
+            'totalOpen',
         ])
         && isString(value?.invoiceId)
         && isString(value?.clientId)
@@ -214,6 +219,11 @@ export function isInvoiceDTO (value: any): value is InvoiceDTO {
         && isPaytrailPaymentProviderListDTOOrUndefined(value?.payment)
         && isPaytrailCreatePaymentDTOOrUndefined(value?.newTransaction)
         && isPaytrailPaymentDTOOrUndefined(value?.transaction)
+        && isNumberOrUndefined(value?.totalSum)
+        && isNumberOrUndefined(value?.totalVat)
+        && isNumberOrUndefined(value?.totalSumIncludingVat)
+        && isNumberOrUndefined(value?.totalPaid)
+        && isNumberOrUndefined(value?.totalOpen)
     );
 }
 
@@ -251,6 +261,11 @@ export function explainInvoiceDTO (value: any) : string {
                 'payment',
                 'newTransaction',
                 'transaction',
+                'totalSum',
+                'totalVat',
+                'totalSumIncludingVat',
+                'totalPaid',
+                'totalOpen',
             ])
             , explainProperty("invoiceId", explainString(value?.invoiceId))
             , explainProperty("clientId", explainString(value?.clientId))
@@ -281,6 +296,11 @@ export function explainInvoiceDTO (value: any) : string {
             , explainProperty("payment", explainPaytrailPaymentProviderListDTOOrUndefined(value?.payment))
             , explainProperty("newTransaction", explainPaytrailCreatePaymentDTOOrUndefined(value?.newTransaction))
             , explainProperty("transaction", explainPaytrailPaymentDTOOrUndefined(value?.transaction))
+            , explainProperty("totalSum", explainNumberOrUndefined(value?.totalSum))
+            , explainProperty("totalVat", explainNumberOrUndefined(value?.totalVat))
+            , explainProperty("totalSumIncludingVat", explainNumberOrUndefined(value?.totalSumIncludingVat))
+            , explainProperty("totalPaid", explainNumberOrUndefined(value?.totalPaid))
+            , explainProperty("totalOpen", explainNumberOrUndefined(value?.totalOpen))
         ]
     );
 }
