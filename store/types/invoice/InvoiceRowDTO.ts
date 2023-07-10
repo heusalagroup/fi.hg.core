@@ -33,7 +33,7 @@ export function createInvoiceRowDTO (
     campaignId         : string,
     campaignPaymentId  : string,
     productId          : string,
-    inventoryItemId          : string,
+    inventoryItemId    : string,
     updated            : string,
     created            : string,
     startDate          : string,
