@@ -56,6 +56,8 @@ describe('OneToMany', () => {
 
     it('can set fields metadata for cart property', () => {
         const expectedItem : EntityRelationOneToMany = createEntityRelationOneToMany("cartItems", "cart", "cart_items");
+        // .toBeArray() is only available in the testing mode
+        // @ts-ignore
         expect(metadata.oneToManyRelations).toBeArray();
         expect(metadata.oneToManyRelations).toContainEqual(expectedItem);
     });
