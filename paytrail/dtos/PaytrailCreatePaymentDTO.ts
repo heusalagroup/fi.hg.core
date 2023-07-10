@@ -5,7 +5,7 @@ import { isUndefined } from "../../types/undefined";
 import { explainString, isString } from "../../types/String";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainReadonlyJsonObject, explainReadonlyJsonObjectOrUndefined, isReadonlyJsonObject, isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../Json";
+import { explainReadonlyJsonObjectOrUndefined, isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../Json";
 import { explainPaytrailProvider, isPaytrailProvider, PaytrailProvider } from "../types/PaytrailProvider";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 import { explainPaytrailPaymentMethodGroupData, isPaytrailPaymentMethodGroupData, PaytrailPaymentMethodGroupData } from "../types/PaytrailPaymentMethodGroupData";
