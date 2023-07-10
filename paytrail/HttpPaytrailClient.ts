@@ -122,7 +122,8 @@ export class HttpPaytrailClient implements PaytrailClient {
         params  : {[key: string]: string},
         body   ?: string
     ): boolean {
-        return params['signature'] === this._calculateHmac(this._secret, params, body);
+        const signature = params?.signature;
+        return signature === this._calculateHmac(this._secret, params, body);
     }
 
     /**
