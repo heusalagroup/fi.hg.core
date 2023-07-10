@@ -12,6 +12,9 @@ import { filter } from "../../functions/filter";
 import { has } from "../../functions/has";
 import { find } from "../../functions/find";
 import { merge } from "../../functions/merge";
+import { uniq } from "../../functions/uniq";
+import { reduce } from "../../functions/reduce";
+import { map } from "../../functions/map";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
 import { OpenAPIV3 } from "../../types/openapi";
@@ -34,10 +37,6 @@ import { RequestPathVariableMapParamObject } from "../types/RequestPathVariableM
 import { DefaultHeaderMapValuesType } from "../types/DefaultHeaderMapValuesType";
 import { DefaultPathVariableMapValuesType } from "../types/DefaultPathVariableMapValuesType";
 import { RequestModelAttributeParamObject } from "../types/RequestModelAttributeParamObject";
-import { keys } from "../../functions/keys";
-import { uniq } from "../../functions/uniq";
-import { reduce } from "../../functions/reduce";
-import { map } from "../../functions/map";
 
 const LOG = LogService.createLogger('RequestControllerUtils');
 
