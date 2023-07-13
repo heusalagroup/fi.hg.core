@@ -122,7 +122,8 @@ export class RequestControllerUtils {
                     [propertyKey] : {
                         mappings        : [parsedObject],
                         params          : [],
-                        modelAttributes : []
+                        modelAttributes : [],
+                        synchronized    : false
                     }
                 }
             });
@@ -136,7 +137,8 @@ export class RequestControllerUtils {
                     [propertyKey] : {
                         mappings        : [parsedObject],
                         params          : [],
-                        modelAttributes : []
+                        modelAttributes : [],
+                        synchronized    : false
                     }
                 }
             });
@@ -230,7 +232,8 @@ export class RequestControllerUtils {
                     [propertyKey] : {
                         mappings        : [],
                         params          : [],
-                        modelAttributes : [attributeName]
+                        modelAttributes : [attributeName],
+                        synchronized    : false
                     }
                 }
             });
@@ -242,7 +245,8 @@ export class RequestControllerUtils {
                     [propertyKey] : {
                         mappings : [],
                         params   : [],
-                        modelAttributes : [attributeName]
+                        modelAttributes : [attributeName],
+                        synchronized    : false
                     }
                 }
             });
@@ -502,7 +506,8 @@ export class RequestControllerUtils {
                                 modelAttributes: [],
                                 mappings: [],
                                 params: [],
-                                operations: [config]
+                                operations: [config],
+                                synchronized    : false
                             }
                         }
                     }
@@ -538,7 +543,8 @@ export class RequestControllerUtils {
                         mappings        : [],
                         params          : [],
                         modelAttributes : [],
-                        operations      : [config]
+                        operations      : [config],
+                        synchronized    : false
                     }
                 }
             });
@@ -620,6 +626,75 @@ export class RequestControllerUtils {
 
     }
 
+    /**
+     *
+     * @param controller
+     * @param propertyKey
+     */
+    public static attachControllerSynchronizedRequest (
+        controller  : RequestController,
+        propertyKey : string | undefined
+    ) : void {
+
+        if (propertyKey === undefined) {
+            throw new TypeError(`Synchronizing all controller methods is not supported yet`);
+        }
+
+        let mappingObject : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
+        if (mappingObject === undefined) {
+            // ...when no previous mapping found at all, we'll create from stretch
+            setInternalRequestMappingObject(
+                controller,
+                {
+                    mappings: [],
+                    controllerProperties: {
+                        [propertyKey]: {
+                            modelAttributes: [],
+                            mappings: [],
+                            params: [],
+                            synchronized: true
+                        }
+                    }
+                }
+            );
+            return;
+        }
+
+        LOG.debug('attachControllerOperation: propertyKey = ', propertyKey);
+        LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
+
+        if (!has(mappingObject.controllerProperties, propertyKey)) {
+            // When mapping exists, but property does not, we'll create new property from stretch
+            setInternalRequestMappingObject(controller, {
+                ...mappingObject,
+                controllerProperties: {
+                    ...mappingObject.controllerProperties,
+                    [propertyKey] : {
+                        mappings        : [],
+                        params          : [],
+                        modelAttributes : [],
+                        synchronized    : true
+                    }
+                }
+            });
+        } else {
+            setInternalRequestMappingObject(
+                controller,
+                {
+                    ...mappingObject,
+                    controllerProperties: {
+                        ...mappingObject.controllerProperties,
+                        [propertyKey] : {
+                            ...mappingObject.controllerProperties[propertyKey],
+                            synchronized : true
+                        }
+                    }
+                }
+            );
+        }
+
+    }
+
 
     private static _setControllerMethodParam (
         controller          : RequestController,
@@ -641,7 +716,8 @@ export class RequestControllerUtils {
                                 requestBodyRequired : true,
                                 mappings            : [],
                                 modelAttributes     : [],
-                                params              : params
+                                params              : params,
+                                synchronized    : false
                             }
                         }
                     }
@@ -655,7 +731,8 @@ export class RequestControllerUtils {
                             [propertyKey] : {
                                 mappings : [],
                                 modelAttributes     : [],
-                                params   : params
+                                params   : params,
+                                synchronized    : false
                             }
                         }
                     }
@@ -674,7 +751,8 @@ export class RequestControllerUtils {
                                 requestBodyRequired: true,
                                 modelAttributes     : [],
                                 mappings : [],
-                                params   : params
+                                params   : params,
+                                synchronized    : false
                             }
                         }
                     }
@@ -689,7 +767,8 @@ export class RequestControllerUtils {
                             [propertyKey]: {
                                 mappings: [],
                                 modelAttributes : [],
-                                params: params
+                                params: params,
+                                synchronized    : false
                             }
                         }
                     }

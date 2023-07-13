@@ -32,6 +32,14 @@ export class RequestInterfaceUtils {
         return has(value, 'params');
     }
 
+    static hasPropertyModelAttributes (value : any) : value is {modelAttributes: any} {
+        return has(value, 'modelAttributes');
+    }
+
+    static hasPropertySynchronized (value : any) : value is {synchronized: any} {
+        return has(value, 'synchronized');
+    }
+
     static hasPropertyMappings (value : any) : value is {mappings: any} {
         return has(value, 'mappings');
     }

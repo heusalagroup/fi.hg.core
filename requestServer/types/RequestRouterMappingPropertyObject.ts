@@ -6,6 +6,7 @@ import { RequestParamObject } from "../../request/types/RequestParamObject";
 
 export interface RequestRouterMappingPropertyObject {
     readonly requestBodyRequired  : boolean;
+    readonly synchronized         : boolean;
     readonly methods              : readonly RequestMethod[];
     readonly controller           : any;
     readonly propertyName         : string;

@@ -10,6 +10,9 @@ import { map } from "../../functions/map";
 import { OpenAPIV3 } from "../../types/openapi";
 import { isArray, isArrayOf } from "../../types/Array";
 import { every } from "../../functions/every";
+import { isStringArray } from "../../types/StringArray";
+import { has } from "../../functions/has";
+import { isBoolean } from "../../types/Boolean";
 
 export interface RequestControllerMethodObject {
     requestBodyRequired ?: boolean,
@@ -18,6 +21,12 @@ export interface RequestControllerMethodObject {
 
     /** If any defined, this method is a model attribute builder for these model names */
     modelAttributes      : readonly string[];
+
+    /**
+     * If `true` this indicates the request server should synchronize every
+     * asynchronous operation to happen only one at the time
+     */
+    synchronized         : boolean;
 
     /**
      * OpenAPI v3 operation annotations
@@ -31,6 +40,8 @@ export function isRequestControllerMethodObject(value: any): value is RequestCon
         RequestInterfaceUtils.isObject(value)
         && RequestInterfaceUtils.hasPropertyMappings(value) && isArrayOf<RequestMappingObject>(value.mappings, isRequestMappingObject)
         && RequestInterfaceUtils.hasPropertyParams(value) && isArrayOf(value.params, RequestInterfaceUtils.createOrFunction(isRequestParamObject, isNull))
+        && RequestInterfaceUtils.hasPropertyModelAttributes(value) && isStringArray(value?.modelAttributes)
+        && RequestInterfaceUtils.hasPropertySynchronized(value) && isBoolean(value?.synchronized)
     );
 }
 
@@ -54,11 +65,9 @@ export function explainRequestControllerMethodObject(value: any): string {
     if (!RequestInterfaceUtils.hasPropertyParams(value)) {
         return `Property "params" did not exist`;
     }
-
     if (!isArray(value.params)) {
         return `Property "params" was not an array`;
     }
-
     const test = RequestInterfaceUtils.createOrFunction(isRequestParamObject, isNull);
     if (!every(value.params, test)) {
         return `Property "params" had some elements which were not RequestParamObject or null: ${
@@ -69,6 +78,20 @@ export function explainRequestControllerMethodObject(value: any): string {
                 return "";
             }), item => !!item).join(', ')
         }`;
+    }
+
+    if (!RequestInterfaceUtils.hasPropertyModelAttributes(value)) {
+        return `Property "modelAttributes" did not exist`;
+    }
+    if (!isStringArray(value.modelAttributes)) {
+        return `Property "modelAttributes" was not an string array`;
+    }
+
+    if (!RequestInterfaceUtils.hasPropertySynchronized(value)) {
+        return `Property "synchronized" did not exist`;
+    }
+    if (!isBoolean(value.synchronized)) {
+        return `Property "synchronized" was not a boolean`;
     }
 
     return "ok";

@@ -13,6 +13,8 @@ import { trim } from "../functions/trim";
 import { reduce } from "../functions/reduce";
 import { concat } from "../functions/concat";
 import { find } from "../functions/find";
+import { keys } from "../functions/keys";
+import { some } from "../functions/some";
 import { RequestControllerMappingObject } from "../request/types/RequestControllerMappingObject";
 import { RequestMappingObject } from "../request/types/RequestMappingObject";
 import { isRequestStatus } from "../request/types/RequestStatus";
@@ -36,12 +38,12 @@ import { BaseRoutes, RouteParamValuesObject } from "./types/BaseRoutes";
 import { RequestPathVariableParamObject } from "../request/types/RequestPathVariableParamObject";
 import { isRequestModelAttributeParamObject, RequestModelAttributeParamObject } from "../request/types/RequestModelAttributeParamObject";
 import { LogLevel } from "../types/LogLevel";
-import { keys } from "../functions/keys";
-import { some } from "../functions/some";
 import { RequestRouter } from "./RequestRouter";
 import { ParseRequestBodyCallback } from "./types/ParseRequestBodyCallback";
 import { RequestQueryParameters } from "../request/utils/RequestQueryParameters";
 import { parseRequestContextFromPath, RequestContext } from "./types/RequestContext";
+import { AsyncSynchronizer } from "../AsyncSynchronizer";
+import { AsyncSynchronizerImpl } from "../AsyncSynchronizerImpl";
 
 const LOG = LogService.createLogger('RequestRouterImpl');
 
@@ -67,8 +69,15 @@ export class RequestRouterImpl implements RequestRouter {
     private _requestMappings      : readonly RequestControllerMappingObject[] | undefined;
     private _initialized          : boolean;
 
+    /**
+     * The `AsyncSynchronizer`
+     * @private
+     */
+    private readonly _asyncSynchronizer : Map<string, AsyncSynchronizer>;
+
     protected constructor () {
         this._controllers             = [];
+        this._asyncSynchronizer        = new Map<string, AsyncSynchronizer>();
         this._routes                  = undefined;
         this._requestMappings         = undefined;
         this._modelAttributeNames     = undefined;
@@ -168,9 +177,11 @@ export class RequestRouterImpl implements RequestRouter {
             // Handle requests using controllers
             await reduce(routes, async (previousPromise, route: RequestRouterMappingPropertyObject) => {
 
-                const routeController     = route.controller;
-                const routePropertyName   = route.propertyName;
-                const routePropertyParams = route.propertyParams;
+                const routeController : any = route.controller;
+                const routePropertyName : string = route.propertyName;
+                const routePropertyParams : readonly (RequestParamObject | null)[] = route.propertyParams;
+
+                const routeIndex : number = this._controllers.indexOf(routeController);
 
                 await previousPromise;
 
@@ -238,50 +249,62 @@ export class RequestRouterImpl implements RequestRouter {
                     return;
                 }
 
-                LOG.debug(`Calling route property by name "${routePropertyName}"`);
-                const stepResult = await routeController[routePropertyName](...stepParams);
+                let stepResult : any;
+
+                // Lock processing if synchronized enabled
+                const isSynchronized : boolean = route.synchronized;
+                let synchronizerKey : string = '';
+                let synchronizer : AsyncSynchronizer | undefined;
+
+                if (isSynchronized) {
+
+                    // Initialize the queue
+                    synchronizerKey = `controller-${routeIndex}-method-${routePropertyName}`;
+                    LOG.debug(`handleRequest: synchronizer: `, synchronizerKey);
+                    synchronizer = this._asyncSynchronizer.get(synchronizerKey);
+                    if (!synchronizer) {
+                        synchronizer = AsyncSynchronizerImpl.create();
+                        this._asyncSynchronizer.set(synchronizerKey, synchronizer);
+                    }
+                    LOG.debug(`handleRequest: Initialized request synchronizer [${synchronizerKey}]`);
+
+                    stepResult = await synchronizer.run(async () : Promise<any> => {
+                        LOG.debug(`handleRequest: Calling route property by name "${routePropertyName}"`);
+                        return await routeController[routePropertyName](...stepParams);
+                    });
+
+                } else {
+                    LOG.debug(`handleRequest: Calling route property by name "${routePropertyName}"`);
+                    stepResult = await routeController[routePropertyName](...stepParams);
+                }
 
                 if (isRequestStatus(stepResult)) {
-
                     responseEntity = new ResponseEntity<any>(stepResult);
-
                 } else if (isRequestError(stepResult)) {
-
                     responseEntity = new ResponseEntity<ReadonlyJsonObject>(stepResult.toJSON(), stepResult.getStatusCode());
-
                 } else if (isResponseEntity(stepResult)) {
-
                     // FIXME: What if we already have stepResult??
                     if (responseEntity !== undefined) {
                         LOG.warn('Warning! ResponseEntity from previous call ignored.');
                     }
-
                     responseEntity = stepResult;
-
                 } else if (isReadonlyJsonArray(stepResult)) {
 
                     if (responseEntity === undefined) {
-
                         responseEntity = ResponseEntity.ok(stepResult);
-
                     } else {
-
                         responseEntity = new ResponseEntity<any>(
                             concat(responseEntity.getBody(), stepResult),
                             responseEntity.getHeaders(),
                             responseEntity.getStatusCode()
                         );
-
                     }
 
                 } else if (isReadonlyJsonObject(stepResult)) {
 
                     if (responseEntity === undefined) {
-
                         responseEntity = ResponseEntity.ok(stepResult);
-
                     } else {
-
                         responseEntity = new ResponseEntity<any>(
                             {
                                 ...responseEntity.getBody(),
@@ -290,43 +313,32 @@ export class RequestRouterImpl implements RequestRouter {
                             responseEntity.getHeaders(),
                             responseEntity.getStatusCode()
                         );
-
                     }
 
                 } else if (isReadonlyJsonAny(stepResult)) {
 
                     if (responseEntity === undefined) {
-
                         responseEntity = ResponseEntity.ok(stepResult);
-
                     } else {
-
                         LOG.warn('Warning! ResponseEntity from previous call ignored.');
-
                         responseEntity = new ResponseEntity<any>(
                             stepResult,
                             responseEntity.getHeaders(),
                             responseEntity.getStatusCode()
                         );
-
                     }
 
                 } else {
 
                     if (responseEntity === undefined) {
-
                         responseEntity = ResponseEntity.ok(stepResult);
-
                     } else {
-
                         LOG.warn('Warning! ResponseEntity from previous call ignored.');
-
                         responseEntity = new ResponseEntity<any>(
                             stepResult,
                             responseEntity.getHeaders(),
                             responseEntity.getStatusCode()
                         );
-
                     }
 
                 }
@@ -583,6 +595,7 @@ export class RequestRouterImpl implements RequestRouter {
                                         fullPropertyPath,
                                         {
                                             requestBodyRequired : propertyValue?.requestBodyRequired ?? false,
+                                            synchronized        : propertyValue?.synchronized ?? false,
                                             methods             : propertyMethodsCommonWithRoot,
                                             controller          : controller,
                                             propertyName        : propertyKey,
@@ -620,6 +633,7 @@ export class RequestRouterImpl implements RequestRouter {
                                 propertyPath,
                                 {
                                     requestBodyRequired : propertyValue?.requestBodyRequired ?? false,
+                                    synchronized        : propertyValue?.synchronized ?? false,
                                     methods             : propertyMethods,
                                     controller          : controller,
                                     propertyName        : propertyKey,

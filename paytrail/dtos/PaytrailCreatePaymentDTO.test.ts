@@ -86,7 +86,7 @@ describe('PaytrailCreatePaymentDTO', () => {
             expect(result).toContain('property "groups" not PaytrailPaymentMethodGroupData');
             expect(result).toContain('property "reference" not string');
             expect(result).toContain('property "providers" not PaytrailProvider');
-            expect(result).toContain('property "customProviders" not ReadonlyJsonObject');
+            expect(result).not.toContain('property "customProviders" not ReadonlyJsonObject');
         });
     });
 
