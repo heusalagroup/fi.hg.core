@@ -1,16 +1,15 @@
 // Copyright (c) 2022-2023. Heusala Group Oy. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor. All rights reserved.
 
-import {forEach} from "../../functions/forEach";
-import { has} from "../../functions/has";
+import { forEach } from "../../functions/forEach";
 import { EntityMetadata } from "../types/EntityMetadata";
 import { CrudRepository } from "../types/CrudRepository";
 import { Entity, EntityIdTypes } from "../Entity";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
 import { EntityField } from "../types/EntityField";
-import { Sort } from "../Sort";
-import { Where } from "../Where";
+import { isSort, Sort } from "../Sort";
+import { isWhere, Where } from "../Where";
 import { isReservedRepositoryMethodName } from "../types/Repository";
 import { ObjectUtils } from "../../ObjectUtils";
 
@@ -49,12 +48,17 @@ export class RepositoryUtils {
             // Standard ones
             const findAllByMethodName = `findAllBy${camelCasePropertyName}`;
             if ( !this._isReservedRepositoryMethodName(proto, findAllByMethodName) ) {
-                proto[findAllByMethodName] = function findAllByProperty (propertyValue: any, sort?: Sort): Promise<T[]> {
+                proto[findAllByMethodName] = function findAllByProperty (
+                    propertyValue: any,
+                    arg2?: Sort | Where | undefined,
+                    arg3?: Sort | Where | undefined,
+                ): Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyEquals(propertyName, propertyValue),
-                        sort
+                        arg2,
+                        arg3
                     );
                 };
             } else {
@@ -63,12 +67,17 @@ export class RepositoryUtils {
 
             const findByMethodName = `findBy${camelCasePropertyName}`;
             if (!this._isReservedRepositoryMethodName(proto, findByMethodName)) {
-                proto[findByMethodName] = function findByProperty (propertyValue: any, sort?: Sort) : Promise<T | undefined> {
+                proto[findByMethodName] = function findByProperty (
+                    propertyValue: any,
+                    arg2?: Sort | Where | undefined,
+                    arg3?: Sort | Where | undefined,
+                ) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyEquals(propertyName, propertyValue),
-                        sort
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -77,11 +86,17 @@ export class RepositoryUtils {
 
             const deleteAllByMethodName = `deleteAllBy${camelCasePropertyName}`;
             if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodName)) {
-                proto[deleteAllByMethodName] = function deleteAllByProperty (propertyValue: any) : Promise<void> {
+                proto[deleteAllByMethodName] = function deleteAllByProperty (
+                    propertyValue: any,
+                    arg2?: Where | undefined,
+                    arg3?: Where | undefined,
+                ) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyEquals(propertyName, propertyValue),
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -120,12 +135,18 @@ export class RepositoryUtils {
 
             const findAllByMethodNameBetween = `findAllBy${camelCasePropertyName}Between`;
             if (!this._isReservedRepositoryMethodName(proto, findAllByMethodNameBetween)) {
-                proto[findAllByMethodNameBetween] = function findAllByPropertyBetween (startValue: any, endValue: any, sort?: Sort) : Promise<T[]> {
+                proto[findAllByMethodNameBetween] = function findAllByPropertyBetween (
+                    startValue: any,
+                    endValue: any,
+                    arg2?: Sort | Where | undefined,
+                    arg3?: Sort | Where | undefined,
+                ) : Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyBetween(propertyName, startValue, endValue),
-                        sort
+                        arg2,
+                        arg3
                     );
                 };
             } else {
@@ -134,12 +155,18 @@ export class RepositoryUtils {
 
             const findByMethodNameBetween = `findBy${camelCasePropertyName}Between`;
             if (!this._isReservedRepositoryMethodName(proto, findByMethodNameBetween)) {
-                proto[findByMethodNameBetween] = function findByPropertyBetween (startValue: any, endValue: any, sort?: Sort) : Promise<T | undefined> {
+                proto[findByMethodNameBetween] = function findByPropertyBetween (
+                    startValue: any,
+                    endValue: any,
+                    arg2?: Sort | Where | undefined,
+                    arg3?: Sort | Where | undefined,
+                ) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyBetween(propertyName, startValue, endValue),
-                        sort
+                        arg2,
+                        arg3
                     );
                 };
             } else {
@@ -148,11 +175,18 @@ export class RepositoryUtils {
 
             const deleteAllByMethodNameBetween = `deleteAllBy${camelCasePropertyName}Between`;
             if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodNameBetween)) {
-                proto[deleteAllByMethodNameBetween] = function deleteAllByPropertyBetween (startValue: any, endValue: any) : Promise<void> {
+                proto[deleteAllByMethodNameBetween] = function deleteAllByPropertyBetween (
+                    startValue: any,
+                    endValue: any,
+                    arg2?: Where | undefined,
+                    arg3?: Where | undefined,
+                ) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyBetween(propertyName, startValue, endValue),
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -192,12 +226,17 @@ export class RepositoryUtils {
 
             const findAllByMethodNameAfter = `findAllBy${camelCasePropertyName}After`;
             if (!this._isReservedRepositoryMethodName(proto, findAllByMethodNameAfter)) {
-                proto[findAllByMethodNameAfter] = function findAllByPropertyAfter (value: any, sort?: Sort) : Promise<T[]> {
+                proto[findAllByMethodNameAfter] = function findAllByPropertyAfter (
+                    value: any,
+                    arg2?: Sort | Where | undefined,
+                    arg3?: Sort | Where | undefined,
+                ) : Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyAfter(propertyName, value),
-                        sort
+                        arg2,
+                        arg3
                     );
                 };
             } else {
@@ -206,12 +245,17 @@ export class RepositoryUtils {
 
             const findByMethodNameAfter = `findBy${camelCasePropertyName}After`;
             if (!this._isReservedRepositoryMethodName(proto, findByMethodNameAfter)) {
-                proto[findByMethodNameAfter] = function findByPropertyAfter (value: any, sort?: Sort) : Promise<T | undefined> {
+                proto[findByMethodNameAfter] = function findByPropertyAfter (
+                    value: any,
+                    arg2?: Sort | Where | undefined,
+                    arg3?: Sort | Where | undefined,
+                ) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyAfter(propertyName, value),
-                        sort
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -220,11 +264,17 @@ export class RepositoryUtils {
 
             const deleteAllByMethodNameAfter = `deleteAllBy${camelCasePropertyName}After`;
             if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodNameAfter)) {
-                proto[deleteAllByMethodNameAfter] = function deleteAllByPropertyAfter (value: any) : Promise<void> {
+                proto[deleteAllByMethodNameAfter] = function deleteAllByPropertyAfter (
+                    value  : any,
+                    arg2  ?: Where | undefined,
+                    arg3  ?: Where | undefined,
+                ) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyAfter(propertyName, value),
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -265,12 +315,17 @@ export class RepositoryUtils {
 
             const findAllByMethodNameBefore = `findAllBy${camelCasePropertyName}Before`;
             if (!this._isReservedRepositoryMethodName(proto, findAllByMethodNameBefore)) {
-                proto[findAllByMethodNameBefore] = function findAllByPropertyBefore (value: any, sort?: Sort) : Promise<T[]> {
+                proto[findAllByMethodNameBefore] = function findAllByPropertyBefore (
+                    value  : any,
+                    arg2  ?: Sort | Where | undefined,
+                    arg3  ?: Sort | Where | undefined,
+                ) : Promise<T[]> {
                     return RepositoryUtils._findAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyBefore(propertyName, value),
-                        sort
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -279,12 +334,17 @@ export class RepositoryUtils {
 
             const findByMethodNameBefore = `findBy${camelCasePropertyName}Before`;
             if (!this._isReservedRepositoryMethodName(proto, findByMethodNameBefore)) {
-                proto[findByMethodNameBefore] = function findByPropertyBefore (value: any, sort?: Sort) : Promise<T | undefined> {
+                proto[findByMethodNameBefore] = function findByPropertyBefore (
+                    value: any,
+                    arg2  ?: Sort | Where | undefined,
+                    arg3  ?: Sort | Where | undefined,
+                ) : Promise<T | undefined> {
                     return RepositoryUtils._findByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyBefore(propertyName, value),
-                        sort
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -293,11 +353,17 @@ export class RepositoryUtils {
 
             const deleteAllByMethodNameBefore = `deleteAllBy${camelCasePropertyName}Before`;
             if (!this._isReservedRepositoryMethodName(proto, deleteAllByMethodNameBefore)) {
-                proto[deleteAllByMethodNameBefore] = function deleteAllByPropertyBefore (value: any) : Promise<void> {
+                proto[deleteAllByMethodNameBefore] = function deleteAllByPropertyBefore (
+                    value: any,
+                    arg2  ?: Where | undefined,
+                    arg3  ?: Where | undefined,
+                ) : Promise<void> {
                     return RepositoryUtils._deleteAllByCondition<T, ID>(
                         this,
                         entityMetadata,
                         Where.propertyBefore(propertyName, value),
+                        arg2,
+                        arg3,
                     );
                 };
             } else {
@@ -343,20 +409,59 @@ export class RepositoryUtils {
      * @param self
      * @param where
      * @param entityMetadata
-     * @param sort
+     * @param arg2
+     * @param arg3
      */
     private static async _findAllByCondition<T extends Entity, ID extends EntityIdTypes> (
-        self            : CrudRepository<T, ID>,
-        entityMetadata  : EntityMetadata,
-        where           : Where,
-        sort            : Sort | undefined
+        self             : CrudRepository<T, ID>,
+        entityMetadata   : EntityMetadata,
+        where            : Where,
+        arg2             : Sort | Where | undefined,
+        arg3             : Sort | Where | undefined,
     ) : Promise<T[]> {
         const persister = self.__getPersister();
+        const [where2, sort] : [Where | undefined, Sort | undefined] = this._parseSortAndWhereArgs(arg2, arg3);
         return await persister.findAll<T, ID>(
             entityMetadata,
-            where,
+            where2 ? where.and(where2) : where,
             sort
         );
+    }
+
+    /**
+     *
+     * Note! Only one sort argument supported.
+     *
+     * @param arg2 Sort or where condition
+     * @param arg3 Sort or where condition
+     * @throws TypeError if multiple sort objects are provided
+     * @private
+     */
+    private static _parseSortAndWhereArgs (
+        arg2 : Sort | Where | undefined,
+        arg3 : Sort | Where | undefined,
+    ) : [Where | undefined, Sort | undefined] {
+        let sort : Sort | undefined = undefined;
+        let where : Where | undefined = undefined;
+        if (isSort(arg2)) {
+            if (isSort(arg3)) {
+                throw new TypeError('Only one Sort option supported');
+            }
+            sort = arg2;
+            if (isWhere(arg3)) {
+                where = arg3;
+            }
+        } else {
+            if (isWhere(arg2)) {
+                where = arg2;
+            }
+            if (isSort(arg3)) {
+                sort = arg3;
+            } else if (isWhere(arg3)) {
+                where = where ? where.and(arg3) : arg3;
+            }
+        }
+        return [where, sort];
     }
 
     /**
@@ -365,18 +470,21 @@ export class RepositoryUtils {
      * @param self
      * @param where
      * @param entityMetadata
-     * @param sort
+     * @param arg2 Optional sort or where condition. If this is sort, arg3 must be Where or undefined.
+     * @param arg3 Optional sort or where condition. If this is sort, arg2 must be Sort or undefined.
      */
     private static async _findByCondition<T extends Entity, ID extends EntityIdTypes> (
         self           : CrudRepository<T, ID>,
         entityMetadata : EntityMetadata,
         where          : Where,
-        sort           : Sort | undefined
+        arg2           : Sort | Where | undefined,
+        arg3           : Sort | Where | undefined,
     ) : Promise<T | undefined> {
         const persister = self.__getPersister();
+        const [where2, sort]: [Where | undefined, Sort | undefined]  = this._parseSortAndWhereArgs(arg2, arg3);
         return await persister.findBy<T, ID>(
             entityMetadata,
-            where,
+            where2 ? where.and(where2) : where,
             sort
         );
     }
@@ -386,17 +494,22 @@ export class RepositoryUtils {
      *
      * @param self
      * @param where
+     * @param arg2
+     * @param arg3
      * @param entityMetadata
      */
     private static async _deleteAllByCondition<T extends Entity, ID extends EntityIdTypes> (
         self           : CrudRepository<T, ID>,
         entityMetadata : EntityMetadata,
         where          : Where,
+        arg2           : Where | undefined,
+        arg3           : Where | undefined,
     ) : Promise<void> {
         const persister = self.__getPersister();
+        const [where2, ]: [Where | undefined, Sort | undefined]  = this._parseSortAndWhereArgs(arg2, arg3);
         return await persister.deleteAll<T, ID>(
             entityMetadata,
-            where
+            where2 ? where.and(where2) : where
         );
     }
 
