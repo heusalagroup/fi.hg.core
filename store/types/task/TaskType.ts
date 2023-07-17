@@ -5,6 +5,7 @@ import { explainEnum, isEnum, parseEnum, stringifyEnum } from "../../../types/En
 import { isUndefined } from "../../../types/undefined";
 
 export enum TaskType {
+    PING = "fi.hg.ping",
     VPS_RESTART = "fi.hg.vps.restart",
     VPS_START = "fi.hg.vps.start",
     VPS_STOP = "fi.hg.vps.stop",
