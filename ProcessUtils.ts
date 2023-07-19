@@ -5,67 +5,114 @@ import PATH   from 'path';
 import { trim } from "./functions/trim";
 import { LogService } from './LogService';
 import { LogLevel } from "./types/LogLevel";
+import { indexOf } from "./functions/indexOf";
+import { trimStart } from "./functions/trimStart";
 
 const LOG = LogService.createLogger('ProcessUtils');
 
 export class ProcessUtils {
 
-    static setLogLevel (level: LogLevel) {
+    public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
     }
 
-    static getArguments () : Array<string> {
+    public static getArguments () : string[] {
         return process.argv.slice(2);
     }
 
-    static parseEnvFileLine (obj : Record<string, string>, line : string) : Record<string, string> {
+    public static parseEnvFileLine (obj : Record<string, string>, input : string) : Record<string, string> {
 
-        if (line.indexOf('=') < 0) {
-            if (line.length) {
-                obj[line] = '';
+        if ( !input || !trimStart(input) ) return obj;
+
+        let key : string;
+        const equalIndex : number = indexOf(input, '=');
+
+        if (equalIndex < 0) {
+            key = trim(input);
+            if (key.length) {
+                return {
+                    ...obj,
+                    [key]: ''
+                };
+            } else {
+                return obj;
             }
-            return obj;
+        } else {
+            key = input.substring(0, equalIndex);
+            key = trim(key);
         }
 
-        const parts = line.split('=');
-        let key = parts.shift();
-        key = trim(key);
-        if (key.length) {
-            obj[key] = parts.join('=').trim();
+        if (equalIndex === input.length - 1) {
+            return {
+                ...obj,
+                [input]: ''
+            };
         }
-        return obj;
 
+        let block : string;
+        if (input[equalIndex + 1] === '"') {
+            const equalIndexEnd : number = indexOf(input, '"', equalIndex + 2);
+            if (equalIndexEnd >= 0) {
+                block = input.substring(equalIndex + 2, equalIndexEnd);
+                return this.parseEnvFileLine(
+                    {
+                        ...obj,
+                        [key]: block
+                    },
+                    input.substring(equalIndexEnd+1)
+                );
+            } else {
+                throw new TypeError('ProcessUtils.parseEnvFileLine: No ending for double quote detected');
+            }
+        }
+
+        const lineEnd : number = indexOf(input, '\n', equalIndex);
+        if (lineEnd < 0) {
+            block = input.substring(equalIndex + 1).trim();
+            block = block.replace(/\\n/g, '\n');
+            return {
+                ...obj,
+                [key]: block
+            };
+        } else {
+            block = input.substring(equalIndex + 1, lineEnd).trim();
+            block = block.replace(/\\n/g, '\n');
+            return this.parseEnvFileLine(
+                {
+                    ...obj,
+                    [key]: block
+                },
+                input.substring(lineEnd+1)
+            );
+        }
     }
 
-    static parseEnvFile (file: string) : Record<string, string> {
+    public static parseEnvString (input : string) {
+        return ProcessUtils.parseEnvFileLine({}, input);
+    }
 
+    public static parseEnvFile (file: string) : Record<string, string> {
         const input : string = FS.readFileSync(file, {encoding:"utf-8"});
-
-        const rows : Array<string> = input.split('\n');
-
-        return rows.reduce(ProcessUtils.parseEnvFileLine, {});
-
+        return this.parseEnvString(input);
     }
 
-    static initEnvFromFile (file: string) {
-
-        const params = ProcessUtils.parseEnvFile(file);
-
+    public static initEnvFromRecord (params: Record<string, string>) : void {
         process.env = {
             ...params,
             ...process.env
         };
-
     }
 
-    static initEnvFromDefaultFiles () {
+    public static initEnvFromFile (file: string) : void {
+        const params = ProcessUtils.parseEnvFile(file);
+        this.initEnvFromRecord(params);
+    }
 
+    public static initEnvFromDefaultFiles () : void {
         const file = PATH.join(process.cwd(), '.env');
-
         if (FS.existsSync(file)) {
             ProcessUtils.initEnvFromFile(file);
         }
-
     }
 
     /**
@@ -73,10 +120,10 @@ export class ProcessUtils {
      * @param callback
      * @param errorHandler
      */
-    static setupDestroyHandler (
+    public static setupDestroyHandler (
         callback     : () => void,
         errorHandler : (err : any) => void
-    ) {
+    ) : void {
 
         let destroyed = false;
 
@@ -106,7 +153,7 @@ export class ProcessUtils {
 
     }
 
-    private static _printErrors (reason: string, err ?: any) {
+    private static _printErrors (reason: string, err ?: any) : void {
         try {
             if (reason === "exit") {
                 if (err) {
