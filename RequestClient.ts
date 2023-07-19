@@ -41,11 +41,15 @@ export class RequestClient {
     /**
      * Creates client instance
      * @param client
+     * @deprecated Use RequestClient.create(), the direct constructor will be changed to protected later.
      */
     public constructor (client : RequestClientInterface) {
         this._client = client;
     }
 
+    public static create (client : RequestClientInterface) : RequestClient {
+        return new RequestClient(client);
+    }
 
     public async textEntityRequest (
         method   : RequestMethod,

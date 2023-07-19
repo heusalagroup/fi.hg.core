@@ -2,7 +2,7 @@
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainString, isString } from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
 import { explainOpPaymentStatus, isOpPaymentStatus, OpPaymentStatus } from "./OpPaymentStatus";
@@ -34,12 +34,12 @@ export interface OpPaymentResponseDTO {
     readonly currency: string;
     readonly archiveId: string;
     readonly debtorIban: string;
-    readonly ultimateDebtorName: string;
     readonly bookingDate: string;
     readonly paymentType: OpPaymentType;
     readonly creditorIban: string;
     readonly creditorName: string;
-    readonly ultimateCreditorName: string;
+    readonly ultimateDebtorName ?: string;
+    readonly ultimateCreditorName ?: string;
     readonly transactionId: string;
     readonly transactionDate: string;
     readonly endToEndId: string;
@@ -51,12 +51,12 @@ export function createOpPaymentResponseDTO (
     currency : string,
     archiveId : string,
     debtorIban : string,
-    ultimateDebtorName : string,
+    ultimateDebtorName : string | undefined,
     bookingDate : string,
     paymentType : OpPaymentType,
     creditorIban : string,
     creditorName : string,
-    ultimateCreditorName : string,
+    ultimateCreditorName : string | undefined,
     transactionId : string,
     transactionDate : string,
     endToEndId : string,
@@ -67,15 +67,15 @@ export function createOpPaymentResponseDTO (
         currency,
         archiveId,
         debtorIban,
-        ultimateDebtorName,
         bookingDate,
         paymentType,
         creditorIban,
         creditorName,
-        ultimateCreditorName,
         transactionId,
         transactionDate,
         endToEndId,
+        ...(ultimateDebtorName !== undefined ? {ultimateDebtorName} : {}),
+        ...(ultimateCreditorName !== undefined ? {ultimateCreditorName} : {}),
     };
 }
 
@@ -103,12 +103,12 @@ export function isOpPaymentResponseDTO (value: unknown) : value is OpPaymentResp
         && isString(value?.currency)
         && isString(value?.archiveId)
         && isString(value?.debtorIban)
-        && isString(value?.ultimateDebtorName)
+        && isStringOrUndefined(value?.ultimateDebtorName)
         && isString(value?.bookingDate)
         && isOpPaymentType(value?.paymentType)
         && isString(value?.creditorIban)
         && isString(value?.creditorName)
-        && isString(value?.ultimateCreditorName)
+        && isStringOrUndefined(value?.ultimateCreditorName)
         && isString(value?.transactionId)
         && isString(value?.transactionDate)
         && isString(value?.endToEndId)
@@ -140,12 +140,12 @@ export function explainOpPaymentResponseDTO (value: any) : string {
             , explainProperty("currency", explainString(value?.currency))
             , explainProperty("archiveId", explainString(value?.archiveId))
             , explainProperty("debtorIban", explainString(value?.debtorIban))
-            , explainProperty("ultimateDebtorName", explainString(value?.ultimateDebtorName))
+            , explainProperty("ultimateDebtorName", explainStringOrUndefined(value?.ultimateDebtorName))
             , explainProperty("bookingDate", explainString(value?.bookingDate))
             , explainProperty("paymentType", explainOpPaymentType(value?.paymentType))
             , explainProperty("creditorIban", explainString(value?.creditorIban))
             , explainProperty("creditorName", explainString(value?.creditorName))
-            , explainProperty("ultimateCreditorName", explainString(value?.ultimateCreditorName))
+            , explainProperty("ultimateCreditorName", explainStringOrUndefined(value?.ultimateCreditorName))
             , explainProperty("transactionId", explainString(value?.transactionId))
             , explainProperty("transactionDate", explainString(value?.transactionDate))
             , explainProperty("endToEndId", explainString(value?.endToEndId))

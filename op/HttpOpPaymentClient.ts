@@ -1,45 +1,84 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { createHmac } from 'crypto';
+import { createHmac, createSign } from 'crypto';
 import { OpPaymentClient } from "./OpPaymentClient";
 import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
 import { RequestClient } from "../RequestClient";
 import { explainOpPaymentResponseDTO, isOpPaymentResponseDTO, OpPaymentResponseDTO } from "./types/OpPaymentResponseDTO";
+import { isNonEmptyString } from "../types/String";
+import { LogService } from "../LogService";
 
-export class HttpOpCorporatePaymentClient implements OpPaymentClient {
+export const OP_PRODUCTION_URL = 'https://corporate-api.apiauth.services.op.fi';
+export const OP_SANDBOX_URL = 'https://sandbox-api.apiauth.aws.op-palvelut.net';
 
+const LOG = LogService.createLogger( 'HttpOpPaymentClient' );
+
+/**
+ * OP Corporate Payment API implementation
+ */
+export class HttpOpPaymentClient implements OpPaymentClient {
+
+    private readonly _client: RequestClient;
     private readonly _clientId: string;
     private readonly _clientSecret: string;
     private readonly _signingKey: string;
     private readonly _signingKid: string;
-    private readonly _mtlsKey: string;
-    private readonly _mtlsCertificate: string;
     private readonly _url: string;
+    private _token: string | undefined;
 
-    constructor (
+    private constructor (
+        client: RequestClient,
+        url: string,
         clientId: string,
         clientSecret: string,
         signingKey: string,
         signingKid: string,
-        mtlsKey: string,
-        mtlsCertificate: string,
-        url: string
+        token ?: string | undefined,
     ) {
+        this._client = client;
         this._clientId = clientId;
         this._clientSecret = clientSecret;
         this._signingKey = signingKey;
         this._signingKid = signingKid;
-        this._mtlsKey = mtlsKey;
-        this._mtlsCertificate = mtlsCertificate;
         this._url = url;
+        this._token = token;
+    }
+
+    public static create (
+        client: RequestClient,
+        clientId: string,
+        clientSecret: string,
+        signingKey: string,
+        signingKid: string,
+        url : string = OP_PRODUCTION_URL
+    ) : HttpOpPaymentClient {
+        return new HttpOpPaymentClient(
+            client,
+            url,
+            clientId,
+            clientSecret,
+            signingKey,
+            signingKid,
+        );
+    }
+
+    public isAuthenticated () : boolean {
+        return !!this._token;
+    }
+
+    public async authenticate () : Promise<void> {
+        this._token = await this._getAccessToken(this._clientId, this._clientSecret);
     }
 
     /**
-     * Initiates payment processing with payload signature
      * @inheritDoc
      */
-    public async initiatePayment (paymentRequestDto: OpPaymentRequestDTO): Promise<OpPaymentResponseDTO> {
-        const token = await this._getAccessToken();
+    public async createPayment (paymentRequestDto: OpPaymentRequestDTO): Promise<OpPaymentResponseDTO> {
+
+        if (!this.isAuthenticated()) {
+            await this.authenticate();
+        }
+        const token = this._token as string;
 
         const paymentRequest : string = JSON.stringify(paymentRequestDto);
 
@@ -51,14 +90,19 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
             "urn:op.api.iat": IAT,
             "kid": this._signingKid
         });
-        const HEADER_ENC = this._urlSafeBase64Encode(HEADER);
-        const SIGNATURE = this._urlSafeBase64Encode(
-            createHmac('sha256', this._signingKey)
-            .update(`${HEADER_ENC}.${paymentRequest}`)
-            .digest('binary')
-        );
+        const HEADER_ENC = Buffer.from(HEADER, 'utf8').toString('base64url');
+        LOG.debug(`HEADER_ENC = "${HEADER_ENC}"`);
+        LOG.debug(`HEADER_ENC.PaymentRequest = "${HEADER_ENC}.${paymentRequest}"`);
 
-        const REQ_SIGNATURE = `${HEADER_ENC}.${SIGNATURE}`;
+        const sign = createSign('SHA256');
+        sign.write(`${HEADER_ENC}.${paymentRequest}`);
+        sign.end();
+        const SIGNATURE = sign.sign(this._signingKey, 'base64url');
+
+        LOG.debug(`SIGNATURE = "${SIGNATURE}"`);
+
+        const REQ_SIGNATURE = `${HEADER_ENC}..${SIGNATURE}`;
+        LOG.debug(`REQ_SIGNATURE = "${REQ_SIGNATURE}"`);
 
         const headers = {
             'Content-Type': 'application/json',
@@ -66,7 +110,7 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
             'X-Req-Signature': REQ_SIGNATURE
         };
 
-        const resultString = await RequestClient.postText(
+        const resultString = await this._client.postText(
             `${this._url}/corporate-payment/v1/sepa-payment`,
             paymentRequest,
             headers
@@ -79,23 +123,29 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
         return dto;
     }
 
-    private async _getAccessToken(): Promise<string> {
-        const response = await RequestClient.postText(
+    private async _getAccessToken (
+        clientId: string,
+        clientSecret: string,
+    ): Promise<string> {
+        const a = new URLSearchParams();
+        a.append('grant_type', 'client_credentials');
+        a.append('client_id', clientId);
+        a.append('client_secret', clientSecret);
+        const credentialsData = a.toString();
+        LOG.debug(`credentialsData = "${credentialsData}"`)
+        const response = await this._client.postText(
             `${this._url}/corporate-oidc/v1/token`,
-            `grant_type=client_credentials&client_id=${this._clientId}&client_secret=${this._clientSecret}`,
+            credentialsData,
             {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         );
         const data = JSON.parse(response!);
-        return data.access_token;
-    }
-
-    private _urlSafeBase64Encode(str: string): string {
-        return Buffer.from(str).toString('base64')
-                     .replace(/\+/g, '-')
-                     .replace(/\//g, '_')
-                     .replace(/=+$/, '');
+        const accessToken = data?.access_token;
+        if (!isNonEmptyString(accessToken)) {
+            throw new TypeError('HttpOpPaymentClient._getAccessToken: No access token found in the response');
+        }
+        return accessToken;
     }
 
 }

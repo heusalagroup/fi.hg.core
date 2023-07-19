@@ -5,11 +5,12 @@ import { CountryCode } from "../types/CountryCode";
 import { Currency } from "../types/Currency";
 import { RequestClient } from "../RequestClient";
 import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
-import { HttpOpCorporatePaymentClient } from "./HttpOpPaymentClient";
+import { HttpOpPaymentClient } from "./HttpOpPaymentClient";
+import { MockRequestClient } from "../requestClient/mock/MockRequestClient";
 
 jest.mock('../RequestClient');
 
-describe("HttpOpCorporatePaymentClient", () => {
+describe("HttpOpPaymentClient", () => {
 
     const mockRequestClient = RequestClient as jest.Mocked<typeof RequestClient>;
     const mockOpPaymentRequestDTO: OpPaymentRequestDTO = {
@@ -36,17 +37,18 @@ describe("HttpOpCorporatePaymentClient", () => {
         }
     };
 
-    let client: HttpOpCorporatePaymentClient;
+    let client: HttpOpPaymentClient;
 
     beforeEach(() => {
-        // Set up HttpOpCorporatePaymentClient instance
-        client = new HttpOpCorporatePaymentClient(
+        // Set up HttpOpPaymentClient instance
+        client = HttpOpPaymentClient.create(
+            new RequestClient(
+                new MockRequestClient(),
+            ),
             "clientId",
             "clientSecret",
             "signingKey",
             "signingKid",
-            "mtlsKey",
-            "mtlsCertificate",
             "https://example.com"
         );
     });
@@ -78,7 +80,7 @@ describe("HttpOpCorporatePaymentClient", () => {
                              "endToEndId": "544652-end2end"
                          }));
 
-        const result = await client.initiatePayment(mockOpPaymentRequestDTO);
+        const result = await client.createPayment(mockOpPaymentRequestDTO);
 
         // Expect that RequestClient.postText has been called correctly
         expect(mockRequestClient.postText).toHaveBeenCalledTimes(2);
@@ -114,7 +116,9 @@ describe("HttpOpCorporatePaymentClient", () => {
             "ultimateCreditorName": "Ultimate Creditor",
             "transactionId": "A_50009420112088_2019-05-24_20190524593156999999_0",
             "transactionDate": "2019-05-11",
-            "endToEndId": "544652-end2end"        });
+            "endToEndId": "544652-end2end"
+        });
+
     });
 
 });

@@ -13,8 +13,9 @@ export interface OpPaymentClient {
      * Initiates payment processing
      *
      * @param paymentRequest The sandbox-signing.key
-     * @param signingKid The signing KID
      */
-    initiatePayment (paymentRequest: OpPaymentRequestDTO, signingKid: string): Promise<OpPaymentResponseDTO>;
+    createPayment (
+        paymentRequest: OpPaymentRequestDTO,
+    ): Promise<OpPaymentResponseDTO>;
 
 }
