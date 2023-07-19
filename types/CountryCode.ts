@@ -1,6 +1,7 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { trim } from "../functions/trim";
+import { explainEnum } from "./Enum";
 
 export enum CountryCode {
     AF = "AF",
@@ -1016,4 +1017,8 @@ export function parseCountryCode (value: any): CountryCode | undefined {
         default            :
             return undefined;
     }
+}
+
+export function explainCountryCode (value : unknown) : string {
+    return explainEnum("CountryCode", CountryCode, isCountryCode, value);
 }

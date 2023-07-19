@@ -2,6 +2,9 @@
 
 import { explainEnum } from "./Enum";
 
+/**
+ * ISO 4217 code for currencies
+ */
 export enum Currency {
     EUR = "EUR",
     USD = "USD",
