@@ -7,7 +7,7 @@ ProcessUtils.initEnvFromDefaultFiles();
 import HTTP from "http";
 import HTTPS from "https";
 import { HgNode } from "../../node/HgNode";
-import { HttpOpPaymentClient, OP_SANDBOX_URL } from "./HttpOpPaymentClient";
+import { OP_SANDBOX_URL } from "./op-constants";
 import { OpPaymentClient } from "./OpPaymentClient";
 import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
 import { Currency } from "../types/Currency";
@@ -15,6 +15,9 @@ import { CountryCode } from "../types/CountryCode";
 import { OpPaymentResponseDTO } from "./types/OpPaymentResponseDTO";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClient } from "../RequestClient";
+import { HttpOpPaymentClient } from "./HttpOpPaymentClient";
+import { HttpOpAuthClient } from "./HttpOpAuthClient";
+import { LogLevel } from "../types/LogLevel";
 
 const API_SERVER = OP_SANDBOX_URL;
 const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
@@ -48,23 +51,32 @@ describe('system', () => {
         let client : OpPaymentClient;
 
         beforeAll(() => {
+            RequestClient.setLogLevel(LogLevel.NONE);
+            NodeRequestClient.setLogLevel(LogLevel.NONE);
+            HttpOpAuthClient.setLogLevel(LogLevel.NONE);
+            HttpOpPaymentClient.setLogLevel(LogLevel.NONE);
             HgNode.initialize();
         });
 
         beforeEach(() => {
+            const requestClient = RequestClient.create(
+                NodeRequestClient.create(
+                    HTTP,
+                    HTTPS,
+                    {
+                        cert: MTLS_CRT,
+                        key: MTLS_KEY,
+                    }
+                )
+            );
             client = HttpOpPaymentClient.create(
-                RequestClient.create(
-                    NodeRequestClient.create(
-                        HTTP,
-                        HTTPS,
-                        {
-                            cert: MTLS_CRT,
-                            key: MTLS_KEY,
-                        }
-                    )
+                requestClient,
+                HttpOpAuthClient.create(
+                    requestClient,
+                    CLIENT_ID,
+                    CLIENT_SECRET,
+                    API_SERVER,
                 ),
-                CLIENT_ID,
-                CLIENT_SECRET,
                 SIGNING_KEY,
                 SIGNING_KID,
                 API_SERVER,
