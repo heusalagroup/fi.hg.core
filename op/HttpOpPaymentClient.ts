@@ -4,12 +4,14 @@ import { createHmac } from 'crypto';
 import { OpPaymentClient } from "./OpPaymentClient";
 import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
 import { RequestClient } from "../RequestClient";
+import { explainOpPaymentResponseDTO, isOpPaymentResponseDTO, OpPaymentResponseDTO } from "./types/OpPaymentResponseDTO";
 
 export class HttpOpCorporatePaymentClient implements OpPaymentClient {
 
     private readonly _clientId: string;
     private readonly _clientSecret: string;
     private readonly _signingKey: string;
+    private readonly _signingKid: string;
     private readonly _mtlsKey: string;
     private readonly _mtlsCertificate: string;
     private readonly _url: string;
@@ -18,6 +20,7 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
         clientId: string,
         clientSecret: string,
         signingKey: string,
+        signingKid: string,
         mtlsKey: string,
         mtlsCertificate: string,
         url: string
@@ -25,6 +28,7 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
         this._clientId = clientId;
         this._clientSecret = clientSecret;
         this._signingKey = signingKey;
+        this._signingKid = signingKid;
         this._mtlsKey = mtlsKey;
         this._mtlsCertificate = mtlsCertificate;
         this._url = url;
@@ -34,7 +38,7 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
      * Initiates payment processing with payload signature
      * @inheritDoc
      */
-    public async initiatePayment (paymentRequestDto: OpPaymentRequestDTO, signingKid: string): Promise<any> {
+    public async initiatePayment (paymentRequestDto: OpPaymentRequestDTO): Promise<OpPaymentResponseDTO> {
         const token = await this._getAccessToken();
 
         const paymentRequest : string = JSON.stringify(paymentRequestDto);
@@ -45,7 +49,7 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
             "crit": ["b64", "urn:op.api.iat"],
             "alg": "RS256",
             "urn:op.api.iat": IAT,
-            "kid": signingKid
+            "kid": this._signingKid
         });
         const HEADER_ENC = this._urlSafeBase64Encode(HEADER);
         const SIGNATURE = this._urlSafeBase64Encode(
@@ -54,7 +58,7 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
             .digest('binary')
         );
 
-        const REQ_SIGNATURE = `${HEADER_ENC}..${SIGNATURE}`;
+        const REQ_SIGNATURE = `${HEADER_ENC}.${SIGNATURE}`;
 
         const headers = {
             'Content-Type': 'application/json',
@@ -68,7 +72,11 @@ export class HttpOpCorporatePaymentClient implements OpPaymentClient {
             headers
         );
 
-        return JSON.parse(resultString!);
+        const dto = JSON.parse(resultString!);
+        if (!isOpPaymentResponseDTO(dto)) {
+            throw new TypeError(`Response was not OpPaymentResponseDTO: ${explainOpPaymentResponseDTO(dto)}`);
+        }
+        return dto;
     }
 
     private async _getAccessToken(): Promise<string> {

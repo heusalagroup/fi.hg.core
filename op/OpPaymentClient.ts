@@ -1,5 +1,8 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
+import { OpPaymentResponseDTO } from "./types/OpPaymentResponseDTO";
+
 /**
  * OP Corporate Payment API client
  * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#section/Usage-example
@@ -12,6 +15,6 @@ export interface OpPaymentClient {
      * @param paymentRequest The sandbox-signing.key
      * @param signingKid The signing KID
      */
-    initiatePayment (paymentRequest: string, signingKid: string): Promise<any>;
+    initiatePayment (paymentRequest: OpPaymentRequestDTO, signingKid: string): Promise<OpPaymentResponseDTO>;
 
 }
