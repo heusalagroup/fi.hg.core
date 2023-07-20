@@ -5,9 +5,9 @@ import { isUndefined } from "../../types/undefined";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainOpPaymentCreditor, isOpPaymentCreditor, OpPaymentCreditor } from "./OpPaymentCreditor";
-import { explainOpPaymentDebtor, isOpPaymentDebtor, OpPaymentDebtor } from "./OpPaymentDebtor";
-import { explainOpPaymentInstructedAmount, isOpPaymentInstructedAmount, OpPaymentInstructedAmount } from "./OpPaymentInstructedAmount";
+import { explainOpPaymentCreditor, isOpPaymentCreditor, OpPaymentCreditor } from "../types/OpPaymentCreditor";
+import { explainOpPaymentDebtor, isOpPaymentDebtor, OpPaymentDebtor } from "../types/OpPaymentDebtor";
+import { explainOpPaymentInstructedAmount, isOpPaymentInstructedAmount, OpPaymentInstructedAmount } from "../types/OpPaymentInstructedAmount";
 
 /**
  * @example

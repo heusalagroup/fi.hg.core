@@ -5,8 +5,8 @@ import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "..
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
-import { explainOpPaymentStatus, isOpPaymentStatus, OpPaymentStatus } from "./OpPaymentStatus";
-import { explainOpPaymentType, isOpPaymentType, OpPaymentType } from "./OpPaymentType";
+import { explainOpPaymentStatus, isOpPaymentStatus, OpPaymentStatus } from "../types/OpPaymentStatus";
+import { explainOpPaymentType, isOpPaymentType, OpPaymentType } from "../types/OpPaymentType";
 
 /**
  * @example

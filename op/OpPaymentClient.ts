@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
-import { OpPaymentResponseDTO } from "./types/OpPaymentResponseDTO";
+import { OpPaymentRequestDTO } from "./dto/OpPaymentRequestDTO";
+import { OpPaymentResponseDTO } from "./dto/OpPaymentResponseDTO";
 
 /**
  * OP Corporate Payment API client

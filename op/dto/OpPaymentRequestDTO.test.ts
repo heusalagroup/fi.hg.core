@@ -3,7 +3,7 @@
 import { CountryCode } from "../../types/CountryCode";
 import { Currency } from "../../types/Currency";
 import { createOpPaymentRequestDTO, explainOpPaymentRequestDTO, explainOpPaymentRequestDTOOrUndefined, isOpPaymentRequestDTO, isOpPaymentRequestDTOOrUndefined, OpPaymentRequestDTO, parseOpPaymentRequestDTO } from "./OpPaymentRequestDTO";
-import { OpPaymentCreditor } from "./OpPaymentCreditor";
+import { OpPaymentCreditor } from "../types/OpPaymentCreditor";
 
 describe('OpPaymentRequestDTO', () => {
 

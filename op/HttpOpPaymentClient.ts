@@ -2,9 +2,9 @@
 
 import { createSign } from 'crypto';
 import { OpPaymentClient } from "./OpPaymentClient";
-import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
+import { OpPaymentRequestDTO } from "./dto/OpPaymentRequestDTO";
 import { RequestClient } from "../RequestClient";
-import { explainOpPaymentResponseDTO, isOpPaymentResponseDTO, OpPaymentResponseDTO } from "./types/OpPaymentResponseDTO";
+import { explainOpPaymentResponseDTO, isOpPaymentResponseDTO, OpPaymentResponseDTO } from "./dto/OpPaymentResponseDTO";
 import { LogService } from "../LogService";
 import { OP_PRODUCTION_URL } from "./op-constants";
 import { OpAuthClient } from "./OpAuthClient";

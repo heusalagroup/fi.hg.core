@@ -4,7 +4,7 @@ import { OpPaymentCreditor } from "./types/OpPaymentCreditor";
 import { CountryCode } from "../types/CountryCode";
 import { Currency } from "../types/Currency";
 import { RequestClient } from "../RequestClient";
-import { OpPaymentRequestDTO } from "./types/OpPaymentRequestDTO";
+import { OpPaymentRequestDTO } from "./dto/OpPaymentRequestDTO";
 import { HttpOpPaymentClient } from "./HttpOpPaymentClient";
 import { HttpOpAuthClient } from "./HttpOpAuthClient";
 import { MockRequestClient } from "../requestClient/mock/MockRequestClient";
