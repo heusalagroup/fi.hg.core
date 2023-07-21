@@ -44,7 +44,7 @@ describe('HttpOpAccountDataClient', () => {
             mockClient.getJson.mockResolvedValueOnce(expectedAccountList as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
             const client = HttpOpAccountDataClient.create(
-                mockClient, mockAuthClient, 'url', 'signingKey', 'signingKid');
+                mockClient, mockAuthClient, 'url');
 
             const accountList = await client.getAccountList();
             expect(accountList).toEqual(expectedAccountList);
@@ -70,7 +70,7 @@ describe('HttpOpAccountDataClient', () => {
             };
             mockClient.getJson.mockResolvedValueOnce(expectedAccountDetails as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url', 'signingKey', 'signingKid');
+            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url');
 
             const accountDetails = await client.getAccountDetails('surrogateId');
             expect(accountDetails).toEqual(expectedAccountDetails);
@@ -88,7 +88,7 @@ describe('HttpOpAccountDataClient', () => {
             ];
             mockClient.getJson.mockResolvedValueOnce(expectedTransactionList as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url', 'signingKey', 'signingKid');
+            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url');
 
             const transactionList = await client.getTransactionListFromTimestamp('surrogateId', 1234567890);
             expect(transactionList).toEqual(expectedTransactionList);
@@ -106,7 +106,7 @@ describe('HttpOpAccountDataClient', () => {
             ];
             mockClient.getJson.mockResolvedValueOnce(expectedTransactionList as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url', 'signingKey', 'signingKid');
+            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url');
 
             const transactionList = await client.getTransactionListFromObjectId('surrogateId', 'objectId');
             expect(transactionList).toEqual(expectedTransactionList);
