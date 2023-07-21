@@ -15,8 +15,8 @@ import { CountryCode } from "../types/CountryCode";
 import { OpPaymentResponseDTO } from "./dto/OpPaymentResponseDTO";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClient } from "../RequestClient";
-import { HttpOpPaymentClient } from "./HttpOpPaymentClient";
-import { HttpOpAuthClient } from "./HttpOpAuthClient";
+import { OpPaymentClientImpl } from "./OpPaymentClientImpl";
+import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
 
 const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
@@ -47,14 +47,14 @@ const SIGNING_KID = process.env.OP_SIGNING_KID ?? '';
  * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#section/Usage-example
  */
 describe('system', () => {
-    (CLIENT_ID ? describe : describe.skip)('HttpOpPaymentClient', () => {
+    (CLIENT_ID ? describe : describe.skip)('OpPaymentClientImpl', () => {
         let client : OpPaymentClient;
 
         beforeAll(() => {
             RequestClient.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
-            HttpOpAuthClient.setLogLevel(LogLevel.NONE);
-            HttpOpPaymentClient.setLogLevel(LogLevel.NONE);
+            OpAuthClientImpl.setLogLevel(LogLevel.NONE);
+            OpPaymentClientImpl.setLogLevel(LogLevel.NONE);
             HgNode.initialize();
         });
 
@@ -69,9 +69,9 @@ describe('system', () => {
                     }
                 )
             );
-            client = HttpOpPaymentClient.create(
+            client = OpPaymentClientImpl.create(
                 requestClient,
-                HttpOpAuthClient.create(
+                OpAuthClientImpl.create(
                     requestClient,
                     CLIENT_ID,
                     CLIENT_SECRET,

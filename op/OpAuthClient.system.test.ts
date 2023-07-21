@@ -7,10 +7,11 @@ import HTTP from "http";
 import HTTPS from "https";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClient } from "../RequestClient";
-import { HttpOpAuthClient } from "./HttpOpAuthClient";
+import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
 import { HgNode } from "../../node/HgNode";
 import { OP_SANDBOX_URL } from "./op-constants";
+import { OpAuthClient } from "./OpAuthClient";
 
 const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
 const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
@@ -35,13 +36,13 @@ const MTLS_CRT = process.env.OP_MTLS_CRT ?? '';
  * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#section/Usage-example
  */
 describe('system', () => {
-    (CLIENT_ID ? describe : describe.skip)('HttpOpAuthClient', () => {
-        let client : HttpOpAuthClient;
+    (CLIENT_ID ? describe : describe.skip)('OpAuthClientImpl', () => {
+        let client : OpAuthClient;
 
         beforeAll(() => {
             RequestClient.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
-            HttpOpAuthClient.setLogLevel(LogLevel.NONE);
+            OpAuthClientImpl.setLogLevel(LogLevel.NONE);
             HgNode.initialize();
         });
 
@@ -56,7 +57,7 @@ describe('system', () => {
                     }
                 )
             );
-            client = HttpOpAuthClient.create(
+            client = OpAuthClientImpl.create(
                 requestClient,
                 CLIENT_ID,
                 CLIENT_SECRET,

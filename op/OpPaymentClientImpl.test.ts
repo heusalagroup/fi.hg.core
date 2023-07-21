@@ -5,15 +5,15 @@ import { CountryCode } from "../types/CountryCode";
 import { Currency } from "../types/Currency";
 import { RequestClient } from "../RequestClient";
 import { OpPaymentRequestDTO } from "./dto/OpPaymentRequestDTO";
-import { HttpOpPaymentClient } from "./HttpOpPaymentClient";
-import { HttpOpAuthClient } from "./HttpOpAuthClient";
+import { OpPaymentClientImpl } from "./OpPaymentClientImpl";
+import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { MockRequestClient } from "../requestClient/mock/MockRequestClient";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { LogLevel } from "../types/LogLevel";
 
 jest.mock('../RequestClient');
 
-describe("HttpOpPaymentClient", () => {
+describe("OpPaymentClientImpl", () => {
 
     const requestClient = new RequestClient(
         new MockRequestClient(),
@@ -45,21 +45,21 @@ describe("HttpOpPaymentClient", () => {
         }
     };
 
-    let client: HttpOpPaymentClient;
+    let client: OpPaymentClientImpl;
 
     beforeAll(() => {
         RequestClient.setLogLevel(LogLevel.NONE);
         NodeRequestClient.setLogLevel(LogLevel.NONE);
-        HttpOpAuthClient.setLogLevel(LogLevel.NONE);
-        HttpOpPaymentClient.setLogLevel(LogLevel.NONE);
+        OpAuthClientImpl.setLogLevel(LogLevel.NONE);
+        OpPaymentClientImpl.setLogLevel(LogLevel.NONE);
     });
 
     beforeEach(() => {
 
-        // Set up HttpOpPaymentClient instance
-        client = HttpOpPaymentClient.create(
+        // Set up OpPaymentClientImpl instance
+        client = OpPaymentClientImpl.create(
             requestClient,
-            HttpOpAuthClient.create(
+            OpAuthClientImpl.create(
                 requestClient,
                 "clientId",
                 "clientSecret",

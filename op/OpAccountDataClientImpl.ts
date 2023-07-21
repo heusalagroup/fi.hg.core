@@ -20,12 +20,12 @@ import { forEach } from "../functions/forEach";
 import { keys } from "../functions/keys";
 import { explainOpTransactionListDTO, isOpTransactionListDTO, OpTransactionListDTO } from "./dto/OpTransactionListDTO";
 
-const LOG = LogService.createLogger( 'HttpOpAccountDataClient' );
+const LOG = LogService.createLogger( 'OpAccountDataClientImpl' );
 
 /**
  * OP Corporate Payment API implementation
  */
-export class HttpOpAccountDataClient implements OpAccountDataClient, OpAuthClient {
+export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClient {
 
     private readonly _client: RequestClient;
     private readonly _auth: OpAuthClient;
@@ -40,8 +40,8 @@ export class HttpOpAccountDataClient implements OpAccountDataClient, OpAuthClien
         client: RequestClient,
         auth: OpAuthClient,
         url : string = OP_PRODUCTION_URL
-    ) : HttpOpAccountDataClient {
-        return new HttpOpAccountDataClient(
+    ) : OpAccountDataClientImpl {
+        return new OpAccountDataClientImpl(
             client,
             auth,
             url,

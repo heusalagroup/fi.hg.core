@@ -10,12 +10,12 @@ import { OP_PRODUCTION_URL } from "./op-constants";
 import { OpAuthClient } from "./OpAuthClient";
 import { LogLevel } from "../types/LogLevel";
 
-const LOG = LogService.createLogger( 'HttpOpPaymentClient' );
+const LOG = LogService.createLogger( 'OpPaymentClientImpl' );
 
 /**
  * OP Corporate Payment API implementation
  */
-export class HttpOpPaymentClient implements OpPaymentClient, OpAuthClient {
+export class OpPaymentClientImpl implements OpPaymentClient, OpAuthClient {
 
     private readonly _client: RequestClient;
     private readonly _auth: OpAuthClient;
@@ -34,8 +34,8 @@ export class HttpOpPaymentClient implements OpPaymentClient, OpAuthClient {
         signingKey: string,
         signingKid: string,
         url : string = OP_PRODUCTION_URL
-    ) : HttpOpPaymentClient {
-        return new HttpOpPaymentClient(
+    ) : OpPaymentClientImpl {
+        return new OpPaymentClientImpl(
             client,
             auth,
             url,

@@ -8,14 +8,15 @@ import HTTPS from "https";
 import { OP_SANDBOX_URL } from "./op-constants";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClient } from "../RequestClient";
-import { HttpOpAccountDataClient } from "./HttpOpAccountDataClient";
-import { HttpOpAuthClient } from "./HttpOpAuthClient";
+import { OpAccountDataClientImpl } from "./OpAccountDataClientImpl";
+import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { map } from "../functions/map";
 import { OpAccountDTO } from "./dto/OpAccountDTO";
 import { shuffle } from "../functions/shuffle";
 import { slice } from "../functions/slice";
 import { parseInteger } from "../types/Number";
 import { LogLevel } from "../types/LogLevel";
+import { OpAccountDataClient } from "./OpAccountDataClient";
 
 const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
 const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
@@ -49,14 +50,14 @@ const TRANSACTION_TEST_LIMIT = parseInteger(process.env.OP_TRANSACTION_TEST_LIMI
  * ```
  */
 describe('system', () => {
-    (CLIENT_ID ? describe : describe.skip)('HttpOpAccountDataClient', () => {
-        let client : HttpOpAccountDataClient;
+    (CLIENT_ID ? describe : describe.skip)('OpAccountDataClientImpl', () => {
+        let client : OpAccountDataClient;
 
         beforeAll(() => {
             RequestClient.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
-            HttpOpAuthClient.setLogLevel(LogLevel.NONE);
-            HttpOpAccountDataClient.setLogLevel(LogLevel.NONE);
+            OpAuthClientImpl.setLogLevel(LogLevel.NONE);
+            OpAccountDataClientImpl.setLogLevel(LogLevel.NONE);
         });
 
         beforeEach(() => {
@@ -70,9 +71,9 @@ describe('system', () => {
                     }
                 )
             );
-            client = HttpOpAccountDataClient.create(
+            client = OpAccountDataClientImpl.create(
                 requestClient,
-                HttpOpAuthClient.create(
+                OpAuthClientImpl.create(
                     requestClient,
                     CLIENT_ID,
                     CLIENT_SECRET,

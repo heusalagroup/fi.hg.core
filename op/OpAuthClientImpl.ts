@@ -8,12 +8,12 @@ import { explainJsonObject, isJsonObject, parseJson } from "../Json";
 import { OP_PRODUCTION_URL } from "./op-constants";
 import { OpAuthClient } from "./OpAuthClient";
 
-const LOG = LogService.createLogger( 'HttpOpAuthClient' );
+const LOG = LogService.createLogger( 'OpAuthClientImpl' );
 
 /**
  * OP Auth API implementation
  */
-export class HttpOpAuthClient implements OpAuthClient {
+export class OpAuthClientImpl implements OpAuthClient {
 
     private readonly _client: RequestClient;
     private readonly _clientId: string;
@@ -44,8 +44,8 @@ export class HttpOpAuthClient implements OpAuthClient {
         clientId: string,
         clientSecret: string,
         url : string = OP_PRODUCTION_URL
-    ) : HttpOpAuthClient {
-        return new HttpOpAuthClient(
+    ) : OpAuthClientImpl {
+        return new OpAuthClientImpl(
             client,
             url,
             clientId,
@@ -58,7 +58,7 @@ export class HttpOpAuthClient implements OpAuthClient {
     }
 
     public async authenticate () : Promise<void> {
-        this._token = await HttpOpAuthClient.getAccessToken(
+        this._token = await OpAuthClientImpl.getAccessToken(
             this._client,
             this._url,
             this._clientId,
@@ -97,7 +97,7 @@ export class HttpOpAuthClient implements OpAuthClient {
         }
         const accessToken = data?.access_token;
         if (!isNonEmptyString(accessToken)) {
-            throw new TypeError('HttpOpAuthClient.getAccessToken: No access token found in the response');
+            throw new TypeError('OpAuthClientImpl.getAccessToken: No access token found in the response');
         }
         return accessToken;
     }

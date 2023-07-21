@@ -3,12 +3,12 @@
 import { OpAuthClient } from "./OpAuthClient";
 import { RequestClient } from "../RequestClient";
 import { OpAccountListDTO } from "./dto/OpAccountListDTO";
-import { HttpOpAccountDataClient } from "./HttpOpAccountDataClient";
+import { OpAccountDataClientImpl } from "./OpAccountDataClientImpl";
 import { OpAccountDetailsDTO } from "./dto/OpAccountDetailsDTO";
 import { OpTransactionListDTO } from "./dto/OpTransactionListDTO";
 import { createOpTransactionDTO } from "./dto/OpTransactionDTO";
 
-describe('HttpOpAccountDataClient', () => {
+describe('OpAccountDataClientImpl', () => {
 
     let mockAuthClient: jest.Mocked<OpAuthClient>;
     let mockClient: jest.Mocked<RequestClient>;
@@ -43,7 +43,7 @@ describe('HttpOpAccountDataClient', () => {
             ];
             mockClient.getJson.mockResolvedValueOnce(expectedAccountList as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(
+            const client = OpAccountDataClientImpl.create(
                 mockClient, mockAuthClient, 'url');
 
             const accountList = await client.getAccountList();
@@ -70,7 +70,7 @@ describe('HttpOpAccountDataClient', () => {
             };
             mockClient.getJson.mockResolvedValueOnce(expectedAccountDetails as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url');
+            const client = OpAccountDataClientImpl.create(mockClient, mockAuthClient, 'url');
 
             const accountDetails = await client.getAccountDetails('surrogateId');
             expect(accountDetails).toEqual(expectedAccountDetails);
@@ -88,7 +88,7 @@ describe('HttpOpAccountDataClient', () => {
             ];
             mockClient.getJson.mockResolvedValueOnce(expectedTransactionList as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url');
+            const client = OpAccountDataClientImpl.create(mockClient, mockAuthClient, 'url');
 
             const transactionList = await client.getTransactionListFromTimestamp('surrogateId', 1234567890);
             expect(transactionList).toEqual(expectedTransactionList);
@@ -106,7 +106,7 @@ describe('HttpOpAccountDataClient', () => {
             ];
             mockClient.getJson.mockResolvedValueOnce(expectedTransactionList as unknown as any);
             mockAuthClient.isAuthenticated.mockReturnValueOnce(true);
-            const client = HttpOpAccountDataClient.create(mockClient, mockAuthClient, 'url');
+            const client = OpAccountDataClientImpl.create(mockClient, mockAuthClient, 'url');
 
             const transactionList = await client.getTransactionListFromObjectId('surrogateId', 'objectId');
             expect(transactionList).toEqual(expectedTransactionList);
