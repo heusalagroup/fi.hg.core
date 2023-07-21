@@ -29,8 +29,6 @@ export class HttpOpAccountDataClient implements OpAccountDataClient, OpAuthClien
 
     private readonly _client: RequestClient;
     private readonly _auth: OpAuthClient;
-    private readonly _signingKey: string;
-    private readonly _signingKid: string;
     private readonly _url: string;
     private _token: string | undefined;
 
@@ -41,16 +39,12 @@ export class HttpOpAccountDataClient implements OpAccountDataClient, OpAuthClien
     public static create (
         client: RequestClient,
         auth: OpAuthClient,
-        signingKey: string,
-        signingKid: string,
         url : string = OP_PRODUCTION_URL
     ) : HttpOpAccountDataClient {
         return new HttpOpAccountDataClient(
             client,
             auth,
             url,
-            signingKey,
-            signingKid,
         );
     }
 
@@ -58,14 +52,10 @@ export class HttpOpAccountDataClient implements OpAccountDataClient, OpAuthClien
         client: RequestClient,
         auth: OpAuthClient,
         url: string,
-        signingKey: string,
-        signingKid: string,
         token ?: string | undefined,
     ) {
         this._client = client;
         this._auth = auth;
-        this._signingKey = signingKey;
-        this._signingKid = signingKid;
         this._url = url;
         this._token = token;
     }

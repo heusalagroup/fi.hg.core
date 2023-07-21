@@ -2,10 +2,9 @@
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainString, isString } from "../../types/String";
+import { explainString, explainStringOrNull, isString, isStringOrNull } from "../../types/String";
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
-import { explainReadonlyJsonObject, isReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
 import { explainNumber, isNumber } from "../../types/Number";
 
 /**
@@ -46,7 +45,7 @@ export interface OpAccountDetailsDTO {
     /**
      * Account due date for fixed term accounts
      */
-    readonly dueDate: string;
+    readonly dueDate: string | null;
 
     /**
      * Owner identifier
@@ -66,7 +65,7 @@ export interface OpAccountDetailsDTO {
     /**
      * Account name
      */
-    readonly accountName : string;
+    readonly accountName : string | null;
 
     /**
      * Maximum credit amount for the account
@@ -96,24 +95,24 @@ export interface OpAccountDetailsDTO {
     /**
      * Maximum allowed amount for negative balance per day
      */
-    readonly intraDayLimit : string;
+    readonly intraDayLimit : string | null;
 
 }
 
 export function createOpAccountDetailsDTO (
     bic: string,
     iban: string,
-    dueDate: string,
+    dueDate: string | null,
     ownerId: string,
     currency : string,
     netBalance : string,
-    accountName : string,
+    accountName : string | null,
     creditLimit : number,
     surrogateId : string,
     accountOwner : string,
     creationDate : string,
     grossBalance : string,
-    intraDayLimit : string,
+    intraDayLimit : string | null,
     ) : OpAccountDetailsDTO {
     return {
         bic,
@@ -152,17 +151,17 @@ export function isOpAccountDetailsDTO (value: unknown) : value is OpAccountDetai
         ])
         && isString(value?.bic)
         && isString(value?.iban)
-        && isString(value?.dueDate)
+        && isStringOrNull(value?.dueDate)
         && isString(value?.ownerId)
         && isString(value?.currency)
         && isString(value?.netBalance)
-        && isString(value?.accountName)
+        && isStringOrNull(value?.accountName)
         && isNumber(value?.creditLimit)
         && isString(value?.surrogateId)
         && isString(value?.accountOwner)
         && isString(value?.creationDate)
         && isString(value?.grossBalance)
-        && isString(value?.intraDayLimit)
+        && isStringOrNull(value?.intraDayLimit)
     );
 }
 
@@ -187,17 +186,17 @@ export function explainOpAccountDetailsDTO (value: any) : string {
             ])
             , explainProperty("bic", explainString(value?.bic))
             , explainProperty("iban", explainString(value?.iban))
-            , explainProperty("dueDate", explainString(value?.dueDate))
+            , explainProperty("dueDate", explainStringOrNull(value?.dueDate))
             , explainProperty("ownerId", explainString(value?.ownerId))
             , explainProperty("currency", explainString(value?.currency))
             , explainProperty("netBalance", explainString(value?.netBalance))
-            , explainProperty("accountName", explainString(value?.accountName))
+            , explainProperty("accountName", explainStringOrNull(value?.accountName))
             , explainProperty("creditLimit", explainNumber(value?.creditLimit))
             , explainProperty("surrogateId", explainString(value?.surrogateId))
             , explainProperty("accountOwner", explainString(value?.accountOwner))
             , explainProperty("creationDate", explainString(value?.creationDate))
             , explainProperty("grossBalance", explainString(value?.grossBalance))
-            , explainProperty("intraDayLimit", explainString(value?.intraDayLimit))
+            , explainProperty("intraDayLimit", explainStringOrNull(value?.intraDayLimit))
         ]
     );
 }

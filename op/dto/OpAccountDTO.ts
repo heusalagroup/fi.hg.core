@@ -2,7 +2,7 @@
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainString, isString } from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
 import { explainReadonlyJsonObject, isReadonlyJsonObject, ReadonlyJsonObject } from "../../Json";
@@ -64,6 +64,15 @@ export interface OpAccountDTO {
      */
     readonly productNames : ReadonlyJsonObject;
 
+    /**
+     * Account type code.
+     *
+     * Note! This is undocumented at OP API documentation, but exist in
+     * the response. Hence, this is defined as optional since no information if
+     * it is optional or not.
+     */
+    readonly accountTypeCode ?: string;
+
 }
 
 export function createOpAccountDTO (
@@ -74,6 +83,7 @@ export function createOpAccountDTO (
     currency : string,
     surrogateId : string,
     productNames : ReadonlyJsonObject,
+    accountTypeCode ?: string,
 ) : OpAccountDTO {
     return {
         bic,
@@ -83,6 +93,7 @@ export function createOpAccountDTO (
         currency,
         surrogateId,
         productNames,
+        accountTypeCode
     };
 }
 
@@ -97,6 +108,7 @@ export function isOpAccountDTO (value: unknown) : value is OpAccountDTO {
             'currency',
             'surrogateId',
             'productNames',
+            'accountTypeCode',
         ])
         && isString(value?.bic)
         && isString(value?.iban)
@@ -105,6 +117,7 @@ export function isOpAccountDTO (value: unknown) : value is OpAccountDTO {
         && isString(value?.currency)
         && isString(value?.surrogateId)
         && isReadonlyJsonObject(value?.productNames)
+        && isStringOrUndefined(value?.accountTypeCode)
     );
 }
 
@@ -120,6 +133,7 @@ export function explainOpAccountDTO (value: any) : string {
                 'currency',
                 'surrogateId',
                 'productNames',
+                'accountTypeCode',
             ])
             , explainProperty("bic", explainString(value?.bic))
             , explainProperty("iban", explainString(value?.iban))
@@ -128,6 +142,7 @@ export function explainOpAccountDTO (value: any) : string {
             , explainProperty("currency", explainString(value?.currency))
             , explainProperty("surrogateId", explainString(value?.surrogateId))
             , explainProperty("productNames", explainReadonlyJsonObject(value?.productNames))
+            , explainProperty("accountTypeCode", explainStringOrUndefined(value?.accountTypeCode))
         ]
     );
 }

@@ -30,7 +30,7 @@ export interface OpAccountDataClient {
      * Returns account transactions.
      *
      * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
-     * @param fromTimestamp
+     * @param fromTimestamp Note, this is microseconds! Use something like `Date.now()*1000`.
      * @param maxPast
      * @param maxFuture
      * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/transactionsV2

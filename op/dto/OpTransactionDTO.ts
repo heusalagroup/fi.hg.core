@@ -2,7 +2,7 @@
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainString, isString } from "../../types/String";
+import { explainString, explainStringOrNull, isString, isStringOrNull } from "../../types/String";
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
 import { explainNumber, isNumber } from "../../types/Number";
@@ -60,12 +60,12 @@ export interface OpTransactionDTO {
     /**
      * Message that the payer gave for this transaction
      */
-    readonly message: string;
+    readonly message: string | null;
 
     /**
      * ISO currency code
      */
-    readonly currency: string;
+    readonly currency: string | null;
 
     /**
      * Transaction identifier, can be used as a basis of further transaction
@@ -86,12 +86,12 @@ export interface OpTransactionDTO {
     /**
      * Finnish Creditor Reference for the transaction
      */
-    readonly reference: string;
+    readonly reference: string | null;
 
     /**
      * RF Creditor Reference for the transaction
      */
-    readonly rfReference: string;
+    readonly rfReference: string | null;
 
     /**
      * Value date
@@ -137,7 +137,7 @@ export interface OpTransactionDTO {
      * Unique identification, as assigned by the original initiating party, to
      * unambiguously identify the original transaction.
      */
-    readonly endToEndId: string;
+    readonly endToEndId: string | null;
 
     /**
      * The timestamp the transaction was registered with internally, given in
@@ -166,13 +166,13 @@ export function createOpTransactionDTO (
     amount: string,
     balanceBefore: string,
     balanceAfter: string,
-    message: string,
-    currency: string,
+    message: string | null,
+    currency: string | null,
     objectId: string,
     archiveId: string,
     debtorBic: string,
-    reference: string,
-    rfReference: string,
+    reference: string | null,
+    rfReference: string | null,
     valueDate: string,
     debtorName: string,
     bookingDate: string,
@@ -181,7 +181,7 @@ export function createOpTransactionDTO (
     creditorName: string,
     debtorAccount: string,
     creditorAccount: string,
-    endToEndId: string,
+    endToEndId: string | null,
     timestamp: number,
     transactionTypeCode: string,
     transactionTypeDescription: string,
@@ -245,13 +245,13 @@ export function isOpTransactionDTO (value: unknown) : value is OpTransactionDTO 
         && isString(value?.amount)
         && isString(value?.balanceBefore)
         && isString(value?.balanceAfter)
-        && isString(value?.message)
-        && isString(value?.currency)
+        && isStringOrNull(value?.message)
+        && isStringOrNull(value?.currency)
         && isString(value?.objectId)
         && isString(value?.archiveId)
         && isString(value?.debtorBic)
-        && isString(value?.reference)
-        && isString(value?.rfReference)
+        && isStringOrNull(value?.reference)
+        && isStringOrNull(value?.rfReference)
         && isString(value?.valueDate)
         && isString(value?.debtorName)
         && isString(value?.bookingDate)
@@ -260,7 +260,7 @@ export function isOpTransactionDTO (value: unknown) : value is OpTransactionDTO 
         && isString(value?.creditorName)
         && isString(value?.debtorAccount)
         && isString(value?.creditorAccount)
-        && isString(value?.endToEndId)
+        && isStringOrNull(value?.endToEndId)
         && isNumber(value?.timestamp)
         && isString(value?.transactionTypeCode)
         && isString(value?.transactionTypeDescription)
@@ -300,13 +300,13 @@ export function explainOpTransactionDTO (value: any) : string {
             , explainProperty("amount", explainString(value?.amount))
             , explainProperty("balanceBefore", explainString(value?.balanceBefore))
             , explainProperty("balanceAfter", explainString(value?.balanceAfter))
-            , explainProperty("message", explainString(value?.message))
-            , explainProperty("currency", explainString(value?.currency))
+            , explainProperty("message", explainStringOrNull(value?.message))
+            , explainProperty("currency", explainStringOrNull(value?.currency))
             , explainProperty("objectId", explainString(value?.objectId))
             , explainProperty("archiveId", explainString(value?.archiveId))
             , explainProperty("debtorBic", explainString(value?.debtorBic))
-            , explainProperty("reference", explainString(value?.reference))
-            , explainProperty("rfReference", explainString(value?.rfReference))
+            , explainProperty("reference", explainStringOrNull(value?.reference))
+            , explainProperty("rfReference", explainStringOrNull(value?.rfReference))
             , explainProperty("valueDate", explainString(value?.valueDate))
             , explainProperty("debtorName", explainString(value?.debtorName))
             , explainProperty("bookingDate", explainString(value?.bookingDate))
@@ -315,7 +315,7 @@ export function explainOpTransactionDTO (value: any) : string {
             , explainProperty("creditorName", explainString(value?.creditorName))
             , explainProperty("debtorAccount", explainString(value?.debtorAccount))
             , explainProperty("creditorAccount", explainString(value?.creditorAccount))
-            , explainProperty("endToEndId", explainString(value?.endToEndId))
+            , explainProperty("endToEndId", explainStringOrNull(value?.endToEndId))
             , explainProperty("timestamp", explainNumber(value?.timestamp))
             , explainProperty("transactionTypeCode", explainString(value?.transactionTypeCode))
             , explainProperty("transactionTypeDescription", explainString(value?.transactionTypeDescription))

@@ -1,0 +1,161 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
+import { ProcessUtils } from "../ProcessUtils";
+ProcessUtils.initEnvFromDefaultFiles();
+
+import HTTP from "http";
+import HTTPS from "https";
+import { OP_SANDBOX_URL } from "./op-constants";
+import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
+import { RequestClient } from "../RequestClient";
+import { HttpOpAccountDataClient } from "./HttpOpAccountDataClient";
+import { HttpOpAuthClient } from "./HttpOpAuthClient";
+import { map } from "../functions/map";
+import { OpAccountDTO } from "./dto/OpAccountDTO";
+import { shuffle } from "../functions/shuffle";
+import { slice } from "../functions/slice";
+import { parseInteger } from "../types/Number";
+import { LogLevel } from "../types/LogLevel";
+
+const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
+const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
+const CLIENT_SECRET = process.env.OP_CLIENT_SECRET ?? '';
+const MTLS_KEY = process.env.OP_MTLS_KEY ?? '';
+const MTLS_CRT = process.env.OP_MTLS_CRT ?? '';
+
+/**
+ * Since there may be a way too many transactions to test every one, we test
+ * only this amount by random.
+ *
+ * The intention is so that we could find if our DTOs have correct types.
+ *
+ * This will make this test unstable though. It may fail sometimes and not fail
+ * other times.
+ */
+const TRANSACTION_TEST_LIMIT = parseInteger(process.env.OP_TRANSACTION_TEST_LIMIT ?? '5') ?? 5;
+
+/**
+ * To run these tests, create `.env` file like this:
+ * ```
+ * OP_SANDBOX_URL=sandbox-url
+ * OP_CLIENT_ID=clientId
+ * OP_CLIENT_SECRET=clientSecret
+ * OP_MTLS_KEY="-----BEGIN RSA PRIVATE KEY-----
+ * ...
+ * -----END RSA PRIVATE KEY-----"
+ * OP_MTLS_CRT="-----BEGIN CERTIFICATE-----
+ * ...
+ * -----END CERTIFICATE-----"
+ * ```
+ */
+describe('system', () => {
+    (CLIENT_ID ? describe : describe.skip)('HttpOpAccountDataClient', () => {
+        let client : HttpOpAccountDataClient;
+
+        beforeAll(() => {
+            RequestClient.setLogLevel(LogLevel.NONE);
+            NodeRequestClient.setLogLevel(LogLevel.NONE);
+            HttpOpAuthClient.setLogLevel(LogLevel.NONE);
+            HttpOpAccountDataClient.setLogLevel(LogLevel.NONE);
+        });
+
+        beforeEach(() => {
+            const requestClient = RequestClient.create(
+                NodeRequestClient.create(
+                    HTTP,
+                    HTTPS,
+                    {
+                        cert: MTLS_CRT,
+                        key: MTLS_KEY,
+                    }
+                )
+            );
+            client = HttpOpAccountDataClient.create(
+                requestClient,
+                HttpOpAuthClient.create(
+                    requestClient,
+                    CLIENT_ID,
+                    CLIENT_SECRET,
+                    API_SERVER,
+                ),
+                API_SERVER,
+            );
+        });
+
+        describe('#getAccountList', () => {
+            it('should return a list of accounts', async () => {
+                const accountList = await client.getAccountList();
+                expect(accountList).toBeDefined();
+                expect(Array.isArray(accountList)).toBeTruthy();
+            });
+        });
+
+        describe('surrogateId operations', () => {
+
+            let surrogateIdList : string[];
+
+            beforeEach( async () => {
+                const accountList = await client.getAccountList();
+                expect(accountList.length).toBeGreaterThanOrEqual(1);
+                surrogateIdList = map(
+                    accountList,
+                    (item: OpAccountDTO) => item.surrogateId
+                );
+            });
+
+            describe('#getAccountDetails', () => {
+
+                it('should return details for a all accounts', async () => {
+                    for(let i=0; i<surrogateIdList.length; i+=1) {
+                        const surrogateId = surrogateIdList[i];
+                        const accountDetails = await client.getAccountDetails(surrogateId);
+                        expect(accountDetails).toBeDefined();
+                    }
+                });
+
+            });
+
+            describe('#getTransactionListFromTimestamp', () => {
+
+                it('should return a list of transactions for each SurrogateId', async () => {
+                    for(let i=0; i<surrogateIdList.length; i+=1) {
+                        const surrogateId = surrogateIdList[i];
+                        const fromTimestamp = Date.now()*1000;
+                        const transactionList = await client.getTransactionListFromTimestamp( surrogateId, fromTimestamp );
+                        expect( transactionList ).toBeDefined();
+                    }
+                });
+
+            });
+
+            describe('#getTransactionListFromObjectId', () => {
+
+                it('should return a list of transactions', async () => {
+                    for(let i=0; i<surrogateIdList.length; i+=1) {
+                        const surrogateId = surrogateIdList[i];
+
+                        const fromTimestamp = Date.now()*1000;
+                        const firstTransactionList = await client.getTransactionListFromTimestamp( surrogateId, fromTimestamp );
+
+                        // We test only 5
+                        const objectIdList = slice(shuffle(map(
+                            firstTransactionList,
+                            (item) => item.objectId
+                        )), 0, TRANSACTION_TEST_LIMIT);
+
+                        for (let i=0; i<objectIdList.length; i+=1) {
+                            const objectId = objectIdList[i];
+                            const transactionList = await client.getTransactionListFromObjectId( surrogateId, objectId );
+                            expect( transactionList ).toBeDefined();
+                        }
+
+                    }
+                });
+
+            });
+
+        });
+
+    });
+
+});

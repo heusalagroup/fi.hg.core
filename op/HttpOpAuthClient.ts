@@ -1,12 +1,12 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { OpAuthClient } from "./OpAuthClient";
 import { RequestClient } from "../RequestClient";
 import { isNonEmptyString } from "../types/String";
 import { LogService } from "../LogService";
-import { OP_PRODUCTION_URL } from "./op-constants";
-import { explainJsonObject, isJsonObject, parseJson } from "../Json";
 import { LogLevel } from "../types/LogLevel";
+import { explainJsonObject, isJsonObject, parseJson } from "../Json";
+import { OP_PRODUCTION_URL } from "./op-constants";
+import { OpAuthClient } from "./OpAuthClient";
 
 const LOG = LogService.createLogger( 'HttpOpAuthClient' );
 

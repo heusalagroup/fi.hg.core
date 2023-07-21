@@ -10,7 +10,6 @@ import { HttpOpAuthClient } from "./HttpOpAuthClient";
 import { MockRequestClient } from "../requestClient/mock/MockRequestClient";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { LogLevel } from "../types/LogLevel";
-import { HgNode } from "../../node/HgNode";
 
 jest.mock('../RequestClient');
 

@@ -19,13 +19,13 @@ import { HttpOpPaymentClient } from "./HttpOpPaymentClient";
 import { HttpOpAuthClient } from "./HttpOpAuthClient";
 import { LogLevel } from "../types/LogLevel";
 
-const API_SERVER = OP_SANDBOX_URL;
+const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
 const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
 const CLIENT_SECRET = process.env.OP_CLIENT_SECRET ?? '';
-const SIGNING_KEY = process.env.OP_SIGNING_KEY ?? '';
-const SIGNING_KID = process.env.OP_SIGNING_KID ?? '';
 const MTLS_KEY = process.env.OP_MTLS_KEY ?? '';
 const MTLS_CRT = process.env.OP_MTLS_CRT ?? '';
+const SIGNING_KEY = process.env.OP_SIGNING_KEY ?? '';
+const SIGNING_KID = process.env.OP_SIGNING_KID ?? '';
 
 /**
  * To run these tests, create `.env` file like this:
