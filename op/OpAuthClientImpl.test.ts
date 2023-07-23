@@ -1,12 +1,12 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
 
 describe('OpAuthClientImpl', () => {
 
-    let mockClient: jest.Mocked<RequestClient>;
+    let mockClient: jest.Mocked<RequestClientImpl>;
 
     beforeAll( () => {
         OpAuthClientImpl.setLogLevel(LogLevel.NONE);

@@ -3,16 +3,15 @@
 
 import { RequestMethod } from "./request/types/RequestMethod";
 import { JsonAny } from "./Json";
-import { RequestClientInterface } from "./requestClient/RequestClientInterface";
-import { LogService } from "./LogService";
-import { LogLevel } from "./types/LogLevel";
+import { RequestClientAdapter } from "./requestClient/RequestClientAdapter";
 import { ResponseEntity } from "./request/types/ResponseEntity";
 
-const LOG = LogService.createLogger('RequestClient');
-
 /**
+ * Implements higher level extended portable functionality for request clients,
+ * e.g. functionality shared between different request client adapters.
+ *
  * Before using static methods of this library the implementation must be defined
- * and selected using `RequestClient.useClient()`.
+ * and selected using `RequestClientImpl.useClient()`.
  *
  * - See `HgNode.initialize()` which calls `useClient()` for NodeJS projects
  * - See `HgFrontend.initialize()` which calls `useClient()` for frontend projects
@@ -22,498 +21,160 @@ const LOG = LogService.createLogger('RequestClient');
  * `const client = new RequestClient( clientImplementation );
  *
  */
-export class RequestClient {
-
-    /** Internal state for static methods.
-     *
-     * You must call `.useClient()` to initialize it
-     *
-     * @private
-     */
-    private static _client : RequestClient | undefined = undefined;
+export interface RequestClient {
 
     /**
-     * Internal state for normal methods
-     * @private
+     * Returns the internal request adapter
      */
-    private readonly _client : RequestClientInterface;
+    getClient () : RequestClientAdapter;
 
-    /**
-     * Creates client instance
-     * @param client
-     * @deprecated Use RequestClient.create(), the direct constructor will be changed to protected later.
-     */
-    public constructor (client : RequestClientInterface) {
-        this._client = client;
-    }
 
-    public static create (client : RequestClientInterface) : RequestClient {
-        return new RequestClient(client);
-    }
-
-    public async textEntityRequest (
+    textEntityRequest (
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: string
-    ) : Promise<ResponseEntity<string| undefined>> {
-        return await this._client.textEntityRequest(method, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<string| undefined>>;
 
-    public async getTextEntity (
+    getTextEntity (
         url      : string,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        return await this._client.textEntityRequest(RequestMethod.GET, url, headers);
-    }
+    ) : Promise<ResponseEntity<string| undefined>>;
 
-    public async postTextEntity (
+    postTextEntity (
         url      : string,
         data    ?: string,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.textEntityRequest(RequestMethod.POST, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<string| undefined>>;
 
-    public async patchTextEntity (
+    patchTextEntity (
         url      : string,
         data    ?: string,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        LOG.debug('.patchJson: ', url, data, headers);
-        return await this._client.textEntityRequest(RequestMethod.PATCH, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<string| undefined>>;
 
-    public async putTextEntity (
+    putTextEntity (
         url      : string,
         data    ?: string,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        LOG.debug('.putJson: ', url, data, headers);
-        return await this._client.textEntityRequest(RequestMethod.PUT, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<string| undefined>>;
 
-    public async deleteTextEntity (
+    deleteTextEntity (
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: string
-    ) : Promise<ResponseEntity<string| undefined>> {
-        LOG.debug('.deleteJson: ', url, data, headers);
-        return await this._client.textEntityRequest(RequestMethod.DELETE, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<string| undefined>>;
 
 
-    public async textRequest (
+    textRequest (
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: string
-    ) : Promise<string| undefined> {
-        return await this._client.textRequest(method, url, headers, data);
-    }
+    ) : Promise<string| undefined>;
 
-    public async getText (
+    getText (
         url      : string,
         headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        return await this._client.textRequest(RequestMethod.GET, url, headers);
-    }
+    ) : Promise<string| undefined>;
 
-    public async postText (
+    postText (
         url      : string,
         data    ?: string,
         headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.POST, url, headers, data);
-    }
+    ) : Promise<string| undefined>;
 
-    public async patchText (
+    patchText (
         url      : string,
         data    ?: string,
         headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        LOG.debug('.patchJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.PATCH, url, headers, data);
-    }
+    ) : Promise<string| undefined>;
 
-    public async putText (
+    putText (
         url      : string,
         data    ?: string,
         headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        LOG.debug('.putJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.PUT, url, headers, data);
-    }
+    ) : Promise<string| undefined>;
 
-    public async deleteText (
+    deleteText (
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: string
-    ) : Promise<string| undefined> {
-        LOG.debug('.deleteJson: ', url, data, headers);
-        return await this._client.textRequest(RequestMethod.DELETE, url, headers, data);
-    }
+    ) : Promise<string| undefined>;
 
 
-    public async jsonRequest (
+    jsonRequest (
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: JsonAny
-    ) : Promise<JsonAny| undefined> {
-        return await this._client.jsonRequest(method, url, headers, data);
-    }
+    ) : Promise<JsonAny| undefined>;
 
-    public async getJson (
+    getJson (
         url      : string,
         headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        return await this._client.jsonRequest(RequestMethod.GET, url, headers);
-    }
+    ) : Promise<JsonAny| undefined>;
 
-    public async postJson (
+    postJson (
         url      : string,
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        return await this._client.jsonRequest(RequestMethod.POST, url, headers, data);
-    }
+    ) : Promise<JsonAny| undefined>;
 
-    public async patchJson (
+    patchJson (
         url      : string,
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        return await this._client.jsonRequest(RequestMethod.PATCH, url, headers, data);
-    }
+    ) : Promise<JsonAny| undefined>;
 
-    public async putJson (
+    putJson (
         url      : string,
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        return await this._client.jsonRequest(RequestMethod.PUT, url, headers, data);
-    }
+    ) : Promise<JsonAny| undefined>;
 
-    public async deleteJson (
+    deleteJson (
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: JsonAny
-    ) : Promise<JsonAny| undefined> {
-        return await this._client.jsonRequest(RequestMethod.DELETE, url, headers, data);
-    }
+    ) : Promise<JsonAny| undefined>;
 
 
 
-    public async jsonEntityRequest (
+    jsonEntityRequest (
         method   : RequestMethod,
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: JsonAny
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        return await this._client.jsonEntityRequest(method, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<JsonAny| undefined>>;
 
-    public async getJsonEntity (
+    getJsonEntity (
         url      : string,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny|undefined>> {
-        return await this._client.jsonEntityRequest(RequestMethod.GET, url, headers);
-    }
+    ) : Promise<ResponseEntity<JsonAny|undefined>>;
 
-    public async postJsonEntity (
+    postJsonEntity (
         url      : string,
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        return await this._client.jsonEntityRequest(RequestMethod.POST, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<JsonAny| undefined>>;
 
-    public async patchJsonEntity (
+    patchJsonEntity (
         url      : string,
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        return await this._client.jsonEntityRequest(RequestMethod.PATCH, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<JsonAny| undefined>>;
 
-    public async putJsonEntity (
+    putJsonEntity (
         url      : string,
         data    ?: JsonAny,
         headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        return await this._client.jsonEntityRequest(RequestMethod.PUT, url, headers, data);
-    }
+    ) : Promise<ResponseEntity<JsonAny| undefined>>;
 
-    public async deleteJsonEntity (
+    deleteJsonEntity (
         url      : string,
         headers ?: {[key: string]: string},
         data    ?: JsonAny
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        return await this._client.jsonEntityRequest(RequestMethod.DELETE, url, headers, data);
-    }
-
-
-
-
-
-
-
-    public static setLogLevel (level: LogLevel) {
-        LOG.setLogLevel(level);
-    }
-
-    public static setClient (
-        client: RequestClientInterface
-    ) {
-        this._client = new RequestClient( client );
-    }
-
-    public static hasClient () : boolean {
-        return !!this._client;
-    }
-
-    public static getClient () : RequestClientInterface {
-        if (!this._client) {
-            throw new TypeError('Client has not been initialized yet');
-        }
-        return this._client.getClient();
-    }
-
-    public getClient () : RequestClientInterface {
-        return this._client;
-    }
-
-    public static async textRequest (
-        method   : RequestMethod,
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: string
-    ) : Promise<string| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.textRequest(method, url, headers, data);
-    }
-
-    public static async getText (
-        url      : string,
-        headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.getText(url, headers);
-    }
-
-    public static async postText (
-        url      : string,
-        data    ?: string,
-        headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        if (!this._client) throw this._createClientError();
-        LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.postText(url, data, headers);
-    }
-
-    public static async patchText (
-        url      : string,
-        data    ?: string,
-        headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        if (!this._client) throw this._createClientError();
-        LOG.debug('.patchJson: ', url, data, headers);
-        return await this._client.patchText(url, data, headers);
-    }
-
-    public static async putText (
-        url      : string,
-        data    ?: string,
-        headers ?: {[key: string]: string}
-    ) : Promise<string| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.putText(url, data, headers);
-    }
-
-    public static async deleteText (
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: string
-    ) : Promise<string| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.deleteText(url, headers, data);
-    }
-
-    public static async jsonRequest (
-        method   : RequestMethod,
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: JsonAny
-    ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.jsonRequest(method, url, headers, data);
-    }
-
-    public static async getJson (
-        url      : string,
-        headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.getJson(url, headers);
-    }
-
-    public static async postJson (
-        url      : string,
-        data    ?: JsonAny,
-        headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw this._createClientError();
-        LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.postJson(url, data, headers);
-    }
-
-    public static async patchJson (
-        url      : string,
-        data    ?: JsonAny,
-        headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.patchJson(url, data, headers);
-    }
-
-    public static async putJson (
-        url      : string,
-        data    ?: JsonAny,
-        headers ?: {[key: string]: string}
-    ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.putJson(url, data, headers);
-    }
-
-    public static async deleteJson (
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: JsonAny
-    ) : Promise<JsonAny| undefined> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.deleteJson(url, headers, data);
-    }
-
-    public static async textEntityRequest (
-        method   : RequestMethod,
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: string
-    ) : Promise<ResponseEntity<string| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.textEntityRequest(method, url, headers, data);
-    }
-
-    public static async getTextEntity (
-        url      : string,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.getTextEntity(url, headers);
-    }
-
-    public static async postTextEntity (
-        url      : string,
-        data    ?: string,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        if (!this._client) throw this._createClientError();
-        LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.postTextEntity(url, data, headers);
-    }
-
-    public static async patchTextEntity (
-        url      : string,
-        data    ?: string,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        if (!this._client) throw this._createClientError();
-        LOG.debug('.patchJson: ', url, data, headers);
-        return await this._client.patchTextEntity(url, data, headers);
-    }
-
-    public static async putTextEntity (
-        url      : string,
-        data    ?: string,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<string| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.putTextEntity(url, data, headers);
-    }
-
-    public static async deleteTextEntity (
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: string
-    ) : Promise<ResponseEntity<string| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.deleteTextEntity(url, headers, data);
-    }
-
-    public static async jsonEntityRequest (
-        method   : RequestMethod,
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: JsonAny
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.jsonEntityRequest(method, url, headers, data);
-    }
-
-    public static async getJsonEntity (
-        url      : string,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.getJsonEntity(url, headers);
-    }
-
-    public static async postJsonEntity (
-        url      : string,
-        data    ?: JsonAny,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        if (!this._client) throw this._createClientError();
-        LOG.debug('.postJson: ', url, data, headers);
-        return await this._client.postJsonEntity(url, data, headers);
-    }
-
-    public static async patchJsonEntity (
-        url      : string,
-        data    ?: JsonAny,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.patchJsonEntity(url, data, headers);
-    }
-
-    public static async putJsonEntity (
-        url      : string,
-        data    ?: JsonAny,
-        headers ?: {[key: string]: string}
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.putJsonEntity(url, data, headers);
-    }
-
-    public static async deleteJsonEntity (
-        url      : string,
-        headers ?: {[key: string]: string},
-        data    ?: JsonAny
-    ) : Promise<ResponseEntity<JsonAny| undefined>> {
-        if (!this._client) throw this._createClientError();
-        return await this._client.deleteJsonEntity(url, headers, data);
-    }
-
-    /**
-     * @throw TypeError
-     * @private
-     */
-    private static _createClientError () {
-        return new TypeError(`RequestClient: You must initialize implementation first using HgFrontend.initialize() or HgNode.initialize()`);
-    }
+    ) : Promise<ResponseEntity<JsonAny| undefined>>;
 
 }

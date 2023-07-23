@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { OpAccountDataClient } from "./OpAccountDataClient";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { LogService } from "../LogService";
 import {
     OP_ACCOUNT_DATA_GET_ACCOUNT_DETAILS_PATH,
@@ -13,12 +13,9 @@ import { OpAuthClient } from "./OpAuthClient";
 import { LogLevel } from "../types/LogLevel";
 import { explainOpAccountListDTO, isOpAccountListDTO, OpAccountListDTO } from "./dto/OpAccountListDTO";
 import { explainOpAccountDetailsDTO, isOpAccountDetailsDTO, OpAccountDetailsDTO } from "./dto/OpAccountDetailsDTO";
-import { JsonAny } from "../Json";
-import { TestCallbackNonStandardOf } from "../types/TestCallback";
-import { ExplainCallback } from "../types/ExplainCallback";
-import { forEach } from "../functions/forEach";
-import { keys } from "../functions/keys";
 import { explainOpTransactionListDTO, isOpTransactionListDTO, OpTransactionListDTO } from "./dto/OpTransactionListDTO";
+import { QueryParamUtils } from "../QueryParamUtils";
+import { OpRequestUtils } from "./OpRequestUtils";
 
 const LOG = LogService.createLogger( 'OpAccountDataClientImpl' );
 
@@ -27,7 +24,7 @@ const LOG = LogService.createLogger( 'OpAccountDataClientImpl' );
  */
 export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClient {
 
-    private readonly _client: RequestClient;
+    private readonly _client: RequestClientImpl;
     private readonly _auth: OpAuthClient;
     private readonly _url: string;
     private _token: string | undefined;
@@ -37,7 +34,7 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     }
 
     public static create (
-        client: RequestClient,
+        client: RequestClientImpl,
         auth: OpAuthClient,
         url : string = OP_PRODUCTION_URL
     ) : OpAccountDataClientImpl {
@@ -49,7 +46,7 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     }
 
     private constructor (
-        client: RequestClient,
+        client: RequestClientImpl,
         auth: OpAuthClient,
         url: string,
         token ?: string | undefined,
@@ -85,7 +82,10 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
      * @inheritDoc
      */
     public async getAccountList (): Promise<OpAccountListDTO> {
-        return await this._getJsonRequest<OpAccountListDTO>(
+        return await OpRequestUtils.getJsonRequest<OpAccountListDTO>(
+            this._client,
+            this._auth,
+            this._url,
             OP_ACCOUNT_DATA_GET_ACCOUNT_LIST_PATH,
             isOpAccountListDTO,
             explainOpAccountListDTO,
@@ -99,7 +99,10 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     public async getAccountDetails (
         surrogateId: string
     ): Promise<OpAccountDetailsDTO> {
-        return await this._getJsonRequest<OpAccountDetailsDTO>(
+        return await OpRequestUtils.getJsonRequest<OpAccountDetailsDTO>(
+            this._client,
+            this._auth,
+            this._url,
             OP_ACCOUNT_DATA_GET_ACCOUNT_DETAILS_PATH(surrogateId),
             isOpAccountDetailsDTO,
             explainOpAccountDetailsDTO,
@@ -116,14 +119,17 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
         maxPast ?: number,
         maxFuture ?: number,
     ): Promise<OpTransactionListDTO> {
-        const queryParams : string = this._createQueryParams(
+        const queryParams : string = QueryParamUtils.stringifyQueryParams(
             {
                 fromTimestamp: `${fromTimestamp.toFixed(0)}`,
                 ...(maxPast !== undefined ? {maxPast: `${maxPast.toFixed(0)}`} : {}),
                 ...(maxFuture !== undefined ? {maxFuture: `${maxFuture.toFixed(0)}`} : {}),
             }
         );
-        return await this._getJsonRequest<OpTransactionListDTO>(
+        return await OpRequestUtils.getJsonRequest<OpTransactionListDTO>(
+            this._client,
+            this._auth,
+            this._url,
             `${OP_ACCOUNT_DATA_GET_TRANSACTION_LIST_PATH(surrogateId)}${queryParams}`,
             isOpTransactionListDTO,
             explainOpTransactionListDTO,
@@ -140,67 +146,22 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
         maxPast ?: number,
         maxFuture ?: number,
     ): Promise<OpTransactionListDTO> {
-        const queryParams : string = this._createQueryParams(
+        const queryParams : string = QueryParamUtils.stringifyQueryParams(
             {
                 objectId,
                 ...(maxPast !== undefined ? {maxPast: `${maxPast.toFixed(0)}`} : {}),
                 ...(maxFuture !== undefined ? {maxFuture: `${maxFuture.toFixed(0)}`} : {}),
             }
         );
-        return await this._getJsonRequest<OpTransactionListDTO>(
+        return await OpRequestUtils.getJsonRequest<OpTransactionListDTO>(
+            this._client,
+            this._auth,
+            this._url,
             `${OP_ACCOUNT_DATA_GET_TRANSACTION_LIST_PATH(surrogateId)}${queryParams}`,
             isOpTransactionListDTO,
             explainOpTransactionListDTO,
             "OpTransactionListDTO",
         );
-    }
-
-    private _createQueryParams (
-        params : {readonly [key:string] : string}
-    ) : string {
-        const a = new URLSearchParams();
-        forEach(
-            keys(params),
-            (key: string) : void => {
-                const value : string = params[key];
-                a.append(key, value);
-            }
-        );
-        let str = a.toString();
-        return str === '' ? '' : `?${str}`;
-    }
-
-    private async _getJsonRequest<T> (
-        path: string,
-        isDTO: TestCallbackNonStandardOf<T>,
-        explainDTO: ExplainCallback,
-        dtoName : string,
-    ) : Promise<T> {
-        if (!this._auth.isAuthenticated()) {
-            await this._auth.authenticate();
-        }
-        const dto : JsonAny | undefined = await this._client.getJson(
-            `${this._url}${path}`,
-            this._createRequestHeaders()
-        );
-        if (!isDTO(dto)) {
-            LOG.debug(`invalid response = `, dto);
-            throw new TypeError(`Response was not ${dtoName}: ${explainDTO(dto)}`);
-        }
-        return dto;
-    }
-
-    private _createRequestHeaders () : {[key: string]: string} {
-        const token : string = this._auth.getAccessKey();
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'X-Request-ID': this._createRequestId()
-        };
-    }
-
-    private _createRequestId () : string {
-        return `${Date.now()}`;
     }
 
 }

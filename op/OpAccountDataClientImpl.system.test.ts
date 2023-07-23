@@ -7,7 +7,7 @@ import HTTP from "http";
 import HTTPS from "https";
 import { OP_SANDBOX_URL } from "./op-constants";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAccountDataClientImpl } from "./OpAccountDataClientImpl";
 import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { map } from "../functions/map";
@@ -54,14 +54,14 @@ describe('system', () => {
         let client : OpAccountDataClient;
 
         beforeAll(() => {
-            RequestClient.setLogLevel(LogLevel.NONE);
+            RequestClientImpl.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
             OpAuthClientImpl.setLogLevel(LogLevel.NONE);
             OpAccountDataClientImpl.setLogLevel(LogLevel.NONE);
         });
 
         beforeEach(() => {
-            const requestClient = RequestClient.create(
+            const requestClient = RequestClientImpl.create(
                 NodeRequestClient.create(
                     HTTP,
                     HTTPS,

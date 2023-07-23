@@ -2,10 +2,10 @@
 
 import { LogLevel } from "../../types/LogLevel";
 import { DiscordLogger } from "./DiscordLogger";
-import { MockRequestClient } from "../../requestClient/mock/MockRequestClient";
+import { MockRequestClientAdapter } from "../../requestClient/mock/MockRequestClientAdapter";
 import { Logger } from "../../types/Logger";
-import { RequestClient } from "../../RequestClient";
-import { RequestClientInterface } from "../../requestClient/RequestClientInterface";
+import { RequestClientImpl } from "../../RequestClientImpl";
+import { RequestClientAdapter } from "../../requestClient/RequestClientAdapter";
 import { RequestMethod } from "../../request/types/RequestMethod";
 import { HttpService } from "../../HttpService";
 
@@ -17,15 +17,15 @@ describe('DiscordLogger', () => {
     jest.useFakeTimers();
 
     let logger : Logger;
-    let prevRequestClient : RequestClientInterface | undefined;
-    let mockRequestClient : RequestClientInterface;
+    let prevRequestClient : RequestClientAdapter | undefined;
+    let mockRequestClient : RequestClientAdapter;
     let spy : any;
 
     beforeEach(() => {
         HttpService.setLogLevel(LogLevel.NONE);
-        mockRequestClient = new MockRequestClient();
-        prevRequestClient = RequestClient.hasClient() ? RequestClient.getClient() : undefined;
-        RequestClient.setClient(mockRequestClient);
+        mockRequestClient = new MockRequestClientAdapter();
+        prevRequestClient = RequestClientImpl.hasClient() ? RequestClientImpl.getClient() : undefined;
+        RequestClientImpl.setClient(mockRequestClient);
         spy = jest.spyOn(mockRequestClient, 'jsonRequest').mockImplementation();
         logger = new DiscordLogger(
             TEST_NAME,
@@ -42,7 +42,7 @@ describe('DiscordLogger', () => {
 
     afterEach( () => {
         if (prevRequestClient) {
-            RequestClient.setClient(prevRequestClient);
+            RequestClientImpl.setClient(prevRequestClient);
         }
         spy.mockRestore();
         logger.setLogLevel(LogLevel.DEBUG);

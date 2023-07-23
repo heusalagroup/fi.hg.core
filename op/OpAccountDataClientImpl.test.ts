@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { OpAuthClient } from "./OpAuthClient";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAccountListDTO } from "./dto/OpAccountListDTO";
 import { OpAccountDataClientImpl } from "./OpAccountDataClientImpl";
 import { OpAccountDetailsDTO } from "./dto/OpAccountDetailsDTO";
@@ -11,7 +11,7 @@ import { createOpTransactionDTO } from "./dto/OpTransactionDTO";
 describe('OpAccountDataClientImpl', () => {
 
     let mockAuthClient: jest.Mocked<OpAuthClient>;
-    let mockClient: jest.Mocked<RequestClient>;
+    let mockClient: jest.Mocked<RequestClientImpl>;
 
     beforeEach(() => {
         mockAuthClient = {

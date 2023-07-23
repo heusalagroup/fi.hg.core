@@ -8,6 +8,8 @@ import { explainRegularObject, isRegularObject } from "../../types/RegularObject
 import { explainOpPaymentCreditor, isOpPaymentCreditor, OpPaymentCreditor } from "../types/OpPaymentCreditor";
 import { explainOpPaymentDebtor, isOpPaymentDebtor, OpPaymentDebtor } from "../types/OpPaymentDebtor";
 import { explainOpPaymentInstructedAmount, isOpPaymentInstructedAmount, OpPaymentInstructedAmount } from "../types/OpPaymentInstructedAmount";
+import { explainOpUltimateDebtorOrUndefined, isOpUltimateDebtorOrUndefined, OpUltimateDebtor } from "../types/OpUltimateDebtor";
+import { explainOpUltimateCreditorOrUndefined, isOpUltimateCreditorOrUndefined, OpUltimateCreditor } from "../types/OpUltimateCreditor";
 
 /**
  * @example
@@ -36,8 +38,73 @@ import { explainOpPaymentInstructedAmount, isOpPaymentInstructedAmount, OpPaymen
  *      },
  *      "reference":"00000000000000482738"
  *   }
+ *
+ * @example
+ *
+ *     {
+ *       "debtor": {
+ *         "iban": "FI4550009420999999",
+ *         "name": "Debtor Name",
+ *         "address": {
+ *           "country": "FI",
+ *           "addressLine": [
+ *             "string",
+ *             "string"
+ *           ]
+ *         }
+ *       },
+ *       "ultimateDebtor": {
+ *         "name": "Ultimate Debtor",
+ *         "identification": {
+ *           "id": "1234567-8",
+ *           "schemeName": "BIC",
+ *           "issuer": "string"
+ *         },
+ *         "address": {
+ *           "country": "FI",
+ *           "addressLine": [
+ *             "string",
+ *             "string"
+ *           ]
+ *         }
+ *       },
+ *       "message": "Less money, fewer problems",
+ *       "creditor": {
+ *         "iban": "FI4550009420888888",
+ *         "name": "Creditor Name",
+ *         "address": {
+ *           "country": "FI",
+ *           "addressLine": [
+ *             "string",
+ *             "string"
+ *           ]
+ *         }
+ *       },
+ *       "ultimateCreditor": {
+ *         "name": "Ultimate Creditor",
+ *         "identification": {
+ *           "id": "1234567-8",
+ *           "schemeName": "BIC",
+ *           "issuer": "string"
+ *         },
+ *         "address": {
+ *           "country": "FI",
+ *           "addressLine": [
+ *             "string",
+ *             "string"
+ *           ]
+ *         }
+ *       },
+ *       "reference": "00000000000000482738",
+ *       "endToEndId": "544652-end2end",
+ *       "instructionId": "AtoZatoz01234567898NoLongerThan35",
+ *       "instructedAmount": {
+ *         "amount": "12.35",
+ *         "currency": "EUR"
+ *       }
+ *     }
+ *
  */
-
 export interface OpPaymentRequestDTO {
 
     /**
@@ -91,6 +158,16 @@ export interface OpPaymentRequestDTO {
      */
     readonly endToEndId ?: string;
 
+    /**
+     * Ultimate debtor for the payment
+     */
+    readonly ultimateDebtor ?: OpUltimateDebtor;
+
+    /**
+     * Ultimate creditor for the payment
+     */
+    readonly ultimateCreditor ?: OpUltimateCreditor;
+
 }
 
 export function createOpPaymentRequestDTO (
@@ -101,15 +178,19 @@ export function createOpPaymentRequestDTO (
     reference ?: string,
     message ?: string,
     endToEndId ?: string,
+    ultimateDebtor ?: OpUltimateDebtor,
+    ultimateCreditor ?: OpUltimateCreditor,
 ) : OpPaymentRequestDTO {
     return {
         instructionId,
         creditor,
         debtor,
         instructedAmount,
-        reference,
-        message,
-        endToEndId,
+        ...(reference !== undefined ? {reference}: {}),
+        ...(message !== undefined ? {message}: {}),
+        ...(endToEndId !== undefined ? {endToEndId}: {}),
+        ...(ultimateDebtor !== undefined ? {ultimateDebtor}: {}),
+        ...(ultimateCreditor !== undefined ? {ultimateCreditor}: {}),
     };
 }
 
@@ -124,6 +205,8 @@ export function isOpPaymentRequestDTO (value: unknown) : value is OpPaymentReque
             'reference',
             'message',
             'endToEndId',
+            'ultimateDebtor',
+            'ultimateCreditor',
         ])
         && isString(value?.instructionId)
         && isOpPaymentCreditor(value?.creditor)
@@ -132,6 +215,8 @@ export function isOpPaymentRequestDTO (value: unknown) : value is OpPaymentReque
         && isStringOrUndefined(value?.reference)
         && isStringOrUndefined(value?.message)
         && isStringOrUndefined(value?.endToEndId)
+        && isOpUltimateDebtorOrUndefined(value?.ultimateDebtor)
+        && isOpUltimateCreditorOrUndefined(value?.ultimateCreditor)
     );
 }
 
@@ -147,6 +232,8 @@ export function explainOpPaymentRequestDTO (value: any) : string {
                 'reference',
                 'message',
                 'endToEndId',
+                'ultimateDebtor',
+                'ultimateCreditor',
             ])
             , explainProperty("instructionId", explainString(value?.instructionId))
             , explainProperty("creditor", explainOpPaymentCreditor(value?.creditor))
@@ -155,6 +242,8 @@ export function explainOpPaymentRequestDTO (value: any) : string {
             , explainProperty("reference", explainStringOrUndefined(value?.reference))
             , explainProperty("message", explainStringOrUndefined(value?.message))
             , explainProperty("endToEndId", explainStringOrUndefined(value?.endToEndId))
+            , explainProperty("ultimateDebtor", explainOpUltimateDebtorOrUndefined(value?.ultimateDebtor))
+            , explainProperty("ultimateCreditor", explainOpUltimateCreditorOrUndefined(value?.ultimateCreditor))
         ]
     );
 }

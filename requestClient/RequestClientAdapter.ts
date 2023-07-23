@@ -5,7 +5,7 @@ import { RequestMethod } from "../request/types/RequestMethod";
 import { JsonAny } from "../Json";
 import { ResponseEntity } from "../request/types/ResponseEntity";
 
-export interface RequestClientInterface {
+export interface RequestClientAdapter {
 
     jsonEntityRequest (
         method   : RequestMethod,

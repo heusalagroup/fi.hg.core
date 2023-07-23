@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { isNonEmptyString } from "../types/String";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
@@ -15,7 +15,7 @@ const LOG = LogService.createLogger( 'OpAuthClientImpl' );
  */
 export class OpAuthClientImpl implements OpAuthClient {
 
-    private readonly _client: RequestClient;
+    private readonly _client: RequestClientImpl;
     private readonly _clientId: string;
     private readonly _clientSecret: string;
     private readonly _url: string;
@@ -26,7 +26,7 @@ export class OpAuthClientImpl implements OpAuthClient {
     }
 
     protected constructor (
-        client: RequestClient,
+        client: RequestClientImpl,
         url: string,
         clientId : string,
         clientSecret : string,
@@ -40,7 +40,7 @@ export class OpAuthClientImpl implements OpAuthClient {
     }
 
     public static create (
-        client: RequestClient,
+        client: RequestClientImpl,
         clientId: string,
         clientSecret: string,
         url : string = OP_PRODUCTION_URL
@@ -72,7 +72,7 @@ export class OpAuthClientImpl implements OpAuthClient {
     }
 
     public static async getAccessToken (
-        client: RequestClient,
+        client: RequestClientImpl,
         url: string,
         clientId: string,
         clientSecret: string,

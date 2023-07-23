@@ -1,6 +1,6 @@
 // Copyright (c) 2020-2021 Sendanor. All rights reserved.
 
-import { RequestClient } from "./RequestClient";
+import { RequestClientImpl } from "./RequestClientImpl";
 import { LogService } from "./LogService";
 import { RequestError } from "./request/types/RequestError";
 import { RequestStatus } from "./request/types/RequestStatus";
@@ -34,7 +34,7 @@ export class AuthorizationClientService {
 
         try {
 
-            const result = await RequestClient.postJson(`${this._serviceUrl}/verify`, {
+            const result = await RequestClientImpl.postJson(`${this._serviceUrl}/verify`, {
                 token
             });
 

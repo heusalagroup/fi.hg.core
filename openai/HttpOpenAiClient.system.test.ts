@@ -9,7 +9,7 @@
 
 import { HttpOpenAiClient } from './HttpOpenAiClient';
 import { LogLevel } from "../types/LogLevel";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { HttpService } from "../HttpService";
 import { OpenAiModel } from "./types/OpenAiModel";
 import { isNumber } from "../types/Number";
@@ -18,7 +18,7 @@ import { isArray } from "../types/Array";
 const OPENAI_API_KEY  = process?.env?.OPENAI_API_KEY  ?? '';
 const OPENAI_BASE_URL = process?.env?.OPENAI_BASE_URL ?? 'https://api.openai.com';
 
-RequestClient.setLogLevel(LogLevel.NONE);
+RequestClientImpl.setLogLevel(LogLevel.NONE);
 HttpService.setLogLevel(LogLevel.NONE);
 
 (OPENAI_API_KEY ? describe : describe.skip)('system', () => {

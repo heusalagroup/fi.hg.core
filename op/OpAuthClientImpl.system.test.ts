@@ -6,7 +6,7 @@ ProcessUtils.initEnvFromDefaultFiles();
 import HTTP from "http";
 import HTTPS from "https";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
 import { HgNode } from "../../node/HgNode";
@@ -40,14 +40,14 @@ describe('system', () => {
         let client : OpAuthClient;
 
         beforeAll(() => {
-            RequestClient.setLogLevel(LogLevel.NONE);
+            RequestClientImpl.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
             OpAuthClientImpl.setLogLevel(LogLevel.NONE);
             HgNode.initialize();
         });
 
         beforeEach(() => {
-            const requestClient = RequestClient.create(
+            const requestClient = RequestClientImpl.create(
                 NodeRequestClient.create(
                     HTTP,
                     HTTPS,

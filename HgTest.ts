@@ -2,9 +2,9 @@
 
 import { LogService } from "./LogService";
 import { LogLevel } from "./types/LogLevel";
-import { RequestClientInterface } from "./requestClient/RequestClientInterface";
-import { MockRequestClient } from "./requestClient/mock/MockRequestClient";
-import { RequestClient } from "./RequestClient";
+import { RequestClientAdapter } from "./requestClient/RequestClientAdapter";
+import { MockRequestClientAdapter } from "./requestClient/mock/MockRequestClientAdapter";
+import { RequestClientImpl } from "./RequestClientImpl";
 
 const LOG = LogService.createLogger('HgTest');
 
@@ -17,18 +17,18 @@ export class HgTest {
     /**
      * This method will initialize our libraries using frontend implementations.
      *
-     * Right now it will call `RequestClient.setClient()` with a standard NodeJS
+     * Right now it will call `RequestClientImpl.setClient()` with a standard NodeJS
      * implementation. It has a dependency to NodeJS's http and https modules.
      *
-     * @param requestClient
+     * @param requestClient The request client adapter to be used by default
      */
     public static initialize (
-        requestClient ?: RequestClientInterface | undefined
+        requestClient ?: RequestClientAdapter | undefined
     ) {
         if (!requestClient) {
-            requestClient = new MockRequestClient();
+            requestClient = new MockRequestClientAdapter();
         }
-        RequestClient.setClient(requestClient);
+        RequestClientImpl.setClient(requestClient);
     }
 
 }

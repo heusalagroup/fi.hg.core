@@ -2,6 +2,7 @@
 
 import { OpPaymentRequestDTO } from "./dto/OpPaymentRequestDTO";
 import { OpPaymentResponseDTO } from "./dto/OpPaymentResponseDTO";
+import { OpPaymentListDTO } from "./dto/OpPaymentListDTO";
 
 /**
  * OP Corporate Payment API client
@@ -17,5 +18,26 @@ export interface OpPaymentClient {
     createPayment (
         paymentRequest: OpPaymentRequestDTO,
     ): Promise<OpPaymentResponseDTO>;
+
+    /**
+     * Initiates instant payment processing
+     *
+     * @param paymentRequest The sandbox-signing.key
+     */
+    createInstantPayment (
+        paymentRequest: OpPaymentRequestDTO,
+    ): Promise<OpPaymentResponseDTO>;
+
+    /**
+     * Get the status of an initiated SEPA Instant payment. Should be only used
+     * to query payments that ended up with paymentType=SCT_INST and
+     * status=PROCESSING. For other payment type and status combinations, the
+     * result list may be empty.
+     *
+     * @param instructionId instructionId used when the payment was initiated
+     */
+    getInstantPaymentStatus (
+        instructionId: string
+    ): Promise<OpPaymentListDTO>;
 
 }

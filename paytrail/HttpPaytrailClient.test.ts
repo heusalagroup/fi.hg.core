@@ -3,7 +3,7 @@ import { PaytrailClient } from "./PaytrailClient";
 import { createPaytrailCustomer } from "./types/PaytrailCustomer";
 import { createPaytrailItem } from "./types/PaytrailItem";
 import { createPaytrailCallbackUrl } from "./types/PaytrailCallbackUrl";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { PaytrailCurrency } from "./types/PaytrailCurrency";
 import { PaytrailLanguage } from "./types/PaytrailLanguage";
 import { HgTest } from "../HgTest";
@@ -177,8 +177,8 @@ describe('HttpPaytrailClient', () => {
         .useFakeTimers()
         .setSystemTime(new Date(TEST_TIME));
 
-        postTextSpy = jest.spyOn(RequestClient, 'postText').mockResolvedValue(JSON.stringify(TEST_CREATE_RESPONSE));
-        getTextSpy = jest.spyOn(RequestClient, 'getText').mockResolvedValue(JSON.stringify(TEST_FETCH_RESPONSE));
+        postTextSpy = jest.spyOn(RequestClientImpl, 'postText').mockResolvedValue(JSON.stringify(TEST_CREATE_RESPONSE));
+        getTextSpy = jest.spyOn(RequestClientImpl, 'getText').mockResolvedValue(JSON.stringify(TEST_FETCH_RESPONSE));
 
     });
 
@@ -246,10 +246,10 @@ describe('HttpPaytrailClient', () => {
             );
 
             expect(payment).toMatchObject(TEST_CREATE_RESPONSE);
-            expect(RequestClient.postText).toHaveBeenCalledTimes(1);
-            expect((RequestClient.postText as any).mock.calls[0][0]).toBe('http://mockUrl/payments');
-            expect( parseJson( (RequestClient.postText as any).mock.calls[0][1] )).toStrictEqual(TEST_CREATE_REQUEST);
-            expect((RequestClient.postText as any).mock.calls[0][2]).toStrictEqual(TEST_CREATE_PARAMS);
+            expect(RequestClientImpl.postText).toHaveBeenCalledTimes(1);
+            expect((RequestClientImpl.postText as any).mock.calls[0][0]).toBe('http://mockUrl/payments');
+            expect( parseJson( (RequestClientImpl.postText as any).mock.calls[0][1] )).toStrictEqual(TEST_CREATE_REQUEST);
+            expect((RequestClientImpl.postText as any).mock.calls[0][2]).toStrictEqual(TEST_CREATE_PARAMS);
 
         });
 
@@ -293,7 +293,7 @@ describe('HttpPaytrailClient', () => {
                 TEST_CURRENCY,
                 TEST_LANGUAGE
             )).rejects.toThrowError('property "amount" not number');
-            expect(RequestClient.postText).not.toHaveBeenCalled();
+            expect(RequestClientImpl.postText).not.toHaveBeenCalled();
         });
 
     });

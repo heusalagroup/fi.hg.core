@@ -1,18 +1,18 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { RequestClient } from "./RequestClient";
+import { RequestClientImpl } from "./RequestClientImpl";
 import { RequestMethod } from "./request/types/RequestMethod";
-import { RequestClientInterface } from "./requestClient/RequestClientInterface";
+import { RequestClientAdapter } from "./requestClient/RequestClientAdapter";
 import { ResponseEntity } from "./request/types/ResponseEntity";
 import { JsonAny } from "./Json";
 import { LogLevel } from "./types/LogLevel";
 
-describe("RequestClient", () => {
+describe("RequestClientImpl", () => {
 
-    let mockRequestClient : RequestClientInterface;
+    let mockRequestClient : RequestClientAdapter;
 
     beforeEach( () => {
-        RequestClient.setLogLevel(LogLevel.NONE);
+        RequestClientImpl.setLogLevel(LogLevel.NONE);
         mockRequestClient = {
             jsonEntityRequest: jest.fn().mockResolvedValue(ResponseEntity.ok({})),
             textEntityRequest: jest.fn().mockResolvedValue(ResponseEntity.ok('')),
@@ -23,10 +23,10 @@ describe("RequestClient", () => {
 
     describe('instance', () => {
 
-        let requestClient : RequestClient;
+        let requestClient : RequestClientImpl;
 
         beforeEach( () => {
-            requestClient = new RequestClient(mockRequestClient);
+            requestClient = RequestClientImpl.create(mockRequestClient);
         });
 
         describe("#textEntityRequest", () => {
@@ -337,7 +337,7 @@ describe("RequestClient", () => {
     describe('static', () => {
 
         beforeEach( () => {
-            RequestClient.setClient(mockRequestClient);
+            RequestClientImpl.setClient(mockRequestClient);
         });
 
         describe("#textEntityRequest", () => {
@@ -345,7 +345,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok('Hello World')));
             });
             it("makes a GET request with the given method, url, headers, and data", async () => {
-                const response : ResponseEntity<string| undefined> | undefined = await RequestClient.textEntityRequest(RequestMethod.GET, "http://example.com", {}, "Hello");
+                const response : ResponseEntity<string| undefined> | undefined = await RequestClientImpl.textEntityRequest(RequestMethod.GET, "http://example.com", {}, "Hello");
                 expect(mockRequestClient.textEntityRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {}, "Hello");
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -359,7 +359,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok('Hello World')));
             });
             it("makes a GET text request with the given url and headers", async () => {
-                const response : ResponseEntity<string| undefined> | undefined = await RequestClient.getTextEntity("http://example.com", {});
+                const response : ResponseEntity<string| undefined> | undefined = await RequestClientImpl.getTextEntity("http://example.com", {});
                 expect(mockRequestClient.textEntityRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {});
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -373,7 +373,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok('Hello World')));
             });
             it("makes a POST request with the given url and headers", async () => {
-                const response : ResponseEntity<string| undefined> | undefined = await RequestClient.postTextEntity("http://example.com", 'Hello', {});
+                const response : ResponseEntity<string| undefined> | undefined = await RequestClientImpl.postTextEntity("http://example.com", 'Hello', {});
                 expect(mockRequestClient.textEntityRequest).toHaveBeenCalledWith(RequestMethod.POST, "http://example.com", {}, 'Hello');
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -387,7 +387,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok('Hello World')));
             });
             it("makes a PUT request with the given url and headers", async () => {
-                const response : ResponseEntity<string| undefined> | undefined = await RequestClient.putTextEntity("http://example.com", 'Hello', {});
+                const response : ResponseEntity<string| undefined> | undefined = await RequestClientImpl.putTextEntity("http://example.com", 'Hello', {});
                 expect(mockRequestClient.textEntityRequest).toHaveBeenCalledWith(RequestMethod.PUT, "http://example.com", {}, 'Hello');
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -401,7 +401,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok('Hello World')));
             });
             it("makes a DELETE request with the given url and headers", async () => {
-                const response : ResponseEntity<string| undefined> | undefined = await RequestClient.deleteTextEntity("http://example.com", {});
+                const response : ResponseEntity<string| undefined> | undefined = await RequestClientImpl.deleteTextEntity("http://example.com", {});
                 expect(mockRequestClient.textEntityRequest).toHaveBeenCalledWith(RequestMethod.DELETE, "http://example.com", {}, undefined);
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -415,7 +415,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok('Hello World')));
             });
             it("makes a PATCH request with the given url and headers", async () => {
-                const response : ResponseEntity<string| undefined> | undefined = await RequestClient.patchTextEntity("http://example.com", 'Hello', {});
+                const response : ResponseEntity<string| undefined> | undefined = await RequestClientImpl.patchTextEntity("http://example.com", 'Hello', {});
                 expect(mockRequestClient.textEntityRequest).toHaveBeenCalledWith(RequestMethod.PATCH, "http://example.com", {}, 'Hello');
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -430,7 +430,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok({'hello': 'world'})));
             });
             it("makes a GET request with the given method, url, headers, and data", async () => {
-                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClient.jsonEntityRequest(RequestMethod.GET, "http://example.com", {});
+                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClientImpl.jsonEntityRequest(RequestMethod.GET, "http://example.com", {});
                 expect(mockRequestClient.jsonEntityRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {}, undefined);
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -444,7 +444,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok({'hello': 'world'})));
             });
             it("makes a GET request with the given url and headers", async () => {
-                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClient.getJsonEntity("http://example.com", {});
+                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClientImpl.getJsonEntity("http://example.com", {});
                 expect(mockRequestClient.jsonEntityRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {});
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -458,7 +458,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok({'hello': 'world'})));
             });
             it("makes a POST request with the given url and headers", async () => {
-                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClient.postJsonEntity("http://example.com", 'Hello', {});
+                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClientImpl.postJsonEntity("http://example.com", 'Hello', {});
                 expect(mockRequestClient.jsonEntityRequest).toHaveBeenCalledWith(RequestMethod.POST, "http://example.com", {}, 'Hello');
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -472,7 +472,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok({'hello': 'world'})));
             });
             it("makes a PUT request with the given url and headers", async () => {
-                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClient.putJsonEntity("http://example.com", 'Hello', {});
+                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClientImpl.putJsonEntity("http://example.com", 'Hello', {});
                 expect(mockRequestClient.jsonEntityRequest).toHaveBeenCalledWith(RequestMethod.PUT, "http://example.com", {}, 'Hello');
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -486,7 +486,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok({'hello': 'world'})));
             });
             it("makes a DELETE request with the given url and headers", async () => {
-                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClient.deleteJsonEntity("http://example.com", {});
+                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClientImpl.deleteJsonEntity("http://example.com", {});
                 expect(mockRequestClient.jsonEntityRequest).toHaveBeenCalledWith(RequestMethod.DELETE, "http://example.com", {}, undefined);
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -500,7 +500,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonEntityRequest as any).mockImplementationOnce(() => Promise.resolve(ResponseEntity.ok({'hello': 'world'})));
             });
             it("makes a PATCH request with the given url and headers", async () => {
-                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClient.patchJsonEntity("http://example.com", 'Hello', {});
+                const response : ResponseEntity<JsonAny| undefined> | undefined = await RequestClientImpl.patchJsonEntity("http://example.com", 'Hello', {});
                 expect(mockRequestClient.jsonEntityRequest).toHaveBeenCalledWith(RequestMethod.PATCH, "http://example.com", {}, 'Hello');
                 expect(response).toBeDefined();
                 expect(response.getStatusCode()).toBe(200);
@@ -515,7 +515,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textRequest as any).mockImplementationOnce(() => Promise.resolve('Hello World'));
             });
             it("makes a GET request with the given method, url, headers, and data", async () => {
-                const response : string| undefined = await RequestClient.textRequest(RequestMethod.GET, "http://example.com", {}, "Hello");
+                const response : string| undefined = await RequestClientImpl.textRequest(RequestMethod.GET, "http://example.com", {}, "Hello");
                 expect(mockRequestClient.textRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {}, "Hello");
                 expect(response).toBe("Hello World");
             });
@@ -526,7 +526,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textRequest as any).mockImplementationOnce(() => Promise.resolve('Hello World'));
             });
             it("makes a GET text request with the given url and headers", async () => {
-                const response : string| undefined = await RequestClient.getText("http://example.com", {});
+                const response : string| undefined = await RequestClientImpl.getText("http://example.com", {});
                 expect(mockRequestClient.textRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {});
                 expect(response).toBe("Hello World");
             });
@@ -537,7 +537,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textRequest as any).mockImplementationOnce(() => Promise.resolve('Hello World'));
             });
             it("makes a POST request with the given url and headers", async () => {
-                const response : string| undefined = await RequestClient.postText("http://example.com", 'Hello', {});
+                const response : string| undefined = await RequestClientImpl.postText("http://example.com", 'Hello', {});
                 expect(mockRequestClient.textRequest).toHaveBeenCalledWith(RequestMethod.POST, "http://example.com", {}, 'Hello');
                 expect(response).toBe("Hello World");
             });
@@ -548,7 +548,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textRequest as any).mockImplementationOnce(() => Promise.resolve('Hello World'));
             });
             it("makes a PUT request with the given url and headers", async () => {
-                const response : string| undefined = await RequestClient.putText("http://example.com", 'Hello', {});
+                const response : string| undefined = await RequestClientImpl.putText("http://example.com", 'Hello', {});
                 expect(mockRequestClient.textRequest).toHaveBeenCalledWith(RequestMethod.PUT, "http://example.com", {}, 'Hello');
                 expect(response).toBe("Hello World");
             });
@@ -559,7 +559,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textRequest as any).mockImplementationOnce(() => Promise.resolve('Hello World'));
             });
             it("makes a DELETE request with the given url and headers", async () => {
-                const response : string| undefined = await RequestClient.deleteText("http://example.com", {});
+                const response : string| undefined = await RequestClientImpl.deleteText("http://example.com", {});
                 expect(mockRequestClient.textRequest).toHaveBeenCalledWith(RequestMethod.DELETE, "http://example.com", {}, undefined);
                 expect(response).toBe("Hello World");
             });
@@ -570,7 +570,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.textRequest as any).mockImplementationOnce(() => Promise.resolve('Hello World'));
             });
             it("makes a PATCH request with the given url and headers", async () => {
-                const response : string| undefined = await RequestClient.patchText("http://example.com", 'Hello', {});
+                const response : string| undefined = await RequestClientImpl.patchText("http://example.com", 'Hello', {});
                 expect(mockRequestClient.textRequest).toHaveBeenCalledWith(RequestMethod.PATCH, "http://example.com", {}, 'Hello');
                 expect(response).toBe("Hello World");
             });
@@ -582,7 +582,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonRequest as any).mockImplementationOnce(() => Promise.resolve({'hello': 'world'}));
             });
             it("makes a GET request with the given method, url, headers, and data", async () => {
-                const response : JsonAny| undefined = await RequestClient.jsonRequest(RequestMethod.GET, "http://example.com", {});
+                const response : JsonAny| undefined = await RequestClientImpl.jsonRequest(RequestMethod.GET, "http://example.com", {});
                 expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {}, undefined);
                 expect(response).toStrictEqual({'hello': 'world'});
             });
@@ -593,7 +593,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonRequest as any).mockImplementationOnce(() => Promise.resolve({'hello': 'world'}));
             });
             it("makes a GET request with the given url and headers", async () => {
-                const response : JsonAny| undefined = await RequestClient.getJson("http://example.com", {});
+                const response : JsonAny| undefined = await RequestClientImpl.getJson("http://example.com", {});
                 expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(RequestMethod.GET, "http://example.com", {});
                 expect(response).toStrictEqual({'hello': 'world'});
             });
@@ -604,7 +604,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonRequest as any).mockImplementationOnce(() => Promise.resolve({'hello': 'world'}));
             });
             it("makes a POST request with the given url and headers", async () => {
-                const response : JsonAny| undefined = await RequestClient.postJson("http://example.com", 'Hello', {});
+                const response : JsonAny| undefined = await RequestClientImpl.postJson("http://example.com", 'Hello', {});
                 expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(RequestMethod.POST, "http://example.com", {}, 'Hello');
                 expect(response).toStrictEqual({'hello': 'world'});
             });
@@ -615,7 +615,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonRequest as any).mockImplementationOnce(() => Promise.resolve({'hello': 'world'}));
             });
             it("makes a PUT request with the given url and headers", async () => {
-                const response : JsonAny| undefined = await RequestClient.putJson("http://example.com", 'Hello', {});
+                const response : JsonAny| undefined = await RequestClientImpl.putJson("http://example.com", 'Hello', {});
                 expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(RequestMethod.PUT, "http://example.com", {}, 'Hello');
                 expect(response).toStrictEqual({'hello': 'world'});
             });
@@ -626,7 +626,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonRequest as any).mockImplementationOnce(() => Promise.resolve({'hello': 'world'}));
             });
             it("makes a DELETE request with the given url and headers", async () => {
-                const response : JsonAny| undefined = await RequestClient.deleteJson("http://example.com", {});
+                const response : JsonAny| undefined = await RequestClientImpl.deleteJson("http://example.com", {});
                 expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(RequestMethod.DELETE, "http://example.com", {}, undefined);
                 expect(response).toStrictEqual({'hello': 'world'});
             });
@@ -637,7 +637,7 @@ describe("RequestClient", () => {
                 (mockRequestClient.jsonRequest as any).mockImplementationOnce(() => Promise.resolve({'hello': 'world'}));
             });
             it("makes a PATCH request with the given url and headers", async () => {
-                const response : JsonAny| undefined = await RequestClient.patchJson("http://example.com", 'Hello', {});
+                const response : JsonAny| undefined = await RequestClientImpl.patchJson("http://example.com", 'Hello', {});
                 expect(mockRequestClient.jsonRequest).toHaveBeenCalledWith(RequestMethod.PATCH, "http://example.com", {}, 'Hello');
                 expect(response).toStrictEqual({'hello': 'world'});
             });

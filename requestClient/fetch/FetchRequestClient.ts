@@ -2,7 +2,7 @@
 
 import { RequestMethod, stringifyRequestMethod } from "../../request/types/RequestMethod";
 import { JsonAny } from "../../Json";
-import { RequestClientInterface } from "../RequestClientInterface";
+import { RequestClientAdapter } from "../RequestClientAdapter";
 import { RequestError } from "../../request/types/RequestError";
 import { ContentType } from "../../request/types/ContentType";
 import { ResponseEntity } from "../../request/types/ResponseEntity";
@@ -12,7 +12,7 @@ export interface FetchInterface {
     (input: string, init?: RequestInit): Promise<Response>;
 }
 
-export class FetchRequestClient implements RequestClientInterface {
+export class FetchRequestClient implements RequestClientAdapter {
 
     private readonly _fetch : FetchInterface;
 

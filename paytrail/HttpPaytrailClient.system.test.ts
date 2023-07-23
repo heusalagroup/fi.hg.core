@@ -18,7 +18,7 @@ import { HgNode } from "../../node/HgNode";
 // @ts-ignore
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { keys } from "../functions/keys";
 import { isNonEmptyString } from "../types/String";
 import { every } from "../functions/every";
@@ -69,7 +69,7 @@ describe('system', () => {
         beforeAll( () => {
             HgNode.initialize();
             HttpPaytrailClient.setLogLevel(LogLevel.NONE);
-            RequestClient.setLogLevel(LogLevel.NONE);
+            RequestClientImpl.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
         });
 

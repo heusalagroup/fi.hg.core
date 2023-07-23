@@ -2,7 +2,7 @@
 
 import { PaytrailClient } from "./PaytrailClient";
 import { createHash, createHmac } from "crypto";
-import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { startsWith } from "../functions/startsWith";
 import { map } from "../functions/map";
 import { PaytrailItem } from "./types/PaytrailItem";
@@ -103,7 +103,7 @@ export class HttpPaytrailClient implements PaytrailClient {
         if (!transactionId) throw new Error('No transaction ID defined!');
         const headers = this._createHeaders('GET', transactionId);
         headers['signature'] = this._calculateHmac(this._secret, headers);
-        const resultString = await RequestClient.getText(
+        const resultString = await RequestClientImpl.getText(
             `${this._url}/payments/${transactionId}`,
             headers
         );
@@ -139,7 +139,7 @@ export class HttpPaytrailClient implements PaytrailClient {
         ];
         const headers = this._createHeaders('GET');
         headers['signature'] = this._calculateHmac(this._secret, headers);
-        const resultString = await RequestClient.getText(
+        const resultString = await RequestClientImpl.getText(
             `${this._url}/merchants/payment-providers${queryParams?.length ? `?${queryParams.join('&')}`: ''}`,
             headers
         );
@@ -166,7 +166,7 @@ export class HttpPaytrailClient implements PaytrailClient {
         ];
         const headers = this._createHeaders('GET');
         headers['signature'] = this._calculateHmac(this._secret, headers);
-        const resultString = await RequestClient.getText(
+        const resultString = await RequestClientImpl.getText(
             `${this._url}/merchants/grouped-payment-providers${queryParams?.length ? `?${queryParams.join('&')}`: ''}`,
             headers
         );
@@ -216,7 +216,7 @@ export class HttpPaytrailClient implements PaytrailClient {
         const headers = this._createHeaders('POST');
         const bodyString = JSON.stringify(body, null, 2);
         headers['signature'] = this._calculateHmac(this._secret, headers, bodyString);
-        const resultString = await RequestClient.postText(
+        const resultString = await RequestClientImpl.postText(
             `${this._url}/payments`,
             bodyString,
             headers

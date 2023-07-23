@@ -1,7 +1,5 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-// Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
-
 import { createOpPaymentResponseDTO, explainOpPaymentResponseDTO, explainOpPaymentResponseDTOOrUndefined, isOpPaymentResponseDTO, isOpPaymentResponseDTOOrUndefined, OpPaymentResponseDTO, parseOpPaymentResponseDTO } from "./OpPaymentResponseDTO";
 import { OpPaymentStatus } from "../types/OpPaymentStatus";
 import { OpPaymentType } from "../types/OpPaymentType";

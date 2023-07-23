@@ -1,7 +1,7 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { JsonAny,  ReadonlyJsonAny } from "./Json";
-import { RequestClient } from "./RequestClient";
+import { RequestClientImpl } from "./RequestClientImpl";
 import { Observer,  ObserverCallback, ObserverDestructor } from "./Observer";
 import { LogService } from "./LogService";
 import { LogLevel } from "./types/LogLevel";
@@ -34,7 +34,7 @@ export class HttpService {
 
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
-        RequestClient.setLogLevel(level);
+        RequestClientImpl.setLogLevel(level);
     }
 
     public static setRequestLimit (value : number ) {
@@ -207,7 +207,7 @@ export class HttpService {
             Method.GET,
             url,
             async () => {
-                const response : JsonAny | undefined = await RequestClient.getJson(url, headers);
+                const response : JsonAny | undefined = await RequestClientImpl.getJson(url, headers);
                 return response as ReadonlyJsonAny | undefined;
             },
             retryPolicy
@@ -226,7 +226,7 @@ export class HttpService {
             Method.POST,
             url,
             async () => {
-                const response : JsonAny | undefined = await RequestClient.postJson(url, data as JsonAny, headers);
+                const response : JsonAny | undefined = await RequestClientImpl.postJson(url, data as JsonAny, headers);
                 return response as ReadonlyJsonAny | undefined;
             },
             retryPolicy
@@ -244,7 +244,7 @@ export class HttpService {
             Method.DELETE,
             url,
             async () => {
-                const response : JsonAny | undefined = await RequestClient.deleteJson(url, headers);
+                const response : JsonAny | undefined = await RequestClientImpl.deleteJson(url, headers);
                 return response as ReadonlyJsonAny | undefined;
             },
             retryPolicy
@@ -263,7 +263,7 @@ export class HttpService {
             Method.GET,
             url,
             async () => {
-                const response : string | undefined = await RequestClient.getText(url, headers);
+                const response : string | undefined = await RequestClientImpl.getText(url, headers);
                 return response as string | undefined;
             },
             retryPolicy
@@ -282,7 +282,7 @@ export class HttpService {
             Method.POST,
             url,
             async () => {
-                const response : string | undefined = await RequestClient.postText(url, data, headers);
+                const response : string | undefined = await RequestClientImpl.postText(url, data, headers);
                 return response as string | undefined;
             },
             retryPolicy
@@ -301,7 +301,7 @@ export class HttpService {
             Method.DELETE,
             url,
             async () => {
-                const response : string | undefined = await RequestClient.deleteText(url, headers);
+                const response : string | undefined = await RequestClientImpl.deleteText(url, headers);
                 return response as string | undefined;
             },
             retryPolicy
@@ -319,7 +319,7 @@ export class HttpService {
             Method.GET,
             url,
             async () => {
-                return await RequestClient.getJsonEntity(url, headers);
+                return await RequestClientImpl.getJsonEntity(url, headers);
             },
             retryPolicy
         );
@@ -337,7 +337,7 @@ export class HttpService {
             Method.POST,
             url,
             async () => {
-                return await RequestClient.postJsonEntity(url, data as JsonAny, headers);
+                return await RequestClientImpl.postJsonEntity(url, data as JsonAny, headers);
             },
             retryPolicy
         );
@@ -354,7 +354,7 @@ export class HttpService {
             Method.DELETE,
             url,
             async () => {
-                return await RequestClient.deleteJsonEntity(url, headers);
+                return await RequestClientImpl.deleteJsonEntity(url, headers);
             },
             retryPolicy
         );
@@ -372,7 +372,7 @@ export class HttpService {
             Method.GET,
             url,
             async () => {
-                return await RequestClient.getTextEntity(url, headers);
+                return await RequestClientImpl.getTextEntity(url, headers);
             },
             retryPolicy
         );
@@ -390,7 +390,7 @@ export class HttpService {
             Method.POST,
             url,
             async () => {
-                return await RequestClient.postTextEntity(url, data, headers);
+                return await RequestClientImpl.postTextEntity(url, data, headers);
             },
             retryPolicy
         );
@@ -408,7 +408,7 @@ export class HttpService {
             Method.DELETE,
             url,
             async () => {
-                return await RequestClient.deleteTextEntity(url, headers);
+                return await RequestClientImpl.deleteTextEntity(url, headers);
             },
             retryPolicy
         );
