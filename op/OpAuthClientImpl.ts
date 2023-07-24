@@ -1,12 +1,12 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { RequestClientImpl } from "../RequestClientImpl";
 import { isNonEmptyString } from "../types/String";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
 import { explainJsonObject, isJsonObject, parseJson } from "../Json";
 import { OP_PRODUCTION_URL } from "./op-constants";
 import { OpAuthClient } from "./OpAuthClient";
+import { RequestClient } from "../RequestClient";
 
 const LOG = LogService.createLogger( 'OpAuthClientImpl' );
 
@@ -15,7 +15,7 @@ const LOG = LogService.createLogger( 'OpAuthClientImpl' );
  */
 export class OpAuthClientImpl implements OpAuthClient {
 
-    private readonly _client: RequestClientImpl;
+    private readonly _client: RequestClient;
     private readonly _url: string;
     private _token: string | undefined;
 
@@ -24,7 +24,7 @@ export class OpAuthClientImpl implements OpAuthClient {
     }
 
     protected constructor (
-        client: RequestClientImpl,
+        client: RequestClient,
         url: string,
         token ?: string | undefined,
     ) {
@@ -34,7 +34,7 @@ export class OpAuthClientImpl implements OpAuthClient {
     }
 
     public static create (
-        client  : RequestClientImpl,
+        client  : RequestClient,
         url     : string = OP_PRODUCTION_URL,
         token  ?: string | undefined,
     ) : OpAuthClientImpl {
@@ -67,7 +67,7 @@ export class OpAuthClientImpl implements OpAuthClient {
     }
 
     public static async getAccessToken (
-        client: RequestClientImpl,
+        client: RequestClient,
         url: string,
         clientId: string,
         clientSecret: string,
