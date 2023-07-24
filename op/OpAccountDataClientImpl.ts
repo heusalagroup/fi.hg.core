@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { OpAccountDataClient } from "./OpAccountDataClient";
-import { RequestClientImpl } from "../RequestClientImpl";
 import { LogService } from "../LogService";
 import {
     OP_ACCOUNT_DATA_GET_ACCOUNT_DETAILS_PATH,
@@ -16,6 +15,7 @@ import { explainOpAccountDetailsDTO, isOpAccountDetailsDTO, OpAccountDetailsDTO 
 import { explainOpTransactionListDTO, isOpTransactionListDTO, OpTransactionListDTO } from "./dto/OpTransactionListDTO";
 import { QueryParamUtils } from "../QueryParamUtils";
 import { OpRequestUtils } from "./OpRequestUtils";
+import { RequestClient } from "../RequestClient";
 
 const LOG = LogService.createLogger( 'OpAccountDataClientImpl' );
 
@@ -24,7 +24,7 @@ const LOG = LogService.createLogger( 'OpAccountDataClientImpl' );
  */
 export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClient {
 
-    private readonly _client: RequestClientImpl;
+    private readonly _client: RequestClient;
     private readonly _auth: OpAuthClient;
     private readonly _url: string;
     private _token: string | undefined;
@@ -34,7 +34,7 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     }
 
     public static create (
-        client: RequestClientImpl,
+        client: RequestClient,
         auth: OpAuthClient,
         url : string = OP_PRODUCTION_URL
     ) : OpAccountDataClientImpl {
@@ -46,7 +46,7 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     }
 
     private constructor (
-        client: RequestClientImpl,
+        client: RequestClient,
         auth: OpAuthClient,
         url: string,
         token ?: string | undefined,
