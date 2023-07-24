@@ -14,6 +14,7 @@ export interface OpPaymentClient {
      * Initiates payment processing
      *
      * @param paymentRequest The sandbox-signing.key
+     * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#operation/payment
      */
     createPayment (
         paymentRequest: OpPaymentRequestDTO,
@@ -23,6 +24,7 @@ export interface OpPaymentClient {
      * Initiates instant payment processing
      *
      * @param paymentRequest The sandbox-signing.key
+     * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#operation/instantPayment
      */
     createInstantPayment (
         paymentRequest: OpPaymentRequestDTO,
@@ -35,6 +37,7 @@ export interface OpPaymentClient {
      * result list may be empty.
      *
      * @param instructionId instructionId used when the payment was initiated
+     * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#operation/instantPaymentStatus
      */
     getInstantPaymentStatus (
         instructionId: string

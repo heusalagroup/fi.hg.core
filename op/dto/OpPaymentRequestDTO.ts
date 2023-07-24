@@ -12,6 +12,9 @@ import { explainOpUltimateDebtorOrUndefined, isOpUltimateDebtorOrUndefined, OpUl
 import { explainOpUltimateCreditorOrUndefined, isOpUltimateCreditorOrUndefined, OpUltimateCreditor } from "../types/OpUltimateCreditor";
 
 /**
+ * SEPA and SEPA instant payment request DTO.
+ *
+ * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#operation/payment
  * @example
  *   {
  *      "instructionId":"$INSTRUCTIONID",
