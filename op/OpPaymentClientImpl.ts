@@ -61,8 +61,11 @@ export class OpPaymentClientImpl implements OpPaymentClient, OpAuthClient {
         return this._auth.isAuthenticated();
     }
 
-    public async authenticate () : Promise<void> {
-        await this._auth.authenticate();
+    public async authenticate (
+        clientId     : string,
+        clientSecret : string,
+    ) : Promise<void> {
+        await this._auth.authenticate(clientId, clientSecret);
     }
 
     public getAccessKey() : string {

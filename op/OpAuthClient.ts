@@ -13,8 +13,14 @@ export interface OpAuthClient {
 
     /**
      * Authenticates
+     *
+     * @param clientId OP client ID
+     * @param clientSecret OP client secret
      */
-    authenticate () : Promise<void>;
+    authenticate (
+        clientId: string,
+        clientSecret: string,
+    ) : Promise<void>;
 
     /**
      * Returns access token

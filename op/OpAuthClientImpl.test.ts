@@ -20,22 +20,22 @@ describe('OpAuthClientImpl', () => {
 
     describe('#create', () => {
         it('creates new OpAuthClientImpl instance', () => {
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
+            const authClient = OpAuthClientImpl.create(mockClient);
             expect(authClient).toBeInstanceOf(OpAuthClientImpl);
         });
     });
 
     describe('#isAuthenticated', () => {
         it('returns false when there is no access token', () => {
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
+            const authClient = OpAuthClientImpl.create(mockClient);
             expect(authClient.isAuthenticated()).toBe(false);
         });
 
         it('returns true when there is an access token', async () => {
             const expectedToken = 'access-token';
             mockClient.postText.mockResolvedValueOnce(JSON.stringify({ access_token: expectedToken }));
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
-            await authClient.authenticate();
+            const authClient = OpAuthClientImpl.create(mockClient);
+            await authClient.authenticate('clientId', 'clientSecret');
             expect(authClient.isAuthenticated()).toBe(true);
         });
     });
@@ -44,17 +44,17 @@ describe('OpAuthClientImpl', () => {
         it('authenticates and sets access token correctly', async () => {
             const expectedToken = 'access-token';
             mockClient.postText.mockResolvedValueOnce(JSON.stringify({ access_token: expectedToken }));
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
+            const authClient = OpAuthClientImpl.create(mockClient);
 
-            await authClient.authenticate();
+            await authClient.authenticate('clientId', 'clientSecret');
             expect(authClient.isAuthenticated()).toBe(true);
         });
 
         it('throws error when no token found after authentication', async () => {
             mockClient.postText.mockResolvedValueOnce(JSON.stringify({}));
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
+            const authClient = OpAuthClientImpl.create(mockClient);
 
-            await expect(authClient.authenticate()).rejects.toThrow(TypeError);
+            await expect(authClient.authenticate('clientId', 'clientSecret')).rejects.toThrow(TypeError);
             expect(authClient.isAuthenticated()).toBe(false);
         });
 
@@ -63,16 +63,16 @@ describe('OpAuthClientImpl', () => {
     describe('#getAccessKey', () => {
 
         it('throws an error when not authenticated', () => {
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
+            const authClient = OpAuthClientImpl.create(mockClient);
             expect(() => authClient.getAccessKey()).toThrow('Not authenticated');
         });
 
         it('returns the access token when authenticated', async () => {
             const expectedToken = 'access-token';
             mockClient.postText.mockResolvedValueOnce(JSON.stringify({ access_token: expectedToken }));
-            const authClient = OpAuthClientImpl.create(mockClient, 'clientId', 'clientSecret');
+            const authClient = OpAuthClientImpl.create(mockClient);
 
-            await authClient.authenticate();
+            await authClient.authenticate('clientId', 'clientSecret');
             expect(authClient.getAccessKey()).toBe(expectedToken);
         });
 

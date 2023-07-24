@@ -39,6 +39,27 @@ export class OpRequestUtils {
     }
 
     /**
+     * Authenticates with the Op API if there is no session open.
+     *
+     * @param authClient
+     * @param clientId
+     * @param clientSecret
+     */
+    public static async authenticateIfNot (
+        authClient   : OpAuthClient,
+        clientId     : string,
+        clientSecret : string,
+    ) : Promise<void> {
+        if (!authClient.isAuthenticated()) {
+            await authClient.authenticate(clientId, clientSecret);
+        }
+    }
+
+    /**
+     * Performs JSON request on the OP API.
+     *
+     * Use `await OpRequestUtils.authenticateIfNot()` before calling this to
+     * verify there is open API access active.
      *
      * @param requestClient
      * @param authClient
@@ -57,9 +78,6 @@ export class OpRequestUtils {
         explainDTO: ExplainCallback,
         dtoName : string,
     ) : Promise<T> {
-        if (!authClient.isAuthenticated()) {
-            await authClient.authenticate();
-        }
         const dto : JsonAny | undefined = await requestClient.getJson(
             `${url}${path}`,
             OpRequestUtils.createRequestHeaders(authClient.getAccessKey())
@@ -74,6 +92,9 @@ export class OpRequestUtils {
     /**
      * Initiate a signed POST request.
      *
+     * Use `await OpRequestUtils.authenticateIfNot()` before calling this to
+     * verify there is open API access active.
+     *
      * @param requestClient
      * @param authClient
      * @param requestSigner
@@ -83,7 +104,6 @@ export class OpRequestUtils {
      * @param isDTO Response DTO check callback
      * @param explainDTO Response DTO explain callback
      * @param dtoName Response DTO type name
-     * @private
      */
     public static async postSignedRequest<BodyT, T> (
         requestClient: RequestClient,
@@ -96,9 +116,6 @@ export class OpRequestUtils {
         explainDTO: ExplainCallback,
         dtoName : string,
     ) : Promise<T> {
-        if (!authClient.isAuthenticated()) {
-            await authClient.authenticate();
-        }
         const token = authClient.getAccessKey();
         const bodyString : string = JSON.stringify(body);
         const xReqSignature : string = requestSigner(bodyString);

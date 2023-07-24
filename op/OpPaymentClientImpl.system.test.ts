@@ -22,6 +22,7 @@ import { OpRequestSigner } from "./OpRequestSigner";
 import { OpPaymentStatus } from "./types/OpPaymentStatus";
 import { OpPaymentListDTO } from "./dto/OpPaymentListDTO";
 import { first } from "../functions/first";
+import { OpAuthClient } from "./OpAuthClient";
 
 const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
 const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
@@ -63,7 +64,7 @@ describe('system', () => {
             HgNode.initialize();
         });
 
-        beforeEach(() => {
+        beforeEach(async () => {
             const requestClient = RequestClientImpl.create(
                 NodeRequestClient.create(
                     HTTP,
@@ -74,19 +75,22 @@ describe('system', () => {
                     }
                 )
             );
+            const authClient : OpAuthClient = OpAuthClientImpl.create(
+                requestClient,
+                API_SERVER,
+            );
             client = OpPaymentClientImpl.create(
                 requestClient,
-                OpAuthClientImpl.create(
-                    requestClient,
-                    CLIENT_ID,
-                    CLIENT_SECRET,
-                    API_SERVER,
-                ),
+                authClient,
                 OpRequestSigner.create(
                     SIGNING_KID,
                     SIGNING_KEY,
                 ),
                 API_SERVER,
+            );
+            await authClient.authenticate(
+                CLIENT_ID,
+                CLIENT_SECRET,
             );
         });
 

@@ -123,37 +123,21 @@ describe("OpPaymentClientImpl", () => {
 
             // Arrange
             (authClient.isAuthenticated as any).mockReturnValue(false);
+            (authClient.getAccessKey as any).mockImplementation(() => {
+                throw new Error('Not authenticated');
+            });
             (authClient.authenticate as any).mockReturnValue(Promise.resolve());
-            (authClient.getAccessKey as any).mockReturnValue(MOCK_ACCESS_TOKEN);
             (requestClient.postText as any).mockReturnValue(Promise.resolve(JSON.stringify(MOCK_OP_PAYMENT_RESPONSE_DTO)));
             (requestSigner as any).mockReturnValue(MOCK_SIGNATURE);
 
             // Act
-            const result = await client.createPayment(MOCK_OPPAYMENTREQUEST_DTO);
+            await expect(client.createPayment(MOCK_OPPAYMENTREQUEST_DTO)).rejects.toThrow('Not authenticated');
 
             // Assert
-
-            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
-
-            expect(authClient.authenticate).toHaveBeenCalledTimes(1);
-            expect(authClient.authenticate).toHaveBeenCalledWith();
-
-            expect(requestSigner).toHaveBeenCalledTimes(1);
-            expect(requestSigner).toHaveBeenCalledWith(JSON.stringify(MOCK_OPPAYMENTREQUEST_DTO));
-
-            expect(requestClient.postText).toHaveBeenCalledTimes(1);
-            expect(requestClient.postText).toHaveBeenCalledWith(
-                "https://example.com/corporate-payment/v1/sepa-payment",
-                JSON.stringify(MOCK_OPPAYMENTREQUEST_DTO),
-                expect.objectContaining({
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${MOCK_ACCESS_TOKEN}`,
-                    "X-Req-Signature": MOCK_SIGNATURE,
-                })
-            );
-
-            // Expect result to match mock OpPaymentResponseDTO
-            expect(result).toStrictEqual(MOCK_OP_PAYMENT_RESPONSE_DTO);
+            expect(authClient.isAuthenticated).not.toHaveBeenCalled();
+            expect(authClient.authenticate).not.toHaveBeenCalled();
+            expect(requestSigner).not.toHaveBeenCalled();
+            expect(requestClient.postText).not.toHaveBeenCalled();
 
         });
 
@@ -169,7 +153,7 @@ describe("OpPaymentClientImpl", () => {
             const result = await client.createPayment(MOCK_OPPAYMENTREQUEST_DTO);
 
             // Assert
-            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
+            expect(authClient.isAuthenticated).not.toHaveBeenCalled();
             expect(authClient.authenticate).not.toHaveBeenCalled();
 
             expect(requestSigner).toHaveBeenCalledTimes(1);
@@ -199,37 +183,21 @@ describe("OpPaymentClientImpl", () => {
 
             // Arrange
             (authClient.isAuthenticated as any).mockReturnValue(false);
+            (authClient.getAccessKey as any).mockImplementation(() => {
+                throw new Error('Not authenticated');
+            });
             (authClient.authenticate as any).mockReturnValue(Promise.resolve());
-            (authClient.getAccessKey as any).mockReturnValue(MOCK_ACCESS_TOKEN);
             (requestClient.postText as any).mockReturnValue(Promise.resolve(JSON.stringify(MOCK_OP_PAYMENT_RESPONSE_DTO)));
             (requestSigner as any).mockReturnValue(MOCK_SIGNATURE);
 
             // Act
-            const result = await client.createInstantPayment(MOCK_OPPAYMENTREQUEST_DTO);
+            await expect(client.createInstantPayment(MOCK_OPPAYMENTREQUEST_DTO)).rejects.toThrow('Not authenticated');
 
             // Assert
-
-            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
-
-            expect(authClient.authenticate).toHaveBeenCalledTimes(1);
-            expect(authClient.authenticate).toHaveBeenCalledWith();
-
-            expect(requestSigner).toHaveBeenCalledTimes(1);
-            expect(requestSigner).toHaveBeenCalledWith(JSON.stringify(MOCK_OPPAYMENTREQUEST_DTO));
-
-            expect(requestClient.postText).toHaveBeenCalledTimes(1);
-            expect(requestClient.postText).toHaveBeenCalledWith(
-                "https://example.com/corporate-payment/v1/sepa-instant-payment",
-                JSON.stringify(MOCK_OPPAYMENTREQUEST_DTO),
-                expect.objectContaining({
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${MOCK_ACCESS_TOKEN}`,
-                    "X-Req-Signature": MOCK_SIGNATURE,
-                })
-            );
-
-            // Expect result to match mock OpPaymentResponseDTO
-            expect(result).toStrictEqual(MOCK_OP_PAYMENT_RESPONSE_DTO);
+            expect(authClient.isAuthenticated).not.toHaveBeenCalled();
+            expect(authClient.authenticate).not.toHaveBeenCalled();
+            expect(requestSigner).not.toHaveBeenCalled();
+            expect(requestClient.postText).not.toHaveBeenCalled();
 
         });
 
@@ -245,7 +213,7 @@ describe("OpPaymentClientImpl", () => {
             const result = await client.createInstantPayment(MOCK_OPPAYMENTREQUEST_DTO);
 
             // Assert
-            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
+            expect(authClient.isAuthenticated).not.toHaveBeenCalled();
             expect(authClient.authenticate).not.toHaveBeenCalled();
 
             expect(requestSigner).toHaveBeenCalledTimes(1);
@@ -283,10 +251,8 @@ describe("OpPaymentClientImpl", () => {
             const result = await client.getInstantPaymentStatus(MOCK_INSTRUCTION_ID);
 
             // Assert
-            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
-
+            expect(authClient.isAuthenticated).not.toHaveBeenCalled();
             expect(authClient.authenticate).not.toHaveBeenCalled();
-
             expect(requestSigner).not.toHaveBeenCalled();
 
             expect(requestClient.getJson).toHaveBeenCalledTimes(1);
@@ -304,38 +270,25 @@ describe("OpPaymentClientImpl", () => {
 
         });
 
-        it('should get valid status of an initiated instant payment when auth client is not authenticated', async () => {
+        it('should throw an error when auth client is not authenticated', async () => {
 
             // Arrange
             (authClient.isAuthenticated as any).mockReturnValue(false);
+            (authClient.getAccessKey as any).mockImplementation(() => {
+                throw new Error('Not authenticated');
+            });
             (authClient.authenticate as any).mockReturnValue(Promise.resolve());
-            (authClient.getAccessKey as any).mockReturnValue(MOCK_ACCESS_TOKEN);
             (requestClient.getJson as any).mockReturnValue(Promise.resolve(MOCK_PAYMENT_LIST_RESPONSE));
             (requestSigner as any).mockReturnValue(MOCK_SIGNATURE);
 
             // Act
-            const result = await client.getInstantPaymentStatus(MOCK_INSTRUCTION_ID);
+            await expect(client.getInstantPaymentStatus(MOCK_INSTRUCTION_ID)).rejects.toThrow('Not authenticated');
 
             // Assert
-            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
-
-            expect(authClient.authenticate).toHaveBeenCalledTimes(1);
-            expect(authClient.authenticate).toHaveBeenCalledWith();
-
+            expect(authClient.isAuthenticated).not.toHaveBeenCalled();
+            expect(authClient.authenticate).not.toHaveBeenCalled();
             expect(requestSigner).not.toHaveBeenCalled();
-
-            expect(requestClient.getJson).toHaveBeenCalledTimes(1);
-            expect(requestClient.getJson).toHaveBeenCalledWith(
-                `https://example.com/corporate-payment/v1/sepa-instant-payment/${MOCK_INSTRUCTION_ID}`,
-                expect.objectContaining({
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${MOCK_ACCESS_TOKEN}`,
-                    "X-Request-ID": expect.any(String)
-                })
-            );
-
-            // Expect result to match mock OpPaymentResponseDTO
-            expect(result).toStrictEqual(MOCK_PAYMENT_LIST_RESPONSE);
+            expect(requestClient.getJson).not.toHaveBeenCalled();
 
         });
 

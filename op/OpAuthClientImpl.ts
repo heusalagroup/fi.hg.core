@@ -16,8 +16,6 @@ const LOG = LogService.createLogger( 'OpAuthClientImpl' );
 export class OpAuthClientImpl implements OpAuthClient {
 
     private readonly _client: RequestClientImpl;
-    private readonly _clientId: string;
-    private readonly _clientSecret: string;
     private readonly _url: string;
     private _token: string | undefined;
 
@@ -28,28 +26,22 @@ export class OpAuthClientImpl implements OpAuthClient {
     protected constructor (
         client: RequestClientImpl,
         url: string,
-        clientId : string,
-        clientSecret : string,
         token ?: string | undefined,
     ) {
         this._client = client;
-        this._clientId = clientId;
-        this._clientSecret = clientSecret;
         this._url = url;
         this._token = token;
     }
 
     public static create (
-        client: RequestClientImpl,
-        clientId: string,
-        clientSecret: string,
-        url : string = OP_PRODUCTION_URL
+        client  : RequestClientImpl,
+        url     : string = OP_PRODUCTION_URL,
+        token  ?: string | undefined,
     ) : OpAuthClientImpl {
         return new OpAuthClientImpl(
             client,
             url,
-            clientId,
-            clientSecret,
+            token,
         );
     }
 
@@ -57,12 +49,15 @@ export class OpAuthClientImpl implements OpAuthClient {
         return !!this._token;
     }
 
-    public async authenticate () : Promise<void> {
+    public async authenticate (
+        clientId: string,
+        clientSecret: string,
+    ) : Promise<void> {
         this._token = await OpAuthClientImpl.getAccessToken(
             this._client,
             this._url,
-            this._clientId,
-            this._clientSecret
+            clientId,
+            clientSecret
         );
     }
 

@@ -17,6 +17,7 @@ import { slice } from "../functions/slice";
 import { parseInteger } from "../types/Number";
 import { LogLevel } from "../types/LogLevel";
 import { OpAccountDataClient } from "./OpAccountDataClient";
+import { OpAuthClient } from "./OpAuthClient";
 
 const API_SERVER = process.env.OP_SANDBOX_URL ?? OP_SANDBOX_URL;
 const CLIENT_ID = process.env.OP_CLIENT_ID ?? '';
@@ -60,7 +61,7 @@ describe('system', () => {
             OpAccountDataClientImpl.setLogLevel(LogLevel.NONE);
         });
 
-        beforeEach(() => {
+        beforeEach(async () => {
             const requestClient = RequestClientImpl.create(
                 NodeRequestClient.create(
                     HTTP,
@@ -71,15 +72,18 @@ describe('system', () => {
                     }
                 )
             );
+            const authClient : OpAuthClient = OpAuthClientImpl.create(
+                requestClient,
+                API_SERVER,
+            );
             client = OpAccountDataClientImpl.create(
                 requestClient,
-                OpAuthClientImpl.create(
-                    requestClient,
-                    CLIENT_ID,
-                    CLIENT_SECRET,
-                    API_SERVER,
-                ),
+                authClient,
                 API_SERVER,
+            );
+            await authClient.authenticate(
+                CLIENT_ID,
+                CLIENT_SECRET,
             );
         });
 

@@ -67,8 +67,14 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     /**
      * @inheritDoc
      */
-    public async authenticate () : Promise<void> {
-        await this._auth.authenticate();
+    public async authenticate (
+        clientId     : string,
+        clientSecret : string,
+    ) : Promise<void> {
+        await this._auth.authenticate(
+            clientId,
+            clientSecret,
+        );
     }
 
     /**

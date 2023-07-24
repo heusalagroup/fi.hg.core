@@ -59,8 +59,6 @@ describe('system', () => {
             );
             client = OpAuthClientImpl.create(
                 requestClient,
-                CLIENT_ID,
-                CLIENT_SECRET,
                 API_SERVER,
             );
         });
@@ -73,7 +71,10 @@ describe('system', () => {
 
         describe('#authenticate', () => {
             it('should authenticate successfully', async () => {
-                await client.authenticate();
+                await client.authenticate(
+                    CLIENT_ID,
+                    CLIENT_SECRET,
+                );
                 expect(client.isAuthenticated()).toBeTruthy();
             });
         });
@@ -87,7 +88,10 @@ describe('system', () => {
             });
 
             it('should return access key when authenticated', async () => {
-                await client.authenticate();
+                await client.authenticate(
+                    CLIENT_ID,
+                    CLIENT_SECRET,
+                );
                 const accessKey = client.getAccessKey();
                 expect(typeof accessKey).toBe('string');
             });

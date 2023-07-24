@@ -53,6 +53,16 @@ describe('OpRequestUtils', () => {
         });
     });
 
+    describe('#authenticateIfNot', () => {
+        it('should authenticate if not already authenticated', async () => {
+            authClient.isAuthenticated.mockReturnValue(false);
+            await OpRequestUtils.authenticateIfNot(authClient, 'clientId', 'clientSecret');
+            expect(authClient.isAuthenticated).toHaveBeenCalledTimes(1);
+            expect(authClient.authenticate).toHaveBeenCalledTimes(1);
+            expect(authClient.authenticate).toHaveBeenCalledWith('clientId', 'clientSecret');
+        });
+    });
+
     describe('#getJsonRequest', () => {
 
         it('should successfully fetch JSON when authenticated', async () => {
@@ -61,10 +71,14 @@ describe('OpRequestUtils', () => {
             expect(data).toBeDefined();
         });
 
-        it('should authenticate if not already authenticated', async () => {
+        it('should throw an error if not already authenticated', async () => {
             authClient.isAuthenticated.mockReturnValue(false);
-            await OpRequestUtils.getJsonRequest(requestClient, authClient, mockURL, mockPath, isDTO as any, explainDTO, mockDTOName);
-            expect(authClient.authenticate).toHaveBeenCalledTimes(1);
+            authClient.getAccessKey.mockImplementation(() => {
+                throw new Error('Not authenticated');
+            });
+            await expect(OpRequestUtils.getJsonRequest(requestClient, authClient, mockURL, mockPath, isDTO as any, explainDTO, mockDTOName)).rejects.toThrowError('Not authenticated');
+            expect(authClient.getAccessKey).toHaveBeenCalledTimes(1);
+            expect(authClient.authenticate).not.toHaveBeenCalled();
         });
 
         it('should throw an error if the response is not a valid DTO', async () => {
@@ -85,10 +99,14 @@ describe('OpRequestUtils', () => {
             expect(data).toBeDefined();
         });
 
-        it('should authenticate if not already authenticated', async () => {
+        it('should throw an error if not already authenticated', async () => {
             authClient.isAuthenticated.mockReturnValue(false);
-            await OpRequestUtils.postSignedRequest(requestClient, authClient, mockSigner, mockURL, mockPath, mockBody, isDTO as any, explainDTO, mockDTOName);
-            expect(authClient.authenticate).toHaveBeenCalledTimes(1);
+            authClient.getAccessKey.mockImplementation(() => {
+                throw new Error('Not authenticated');
+            });
+            await expect(OpRequestUtils.postSignedRequest(requestClient, authClient, mockSigner, mockURL, mockPath, mockBody, isDTO as any, explainDTO, mockDTOName)).rejects.toThrowError('Not authenticated');
+            expect(authClient.getAccessKey).toHaveBeenCalledTimes(1);
+            expect(authClient.authenticate).not.toHaveBeenCalled();
         });
 
         it('should throw an error if the response is not a valid DTO', async () => {
