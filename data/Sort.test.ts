@@ -56,6 +56,7 @@ describe("Sort", () => {
             expect(() => Sort.by({})).toThrowError(TypeError);
             // @ts-ignore
             expect(() => Sort.by("firstName", {})).toThrowError(TypeError);
+            // @ts-ignore
             expect(() => Sort.by(3)).toThrowError(TypeError);
         });
 

@@ -6,6 +6,7 @@ import { createEntityCallback } from "./types/EntityCallback";
 import { EntityCallbackType } from "./types/EntityCallbackType";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
+import { isStringOrSymbol } from "../types/String";
 
 const LOG = LogService.createLogger( 'PostRemove' );
 LOG.setLogLevel(LogLevel.INFO);
@@ -34,8 +35,9 @@ export const PostRemove = (): PropertyDecorator => {
      */
     return (
         target: any,
-        propertyName : string | symbol
+        context: any
     ) => {
+        const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (propertyName !== undefined) {
             LOG.debug(`Installing POST_REMOVE callback for property "${propertyName.toString()}"`);
             EntityMetadataUtils.updateMetadata(target.constructor, (metadata: EntityMetadata) => {

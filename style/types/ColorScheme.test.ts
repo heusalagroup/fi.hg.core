@@ -69,6 +69,7 @@ describe('ColorScheme', () => {
         });
 
         test('can stringify undefined numbers', () => {
+            // @ts-ignore
             expect( stringifyColorScheme(999) ).toBe('ColorScheme(999)');
         });
 
