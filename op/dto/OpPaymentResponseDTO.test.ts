@@ -3,6 +3,7 @@
 import { createOpPaymentResponseDTO, explainOpPaymentResponseDTO, explainOpPaymentResponseDTOOrUndefined, isOpPaymentResponseDTO, isOpPaymentResponseDTOOrUndefined, OpPaymentResponseDTO, parseOpPaymentResponseDTO } from "./OpPaymentResponseDTO";
 import { OpPaymentStatus } from "../types/OpPaymentStatus";
 import { OpPaymentType } from "../types/OpPaymentType";
+import { Currency } from "../../types/Currency";
 
 describe('OpPaymentResponseDTO', () => {
 
@@ -29,7 +30,7 @@ describe('OpPaymentResponseDTO', () => {
             const validDto = createOpPaymentResponseDTO(
                 "3.45",
                 OpPaymentStatus.PROCESSED,
-                "EUR",
+                Currency.EUR,
                 "20190524593156999999",
                 "FI4550009420888888",
                 "Ultimate Debtor",

@@ -4,11 +4,12 @@ import { OpPaymentResponseDTO } from "./OpPaymentResponseDTO";
 import { createOpPaymentListDTO, explainOpPaymentListDTO, explainOpPaymentListDTOOrUndefined, isOpPaymentListDTO, isOpPaymentListDTOOrUndefined, parseOpPaymentListDTO } from "./OpPaymentListDTO";
 import { OpPaymentStatus } from "../types/OpPaymentStatus";
 import { OpPaymentType } from "../types/OpPaymentType";
+import { Currency } from "../../types/Currency";
 
 const MOCK_PAYMENT_RESPONSE: OpPaymentResponseDTO = {
     "amount": "3.45",
     "status": OpPaymentStatus.PROCESSED,
-    "currency": "EUR",
+    "currency": Currency.EUR,
     "archiveId": "20190524593156999999",
     "debtorIban": "FI4550009420888888",
     "ultimateDebtorName": "Ultimate Debtor",

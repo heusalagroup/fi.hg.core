@@ -16,35 +16,35 @@ export class OpTransactionEntity extends Entity {
 
     // The constructor
     public constructor ();
-    public constructor (dto : OpTransactionDTO);
+    public constructor (dto : OpTransactionDTO & {opAccountId: string, opSurrogateId: string});
 
     public constructor (dto ?: OpTransactionDTO & {opAccountId: string, opSurrogateId: string}) {
         super();
-        this.opAccountId                = dto.opAccountId;
-        this.opSurrogateId              = dto.opSurrogateId;
-        this.amount                     = dto.amount;
-        this.balanceBefore              = dto.balanceBefore;
-        this.balanceAfter               = dto.balanceAfter;
-        this.message                    = dto.message;
-        this.currency                   = dto.currency;
-        this.objectId                   = dto.objectId;
-        this.archiveId                  = dto.archiveId;
-        this.debtorBic                  = dto.debtorBic;
-        this.reference                  = dto.reference;
-        this.rfReference                = dto.rfReference;
-        this.valueDate                  = dto.valueDate;
-        this.debtorName                 = dto.debtorName;
-        this.bookingDate                = dto.bookingDate;
-        this.creditorBic                = dto.creditorBic;
-        this.paymentDate                = dto.paymentDate;
-        this.creditorName               = dto.creditorName;
-        this.debtorAccount              = dto.debtorAccount;
-        this.creditorAccount            = dto.creditorAccount;
-        this.endToEndId                 = dto.endToEndId;
-        this.timestamp                  = dto.timestamp;
-        this.transactionTypeCode        = dto.transactionTypeCode;
-        this.transactionTypeDescription = dto.transactionTypeDescription;
-        this.uetr                       = dto.uetr;
+        this.opAccountId                = dto?.opAccountId;
+        this.opSurrogateId              = dto?.opSurrogateId;
+        this.amount                     = dto?.amount;
+        this.balanceBefore              = dto?.balanceBefore;
+        this.balanceAfter               = dto?.balanceAfter;
+        this.message                    = dto?.message;
+        this.currency                   = dto?.currency;
+        this.objectId                   = dto?.objectId;
+        this.archiveId                  = dto?.archiveId;
+        this.debtorBic                  = dto?.debtorBic;
+        this.reference                  = dto?.reference;
+        this.rfReference                = dto?.rfReference;
+        this.valueDate                  = dto?.valueDate;
+        this.debtorName                 = dto?.debtorName;
+        this.bookingDate                = dto?.bookingDate;
+        this.creditorBic                = dto?.creditorBic;
+        this.paymentDate                = dto?.paymentDate;
+        this.creditorName               = dto?.creditorName;
+        this.debtorAccount              = dto?.debtorAccount;
+        this.creditorAccount            = dto?.creditorAccount;
+        this.endToEndId                 = dto?.endToEndId;
+        this.timestamp                  = dto?.timestamp;
+        this.transactionTypeCode        = dto?.transactionTypeCode;
+        this.transactionTypeDescription = dto?.transactionTypeDescription;
+        this.uetr                       = dto?.uetr;
     }
 
     @Id()
@@ -135,26 +135,42 @@ export class OpTransactionEntity extends Entity {
     public uetr ?: string;
 
     public static toDTO (entity: OpTransactionEntity) : OpTransactionDTO {
+        if (!entity.amount) throw new TypeError('entity.amount missing');
+        if (!entity.balanceBefore) throw new TypeError('entity.balanceBefore missing');
+        if (!entity.balanceAfter) throw new TypeError('entity.balanceAfter missing');
+        if (!entity.objectId) throw new TypeError('entity.objectId missing');
+        if (!entity.archiveId) throw new TypeError('entity.archiveId missing');
+        if (!entity.debtorBic) throw new TypeError('entity.debtorBic missing');
+        if (!entity.valueDate) throw new TypeError('entity.valueDate missing');
+        if (!entity.debtorName) throw new TypeError('entity.debtorName missing');
+        if (!entity.bookingDate) throw new TypeError('entity.bookingDate missing');
+        if (!entity.paymentDate) throw new TypeError('entity.paymentDate missing');
+        if (!entity.creditorName) throw new TypeError('entity.creditorName missing');
+        if (!entity.debtorAccount) throw new TypeError('entity.debtorAccount missing');
+        if (!entity.timestamp) throw new TypeError('entity.timestamp missing');
+        if (!entity.transactionTypeCode) throw new TypeError('entity.transactionTypeCode missing');
+        if (!entity.transactionTypeDescription) throw new TypeError('entity.transactionTypeDescription missing');
+        if (!entity.uetr) throw new TypeError('entity.uetr missing');
         const dto : OpTransactionDTO = createOpTransactionDTO(
             entity.amount,
             entity.balanceBefore,
             entity.balanceAfter,
-            entity.message,
-            entity.currency,
+            entity.message ?? null,
+            entity.currency ?? null,
             entity.objectId,
             entity.archiveId,
             entity.debtorBic,
-            entity.reference,
-            entity.rfReference,
+            entity.reference ?? null,
+            entity.rfReference ?? null,
             entity.valueDate,
             entity.debtorName,
             entity.bookingDate,
-            entity.creditorBic,
+            entity.creditorBic ?? null,
             entity.paymentDate,
             entity.creditorName,
             entity.debtorAccount,
-            entity.creditorAccount,
-            entity.endToEndId,
+            entity.creditorAccount ?? null,
+            entity.endToEndId ?? null,
             entity.timestamp,
             entity.transactionTypeCode,
             entity.transactionTypeDescription,
