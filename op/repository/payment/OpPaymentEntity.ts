@@ -3,7 +3,8 @@
 import { LogService } from "../../../LogService";
 import { Table } from "../../../data/Table";
 import { Entity } from "../../../data/Entity";
-import { createOpPaymentDTO, explainOpPaymentDTO, isOpPaymentDTO, OpPaymentDTO } from "../../dto/OpPaymentDTO";
+import { createOpPaymentDTO, explainOpPaymentDTO, isOpPaymentDTO } from "../../dto/OpPaymentDTO";
+import type { OpPaymentDTO } from "../../dto/OpPaymentDTO";
 import { Id } from "../../../data/Id";
 import { Column } from "../../../data/Column";
 import { OpPaymentType } from "../../types/OpPaymentType";
@@ -234,6 +235,19 @@ export class OpPaymentEntity extends Entity {
     public endToEndId ?: string;
 
     public static toDTO (entity: OpPaymentEntity) : OpPaymentDTO {
+
+        if (!entity?.rInstructionId) throw new TypeError('entity.rInstructionId missing');
+        if (!entity?.rCreditorName) throw new TypeError('entity.rCreditorName missing');
+        if (!entity?.rCreditorAddressCountry) throw new TypeError('entity.rCreditorAddressCountry missing');
+        if (!entity?.rCreditorAddressLine1) throw new TypeError('entity.rCreditorAddressLine1 missing');
+        if (!entity?.rCreditorAddressLine2) throw new TypeError('entity.rCreditorAddressLine2 missing');
+        if (!entity?.rDebtorName) throw new TypeError('entity.rDebtorName missing');
+        if (!entity?.rDebtorAddressCountry) throw new TypeError('entity.rDebtorAddressCountry missing');
+        if (!entity?.rDebtorAddressLine1) throw new TypeError('entity.rDebtorAddressLine1 missing');
+        if (!entity?.rDebtorAddressLine2) throw new TypeError('entity.rDebtorAddressLine2 missing');
+        if (!entity?.rInstructedAmountValue) throw new TypeError('entity.rInstructedAmountValue missing');
+        if (!entity?.rInstructedAmountCurrency) throw new TypeError('entity.rInstructedAmountCurrency missing');
+
         const dto : OpPaymentDTO = createOpPaymentDTO(
             createOpPaymentRequestDTO(
                 entity?.rInstructionId,
@@ -266,7 +280,14 @@ export class OpPaymentEntity extends Entity {
                 entity?.rReference,
                 entity?.rMessage,
                 entity?.rEndToEndId,
-                createOpUltimateDebtor(
+                (
+                    entity?.rUltimateDebtorName
+                    && entity?.rUltimateDebtorIdentificationId
+                    && entity?.rUltimateDebtorIdentificationSchemeName
+                    && entity?.rUltimateDebtorAddressCountry
+                    && entity?.rUltimateDebtorAddressLine1
+                    && entity?.rUltimateDebtorAddressLine2
+                ) ? createOpUltimateDebtor(
                     entity?.rUltimateDebtorName,
                     createOpPaymentIdentification(
                         entity?.rUltimateDebtorIdentificationId,
@@ -280,8 +301,15 @@ export class OpPaymentEntity extends Entity {
                             entity?.rUltimateDebtorAddressLine2,
                         ]
                     ),
-                ),
-                createOpUltimateCreditor(
+                ) : undefined,
+                (
+                    entity?.rUltimateCreditorName
+                    && entity?.rUltimateCreditorIdentificationId
+                    && entity?.rUltimateCreditorIdentificationSchemeName
+                    && entity?.rUltimateCreditorAddressCountry
+                    && entity?.rUltimateCreditorAddressLine1
+                    && entity?.rUltimateCreditorAddressLine2
+                ) ? createOpUltimateCreditor(
                     entity?.rUltimateCreditorName,
                     createOpPaymentIdentification(
                         entity?.rUltimateCreditorIdentificationId,
@@ -295,9 +323,22 @@ export class OpPaymentEntity extends Entity {
                             entity?.rUltimateCreditorAddressLine2,
                         ]
                     ),
-                ),
+                ) : undefined,
             ),
-            createOpPaymentResponseDTO(
+            (
+                entity?.amount
+                && entity?.status
+                && entity?.currency
+                && entity?.archiveId
+                && entity?.debtorIban
+                && entity?.bookingDate
+                && entity?.paymentType
+                && entity?.creditorIban
+                && entity?.creditorName
+                && entity?.transactionId
+                && entity?.transactionDate
+                && entity?.endToEndId
+            ) ? createOpPaymentResponseDTO(
                 entity?.amount,
                 entity?.status,
                 entity?.currency,
@@ -312,7 +353,7 @@ export class OpPaymentEntity extends Entity {
                 entity?.transactionId,
                 entity?.transactionDate,
                 entity?.endToEndId,
-            )
+            ) : undefined
         );
         // Redundant fail safe
         if (!isOpPaymentDTO(dto)) {

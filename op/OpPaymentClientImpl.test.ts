@@ -66,7 +66,7 @@ const MOCK_ACCESS_TOKEN = 'testToken';
 const MOCK_PAYMENT_LIST_ITEM_RESPONSE: OpPaymentResponseDTO = {
     "amount": "3.45",
     "status": OpPaymentStatus.PROCESSED,
-    "currency": "EUR",
+    "currency": Currency.EUR,
     "archiveId": "20190524593156999999",
     "debtorIban": "FI4550009420888888",
     "ultimateDebtorName": "Ultimate Debtor",
