@@ -5,10 +5,12 @@ ProcessUtils.initEnvFromDefaultFiles();
 
 import HTTP from "http";
 import HTTPS from "https";
+// @ts-ignore
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
+// @ts-ignore
 import { HgNode } from "../../node/HgNode";
 import { OP_SANDBOX_URL } from "./op-constants";
 import { OpAuthClient } from "./OpAuthClient";

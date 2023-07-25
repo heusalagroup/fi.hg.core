@@ -6,6 +6,7 @@ ProcessUtils.initEnvFromDefaultFiles();
 import HTTP from "http";
 import HTTPS from "https";
 import { OP_SANDBOX_URL } from "./op-constants";
+// @ts-ignore
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAccountDataClientImpl } from "./OpAccountDataClientImpl";

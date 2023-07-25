@@ -11,7 +11,7 @@ import { PathVariable } from "./PathVariable";
 import { ParamRoutes } from "../requestServer/types/ParamRoutes";
 import { GetMapping } from "./GetMapping";
 import { RequestBody } from "./RequestBody";
-import { ReadonlyJsonAny } from "../Json";
+import type { ReadonlyJsonAny } from "../Json";
 import { OpenAPIV3 } from "../types/openapi";
 import { getOpenApiDocumentFromRequestController } from "./types/RequestController";
 import { Operation } from "./Operation";

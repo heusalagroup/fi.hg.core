@@ -3,7 +3,8 @@
 import { LogService } from "../../../LogService";
 import { Table } from "../../../data/Table";
 import { Entity } from "../../../data/Entity";
-import { createOpAccountDTO, explainOpAccountDTO, isOpAccountDTO, OpAccountDTO } from "../../dto/OpAccountDTO";
+import { createOpAccountDTO, explainOpAccountDTO, isOpAccountDTO } from "../../dto/OpAccountDTO";
+import type { OpAccountDTO } from "../../dto/OpAccountDTO";
 import { Id } from "../../../data/Id";
 import { Column } from "../../../data/Column";
 import { ReadonlyJsonObject } from "../../../Json";
@@ -58,22 +59,22 @@ export class OpAccountEntity extends Entity {
     @Column("surrogate_id")
     public surrogateId ?: string;
 
-    @Column("product_names", 'JSON')
-    public productNames ?: ReadonlyJsonObject;
+    @Column("productNames", 'JSON')
+    public productNames ?: ReadonlyJsonObject | null;
 
     @Column("account_type_code")
     public accountTypeCode ?: string;
 
     public static toDTO (entity: OpAccountEntity) : OpAccountDTO {
         const dto : OpAccountDTO = createOpAccountDTO(
-            entity?.bic,
-            entity?.iban,
-            entity?.name,
-            entity?.balance,
-            entity?.currency,
-            entity?.surrogateId,
-            entity?.productNames,
-            entity?.accountTypeCode,
+            entity?.bic ?? '',
+            entity?.iban ?? '',
+            entity?.name ?? '',
+            entity?.balance ?? '',
+            entity?.currency ?? '',
+            entity?.surrogateId ?? '',
+            entity?.productNames ?? {},
+            entity?.accountTypeCode ?? '',
         );
         // Redundant fail safe
         if (!isOpAccountDTO(dto)) {

@@ -6,6 +6,7 @@ ProcessUtils.initEnvFromDefaultFiles();
 
 import HTTP from "http";
 import HTTPS from "https";
+// @ts-ignore
 import { HgNode } from "../../node/HgNode";
 import { OP_SANDBOX_URL } from "./op-constants";
 import { OpPaymentClient } from "./OpPaymentClient";
@@ -13,6 +14,7 @@ import { OpPaymentRequestDTO } from "./dto/OpPaymentRequestDTO";
 import { Currency } from "../types/Currency";
 import { CountryCode } from "../types/CountryCode";
 import { OpPaymentResponseDTO } from "./dto/OpPaymentResponseDTO";
+// @ts-ignore
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClientImpl } from "../RequestClientImpl";
 import { OpPaymentClientImpl } from "./OpPaymentClientImpl";
