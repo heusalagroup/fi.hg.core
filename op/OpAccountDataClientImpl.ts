@@ -16,6 +16,8 @@ import { explainOpTransactionListDTO, isOpTransactionListDTO, OpTransactionListD
 import { QueryParamUtils } from "../QueryParamUtils";
 import { OpRequestUtils } from "./OpRequestUtils";
 import { RequestClient } from "../RequestClient";
+import { forEach } from "../functions/forEach";
+import { OpTransactionDTO } from "./dto/OpTransactionDTO";
 
 const LOG = LogService.createLogger( 'OpAccountDataClientImpl' );
 
@@ -120,10 +122,10 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
      * @inheritDoc
      */
     public async getTransactionListFromTimestamp (
-        surrogateId: string,
-        fromTimestamp : number,
-        maxPast ?: number,
-        maxFuture ?: number,
+        surrogateId    : string,
+        fromTimestamp  : number,
+        maxPast       ?: number,
+        maxFuture     ?: number,
     ): Promise<OpTransactionListDTO> {
         const queryParams : string = QueryParamUtils.stringifyQueryParams(
             {
@@ -168,6 +170,73 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
             explainOpTransactionListDTO,
             "OpTransactionListDTO",
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public async getTransactionListFromTimestampRange (
+        surrogateId    : string,
+        fromTimestamp  : number,
+        toTimestamp    : number,
+        bufferSize     : number = 150,
+    ) : Promise<OpTransactionListDTO> {
+        let list : OpTransactionListDTO;
+        let fullList : OpTransactionDTO[] = [];
+        fromTimestamp -= 1;
+        let prevStartTime = fromTimestamp;
+        do {
+
+            LOG.debug(`Fetching from ${fromTimestamp} to ${toTimestamp} for ${bufferSize} items`);
+            list = await this.getTransactionListFromTimestamp(
+                surrogateId,
+                fromTimestamp,
+                0,
+                bufferSize
+            );
+            prevStartTime = fromTimestamp;
+
+            if ( list.length > 0 ) {
+                let breakLoop : boolean = false;
+                forEach(
+                    list,
+                    (item: OpTransactionDTO) : void => {
+                        const time : number = item.timestamp;
+                        if (time > toTimestamp) {
+                            breakLoop = true;
+                        } else {
+                            if (time >= prevStartTime) {
+                                fullList.push(item);
+                                if (time > fromTimestamp) {
+                                    fromTimestamp = time;
+                                }
+                            } else {
+                                LOG.warn(`Warning! Got older items with time ${time}: `, item);
+                            }
+                        }
+                    }
+                );
+                if (breakLoop) break;
+            }
+
+            if (prevStartTime === fromTimestamp) {
+                break;
+            }
+
+        } while ( list.length > 0 );
+
+        // Sort by timestamp
+        fullList.sort((
+            a: OpTransactionDTO,
+            b: OpTransactionDTO,
+        ) : number => {
+            const aa : number = a.timestamp;
+            const bb : number = b.timestamp;
+            if (aa === bb) return 0;
+            return aa < bb ? -1 : 1;
+        });
+
+        return fullList;
     }
 
 }

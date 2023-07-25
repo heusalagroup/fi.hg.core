@@ -30,10 +30,11 @@ export interface OpAccountDataClient {
      * Returns account transactions.
      *
      * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
-     * @param fromTimestamp Note, this is microseconds! Use something like `Date.now()*1000`.
+     * @param fromTimestamp Note, this is microseconds! When looking into future items, subtract by one if you want to include any record with the same timestamp value.
      * @param maxPast
      * @param maxFuture
      * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/transactionsV2
+     * @see DateUtils.getMicroSeconds()
      */
     getTransactionListFromTimestamp (
         surrogateId: string,
@@ -56,6 +57,22 @@ export interface OpAccountDataClient {
         objectId : string,
         maxPast ?: number,
         maxFuture ?: number,
+    ) : Promise<OpTransactionListDTO>;
+
+    /**
+     * Returns account transactions between two timestamps.
+     *
+     * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
+     * @param fromTimestamp Note, this is microseconds! Use something like `Date.now()*1000`. Any timestamp equal or greater than this value will be included in the set.
+     * @param toTimestamp Note, this is microseconds! Use something like `Date.now()*1000`. Any timestamp equal or less than this value will be included in the set.
+     * @param bufferSize How many items to request with single request.
+     * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/transactionsV2
+     */
+    getTransactionListFromTimestampRange (
+        surrogateId    : string,
+        fromTimestamp  : number,
+        toTimestamp  : number,
+        bufferSize     : number,
     ) : Promise<OpTransactionListDTO>;
 
 }
