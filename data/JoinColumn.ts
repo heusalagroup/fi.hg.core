@@ -19,7 +19,7 @@ import { EntityFieldType } from "./types/EntityFieldType";
 export const JoinColumn = (
     columnName : string,
     nullable  ?: boolean | undefined
-): PropertyDecorator => {
+) => {
     return (target: any, context : any) : void => {
         const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);

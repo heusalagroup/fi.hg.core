@@ -8,7 +8,7 @@ import { EntityConstructor } from "./Entity";
 
 export const ManyToOne = (
     mappedTo : string | EntityConstructor
-): PropertyDecorator => {
+) => {
     return (
         target: any,
         context : any

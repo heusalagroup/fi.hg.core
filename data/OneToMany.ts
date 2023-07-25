@@ -9,7 +9,7 @@ import { EntityConstructor } from "./Entity";
 export const OneToMany = (
     mappedTo   : string | EntityConstructor,
     mappedBy : string
-): PropertyDecorator => {
+) => {
     return (target: any, context : any) : void => {
         const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);

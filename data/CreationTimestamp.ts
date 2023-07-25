@@ -15,7 +15,7 @@ import { isString, isStringOrSymbol } from "../types/String";
  * However, some day when we have SQL initialization functionality, this may be
  * used there, to initialize database table schemas automatically.
  */
-export const CreationTimestamp = (): PropertyDecorator => {
+export const CreationTimestamp = () => {
     return (target: any, context : any) : void => {
         const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (!isString(propertyName)) throw new TypeError(`Symbols not supported for property "${propertyName.toString()}"`);

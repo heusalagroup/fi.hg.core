@@ -8,7 +8,7 @@ import { isString, isStringOrSymbol } from "../types/String";
 
 export const Temporal = (
     type : TemporalType = TemporalType.TIMESTAMP
-): PropertyDecorator => {
+) => {
     return (target: any, context : any) => {
         const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (!isString(propertyName)) throw new TypeError(`Symbols not supported for property "${propertyName.toString()}"`);

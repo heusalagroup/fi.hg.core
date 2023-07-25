@@ -26,10 +26,10 @@ LOG.setLogLevel(LogLevel.INFO);
  *
  * TODO: Document the invocation order of lifecycle callbacks.
  *
- * @returns {PropertyDecorator} The decorator function.
+ * @returns The decorator function.
  * @throws {Error} If an exception is thrown from the callback. The transaction will be marked for rollback.
  */
-export const PreUpdate = (): PropertyDecorator => {
+export const PreUpdate = () => {
 
     /**
      * Decorator function.

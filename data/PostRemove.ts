@@ -21,10 +21,10 @@ LOG.setLogLevel(LogLevel.INFO);
  * Cascaded remove operations trigger the corresponding lifecycle methods of the
  * associated entities.
  *
- * @returns {PropertyDecorator} The decorator function.
+ * @returns The decorator function.
  * @throws {Error} If an exception is thrown from the callback. The transaction will be marked for rollback.
  */
-export const PostRemove = (): PropertyDecorator => {
+export const PostRemove = () => {
 
     /**
      * Decorator function.

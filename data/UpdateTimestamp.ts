@@ -8,7 +8,7 @@ import { isString, isStringOrSymbol } from "../types/String";
  * Annotation which marks the property to be automatically initialized by
  * update time.
  */
-export const UpdateTimestamp = (): PropertyDecorator => {
+export const UpdateTimestamp = () => {
     return (target: any, context : any) => {
         const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (!isString(propertyName)) throw new TypeError(`Symbols not supported for property "${propertyName.toString()}"`);

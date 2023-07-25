@@ -4,7 +4,7 @@ import { isString, isStringOrSymbol } from "../types/String";
 import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
 import { EntityMetadata } from "./types/EntityMetadata";
 
-export const Id = (): PropertyDecorator => {
+export const Id = () => {
     return (target: any, context : any) => {
         const propertyName = isStringOrSymbol(context) ? context : context?.name;
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);

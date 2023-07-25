@@ -20,10 +20,10 @@ LOG.setLogLevel(LogLevel.INFO);
  *
  * TODO: Document the invocation order of lifecycle callbacks.
  *
- * @returns {PropertyDecorator} The decorator function.
+ * @returns The decorator function.
  * @throws {Error} If an exception is thrown from the callback.
  */
-export const PostLoad = (): PropertyDecorator => {
+export const PostLoad = () => {
 
     /**
      * Decorator function.
