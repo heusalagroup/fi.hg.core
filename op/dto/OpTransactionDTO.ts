@@ -111,7 +111,7 @@ export interface OpTransactionDTO {
     /**
      * Creditor account BIC
      */
-    readonly creditorBic: string;
+    readonly creditorBic : string | null;
 
     /**
      * Payment date
@@ -131,7 +131,7 @@ export interface OpTransactionDTO {
     /**
      * Creditor account IBAN
      */
-    readonly creditorAccount: string;
+    readonly creditorAccount: string | null;
 
     /**
      * Unique identification, as assigned by the original initiating party, to
@@ -176,11 +176,11 @@ export function createOpTransactionDTO (
     valueDate: string,
     debtorName: string,
     bookingDate: string,
-    creditorBic: string,
+    creditorBic: string | null,
     paymentDate: string,
     creditorName: string,
     debtorAccount: string,
-    creditorAccount: string,
+    creditorAccount: string | null,
     endToEndId: string | null,
     timestamp: number,
     transactionTypeCode: string,
@@ -255,11 +255,11 @@ export function isOpTransactionDTO (value: unknown) : value is OpTransactionDTO 
         && isString(value?.valueDate)
         && isString(value?.debtorName)
         && isString(value?.bookingDate)
-        && isString(value?.creditorBic)
+        && isStringOrNull(value?.creditorBic)
         && isString(value?.paymentDate)
         && isString(value?.creditorName)
         && isString(value?.debtorAccount)
-        && isString(value?.creditorAccount)
+        && isStringOrNull(value?.creditorAccount)
         && isStringOrNull(value?.endToEndId)
         && isNumber(value?.timestamp)
         && isString(value?.transactionTypeCode)
@@ -310,11 +310,11 @@ export function explainOpTransactionDTO (value: any) : string {
             , explainProperty("valueDate", explainString(value?.valueDate))
             , explainProperty("debtorName", explainString(value?.debtorName))
             , explainProperty("bookingDate", explainString(value?.bookingDate))
-            , explainProperty("creditorBic", explainString(value?.creditorBic))
+            , explainProperty("creditorBic", explainStringOrNull(value?.creditorBic))
             , explainProperty("paymentDate", explainString(value?.paymentDate))
             , explainProperty("creditorName", explainString(value?.creditorName))
             , explainProperty("debtorAccount", explainString(value?.debtorAccount))
-            , explainProperty("creditorAccount", explainString(value?.creditorAccount))
+            , explainProperty("creditorAccount", explainStringOrNull(value?.creditorAccount))
             , explainProperty("endToEndId", explainStringOrNull(value?.endToEndId))
             , explainProperty("timestamp", explainNumber(value?.timestamp))
             , explainProperty("transactionTypeCode", explainString(value?.transactionTypeCode))
