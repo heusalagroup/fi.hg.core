@@ -7,6 +7,7 @@ import { explain, explainNot, explainOk, explainOr, explainProperty } from "../.
 import { isUndefined } from "../../types/undefined";
 import { explainOpPaymentStatus, isOpPaymentStatus, OpPaymentStatus } from "../types/OpPaymentStatus";
 import { explainOpPaymentType, isOpPaymentType, OpPaymentType } from "../types/OpPaymentType";
+import { Currency } from "../../types/Currency";
 
 /**
  * @example
@@ -31,7 +32,7 @@ import { explainOpPaymentType, isOpPaymentType, OpPaymentType } from "../types/O
 export interface OpPaymentResponseDTO {
     readonly amount: string;
     readonly status: OpPaymentStatus;
-    readonly currency: string;
+    readonly currency: Currency;
     readonly archiveId: string;
     readonly debtorIban: string;
     readonly bookingDate: string;
@@ -48,7 +49,7 @@ export interface OpPaymentResponseDTO {
 export function createOpPaymentResponseDTO (
     amount : string,
     status : OpPaymentStatus,
-    currency : string,
+    currency : Currency,
     archiveId : string,
     debtorIban : string,
     ultimateDebtorName : string | undefined,

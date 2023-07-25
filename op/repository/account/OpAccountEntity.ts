@@ -55,13 +55,13 @@ export class OpAccountEntity extends Entity {
     @Column("currency")
     public currency ?: string;
 
-    @Column("surrogateId")
+    @Column("surrogate_id")
     public surrogateId ?: string;
 
-    @Column("productNames", 'JSON')
+    @Column("product_names", 'JSON')
     public productNames ?: ReadonlyJsonObject;
 
-    @Column("accountTypeCode")
+    @Column("account_type_code")
     public accountTypeCode ?: string;
 
     public static toDTO (entity: OpAccountEntity) : OpAccountDTO {
