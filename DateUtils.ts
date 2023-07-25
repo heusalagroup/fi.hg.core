@@ -1,12 +1,13 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 /**
- * Pure zero-dep JavaScript date operations
+ * Pure zero-dep JavaScript date operations.
  */
 export class DateUtils {
 
     /**
      * Creates a new Date object that is a copy of the provided date.
+     *
      * @param {Date} date - The original Date object to be cloned.
      * @returns {Date} A new Date object that is a copy of the original date.
      */
@@ -16,6 +17,9 @@ export class DateUtils {
 
     /**
      * Subtracts a specified number of days from a given date.
+     *
+     * Note! This handles times with local timezone.
+     *
      * @param {Date} date - The original Date object.
      * @param {number} offset - The number of days to subtract.
      * @returns {Date} A new Date object resulting from subtracting the specified days from the original date.
@@ -31,6 +35,9 @@ export class DateUtils {
 
     /**
      * Gets the first day of the month based on the provided start date and offset.
+     *
+     * Note! This handles times with local timezone.
+     *
      * @param {Date} startDate - The starting date from which to calculate the first day of the month.
      * @param {number} offset - An optional offset to calculate the first day of a different month (default is 0).
      * @returns {Date} The first day of the month as a new Date object.
@@ -41,11 +48,14 @@ export class DateUtils {
     ) : Date {
         const nextMonthFirstDay = DateUtils.cloneDate(startDate);
         nextMonthFirstDay.setMonth(nextMonthFirstDay.getMonth() + offset, 1);
-        return nextMonthFirstDay;
+        return DateUtils.getFirstTimeOfDate(nextMonthFirstDay);
     }
 
     /**
      * Gets the last day of the month based on the provided start date and offset.
+     *
+     * Note! This handles times with local timezone.
+     *
      * @param {Date} startDate - The starting date from which to calculate the last day of the month.
      * @param {number} offset - An optional offset to calculate the last day of a different month (default is 0).
      * @returns {Date} The last day of the month as a new Date object with the time set to 23:59:59.999.
@@ -62,6 +72,9 @@ export class DateUtils {
 
     /**
      * Gets the last time of the day (23:59:59.999) for a given date.
+     *
+     * Note! This handles times with local timezone.
+     *
      * @param {Date} date - The input date.
      * @returns {Date} A new Date object representing the last time (23:59:59.999) of the given date.
      */
@@ -73,6 +86,9 @@ export class DateUtils {
 
     /**
      * Gets the first time of the day (00:00:00.000) for a given date.
+     *
+     * Note! This handles times with local timezone.
+     *
      * @param {Date} date - The input date.
      * @returns {Date} A new Date object representing the last time (00:00:00.000) of the given date.
      */
@@ -84,6 +100,7 @@ export class DateUtils {
 
     /**
      * Gets the number of microseconds since January 1, 1970 (Unix Epoch) for the given date.
+     *
      * @param {Date} value - The date for which to calculate the number of microseconds.
      * @returns {number} The number of microseconds since January 1, 1970, for the given date.
      */
