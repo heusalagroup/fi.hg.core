@@ -5,7 +5,10 @@ import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
 import { EntityMetadata } from "./types/EntityMetadata";
 
 export const Id = (): PropertyDecorator => {
-    return (target: any, propertyName : string | symbol) => {
+    return (target: any, context ?: ClassMethodDecoratorContext | string) => {
+
+        const propertyName = isString(context) ? context : context.name;
+
         if (!isString(propertyName)) throw new TypeError(`Only string properties supported. The type was ${typeof propertyName}.`);
         EntityMetadataUtils.updateMetadata(target.constructor, (metadata: EntityMetadata) => {
             metadata.idPropertyName = propertyName;
