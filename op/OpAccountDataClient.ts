@@ -20,7 +20,8 @@ export interface OpAccountDataClient {
     /**
      * Returns account details for single account.
      *
-     * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.     * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/account
+     * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
+     * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/account
      */
     getAccountDetails (
         surrogateId: string
@@ -29,22 +30,28 @@ export interface OpAccountDataClient {
     /**
      * Returns account transactions.
      *
+     * Note that the sandbox environment doesn't seem to return coherent time
+     * values between calls.
+     *
      * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
-     * @param fromTimestamp Note, this is microseconds! When looking into future items, subtract by one if you want to include any record with the same timestamp value.
+     * @param fromTimestamp Note, this is microseconds!
      * @param maxPast
      * @param maxFuture
      * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/transactionsV2
      * @see DateUtils.getMicroSeconds()
      */
     getTransactionListFromTimestamp (
-        surrogateId: string,
-        fromTimestamp : number,
-        maxPast ?: number,
-        maxFuture ?: number,
+        surrogateId    : string,
+        fromTimestamp  : number,
+        maxPast       ?: number,
+        maxFuture     ?: number,
     ) : Promise<OpTransactionListDTO>;
 
     /**
      * Returns account transactions using object Id.
+     *
+     * It seems the sandbox environment does not support object IDs. Not easy
+     * to test or develop using this without a production environment.
      *
      * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
      * @param objectId
@@ -53,14 +60,17 @@ export interface OpAccountDataClient {
      * @see https://op-developer.fi/products/banking/docs/op-corporate-account-data-api#operation/transactionsV2
      */
     getTransactionListFromObjectId (
-        surrogateId: string,
-        objectId : string,
-        maxPast ?: number,
-        maxFuture ?: number,
+        surrogateId  : string,
+        objectId     : string,
+        maxPast     ?: number,
+        maxFuture   ?: number,
     ) : Promise<OpTransactionListDTO>;
 
     /**
      * Returns account transactions between two timestamps.
+     *
+     * Note that the sandbox environment doesn't seem to return coherent time
+     * values between calls. Not easy to test without production environment.
      *
      * @param surrogateId Account surrogateId. You can get this value by using .getAccountList() call.
      * @param fromTimestamp Note, this is microseconds! Use something like `Date.now()*1000`. Any timestamp equal or greater than this value will be included in the set.
@@ -71,7 +81,7 @@ export interface OpAccountDataClient {
     getTransactionListFromTimestampRange (
         surrogateId    : string,
         fromTimestamp  : number,
-        toTimestamp  : number,
+        toTimestamp    : number,
         bufferSize     : number,
     ) : Promise<OpTransactionListDTO>;
 

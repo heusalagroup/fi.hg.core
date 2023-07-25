@@ -183,7 +183,6 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     ) : Promise<OpTransactionListDTO> {
         let list : OpTransactionListDTO;
         let fullList : OpTransactionDTO[] = [];
-        fromTimestamp -= 1;
         let prevStartTime = fromTimestamp;
         do {
 
@@ -207,8 +206,8 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
                         } else {
                             if (time >= prevStartTime) {
                                 fullList.push(item);
-                                if (time > fromTimestamp) {
-                                    fromTimestamp = time;
+                                if (time + 1 > fromTimestamp) {
+                                    fromTimestamp = time + 1;
                                 }
                             } else {
                                 LOG.warn(`Warning! Got older items with time ${time}: `, item);
