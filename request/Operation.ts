@@ -2,7 +2,7 @@
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { OpenAPIV3 } from "../types/openapi";
-import { MethodDecoratorFunction } from "./types/MethodDecoratorFunction";
+import { MethodDecoratorFunction } from "../decorators/types/MethodDecoratorFunction";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";

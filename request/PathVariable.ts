@@ -3,7 +3,7 @@
 
 import { RequestPathVariableListOptions } from "./types/RequestPathVariableListOptions";
 import { isRequestPathVariableOptionsOrUndefined, RequestPathVariableOptions } from "./types/RequestPathVariableOptions";
-import { ParameterDecoratorFunction } from "./types/ParameterDecoratorFunction";
+import { ParameterDecoratorFunction } from "../decorators/types/ParameterDecoratorFunction";
 import { DefaultPathVariableMapValuesType } from "./types/DefaultPathVariableMapValuesType";
 import { RequestController } from "./types/RequestController";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";

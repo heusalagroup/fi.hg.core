@@ -3,7 +3,7 @@
 
 import { isRequestHeaderListOptions, RequestHeaderListOptions } from "./types/RequestHeaderListOptions";
 import { isRequestHeaderOptionsOrUndefined, RequestHeaderOptions } from "./types/RequestHeaderOptions";
-import { ParameterDecoratorFunction } from "./types/ParameterDecoratorFunction";
+import { ParameterDecoratorFunction } from "../decorators/types/ParameterDecoratorFunction";
 import { DefaultHeaderMapValuesType } from "./types/DefaultHeaderMapValuesType";
 import { RequestController } from "./types/RequestController";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";

@@ -2,7 +2,7 @@
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { getOpenApiTypeStringFromRequestParamValueType, isRequestParamValueTypeOrUndefined, RequestParamValueType } from "./types/RequestParamValueType";
-import { ParameterDecoratorFunction } from "./types/ParameterDecoratorFunction";
+import { ParameterDecoratorFunction } from "../decorators/types/ParameterDecoratorFunction";
 import { RequestController } from "./types/RequestController";
 import { isString } from "../types/String";
 import { isNumber } from "../types/Number";

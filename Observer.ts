@@ -1,4 +1,5 @@
-// Copyright (c) 2020 Sendanor. All rights reserved.
+// Copyright (c) 2022-2023 Heusala Group <info@hg.fi>. All rights reserved.
+// Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { filter } from "./functions/filter";
 import { forEach } from "./functions/forEach";
@@ -115,6 +116,10 @@ export class Observer<EventName extends keyof any> implements Disposable {
         this._name = name;
         this._callbacks = {} as ObserverRecord<EventName>;
 
+    }
+
+    public static create<EventName extends keyof any> (name : string) : Observer<EventName> {
+        return new Observer<EventName>(name);
     }
 
     /**

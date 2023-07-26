@@ -2,11 +2,11 @@
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { RequestMappingValue } from "./types/RequestMappingValue";
-import { MethodDecoratorFunction } from "./types/MethodDecoratorFunction";
+import { MethodDecoratorFunction } from "../decorators/types/MethodDecoratorFunction";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";
 import { LogService } from "../LogService";
 import { RequestHeaderListOptions } from "./types/RequestHeaderListOptions";
-import { ParameterDecoratorFunction } from "./types/ParameterDecoratorFunction";
+import { ParameterDecoratorFunction } from "../decorators/types/ParameterDecoratorFunction";
 import { RequestHeaderOptions } from "./types/RequestHeaderOptions";
 import { LogLevel } from "../types/LogLevel";
 

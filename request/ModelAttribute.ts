@@ -1,7 +1,7 @@
 // Copyright (c) 2022-2023 Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
-import { ParameterOrMethodDecoratorFunction } from "./types/ParameterOrMethodDecoratorFunction";
+import { ParameterOrMethodDecoratorFunction } from "../decorators/types/ParameterOrMethodDecoratorFunction";
 import { isString } from "../types/String";
 import { RequestController } from "./types/RequestController";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";
