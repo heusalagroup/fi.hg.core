@@ -2,10 +2,10 @@
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { OpenAPIV3 } from "../types/openapi";
-import { MethodDecoratorFunction } from "../decorators/types/MethodDecoratorFunction";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";
 import { LogService } from "../LogService";
 import { LogLevel } from "../types/LogLevel";
+import { ClassOrMethodDecoratorFunction } from "../decorators/types/ClassOrMethodDecoratorFunction";
 
 const LOG = LogService.createLogger( 'OpenAPIDefinition' );
 
@@ -13,11 +13,11 @@ const LOG = LogService.createLogger( 'OpenAPIDefinition' );
  * Define OpenAPI document definition
  * @param config
  */
-export function OpenAPIDefinition (config: Partial<OpenAPIV3.Document>): MethodDecoratorFunction {
+export function OpenAPIDefinition (config: Partial<OpenAPIV3.Document>): ClassOrMethodDecoratorFunction {
     return (
-        target: any | Function,
+        target       : any | Function,
         propertyKey ?: string,
-        descriptor  ?: PropertyDescriptor
+        descriptor  ?: TypedPropertyDescriptor<any>
     ) => {
         const requestController = RequestControllerUtils.findController( target );
         if ( requestController !== undefined ) {

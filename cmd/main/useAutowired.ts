@@ -33,8 +33,8 @@ export function useAutowired<T = any> () : MethodDecoratorFunction {
     LOG.debug(`1 creating autowired decorator`);
     return function autowiredMethod (
         target       : any | Function,
-        propertyKey ?: string,
-        descriptor  ?: TypedPropertyDescriptor<any>,
+        propertyKey  : string,
+        descriptor   : TypedPropertyDescriptor<any>,
     ) : void {
         const method = descriptor.value!;
         const metadata = AutowireMetadataUtils.getMethodMetadata(target, propertyKey);

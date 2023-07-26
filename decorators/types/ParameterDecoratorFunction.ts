@@ -8,9 +8,18 @@
  * yet support these parameter decorators.
  */
 export interface ParameterDecoratorFunction {
+
+    /**
+     * Parameter decorator function.
+     *
+     * @param target
+     * @param propertyKey
+     * @param paramIndex
+     */
     (
         target       : any | Function,
-        propertyKey ?: string,
-        paramIndex  ?: number
+        propertyKey  : string,
+        paramIndex   : number
     ): void;
+
 }

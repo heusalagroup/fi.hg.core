@@ -23,10 +23,10 @@ export function ModelAttribute (
     // - ParameterDecoratorFunction  = any | Function, string, PropertyDescriptor
     // - MethodDecoratorFunction     = any | Function, string, number
     return (
-        target: any | Function,
+        target       : any | Function,
         propertyKey ?: string,
-        paramIndex  ?: number | PropertyDescriptor
-    ) => {
+        paramIndex  ?: number | TypedPropertyDescriptor<any>
+    ) : void => {
         if ( isString( propertyKey ) ) {
             const requestController: RequestController | undefined = RequestControllerUtils.findController( target );
             if ( requestController !== undefined ) {

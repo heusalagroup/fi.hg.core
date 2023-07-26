@@ -25,12 +25,12 @@ export class AutowireUtils {
      */
     public static autowireValues<T> (
         autowireService: AutowireService,
-        paramNames: readonly string[],
+        paramNames: readonly (string|undefined)[],
     ): any[] {
         return map(
             paramNames,
-            (name: string) => {
-                return autowireService.hasName(name) ? autowireService.getName<any>(name) : undefined;
+            (name: string | undefined) => {
+                return name && autowireService.hasName(name) ? autowireService.getName<any>(name) : undefined;
             }
         );
     }
@@ -44,12 +44,13 @@ export class AutowireUtils {
         const metadata : AutowireMetadata = AutowireMetadataUtils.getMethodMetadata(target, propertyName);
         LOG.debug(`autowired metadata = `, metadata);
         const autowireService : AutowireService = AutowireServiceImpl.getAutowireService();
-        const valueKeys = keys(values);
+        const initializedValues = values ?? {};
+        const valueKeys = keys(initializedValues);
         try {
             forEach(
                 valueKeys,
                 (key: string) => {
-                    autowireService.setName(key, values[key]);
+                    autowireService.setName(key, initializedValues[key]);
                 }
             );
             autowireService.setName("autowireService", autowireService);

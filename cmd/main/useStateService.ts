@@ -11,7 +11,7 @@ import { TestCallbackNonStandardOf } from "../../types/TestCallback";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
 import { AutowireServiceImpl } from "./types/AutowireServiceImpl";
-import { DestroyService, DestroyServiceEvent } from "./types/DestroyService";
+import { DestroyService } from "./types/DestroyService";
 
 const LOG = LogService.createLogger( 'useStateService' );
 
@@ -70,7 +70,7 @@ export function useStateService<
             ...args: any[]
         ) {
             const autowireService = AutowireServiceImpl.getAutowireService();
-            let stateService: StateServiceImpl;
+            let stateService: StateServiceImpl | undefined = undefined;
             let savePromise: Promise<void> | undefined = undefined;
             let stateServiceChangedDestructor: ObserverDestructor | undefined;
             try {
@@ -98,6 +98,10 @@ export function useStateService<
                 }
 
                 stateServiceChangedDestructor = stateService.on( StateServiceEvent.CHANGED, () => {
+                    if (!stateService) {
+                        LOG.warn(`Warning! State service was already destroyed.`);
+                        return;
+                    }
                     savePromise = saveStateDTOFromFile(
                         writeFile,
                         stateConfigFile,
@@ -140,7 +144,10 @@ export function useStateService<
 
                 autowireService.deleteName("stateService");
 
-                stateService.destroy();
+                if (stateService !== undefined) {
+                    stateService.destroy();
+                    stateService = undefined;
+                }
 
             }
         };

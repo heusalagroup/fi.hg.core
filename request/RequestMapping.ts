@@ -2,22 +2,21 @@
 // Copyright (c) 2020-2021 Sendanor <info@sendanor.fi>. All rights reserved.
 
 import { RequestMappingValue } from "./types/RequestMappingValue";
-import { MethodDecoratorFunction } from "../decorators/types/MethodDecoratorFunction";
 import { RequestControllerUtils } from "./utils/RequestControllerUtils";
 import { LogService } from "../LogService";
-import { RequestHeaderListOptions } from "./types/RequestHeaderListOptions";
-import { ParameterDecoratorFunction } from "../decorators/types/ParameterDecoratorFunction";
-import { RequestHeaderOptions } from "./types/RequestHeaderOptions";
 import { LogLevel } from "../types/LogLevel";
+import { ClassOrMethodDecoratorFunction } from "../decorators/types/ClassOrMethodDecoratorFunction";
 
 const LOG = LogService.createLogger( 'RequestMapping' );
 
-export function RequestMapping (...config: readonly RequestMappingValue[]): MethodDecoratorFunction {
+export function RequestMapping<T = any> (
+    ...config: readonly RequestMappingValue[]
+): ClassOrMethodDecoratorFunction<T> {
     return (
-        target: any | Function,
+        target       : any | Function,
         propertyKey ?: string,
-        descriptor  ?: PropertyDescriptor
-    ) => {
+        descriptor  ?: TypedPropertyDescriptor<T>
+    ) : void => {
         const requestController = RequestControllerUtils.findController( target );
         if ( requestController !== undefined ) {
             if ( propertyKey === undefined ) {

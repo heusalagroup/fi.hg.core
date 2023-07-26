@@ -9,10 +9,13 @@
  */
 export interface ClassDecoratorFunction {
 
+    /**
+     * Class decorator function.
+     *
+     * @param constructor
+     */
     (
         constructor : Function,
     ): void | any;
 
 }
-
-

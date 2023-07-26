@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { DestroyService, DestroyServiceDestructor, DestroyServiceEvent } from "./DestroyService";
-import { Observer, ObserverCallback } from "../../../Observer";
+import { Observer, ObserverCallback, ObserverDestructor } from "../../../Observer";
 import { VoidCallback } from "../../../interfaces/callbacks";
 import { Disposable } from "../../../types/Disposable";
 
@@ -53,7 +53,7 @@ export class DestroyServiceImpl implements DestroyService {
     public addDestroyListener (
         callback: VoidCallback
     ) : DestroyServiceDestructor {
-        let destructor = this.on(
+        let destructor : ObserverDestructor | undefined = this.on(
             DestroyServiceEvent.DESTROYED,
             () => {
                 if (destructor) {

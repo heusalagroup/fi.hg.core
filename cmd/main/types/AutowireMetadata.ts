@@ -7,7 +7,7 @@ import { explainRegularObject, isRegularObject } from "../../../types/RegularObj
 import { explainStringArray, isStringArray } from "../../../types/StringArray";
 
 export interface AutowireMetadata {
-    readonly paramNames: readonly string[];
+    readonly paramNames: readonly (string|undefined)[];
 }
 
 export function createAutowireMetadata (

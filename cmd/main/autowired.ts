@@ -34,25 +34,27 @@ export function autowired<T = any> (
     LOG.debug(`1 creating autowired decorator`);
     return function autowiredParam (
         target       : any | Function,
-        propertyKey ?: string,
+        propertyKey ?: string | symbol,
         paramIndex  ?: number,
     ): void {
         LOG.debug(`3 autowiredParam: propertyKey = `, propertyKey, paramIndex);
-        AutowireMetadataUtils.updateMethodMetadata(
-            target,
-            propertyKey,
-            (orig: AutowireMetadata): AutowireMetadata => {
-                const paramNames : string[] = map(orig?.paramNames ?? [], item => item);
-                while (paramNames.length < paramIndex) {
-                    paramNames.push(undefined);
+        if (propertyKey !== undefined && paramIndex !== undefined) {
+            AutowireMetadataUtils.updateMethodMetadata(
+                target,
+                propertyKey,
+                (orig: AutowireMetadata): AutowireMetadata => {
+                    const paramNames : (string | undefined)[] = map(orig?.paramNames ?? [], item => item);
+                    while (paramNames.length < paramIndex) {
+                        paramNames.push(undefined);
+                    }
+                    paramNames[paramIndex] = paramName;
+                    LOG.debug(`4 autowiredParam: "${propertyKey.toString()}": paramNames updated as: `, paramNames);
+                    return {
+                        ...orig,
+                        paramNames
+                    };
                 }
-                paramNames[paramIndex] = paramName;
-                LOG.debug(`4 autowiredParam: "${propertyKey}": paramNames updated as: `, paramNames);
-                return {
-                    ...orig,
-                    paramNames
-                };
-            }
-        );
+            );
+        }
     }
 }

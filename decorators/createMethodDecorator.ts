@@ -26,11 +26,19 @@ export type ClassMethodDecorator = (
 export function createMethodDecorator<T> (
     esDecorator: ClassMethodDecorator
 ) : MethodDecoratorFunction {
-    function methodDecorator (
-        target       : any,
-        propertyName : string,
-        descriptor   : TypedPropertyDescriptor<any>,
+    return function methodDecorator (
+        target        : any | Function,
+        propertyName ?: string,
+        descriptor   ?: TypedPropertyDescriptor<any>,
     ) : void {
+
+        if (!propertyName) {
+            throw new TypeError(`createMethodDecorator: Property name missing`);
+        }
+
+        if (!descriptor) {
+            throw new TypeError(`createMethodDecorator: descriptor missing from the property "${propertyName}"`);
+        }
 
         let method = descriptor.value!;
         if (!isFunction(method)) {
@@ -62,6 +70,5 @@ export function createMethodDecorator<T> (
             LOG.warn(`The return value was not void or Function: ${typeof overrideCallback}`);
         }
 
-    }
-    return methodDecorator;
+    };
 }

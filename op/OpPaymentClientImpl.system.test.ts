@@ -17,6 +17,7 @@ import { OpPaymentResponseDTO } from "./dto/OpPaymentResponseDTO";
 // @ts-ignore
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClientImpl } from "../RequestClientImpl";
+import { Headers } from "../request/types/Headers";
 import { OpPaymentClientImpl } from "./OpPaymentClientImpl";
 import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
@@ -58,6 +59,7 @@ describe('system', () => {
         let client : OpPaymentClient;
 
         beforeAll(() => {
+            Headers.setLogLevel(LogLevel.NONE);
             RequestClientImpl.setLogLevel(LogLevel.NONE);
             NodeRequestClient.setLogLevel(LogLevel.NONE);
             OpRequestSigner.setLogLevel(LogLevel.NONE);
