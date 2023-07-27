@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainString, isString } from "../../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
 import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 import { explain, explainProperty } from "../../../types/explain";
@@ -11,9 +11,9 @@ import { explainBoolean, isBoolean } from "../../../types/Boolean";
 
 export interface TaskDTO {
     readonly taskId         : string;
-    readonly parentId       : string;
-    readonly clientId       : string;
-    readonly invoiceId      : string;
+    readonly parentId      ?: string | undefined;
+    readonly clientId      ?: string | undefined;
+    readonly invoiceId     ?: string | undefined;
     readonly created        : string;
     readonly updated        : string;
     readonly startDate      : string;
@@ -28,9 +28,9 @@ export interface TaskDTO {
 
 export function createTaskDTO (
     taskId         : string,
-    parentId       : string,
-    clientId       : string,
-    invoiceId      : string,
+    parentId       : string | undefined,
+    clientId       : string | undefined,
+    invoiceId      : string | undefined,
     created        : string,
     updated        : string,
     startDate      : string,
@@ -80,9 +80,9 @@ export function isTaskDTO (value: any): value is TaskDTO {
             'onHold',
         ])
         && isString(value?.taskId)
-        && isString(value?.parentId)
-        && isString(value?.clientId)
-        && isString(value?.invoiceId)
+        && isStringOrUndefined(value?.parentId)
+        && isStringOrUndefined(value?.clientId)
+        && isStringOrUndefined(value?.invoiceId)
         && isString(value?.created)
         && isString(value?.updated)
         && isString(value?.startDate)
@@ -117,9 +117,9 @@ export function explainTaskDTO (value: any) : string {
                 'onHold',
             ])
             , explainProperty("taskId", explainString(value?.taskId))
-            , explainProperty("parentId", explainString(value?.parentId))
-            , explainProperty("clientId", explainString(value?.clientId))
-            , explainProperty("invoiceId", explainString(value?.invoiceId))
+            , explainProperty("parentId", explainStringOrUndefined(value?.parentId))
+            , explainProperty("clientId", explainStringOrUndefined(value?.clientId))
+            , explainProperty("invoiceId", explainStringOrUndefined(value?.invoiceId))
             , explainProperty("created", explainString(value?.created))
             , explainProperty("updated", explainString(value?.updated))
             , explainProperty("startDate", explainString(value?.startDate))

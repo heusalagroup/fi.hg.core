@@ -1,7 +1,7 @@
 /*
  * Finnish Identity Number Library
  *
- * Copyright (C) 2022 by Heusala Group <info@hg.fi> (http://www.hg.fi),
+ * Copyright (C) 2022-2023 by Heusala Group <info@hg.fi> (http://www.hg.fi),
  * Copyright (C) 2014 by Sendanor <info@sendanor.fi> (http://www.sendanor.fi),
  * Copyright (c) 2014 by Jaakko-Heikki Heusala <jheusala@iki.fi>
  * Copyright (c) 2014 by Juho Vähäkangas <juhov@iki.fi>
@@ -26,15 +26,11 @@
  */
 
 import { LogService } from "../LogService";
+import { isString } from "../types/String";
+import { isNumber, parseInteger } from "../types/Number";
+import { isNumberArray } from "../types/NumberArray";
 
 const LOG = LogService.createLogger('yTunnus');
-
-/** Parse integers in base 10
- * @returns {number} value of `parseInt(n, 10)`
- */
-export function yTunnusParseInt10 (n: any): number {
-    return parseInt(n, 10);
-}
 
 /** Generate Finnish business IDs
  * @param id_ {string} The business ID with or without checksum
@@ -42,9 +38,9 @@ export function yTunnusParseInt10 (n: any): number {
  * @throws TypeError
  */
 export function yTunnusWithSum (id_: string): string {
-    let numbers = [ 7, 9, 10, 5, 8, 4, 2 ];
-    let parts = ('' + id_).split("-");
-    let id = parts.shift();
+    let numbers : number[] = [ 7, 9, 10, 5, 8, 4, 2 ];
+    let parts : string[] = ('' + id_).split("-");
+    let id : string | undefined = parts.shift();
     if ( !id ) {
         throw new TypeError("id not valid: " + id_);
     }
@@ -55,17 +51,16 @@ export function yTunnusWithSum (id_: string): string {
         throw new TypeError("id length not valid: " + id_);
     }
 
-    let id_array = id.split('').map(yTunnusParseInt10);
-
+    const id_array : (number|undefined)[] = id.split('').map(parseInteger);
+    if (!isNumberArray(id_array)) {
+        throw new TypeError("id is not valid: "+ id_);
+    }
     if ( id_array.length > 7 ) {
         throw new TypeError("id array too long (" + id_array.length + ") for " + id_);
     }
 
-    let sum = id_array.reduce(function (sum, n, i) {
-        let x = numbers[i];
-        if ( typeof n !== "number" ) {
-            throw new TypeError("id[" + i + "] not valid number in " + id_);
-        }
+    let sum : number = id_array.reduce( (sum : number, n : number, i : number) => {
+        const x : number = numbers[i];
         return sum + n * x;
     }, 0);
 
@@ -75,7 +70,7 @@ export function yTunnusWithSum (id_: string): string {
     }
     sum = (sum === 0) ? 0 : 11 - sum;
 
-    let sum_ = parts.join('-');
+    let sum_ : string = parts.join('-');
     if ( sum_ && ('' + sum !== sum_) ) {
         throw new TypeError("Illegal checksum in " + id_);
     }
@@ -127,8 +122,8 @@ export function yTunnusCompare (a: string, b: string): boolean {
  * @returns {boolean} `true` if ID was valid
  * @throws TypeError
  */
-export function yTunnusCheck (id: string): boolean {
-    id = '' + id;
+export function yTunnusCheck (id: unknown): id is string {
+    if (!isString(id)) return false;
     return yTunnusHasSum(id) ? yTunnusCompare(id, yTunnusWithSum(id)) : false;
 }
 

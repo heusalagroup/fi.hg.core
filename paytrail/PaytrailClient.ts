@@ -47,7 +47,7 @@ export interface PaytrailClient {
         reference     : string,
         amount        : number,
         customer      : PaytrailCustomer,
-        items         : readonly PaytrailItem[],
+        items         : readonly PaytrailItem[] | undefined,
         redirectUrls  : PaytrailCallbackUrl,
         callbackUrls ?: PaytrailCallbackUrl,
         currency     ?: PaytrailCurrency,
