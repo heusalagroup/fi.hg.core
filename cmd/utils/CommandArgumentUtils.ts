@@ -12,6 +12,7 @@ import { explainBoolean, parseBoolean } from "../../types/Boolean";
 import { explainString, parseString } from "../../types/String";
 import { explainInteger, parseInteger } from "../../types/Number";
 import { LogService } from "../../LogService";
+import { LogLevel } from "../../types/LogLevel";
 
 const LOG = LogService.createLogger('CommandArgumentUtils');
 
@@ -49,6 +50,10 @@ export interface ParsedCommandArgumentObject {
 }
 
 export class CommandArgumentUtils {
+
+    public static setLogLevel (level: LogLevel) : void {
+        LOG.setLogLevel(level);
+    }
 
     public static parseArguments (
         defaultScriptName: string,

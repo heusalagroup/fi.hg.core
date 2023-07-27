@@ -5,15 +5,15 @@ import { LogService } from "../../LogService";
 import { ParsedCommandArgumentObject } from "../utils/CommandArgumentUtils";
 import { ObserverDestructor } from "../../Observer";
 import { parseNonEmptyString } from "../../types/String";
-import { StateService, StateServiceEvent } from "./types/StateService";
+import { StateService, StateServiceEvent } from "./services/StateService";
 import { ExplainCallback } from "../../types/ExplainCallback";
 import { TestCallbackNonStandardOf } from "../../types/TestCallback";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
-import { AutowireServiceImpl } from "./types/AutowireServiceImpl";
-import { DestroyService } from "./types/DestroyService";
+import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
+import { DestroyService } from "./services/DestroyService";
 
-const LOG = LogService.createLogger( 'useStateService' );
+const LOG = LogService.createLogger( 'addStateService' );
 
 /**
  * Wraps the method body with proper state service handling.
@@ -25,8 +25,8 @@ const LOG = LogService.createLogger( 'useStateService' );
  *
  *     class MyApp {
  *
- *         @useArgumentParser(...)
- *         @useStateService<MyStateService>(
+ *         @addArgumentParser(...)
+ *         @addStateService<MyStateService>(
  *             AgentStateServiceImpl.create,
  *             () => createAgentStateDTO(undefined, undefined, undefined),
  *             isAgentStateDTO,
@@ -46,7 +46,7 @@ const LOG = LogService.createLogger( 'useStateService' );
  *
  * }
  */
-export function useStateService<
+export function addStateService<
     T = any,
     DTO = any,
     StateServiceImpl extends StateService<DTO> = StateService<DTO>,
@@ -94,7 +94,7 @@ export function useStateService<
                     const destroyService = autowireService.getName<DestroyService>('destroyService');
                     destroyService.registerDisposable(stateService);
                 } else {
-                    LOG.warn(`Warning! You should include useDestroyService() for proper StateService destruction support`);
+                    LOG.warn(`Warning! You should include @addDestroyService() for proper StateService destruction support`);
                 }
 
                 stateServiceChangedDestructor = stateService.on( StateServiceEvent.CHANGED, () => {
@@ -122,7 +122,7 @@ export function useStateService<
                 return await method.apply(this, args);
 
             } catch (err) {
-                LOG.warn(`Warning! The useStateService decorator for "${propertyName.toString()}" method had an error: `, err);
+                LOG.warn(`Warning! The addStateService decorator for "${propertyName.toString()}" method had an error: `, err);
                 throw err;
             } finally {
 

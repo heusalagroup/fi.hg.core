@@ -4,21 +4,24 @@ import { LogService } from "../../LogService";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
 import { ProcessUtils } from "../../ProcessUtils";
-import { Observer } from "../../Observer";
-import { DestroyServiceImpl } from "./types/DestroyServiceImpl";
-import { AutowireServiceImpl } from "./types/AutowireServiceImpl";
+import { DestroyServiceImpl } from "./services/DestroyServiceImpl";
+import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
+import { LogLevel } from "../../types/LogLevel";
 
-const LOG = LogService.createLogger( 'useErrorHandler' );
+const LOG = LogService.createLogger( 'addDestroyService' );
 
 /**
- * Setup process destroy handler.
+ * Setup destroy handler for the process itself.
+ *
+ * This will add listeners for multiple signals like SIGTERM, SIGINT, SIGUSR1,
+ * SIGUSR2 and other uncaught error handlers.
  *
  * Example usage:
  *
  *     ```typescript
  *     class MyApp {
  *
- *         @useDestroyHandler()
+ *         @addDestroyService()
  *         public static async run (
  *             args: string[] = []
  *         ): Promise<CommandExitStatus> {
@@ -29,7 +32,7 @@ const LOG = LogService.createLogger( 'useErrorHandler' );
  *
  * }
  */
-export function useDestroyService<T = any> (
+export function addDestroyService<T = any> (
 ) : MethodDecoratorFunction {
     LOG.debug(`creating MethodDecorator`);
 
@@ -59,3 +62,5 @@ export function useDestroyService<T = any> (
         };
     } );
 }
+
+addDestroyService.setLogLevel = (level: LogLevel) => LOG.setLogLevel(level);

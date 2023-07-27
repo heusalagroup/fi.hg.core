@@ -25,7 +25,9 @@ export class DestroyServiceImpl implements DestroyService {
      * @inheritDoc
      */
     public destroy (): void {
-        this._observer.triggerEvent(DestroyServiceEvent.DESTROYED);
+        if (this._observer.hasCallbacks(DestroyServiceEvent.DESTROYED)) {
+            this._observer.triggerEvent(DestroyServiceEvent.DESTROYED);
+        }
         this._isDestroyed = true;
         this._observer.destroy();
     }

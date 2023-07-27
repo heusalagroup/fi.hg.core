@@ -138,7 +138,7 @@ describe('RequestParam', () => {
                         router = RequestRouterImpl.create(Controller);
                     } );
 
-                    it.only('can create GET mapping for string response', async () => {
+                    it('can create GET mapping for string response', async () => {
                         const response = await router.handleRequest(
                             RequestMethod.GET,
                             '/hello?q=something&other=bar',

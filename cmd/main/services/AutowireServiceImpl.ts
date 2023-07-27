@@ -4,7 +4,7 @@ import { AutowireService } from "./AutowireService";
 
 export class AutowireServiceImpl implements AutowireService {
 
-    private static _autowireService : AutowireService;
+    private static _autowireService : AutowireService | undefined;
 
     private _data : Map<string, any>;
 
@@ -37,7 +37,7 @@ export class AutowireServiceImpl implements AutowireService {
      * Set global autowire service
      * @param service
      */
-    public static setAutowireService (service: AutowireService) : void {
+    public static setAutowireService (service: AutowireService | undefined) : void {
         this._autowireService = service;
     }
 

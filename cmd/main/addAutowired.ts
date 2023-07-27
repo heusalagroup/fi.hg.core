@@ -4,10 +4,9 @@ import { LogService } from "../../LogService";
 import { AutowireMetadataUtils } from "./utils/AutowireMetadataUtils";
 import { AutowireUtils } from "./utils/AutowireUtils";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
-import { createMethodDecorator } from "../../decorators/createMethodDecorator";
-import { isFunction } from "../../types/Function";
+import { LogLevel } from "../../types/LogLevel";
 
-const LOG = LogService.createLogger( 'useAutowired' );
+const LOG = LogService.createLogger( 'addAutowired' );
 
 /**
  * Autowires method parameters based on the property name.
@@ -17,7 +16,7 @@ const LOG = LogService.createLogger( 'useAutowired' );
  *     ```typescript
  *     class MyApp {
  *
- *         @useAutowired()
+ *         @addAutowired()
  *         public static async run (
  *             @autowired('args')
  *             args: string[] = [],
@@ -29,7 +28,7 @@ const LOG = LogService.createLogger( 'useAutowired' );
  *
  * }
  */
-export function useAutowired<T = any> () : MethodDecoratorFunction {
+export function addAutowired<T = any> () : MethodDecoratorFunction {
     LOG.debug(`1 creating autowired decorator`);
     return function autowiredMethod (
         target       : any | Function,
@@ -43,7 +42,7 @@ export function useAutowired<T = any> () : MethodDecoratorFunction {
 
         const overrideCallback = function (
             this: T,
-            args: readonly string[],
+            ...args: any
         ) {
             try {
                 return AutowireUtils.autowireApply(
@@ -51,11 +50,11 @@ export function useAutowired<T = any> () : MethodDecoratorFunction {
                     propertyKey,
                     method,
                     {
-                        args
+                        prevArgs: args
                     }
                 );
             } catch (err) {
-                LOG.warn(`Warning! The useAutowired decorator for "${propertyKey}" method had an error: `, err);
+                LOG.warn(`Warning! The addAutowired decorator for "${propertyKey}" method had an error: `, err);
                 throw err;
             }
         };
@@ -66,3 +65,5 @@ export function useAutowired<T = any> () : MethodDecoratorFunction {
 
     }
 }
+
+addAutowired.setLogLevel = (level: LogLevel) => LOG.setLogLevel(level);

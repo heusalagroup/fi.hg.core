@@ -1,13 +1,14 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { AutowireService } from "../types/AutowireService";
 import { map } from "../../../functions/map";
-import { AutowireMetadata } from "../types/AutowireMetadata";
-import { AutowireMetadataUtils } from "./AutowireMetadataUtils";
-import { LogService } from "../../../LogService";
 import { keys } from "../../../functions/keys";
 import { forEach } from "../../../functions/forEach";
-import { AutowireServiceImpl } from "../types/AutowireServiceImpl";
+import { LogLevel } from "../../../types/LogLevel";
+import { AutowireService } from "../services/AutowireService";
+import { AutowireMetadata } from "../types/AutowireMetadata";
+import { LogService } from "../../../LogService";
+import { AutowireServiceImpl } from "../services/AutowireServiceImpl";
+import { AutowireMetadataUtils } from "./AutowireMetadataUtils";
 
 const LOG = LogService.createLogger( 'AutowireUtils' );
 
@@ -16,6 +17,10 @@ const LOG = LogService.createLogger( 'AutowireUtils' );
  * an AutowireManager instance.
  */
 export class AutowireUtils {
+
+    public static setLogLevel (level: LogLevel) : void {
+        LOG.setLogLevel(level);
+    }
 
     /**
      * Populates the arguments based on autowired parameter names.
@@ -45,7 +50,9 @@ export class AutowireUtils {
         LOG.debug(`autowired metadata = `, metadata);
         const autowireService : AutowireService = AutowireServiceImpl.getAutowireService();
         const initializedValues = values ?? {};
+        LOG.debug(`autowired initializedValues = `, initializedValues);
         const valueKeys = keys(initializedValues);
+        LOG.debug(`autowired valueKeys = `, valueKeys);
         try {
             forEach(
                 valueKeys,
@@ -54,6 +61,7 @@ export class AutowireUtils {
                 }
             );
             autowireService.setName("autowireService", autowireService);
+            LOG.debug(`autowired param names = `, metadata?.paramNames ?? []);
             const autowiredArgs = AutowireUtils.autowireValues(
                 autowireService,
                 metadata?.paramNames ?? []

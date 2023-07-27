@@ -5,6 +5,7 @@ import { AutowireMetadataUtils } from "./utils/AutowireMetadataUtils";
 import { AutowireMetadata } from "./types/AutowireMetadata";
 import { map } from "../../functions/map";
 import { ParameterDecoratorFunction } from "../../decorators/types/ParameterDecoratorFunction";
+import { LogLevel } from "../../types/LogLevel";
 
 const LOG = LogService.createLogger( 'autowired' );
 
@@ -16,7 +17,7 @@ const LOG = LogService.createLogger( 'autowired' );
  *     ```typescript
  *     class MyApp {
  *
- *         @useAutowired()
+ *         @addAutowired()
  *         public static async run (
  *             @autowired('args')
  *             args: string[] = [],
@@ -58,3 +59,5 @@ export function autowired<T = any> (
         }
     }
 }
+
+autowired.setLogLevel = (level: LogLevel) => LOG.setLogLevel(level);

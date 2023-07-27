@@ -4,8 +4,9 @@ import { CommandExitStatus } from "../types/CommandExitStatus";
 import { LogService } from "../../LogService";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
+import { LogLevel } from "../../types/LogLevel";
 
-const LOG = LogService.createLogger( 'useErrorHandler' );
+const LOG = LogService.createLogger( 'addErrorHandler' );
 
 /**
  * Wraps the method body with try-catch.
@@ -17,7 +18,7 @@ const LOG = LogService.createLogger( 'useErrorHandler' );
  *     ```typescript
  *     class MyApp {
  *
- *         @useErrorHandler(CommandExitStatus.FATAL_ERROR)
+ *         @addErrorHandler(CommandExitStatus.FATAL_ERROR)
  *         public static async run (
  *             args: string[] = []
  *         ): Promise<CommandExitStatus> {
@@ -29,7 +30,7 @@ const LOG = LogService.createLogger( 'useErrorHandler' );
  *
  * }
  */
-export function useErrorHandler<T = any> (
+export function addErrorHandler<T = any> (
     exitStatus: CommandExitStatus = CommandExitStatus.FATAL_ERROR
 ) : MethodDecoratorFunction {
     LOG.debug(`creating MethodDecorator`);
@@ -53,3 +54,5 @@ export function useErrorHandler<T = any> (
         };
     } );
 }
+
+addErrorHandler.setLogLevel = (level: LogLevel) => LOG.setLogLevel(level);
