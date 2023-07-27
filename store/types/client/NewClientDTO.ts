@@ -26,6 +26,42 @@ export interface NewClientDTO {
     readonly sendPost             ?: boolean;
 }
 
+export function createNewClientDTO (
+    company              ?: string,
+    companyCode          ?: string,
+    firstName            ?: string,
+    lastName             ?: string,
+    address              ?: string | string[],
+    postCode             ?: string,
+    postName             ?: string,
+    country              ?: string,
+    email                ?: string | string[],
+    phone                ?: string,
+    mobile               ?: string,
+    fax                  ?: string,
+    billingLang          ?: string,
+    sendEmail            ?: boolean,
+    sendPost             ?: boolean,
+): NewClientDTO {
+    return {
+        ...(company !== undefined ? {company} : {}),
+        ...(companyCode !== undefined ? {companyCode} : {}),
+        ...(firstName !== undefined ? {firstName} : {}),
+        ...(lastName !== undefined ? {lastName} : {}),
+        ...(address !== undefined ? {address} : {}),
+        ...(postCode !== undefined ? {postCode} : {}),
+        ...(postName !== undefined ? {postName} : {}),
+        ...(country !== undefined ? {country} : {}),
+        ...(email !== undefined ? {email} : {}),
+        ...(phone !== undefined ? {phone} : {}),
+        ...(mobile !== undefined ? {mobile} : {}),
+        ...(fax !== undefined ? {fax} : {}),
+        ...(billingLang !== undefined ? {billingLang} : {}),
+        ...(sendEmail !== undefined ? {sendEmail} : {}),
+        ...(sendPost !== undefined ? {sendPost} : {}),
+    };
+}
+
 export function isNewClientDTO (value: any): value is NewClientDTO {
     return (
         isRegularObject(value)
