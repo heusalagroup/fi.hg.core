@@ -151,7 +151,7 @@ describe('RequestParam', () => {
 
                     it('can set OpenAPI parameters information', async () => {
 
-                        const expected : OpenAPIV3.Document = {
+                        const expected: OpenAPIV3.Document = {
                             "components": {},
                             "info": {
                                 "title": "API Reference",
@@ -162,11 +162,19 @@ describe('RequestParam', () => {
                                 "/hello": {
                                     "get": {
                                         "operationId": "getHello",
+                                        "parameters": [ {
+                                            "in": "query",
+                                            "name": undefined,
+                                            "schema": {
+                                                "type": "object"
+                                            }
+                                        }
+                                        ],
                                         "summary": "Get a test response using GET",
                                         "responses": {
                                             "200": {
                                                 "description": "Successful operation"
-                                            },
+                                            }
                                         }
                                     }
                                 }
