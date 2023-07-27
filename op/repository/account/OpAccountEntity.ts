@@ -3,11 +3,15 @@
 import { LogService } from "../../../LogService";
 import { Table } from "../../../data/Table";
 import { Entity } from "../../../data/Entity";
-import { createOpAccountDTO, explainOpAccountDTO, isOpAccountDTO } from "../../dto/OpAccountDTO";
 import type { OpAccountDTO } from "../../dto/OpAccountDTO";
+import { createOpAccountDTO, explainOpAccountDTO, isOpAccountDTO } from "../../dto/OpAccountDTO";
 import { Id } from "../../../data/Id";
 import { Column } from "../../../data/Column";
 import { ReadonlyJsonObject } from "../../../Json";
+import { Temporal } from "../../../data/Temporal";
+import { TemporalType } from "../../../data/types/TemporalType";
+import { UpdateTimestamp } from "../../../data/UpdateTimestamp";
+import { CreationTimestamp } from "../../../data/CreationTimestamp";
 
 const LOG = LogService.createLogger('OpAccountEntity');
 
@@ -35,10 +39,14 @@ export class OpAccountEntity extends Entity {
     @Column("op_account_id", 'BIGINT', { updatable : false, insertable: false })
     public opAccountId?: string;
 
-    @Column("updated", 'DATETIME')
+    @UpdateTimestamp()
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column("updated", 'DATETIME', { updatable : false, insertable: false })
     public updated?: string;
 
-    @Column("created", 'DATETIME')
+    @CreationTimestamp()
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column("created", 'DATETIME', { updatable : false, insertable: false })
     public created?: string;
 
     @Column("bic")
@@ -59,7 +67,7 @@ export class OpAccountEntity extends Entity {
     @Column("surrogate_id")
     public surrogateId ?: string;
 
-    @Column("productNames", 'JSON')
+    @Column("product_names", 'JSON')
     public productNames ?: ReadonlyJsonObject | null;
 
     @Column("account_type_code")
