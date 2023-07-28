@@ -8,6 +8,8 @@ import { Id } from "../../../data/Id";
 import { Column } from "../../../data/Column";
 import { UpdateTimestamp } from "../../../data/UpdateTimestamp";
 import { CreationTimestamp } from "../../../data/CreationTimestamp";
+import { Temporal } from "../../../data/Temporal";
+import { TemporalType } from "../../../data/types/TemporalType";
 
 const LOG = LogService.createLogger('OpTransactionEntity');
 
@@ -58,11 +60,13 @@ export class OpTransactionEntity extends Entity {
     public opSurrogateId?: string;
 
     @UpdateTimestamp()
-    @Column("updated", 'TIMESTAMP')
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column("updated", 'DATETIME', { updatable : false, insertable: false })
     public updated?: string;
 
     @CreationTimestamp()
-    @Column("created", 'TIMESTAMP')
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column("created", 'DATETIME', { updatable : false, insertable: false })
     public created?: string;
 
     @Column("amount")

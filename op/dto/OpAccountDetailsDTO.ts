@@ -113,7 +113,7 @@ export function createOpAccountDetailsDTO (
     creationDate : string,
     grossBalance : string,
     intraDayLimit : string | null,
-    ) : OpAccountDetailsDTO {
+) : OpAccountDetailsDTO {
     return {
         bic,
         iban,

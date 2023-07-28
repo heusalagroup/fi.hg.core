@@ -21,6 +21,10 @@ import { createOpUltimateDebtor } from "../../types/OpUltimateDebtor";
 import { createOpPaymentIdentification } from "../../types/OpPaymentIdentification";
 import { createOpUltimateCreditor } from "../../types/OpUltimateCreditor";
 import { CountryCode } from "../../../types/CountryCode";
+import { CreationTimestamp } from "../../../data/CreationTimestamp";
+import { Temporal } from "../../../data/Temporal";
+import { TemporalType } from "../../../data/types/TemporalType";
+import { UpdateTimestamp } from "../../../data/UpdateTimestamp";
 
 const LOG = LogService.createLogger('OpPaymentEntity');
 
@@ -95,10 +99,14 @@ export class OpPaymentEntity extends Entity {
     @Column("op_account_id", 'BIGINT')
     public opAccountId?: string;
 
-    @Column("updated", 'DATETIME')
+    @UpdateTimestamp()
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column("updated", 'DATETIME', { updatable : false, insertable: false })
     public updated?: string;
 
-    @Column("created", 'DATETIME')
+    @CreationTimestamp()
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column("created", 'DATETIME', { updatable : false, insertable: false })
     public created?: string;
 
     @Column("r_instruction_id")
