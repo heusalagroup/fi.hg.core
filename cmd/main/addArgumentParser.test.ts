@@ -4,7 +4,7 @@ import { addArgumentParser } from './addArgumentParser';
 import { autowired } from './autowired';
 import { LogLevel } from "../../types/LogLevel";
 import { addAutowired } from "./addAutowired";
-import { ArgumentType, CommandArgumentUtils } from "../utils/CommandArgumentUtils";
+import { CommandArgumentUtils } from "../utils/CommandArgumentUtils";
 import type { ArgumentValueMap } from "../utils/CommandArgumentUtils";
 import type { ParsedCommandArgumentObject } from "../utils/CommandArgumentUtils";
 import { CommandExitStatus } from "../types/CommandExitStatus";
@@ -12,6 +12,7 @@ import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { AutowireUtils } from "./utils/AutowireUtils";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 import { AutowireService } from "./services/AutowireService";
+import { ArgumentType } from "../types/ArgumentType";
 
 addArgumentParser.setLogLevel(LogLevel.NONE);
 addAutowired.setLogLevel(LogLevel.NONE);

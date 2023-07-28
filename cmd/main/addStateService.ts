@@ -51,6 +51,7 @@ export function addStateService<
     DTO = any,
     StateServiceImpl extends StateService<DTO> = StateService<DTO>,
 > (
+    name : string,
     createStateService: ((initial: DTO) => StateServiceImpl),
     createDTO: (() => DTO),
     isDTO: TestCallbackNonStandardOf<DTO>,
@@ -118,6 +119,7 @@ export function addStateService<
                 } );
 
                 autowireService.setName("stateService", stateService);
+                autowireService.setName(name, stateService);
 
                 return await method.apply(this, args);
 
@@ -143,6 +145,7 @@ export function addStateService<
                 }
 
                 autowireService.deleteName("stateService");
+                autowireService.deleteName(name);
 
                 if (stateService !== undefined) {
                     stateService.destroy();

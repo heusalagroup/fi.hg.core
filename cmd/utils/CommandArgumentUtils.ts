@@ -1,4 +1,4 @@
-// Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2021-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { CommandExitStatus } from "../types/CommandExitStatus";
 import { CommandArgumentType, parseCommandArgumentType } from "../types/CommandArgumentType";
@@ -9,27 +9,66 @@ import { keys } from "../../functions/keys";
 import { has } from "../../functions/has";
 import { indexOf } from "../../functions/indexOf";
 import { explainBoolean, parseBoolean } from "../../types/Boolean";
-import { explainString, parseString } from "../../types/String";
+import { explainString, parseNonEmptyString, parseString } from "../../types/String";
 import { explainInteger, parseInteger } from "../../types/Number";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
+import { ArgumentType } from "../types/ArgumentType";
+import { isFunction } from "../../types/Function";
 
 const LOG = LogService.createLogger('CommandArgumentUtils');
 
-export enum ArgumentType {
-    "BOOLEAN" = "b",
-    "STRING"  = "s",
-    "NUMBER"  = "n",
-    "INTEGER" = "i"
-}
+export type UserDefinedArgumentType = ArgumentType | string;
 
 /**
- * Type, Long argument, Short argument
+ * Type | Long argument | Short argument | Environment variable name | default value
  */
-export type ArgumentConfiguration = readonly [ArgumentType, string, string];
+export type ArgumentConfigurationWithEnvAndDefaultValue = readonly [
+    UserDefinedArgumentType,
+    string | undefined,
+    string | undefined,
+    string | undefined,
+    string | undefined
+];
+
+/**
+ * Type | Long argument | Short argument | Environment variable name
+ */
+export type ArgumentConfigurationWithEnv = readonly [
+    UserDefinedArgumentType,
+    string | undefined,
+    string | undefined,
+    string | undefined
+];
+
+/**
+ * Type | Long argument | Short argument
+ */
+export type ArgumentConfigurationWithoutEnv = readonly [
+    UserDefinedArgumentType,
+    string | undefined,
+    string | undefined
+];
+
+/**
+ * Type | Long argument | Short argument | Environment variable name | default value
+ */
+export type ArgumentConfiguration = (
+    ArgumentConfigurationWithEnv
+    | ArgumentConfigurationWithoutEnv
+    | ArgumentConfigurationWithEnvAndDefaultValue
+);
 
 export interface ArgumentConfigurationMap {
     [key: string] : ArgumentConfiguration;
+}
+
+export interface UserDefinedParser<T = any> {
+    (value: unknown) : T | undefined;
+}
+
+export interface UserDefinedParserMap {
+    [key: string] : UserDefinedParser;
 }
 
 export interface ArgumentValueMap {
@@ -56,9 +95,10 @@ export class CommandArgumentUtils {
     }
 
     public static parseArguments (
-        defaultScriptName: string,
-        args: readonly string[] = [],
-        configurationMap ?: ArgumentConfigurationMap
+        defaultScriptName  : string,
+        args               : readonly string[] = [],
+        configurationMap  ?: ArgumentConfigurationMap,
+        parserMap         ?: UserDefinedParserMap,
     ) : ParsedCommandArgumentObject {
 
         const myArgs = [...args];
@@ -68,7 +108,7 @@ export class CommandArgumentUtils {
         const scriptNameFromArgs : string = myArgs.shift() ?? '';
         LOG.debug(`scriptNameFromArgs = `, scriptNameFromArgs);
 
-        const argConfigurationMap = configurationMap ? configurationMap : {};
+        const argConfigurationMap : ArgumentConfigurationMap = configurationMap ? configurationMap : {};
 
         if (!scriptNameFromArgs) {
             return {
@@ -111,11 +151,8 @@ export class CommandArgumentUtils {
         );
 
         do {
-
             const argName : string = myArgs.shift() ?? '';
-
             if (parsingArgs) {
-
                 const argType : CommandArgumentType | undefined = parseCommandArgumentType(argName);
 
                 switch (argType) {
@@ -159,15 +196,15 @@ export class CommandArgumentUtils {
 
                                     if ( has(userLongArgs, argKey) ) {
                                         const key = userLongArgs[argKey];
-                                        const [type] = argConfigurationMap[key];
-                                        userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue);
+                                        const [type, , , envKey, defaultValue] = argConfigurationMap[key];
+                                        userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue, parserMap, envKey, defaultValue);
                                         break;
                                     }
 
                                     if ( has(userShortArgs, argKey) ) {
                                         const key = userShortArgs[argKey];
-                                        const [type] = argConfigurationMap[key];
-                                        userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue);
+                                        const [type, , , envKey, defaultValue] = argConfigurationMap[key];
+                                        userArgs[key] = parseArgumentWithParam(argName, type, argKey, argValue, parserMap, envKey, defaultValue);
                                         break;
                                     }
 
@@ -175,15 +212,15 @@ export class CommandArgumentUtils {
 
                                     if ( has(userLongArgs, argName) ) {
                                         const key = userLongArgs[argName];
-                                        const [type] = argConfigurationMap[key];
-                                        userArgs[key] = parseSingleArgument(argName, type);
+                                        const [type, , , envKey, defaultValue] = argConfigurationMap[key];
+                                        userArgs[key] = parseSingleArgument(argName, type, parserMap, envKey, defaultValue);
                                         break;
                                     }
 
                                     if ( has(userShortArgs, argName) ) {
                                         const key = userShortArgs[argName];
-                                        const [type] = argConfigurationMap[key];
-                                        userArgs[key] = parseSingleArgument(argName, type);
+                                        const [type, , , envKey, defaultValue] = argConfigurationMap[key];
+                                        userArgs[key] = parseSingleArgument(argName, type, parserMap, envKey, defaultValue);
                                         break;
                                     }
 
@@ -235,40 +272,60 @@ export class CommandArgumentUtils {
  * @param type The type of argument, e.g. `ArgumentType.STRING`
  * @param key The key part of the argument, e.g. `--foo`
  * @param value The value of the argument, e.g. `bar`
+ * @param parserMap
+ * @param envKey
+ * @param defaultValue
  */
 function parseArgumentWithParam (
-    argName : string,
-    type  : ArgumentType,
-    key   : string,
-    value : string
+    argName       : string,
+    type          : UserDefinedArgumentType,
+    key           : string,
+    value         : string,
+    parserMap     : UserDefinedParserMap | undefined,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined,
 ) : number | boolean | string {
+
     switch(type) {
-        case ArgumentType.BOOLEAN : return parseBooleanArgument(argName, value);
-        case ArgumentType.STRING  : return parseStringArgument(argName, value);
-        case ArgumentType.NUMBER  : return parseNumberArgument(argName, value);
-        case ArgumentType.INTEGER : return parseIntegerArgument(argName, value);
-        default:
-            throw new TypeError(`Unimplemented type: ${type}`);
+        case ArgumentType.BOOLEAN          : return parseBooleanArgument(argName, value, envKey, defaultValue);
+        case ArgumentType.STRING           : return parseStringArgument(argName, value, envKey, defaultValue);
+        case ArgumentType.NON_EMPTY_STRING : return parseNonEmptyStringArgument(argName, value, envKey, defaultValue);
+        case ArgumentType.NUMBER           : return parseNumberArgument(argName, value, envKey, defaultValue);
+        case ArgumentType.INTEGER          : return parseIntegerArgument(argName, value, envKey, defaultValue);
     }
+
+    if ( parserMap && has(parserMap, type) && isFunction(parserMap[type]) ) {
+        return parserMap[type](value) ?? process?.env[envKey] ?? defaultValue;
+    }
+
+    throw new TypeError(`Unimplemented type: ${type.toString()}`);
 }
 
 /**
  *
  * @param argName The full argument string, e.g. `--foo`
  * @param type The type of argument, e.g. `ArgumentType.BOOLEAN`
+ * @param parserMap
+ * @param envKey
+ * @param defaultValue
  */
 function parseSingleArgument (
-    argName : string,
-    type  : ArgumentType
+    argName       : string,
+    type          : UserDefinedArgumentType,
+    parserMap     : UserDefinedParserMap | undefined,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined,
 ) : number | boolean | string {
-    return parseArgumentWithParam(argName, type, argName, type === ArgumentType.BOOLEAN ? 'true' : '');
+    return parseArgumentWithParam(argName, type, argName, type === ArgumentType.BOOLEAN ? 'true' : '', parserMap, envKey, defaultValue);
 }
 
 function parseBooleanArgument (
-    argName   : string,
-    value : string
+    argName       : string,
+    value         : string,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined
 ) : boolean {
-    const output : boolean | undefined = parseBoolean(value);
+    const output : boolean | undefined = parseBoolean(value ?? process?.env[envKey] ?? defaultValue );
     if (output === undefined) {
         throw new TypeError(`Argument ${argName}: Not a boolean: ${explainBoolean(value)}`);
     }
@@ -276,10 +333,25 @@ function parseBooleanArgument (
 }
 
 function parseStringArgument (
-    argName   : string,
-    value : string
+    argName       : string,
+    value         : string,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined
 ) : string {
-    const output : string | undefined = parseString(value);
+    const output : string | undefined = parseString(value) ?? parseString(process?.env[envKey]) ?? parseString(defaultValue);
+    if (output === undefined) {
+        throw new TypeError(`Argument ${argName}: Not a string: ${explainString(value)}`);
+    }
+    return output;
+}
+
+function parseNonEmptyStringArgument (
+    argName       : string,
+    value         : string,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined
+) : string {
+    const output : string | undefined = parseNonEmptyString(value) ?? parseNonEmptyString(process?.env[envKey]) ?? parseNonEmptyString(defaultValue);
     if (output === undefined) {
         throw new TypeError(`Argument ${argName}: Not a string: ${explainString(value)}`);
     }
@@ -287,10 +359,12 @@ function parseStringArgument (
 }
 
 function parseIntegerArgument (
-    argName   : string,
-    value : string
+    argName       : string,
+    value         : string,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined
 ) : number {
-    const output : number | undefined = parseInteger(value);
+    const output : number | undefined = parseInteger(value ?? process?.env[envKey] ?? defaultValue);
     if (output === undefined) {
         throw new TypeError(`Argument ${argName}: Not integer: ${explainInteger(value)}`);
     }
@@ -298,10 +372,12 @@ function parseIntegerArgument (
 }
 
 function parseNumberArgument (
-    argName : string,
-    value : string
+    argName       : string,
+    value         : string,
+    envKey        : string | undefined,
+    defaultValue  : string | undefined
 ) : number {
-    const output : number | undefined = parseFloat(value);
+    const output : number | undefined = parseFloat(value ?? process?.env[envKey] ?? defaultValue);
     if (output === undefined) {
         throw new TypeError(`Argument ${argName}: Not a number: ${value}`);
     }

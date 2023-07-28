@@ -2,7 +2,7 @@
 
 import { LogService } from "../../LogService";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
-import { ArgumentConfigurationMap, CommandArgumentUtils, ParsedCommandArgumentObject } from "../utils/CommandArgumentUtils";
+import { ArgumentConfigurationMap, CommandArgumentUtils, ParsedCommandArgumentObject, UserDefinedParserMap } from "../utils/CommandArgumentUtils";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 import { LogLevel } from "../../types/LogLevel";
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
@@ -49,6 +49,7 @@ export interface GetInfoCallback {
  * @param getVersion
  * @param getUsage
  * @param configurationMap
+ * @param parserMap
  *
  * @see CommandArgumentUtils
  * }
@@ -58,6 +59,7 @@ export function addArgumentParser<T = any> (
     getVersion         : GetInfoCallback,
     getUsage           : GetInfoCallback,
     configurationMap  ?: ArgumentConfigurationMap,
+    parserMap         ?: UserDefinedParserMap,
 ) : MethodDecoratorFunction {
     LOG.debug(`calling createMethodDecorator`);
     return createMethodDecorator( (
@@ -78,7 +80,8 @@ export function addArgumentParser<T = any> (
                 const parsedArgs : ParsedCommandArgumentObject = CommandArgumentUtils.parseArguments(
                     defaultScriptName,
                     args,
-                    configurationMap
+                    configurationMap,
+                    parserMap
                 );
                 autowireService.setName("parsedArgs", parsedArgs);
 
