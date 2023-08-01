@@ -47,7 +47,7 @@ describe('MySqlEntityUpdateQueryBuilder', () => {
 
         @Id()
         @Column(idColumn)
-        public carId ?: string;
+        public carId ?: string | CarEntity;
 
         @Column(nameColumn)
         public carName ?: string;
