@@ -1,4 +1,4 @@
-// Copyright (c) 2021. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2021-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { startsWith } from "../../functions/startsWith";
 import { isNumber, parseInteger } from "../../types/Number";
@@ -36,13 +36,46 @@ export enum CommandExitStatus {
     NOPERM                          = 77,      /* permission denied */
     CONFIG                          = 78,      /* configuration error */
 
-    // From Advanced Bash scripting guide
-
+    /** From Advanced Bash scripting guide
+     * @see https://tldp.org/LDP/abs/html/exitcodes.html
+     */
     COMMAND_INVOKED_CANNOT_EXECUTE  = 126,
+
+    /** From Advanced Bash scripting guide
+     * @see https://tldp.org/LDP/abs/html/exitcodes.html
+     */
     COMMAND_NOT_FOUND               = 127,
+
+    /** From Advanced Bash scripting guide
+     * @see https://tldp.org/LDP/abs/html/exitcodes.html
+     */
     INVALID_ARGUMENT_TO_EXIT        = 128,
+
+    /** The smallest dynamic fatal error signal.
+     *
+     * From Advanced Bash scripting guide:
+     * This should be 128 + smallest_signal
+     * Smallest signal is 1.
+     *
+     * @see https://tldp.org/LDP/abs/html/exitcodes.html
+     */
     FATAL_SIGNAL_RANGE_START        = 129,
-    FATAL_SIGNAL_RANGE_END          = 254,
+
+    /** The maximum dynamic fatal error signal.
+     *
+     * From Advanced Bash scripting guide:
+     * This should be 128 + SIGRTMAX
+     * SIGRTMAX is 64
+     *
+     * @see https://tldp.org/LDP/abs/html/exitcodes.html
+     * @see https://chromium.googlesource.com/chromiumos/docs/+/master/constants/signals.md
+     * @see https://en.wikipedia.org/wiki/Signal_(IPC)#SIGRTMIN
+     */
+    FATAL_SIGNAL_RANGE_END          = 192,
+
+    /** From Advanced Bash scripting guide
+     * @see https://tldp.org/LDP/abs/html/exitcodes.html
+     */
     EXIT_STATUS_OUT_OF_RANGE        = 255
 
 }
@@ -54,19 +87,15 @@ export enum CommandExitStatus {
  * @nosideeffects
  */
 export function isCommandExitStatus (value: any): value is CommandExitStatus {
-
     if (!isNumber(value)) return false;
     if (value < 0) return false;
     if (value > 255) return false;
-
     if ( value >= CommandExitStatus.FATAL_SIGNAL_RANGE_START
         && value <= CommandExitStatus.FATAL_SIGNAL_RANGE_END
     ) {
         return true;
     }
-
     switch (value) {
-
         case CommandExitStatus.OK:
         case CommandExitStatus.GENERAL_ERRORS:
         case CommandExitStatus.MISUSE_OF_SHELL_BUILTINS:
@@ -97,12 +126,9 @@ export function isCommandExitStatus (value: any): value is CommandExitStatus {
         case CommandExitStatus.EXIT_STATUS_OUT_OF_RANGE:
         case CommandExitStatus.CONFLICT:
             return true;
-
         default:
             return false;
-
     }
-
 }
 
 /**
@@ -112,13 +138,10 @@ export function isCommandExitStatus (value: any): value is CommandExitStatus {
  * @nosideeffects
  */
 export function stringifyCommandExitStatus (value: CommandExitStatus): string {
-
     if (value >= CommandExitStatus.FATAL_SIGNAL_RANGE_START && value <= CommandExitStatus.FATAL_SIGNAL_RANGE_END) {
-        return `FATAL_SIGNAL_${ value - CommandExitStatus.FATAL_SIGNAL_RANGE_START }`;
+        return `FATAL_SIGNAL_${ value - CommandExitStatus.FATAL_SIGNAL_RANGE_START + 1 }`;
     }
-
     switch (value) {
-
         case CommandExitStatus.OK                              : return 'OK';
         case CommandExitStatus.GENERAL_ERRORS                  : return 'GENERAL_ERRORS';
         case CommandExitStatus.MISUSE_OF_SHELL_BUILTINS        : return 'MISUSE_OF_SHELL_BUILTINS';
@@ -144,15 +167,10 @@ export function stringifyCommandExitStatus (value: CommandExitStatus): string {
         case CommandExitStatus.COMMAND_INVOKED_CANNOT_EXECUTE  : return 'COMMAND_INVOKED_CANNOT_EXECUTE';
         case CommandExitStatus.COMMAND_NOT_FOUND               : return 'COMMAND_NOT_FOUND';
         case CommandExitStatus.INVALID_ARGUMENT_TO_EXIT        : return 'INVALID_ARGUMENT_TO_EXIT';
-        case CommandExitStatus.FATAL_SIGNAL_RANGE_START        : return 'FATAL_SIGNAL_RANGE_START';
-        case CommandExitStatus.FATAL_SIGNAL_RANGE_END          : return 'FATAL_SIGNAL_RANGE_END';
         case CommandExitStatus.EXIT_STATUS_OUT_OF_RANGE        : return 'EXIT_STATUS_OUT_OF_RANGE';
-        case CommandExitStatus.CONFLICT        : return 'CONFLICT';
-
+        case CommandExitStatus.CONFLICT                        : return 'CONFLICT';
     }
-
     throw new TypeError(`Unsupported RunnerExitStatus value: ${value}`);
-
 }
 
 /**
@@ -162,29 +180,21 @@ export function stringifyCommandExitStatus (value: CommandExitStatus): string {
  * @nosideeffects
  */
 export function parseCommandExitStatus (value: any): CommandExitStatus | undefined {
-
     if (value === undefined) return undefined;
-
     if (isCommandExitStatus(value)) return value;
 
     const valueString = `${value}`.toUpperCase();
-
     if (startsWith(valueString, 'FATAL_SIGNAL_')) {
-
-        const int = parseInteger( value.substr(0, 'FATAL_SIGNAL_'.length) );
-
+        const int : number | undefined = parseInteger( valueString.substring('FATAL_SIGNAL_'.length, valueString.length) );
         if (int === undefined) return undefined;
-
-        if ( int >= 0 && int < (CommandExitStatus.FATAL_SIGNAL_RANGE_END - CommandExitStatus.FATAL_SIGNAL_RANGE_START) ) {
-            return int + CommandExitStatus.FATAL_SIGNAL_RANGE_START;
+        if ( int >= 1 && int <= (CommandExitStatus.FATAL_SIGNAL_RANGE_END+1 - CommandExitStatus.FATAL_SIGNAL_RANGE_START) ) {
+            return int + CommandExitStatus.FATAL_SIGNAL_RANGE_START-1;
         } else {
             return undefined;
         }
-
     }
 
     switch (valueString) {
-
         case 'OK'                              : return CommandExitStatus.OK;
         case 'GENERAL_ERRORS'                  : return CommandExitStatus.GENERAL_ERRORS;
         case 'MISUSE_OF_SHELL_BUILTINS'        : return CommandExitStatus.MISUSE_OF_SHELL_BUILTINS;
@@ -210,14 +220,8 @@ export function parseCommandExitStatus (value: any): CommandExitStatus | undefin
         case 'COMMAND_INVOKED_CANNOT_EXECUTE'  : return CommandExitStatus.COMMAND_INVOKED_CANNOT_EXECUTE;
         case 'COMMAND_NOT_FOUND'               : return CommandExitStatus.COMMAND_NOT_FOUND;
         case 'INVALID_ARGUMENT_TO_EXIT'        : return CommandExitStatus.INVALID_ARGUMENT_TO_EXIT;
-        case 'FATAL_SIGNAL_RANGE_START'        : return CommandExitStatus.FATAL_SIGNAL_RANGE_START;
-        case 'FATAL_SIGNAL_RANGE_END'          : return CommandExitStatus.FATAL_SIGNAL_RANGE_END;
         case 'EXIT_STATUS_OUT_OF_RANGE'        : return CommandExitStatus.EXIT_STATUS_OUT_OF_RANGE;
-        case 'CONFLICT'        : return CommandExitStatus.CONFLICT;
-
-        default:
-            return undefined;
-
+        case 'CONFLICT'                        : return CommandExitStatus.CONFLICT;
+        default: return undefined;
     }
-
 }

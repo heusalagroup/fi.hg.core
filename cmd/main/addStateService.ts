@@ -2,7 +2,6 @@
 
 import { resolve as pathResolve } from "path";
 import { LogService } from "../../LogService";
-import { ParsedCommandArgumentObject } from "../utils/CommandArgumentUtils";
 import { ObserverDestructor } from "../../Observer";
 import { parseNonEmptyString } from "../../types/String";
 import { StateService, StateServiceEvent } from "./services/StateService";
@@ -12,6 +11,8 @@ import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorF
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
 import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { DestroyService } from "./services/DestroyService";
+import { ParsedCommandArgumentObject } from "../types/ParsedCommandArgumentObject";
+import { LogLevel } from "../../types/LogLevel";
 
 const LOG = LogService.createLogger( 'addStateService' );
 
@@ -156,6 +157,8 @@ export function addStateService<
         };
     } );
 }
+
+addStateService.setLogLevel = (level: LogLevel) => LOG.setLogLevel(level);
 
 async function readStateDTOFromFile<DTO> (
     readFile: (file : string, charset: "utf8") => Promise<string>,

@@ -2,13 +2,16 @@
 
 import { LogService } from "../../LogService";
 import { MethodDecoratorFunction } from "../../decorators/types/MethodDecoratorFunction";
-import { ArgumentConfigurationMap, CommandArgumentUtils, ParsedCommandArgumentObject, UserDefinedParserMap } from "../utils/CommandArgumentUtils";
+import { CommandArgumentUtils } from "../utils/CommandArgumentUtils";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 import { LogLevel } from "../../types/LogLevel";
 import { createMethodDecorator } from "../../decorators/createMethodDecorator";
 import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { forEach } from "../../functions/forEach";
 import { keys } from "../../functions/keys";
+import { ArgumentConfigurationMap } from "../types/ArgumentConfigurationMap";
+import { UserDefinedParserMap } from "../types/UserDefinedParserMap";
+import { ParsedCommandArgumentObject } from "../types/ParsedCommandArgumentObject";
 
 const LOG = LogService.createLogger( 'addArgumentParser' );
 
@@ -124,7 +127,7 @@ export function addArgumentParser<T = any> (
                     return exitStatus;
                 }
 
-                if ( errorString ) {
+                if ( errorString !== undefined ) {
                     console.error( `ERROR: ${errorString}` );
                     return exitStatus;
                 }

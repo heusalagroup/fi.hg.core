@@ -24,9 +24,15 @@ export function explainBoolean (value: unknown): string {
  * @nosideeffects
  */
 export function parseBoolean (value: any): boolean | undefined {
-    if ( value === undefined || value === '' ) return undefined;
+    if ( value === undefined || value === null || value === '' ) return undefined;
     if ( isBoolean(value) ) return value;
-    return [ "true", "t", "on", "1", "enabled" ].includes(`${value}`.toLowerCase());
+    if ([ "true", "t", "on", "1", "enabled" ].includes(`${value}`.toLowerCase()) ) {
+        return true;
+    }
+    if ([ "false", "f", "off", "0", "disabled" ].includes(`${value}`.toLowerCase()) ) {
+        return false;
+    }
+    return undefined;
 }
 
 /**

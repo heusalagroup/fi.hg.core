@@ -50,4 +50,39 @@ describe('autowired', () => {
         expect(retrievedArg3).toEqual('hello world');
     });
 
+    it('successfully updates metadata and invokes the method with missing autowired parameters', () => {
+        let retrievedArg: string = '';
+        let retrievedArg2: string = 'xxx';
+        let retrievedArg3: string = '';
+
+        // Define an example class with a method decorated with `addAutowired`
+        class MyApp {
+            @addAutowired()
+            public run(
+                @autowired('hello')
+                name: string = '',
+                @autowired('bar')
+                bar: string = '',
+                @autowired('foobar')
+                foobar: string = '',
+            ) {
+                retrievedArg = name;
+                retrievedArg2 = bar;
+                retrievedArg3 = foobar;
+            }
+        }
+
+        const autowireService = AutowireServiceImpl.create();
+        AutowireServiceImpl.setAutowireService(
+            autowireService
+        );
+        autowireService.setName('foobar', 'hello world');
+        const app = new MyApp();
+        app.run();
+        // Check if autowired parameter matches the context
+        expect(retrievedArg).toEqual('');
+        expect(retrievedArg2).toEqual('');
+        expect(retrievedArg3).toEqual('hello world');
+    });
+
 });

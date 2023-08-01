@@ -79,4 +79,9 @@ export interface ChildProcessService extends Disposable, DisposeAware {
         opts ?: CommandOptions
     ) : Promise<CommandResponse>;
 
+    /**
+     *
+     */
+    sendShutdownToChildProcesses () : void;
+
 }

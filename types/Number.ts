@@ -89,24 +89,15 @@ export function explainNumberOrNullOrUndefined (value: any): string {
  * @nosideeffects
  */
 export function parseInteger (value: any): number | undefined {
-
-    if ( value === undefined ) {
-        return undefined;
-    }
-
-    if ( isSafeInteger(value) ) {
-        return value;
-    }
-
+    if ( value === undefined ) return undefined;
+    if ( value === null ) return undefined;
+    if ( isSafeInteger(value) ) return value;
     if ( _isString(value) ) {
         value = trim(value);
         if ( value.length === 0 ) return undefined;
     }
-
     const parsedValue = toSafeInteger(value);
-
-    return isSafeInteger(parsedValue) ? parsedValue : undefined;
-
+    return isSafeInteger(parsedValue) && parsedValue.toFixed(0) === value ? parsedValue : undefined;
 }
 
 /**

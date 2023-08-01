@@ -28,4 +28,5 @@ export class NumberUtils {
             return undefined;
         }
     }
+
 }

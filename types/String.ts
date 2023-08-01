@@ -6,6 +6,7 @@ import { isUndefined } from "./undefined";
 import { explainNot, explainOk, explainOr } from "./explain";
 import { isNull } from "lodash";
 import { isNumber } from "./Number";
+import { isFunction } from "./Function";
 
 /**
  *
@@ -219,8 +220,10 @@ export function isStringOrUndefinedOf (
  * @__PURE__
  * @nosideeffects
  */
-export function parseString (value: any): string | undefined {
+export function parseString (value: unknown): string | undefined {
     if ( value === undefined ) return undefined;
+    if ( value === null ) return undefined;
+    if ( isFunction(value?.toString) ) return value.toString();
     return `${value}`;
 }
 

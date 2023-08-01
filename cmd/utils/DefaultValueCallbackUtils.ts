@@ -2,6 +2,7 @@
 
 import { DefaultValueCallback } from "../types/DefaultValueCallback";
 import { reduce } from "../../functions/reduce";
+import { reverse } from "../../functions/reverse";
 import { isPromise } from "../../types/Promise";
 import { createAutowiredDefaultCallback } from "../functions/createAutowiredDefaultCallback";
 
@@ -29,7 +30,7 @@ export class DefaultValueCallbackUtils {
         ...callbacks: DefaultValueCallback[]
     ) : DefaultValueCallback {
         return reduce(
-            callbacks,
+            reverse(callbacks),
             (callback : DefaultValueCallback, previousCallback: DefaultValueCallback): DefaultValueCallback => {
                 return (value ?: string | undefined) : string | undefined | Promise<string|undefined> => {
                     const previousValue = previousCallback(value);

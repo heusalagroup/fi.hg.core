@@ -37,12 +37,22 @@ describe('DestroyServiceImpl', () => {
     });
 
     describe('addDestroyListener', () => {
+
         it('calls the callback when destroyed', () => {
             const callback = jest.fn();
             destroyService.addDestroyListener(callback);
             destroyService.destroy();
             expect(callback).toHaveBeenCalled();
         });
+
+        it('can be cancelled by calling the destructor', () => {
+            const callback = jest.fn();
+            const destructor = destroyService.addDestroyListener(callback);
+            destructor();
+            destroyService.destroy();
+            expect(callback).not.toHaveBeenCalled();
+        });
+
     });
 
     describe('registerDisposable', () => {

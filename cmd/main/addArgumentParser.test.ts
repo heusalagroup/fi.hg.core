@@ -5,14 +5,14 @@ import { autowired } from './autowired';
 import { LogLevel } from "../../types/LogLevel";
 import { addAutowired } from "./addAutowired";
 import { CommandArgumentUtils } from "../utils/CommandArgumentUtils";
-import type { ArgumentValueMap } from "../utils/CommandArgumentUtils";
-import type { ParsedCommandArgumentObject } from "../utils/CommandArgumentUtils";
 import { CommandExitStatus } from "../types/CommandExitStatus";
 import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { AutowireUtils } from "./utils/AutowireUtils";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 import { AutowireService } from "./services/AutowireService";
 import { ArgumentType } from "../types/ArgumentType";
+import { ArgumentValueMap } from "../types/ArgumentValueMap";
+import { ParsedCommandArgumentObject } from "../types/ParsedCommandArgumentObject";
 
 addArgumentParser.setLogLevel(LogLevel.NONE);
 addAutowired.setLogLevel(LogLevel.NONE);
@@ -28,20 +28,29 @@ describe('addArgumentParser', () => {
     describe('integration testing', () => {
 
         let autowireService : AutowireService;
-        let retrievedArgs: string[];
+        let retrievedArgs: string[] | undefined;
         let retrievedFreeArgs : string[] | undefined;
-        let retrievedBackend: string;
+        let retrievedBackend: string | undefined;
         let retrievedUserArgs: ArgumentValueMap | undefined;
         let retrievedParsedArgs: ParsedCommandArgumentObject | undefined;
+
+        let getVersion : jest.Mock<any, any, any>;
+        let getUsage: jest.Mock<any, any, any>;
+        let consoleLog: jest.SpyInstance<any, any, any>;
+        let consoleError: jest.SpyInstance<any, any, any>;
+
+        getVersion = jest.fn().mockImplementation(() => '1.0.0');
+        getUsage = jest.fn().mockImplementation(() => 'usage');
 
         // Mock class with a method decorated with `addArgumentParser` and `addAutowired`
         class MyApp {
             @addArgumentParser(
                 'testApp',
-                () => '1.0.0',
-                () => 'usage',
+                getVersion,
+                getUsage,
                 {
                     backend: [ ArgumentType.STRING, '--backend', '-b' ],
+                    integer: [ ArgumentType.INTEGER, '--integer', '-i' ],
                 }
             )
             @addAutowired()
@@ -69,12 +78,138 @@ describe('addArgumentParser', () => {
         let app : MyApp;
 
         beforeEach( () => {
-            retrievedArgs = [];
+            retrievedArgs = undefined;
             retrievedParsedArgs = undefined;
-            retrievedBackend = '';
+            retrievedBackend = undefined;
+            retrievedFreeArgs = undefined;
             autowireService = AutowireServiceImpl.create();
             AutowireServiceImpl.setAutowireService(autowireService);
             app = new MyApp();
+
+            consoleLog = jest.spyOn(console, "log").mockImplementation(() => {});
+
+            consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+
+        });
+
+        afterEach(() => {
+            jest.clearAllMocks();
+        })
+
+        it('can parse long version argument', async () => {
+
+            await app.run(['/usr/bin/node', 'dist.js', '--version']);
+
+            // Check if autowired parameters match expected values
+            expect(consoleLog).toHaveBeenCalledWith('1.0.0');
+
+            expect(getUsage).not.toHaveBeenCalled();
+
+            expect(getVersion).toHaveBeenCalledTimes(1);
+            expect(getVersion).toHaveBeenCalledWith(
+                'dist.js',
+                {
+                    "exitStatus": 0,
+                    "extraArgs": [],
+                    "freeArgs": [],
+                    "nodePath": "/usr/bin/node",
+                    "parseStatus": 3,
+                    "scriptName": "dist.js",
+                    "userArgs": {}
+                }
+            );
+            expect(retrievedArgs).toEqual(undefined);
+            expect(retrievedParsedArgs).not.toBeDefined();
+            expect(retrievedBackend).toEqual(undefined);
+            expect(retrievedFreeArgs).toEqual(undefined);
+
+        });
+
+        it('can parse short version argument', async () => {
+
+            await app.run(['/usr/bin/node', 'dist.js', '-v']);
+
+            // Check if autowired parameters match expected values
+            expect(consoleLog).toHaveBeenCalledWith('1.0.0');
+
+            expect(getUsage).not.toHaveBeenCalled();
+
+            expect(getVersion).toHaveBeenCalledTimes(1);
+            expect(getVersion).toHaveBeenCalledWith(
+                'dist.js',
+                {
+                    "exitStatus": 0,
+                    "extraArgs": [],
+                    "freeArgs": [],
+                    "nodePath": "/usr/bin/node",
+                    "parseStatus": 3,
+                    "scriptName": "dist.js",
+                    "userArgs": {}
+                }
+            );
+            expect(retrievedArgs).toEqual(undefined);
+            expect(retrievedParsedArgs).not.toBeDefined();
+            expect(retrievedBackend).toEqual(undefined);
+            expect(retrievedFreeArgs).toEqual(undefined);
+
+        });
+
+        it('can parse long help argument', async () => {
+
+            await app.run(['/usr/bin/node', 'dist.js', '--help']);
+
+            // Check if autowired parameters match expected values
+            expect(consoleLog).toHaveBeenCalledWith('usage');
+
+            expect(getUsage).toHaveBeenCalledTimes(1);
+            expect(getUsage).toHaveBeenCalledWith(
+                'dist.js',
+                {
+                    "exitStatus": 0,
+                    "extraArgs": [],
+                    "freeArgs": [],
+                    "nodePath": "/usr/bin/node",
+                    "parseStatus": 2,
+                    "scriptName": "dist.js",
+                    "userArgs": {}
+                }
+            );
+
+            expect(getVersion).not.toHaveBeenCalled();
+
+            expect(retrievedArgs).toEqual(undefined);
+            expect(retrievedParsedArgs).not.toBeDefined();
+            expect(retrievedBackend).toEqual(undefined);
+            expect(retrievedFreeArgs).toEqual(undefined);
+
+        });
+
+        it('can parse short help argument', async () => {
+
+            await app.run(['/usr/bin/node', 'dist.js', '-h']);
+
+            // Check if autowired parameters match expected values
+            expect(consoleLog).toHaveBeenCalledWith('usage');
+
+            expect(getUsage).toHaveBeenCalledTimes(1);
+            expect(getUsage).toHaveBeenCalledWith(
+                'dist.js',
+                {
+                    "exitStatus": 0,
+                    "extraArgs": [],
+                    "freeArgs": [],
+                    "nodePath": "/usr/bin/node",
+                    "parseStatus": 2,
+                    "scriptName": "dist.js",
+                    "userArgs": {}
+                }
+            );
+            expect(getVersion).not.toHaveBeenCalled();
+            expect(retrievedArgs).toEqual(undefined);
+            expect(retrievedParsedArgs).not.toBeDefined();
+            expect(retrievedBackend).toEqual(undefined);
+            expect(retrievedFreeArgs).toEqual(undefined);
+
         });
 
         it('can parse long arguments', async () => {
@@ -121,6 +256,21 @@ describe('addArgumentParser', () => {
             expect(retrievedFreeArgs).toEqual(['command', 'one']);
 
         });
+
+        it('can parse illegal integer argument', async () => {
+
+            await app.run(['/usr/bin/node', 'dist.js', '--integer=myBackend']);
+
+            expect(consoleError).toHaveBeenCalledWith('ERROR: Argument parse error: TypeError: Argument --integer=myBackend: not integer');
+
+            // Check if autowired parameters match expected values
+            expect(retrievedArgs).not.toBeDefined();
+            expect(retrievedParsedArgs).not.toBeDefined();
+            expect(retrievedBackend).not.toBeDefined();
+            expect(retrievedFreeArgs).not.toBeDefined();
+
+        });
+
 
     });
 

@@ -28,7 +28,7 @@ export class DefaultValue {
      * @param name The name of the argument. If not specified, uses the previous
      *             value as the name.
      */
-    public static fromAutowired (name ?: string) : DefaultValueCallback {
+    public static fromAutowired (name : string) : DefaultValueCallback {
         if (!this._impl) throw new TypeError('DefaultValue.fromAutowired() not initialized');
         return this._impl.fromAutowired(name);
     }
