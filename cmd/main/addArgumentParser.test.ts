@@ -11,7 +11,7 @@ import { AutowireUtils } from "./utils/AutowireUtils";
 import { ParsedCommandArgumentStatus } from "../types/ParsedCommandArgumentStatus";
 import { AutowireService } from "./services/AutowireService";
 import { ArgumentType } from "../types/ArgumentType";
-import { ArgumentValueMap } from "../types/ArgumentValueMap";
+import type { ArgumentValueMap } from "../types/ArgumentValueMap";
 import type { ParsedCommandArgumentObject } from "../types/ParsedCommandArgumentObject";
 
 addArgumentParser.setLogLevel(LogLevel.NONE);
