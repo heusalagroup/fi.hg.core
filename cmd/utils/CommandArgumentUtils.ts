@@ -222,7 +222,7 @@ export class CommandArgumentUtils {
                         envKey,
                         type,
                         key,
-                        process.env[envKey],
+                        process.env[envKey] as unknown as string,
                         parserMap
                     );
                 }
