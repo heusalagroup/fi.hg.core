@@ -3,6 +3,7 @@
 import { explainNot, explainOk, explainOr } from "./explain";
 import { trim } from "../functions/trim";
 import { default as _isSafeInteger } from "lodash/isSafeInteger";
+import { isString } from "./String";
 import { isUndefined } from "./undefined";
 import { isNull } from "./Null";
 
@@ -80,6 +81,26 @@ export function isNumberOrNullOrUndefined (value: unknown): value is number | nu
  */
 export function explainNumberOrNullOrUndefined (value: any): string {
     return isNumberOrNullOrUndefined(value) ? explainOk() : explainNot(explainOr([ 'number', 'null', 'undefined' ]));
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function isNumberOrNull (value: unknown): value is number | null {
+    return isNull(value) || isNumber(value);
+}
+
+/**
+ *
+ * @param value
+ * @__PURE__
+ * @nosideeffects
+ */
+export function explainNumberOrNull (value: any): string {
+    return isNumberOrNull(value) ? explainOk() : explainNot(explainOr([ 'number', 'null' ]));
 }
 
 /**

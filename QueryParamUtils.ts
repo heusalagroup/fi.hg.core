@@ -12,9 +12,25 @@ export class QueryParamUtils {
     /**
      * Stringify query params from an object presentation.
      *
+     * Appends the question mark.
+     *
      * @param params
      */
     public static stringifyQueryParams (
+        params : QueryParams
+    ) : string {
+        let str = QueryParamUtils.stringifyQueryParamsOnly(params);
+        return str === '' ? '' : `?${str}`;
+    }
+
+    /**
+     * Stringify query params from an object presentation.
+     *
+     * Does not append the question mark.
+     *
+     * @param params
+     */
+    public static stringifyQueryParamsOnly (
         params : QueryParams
     ) : string {
         const a = new URLSearchParams();
@@ -25,8 +41,7 @@ export class QueryParamUtils {
                 a.append(key, value);
             }
         );
-        let str = a.toString();
-        return str === '' ? '' : `?${str}`;
+        return a.toString();
     }
 
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Heusala Group. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group. All rights reserved.
 // Copyright (c) 2020-2021. Sendanor. All rights reserved.
 
 import { startsWith } from "./functions/startsWith";
@@ -8,6 +8,14 @@ export class AuthorizationUtils {
 
     public static createBasicHeader (token: string) : string {
         return `Basic ${token}`;
+    }
+
+    public static createBasicHeaderTokenWithUserAndPassword (username: string, password: string) : string {
+        return btoa(unescape(`${encodeURIComponent(username)}:${encodeURIComponent(password)}`));
+    }
+
+    public static createBasicHeaderWithUserAndPassword (username: string, password: string) : string {
+        return AuthorizationUtils.createBasicHeader(AuthorizationUtils.createBasicHeaderTokenWithUserAndPassword(username, password));
     }
 
     public static parseBasicToken (header : string) : string | undefined {

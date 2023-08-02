@@ -3,8 +3,7 @@
 // We're using directly lodash here to overcome circular dependencies
 import { default as _isString } from "lodash/isString";
 import { default as _every } from "lodash/every";
-
-import { filter } from "../functions/filter";
+import { default as _filter } from "lodash/filter";
 
 /**
  * Returned from explain functions when the value is OK.
@@ -34,7 +33,7 @@ export function explain (
     if ( _every(values, (item: string): boolean => isExplainOk(item)) ) {
         return explainOk();
     }
-    return filter(values, (item: string): boolean => !isExplainOk(item) && !!item).join(', ');
+    return _filter(values, (item: string): boolean => !isExplainOk(item) && !!item).join(', ');
 }
 
 export function explainProperty (

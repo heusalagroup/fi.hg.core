@@ -2,7 +2,7 @@
 
 import { isObject } from "./Object";
 import { IS_DEVELOPMENT } from "../constants/environment";
-import filter from "lodash/filter";
+import { default as _filter } from "lodash/filter";
 import { explainOk } from "./explain";
 import { keys } from "../functions/keys";
 
@@ -14,7 +14,7 @@ import { keys } from "../functions/keys";
  * @nosideeffects
  */
 export function getOtherKeys (obj: any, acceptedKeys: readonly string[]): readonly string[] {
-    return filter(keys(obj), (key: string): boolean => !acceptedKeys.includes(key));
+    return _filter(keys(obj), (key: string): boolean => !acceptedKeys.includes(key));
 }
 
 /**
@@ -44,7 +44,7 @@ export function hasNoOtherKeysInDevelopment (value: any, array: readonly string[
 export function explainNoOtherKeys (value: any, array: readonly string[]): string {
     if ( !hasNoOtherKeys(value, array) ) {
         return `Value had extra properties: ${
-            filter(
+            _filter(
                 keys(value),
                 (item: string): boolean => !array.includes(item)
             )
@@ -57,7 +57,7 @@ export function explainNoOtherKeys (value: any, array: readonly string[]): strin
 export function explainNoOtherKeysInDevelopment (value: any, array: readonly string[]): string {
     if ( !hasNoOtherKeysInDevelopment(value, array) ) {
         return `Value had extra properties: ${
-            filter(
+            _filter(
                 keys(value),
                 (item: string): boolean => !array.includes(item)
             )
