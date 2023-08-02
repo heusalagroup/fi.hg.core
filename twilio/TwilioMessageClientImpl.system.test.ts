@@ -4,10 +4,12 @@ import { ProcessUtils } from "../ProcessUtils";
 
 ProcessUtils.initEnvFromDefaultFiles();
 
+// @ts-ignore
 import { HgNode } from "../../node/HgNode";
+// @ts-ignore
+import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { TwilioMessageClient } from "./TwilioMessageClient";
 import { TwilioMessageDTO } from "./dto/TwilioMessageDTO";
-import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClientImpl } from "../RequestClientImpl";
 import { Headers } from "../request/types/Headers";
 import { TwilioMessageClientImpl } from "./TwilioMessageClientImpl";
