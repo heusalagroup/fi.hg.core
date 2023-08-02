@@ -81,15 +81,19 @@ export class CommandArgumentUtils {
 
         let userLongArgs  : {[key: string]: string} = {};
         let userShortArgs : {[key: string]: string} = {};
+        let userEnvKeys   : {[key: string]: string} = {};
         forEach(
             keys(argConfigurationMap),
             (key: string) => {
-                const [, long, short] = argConfigurationMap[key];
+                const [, long, short, envKey] = argConfigurationMap[key];
                 if (long) {
                     userLongArgs[long]   = key;
                 }
                 if (short) {
                     userShortArgs[short] = key;
+                }
+                if (envKey) {
+                    userEnvKeys[envKey] = key;
                 }
             }
         );
@@ -206,6 +210,24 @@ export class CommandArgumentUtils {
             } // switch (argType)
 
         } while( myArgs.length >= 1 );
+
+        // Set ENV keys
+        forEach(
+            keys(userEnvKeys),
+            (envKey: string) => {
+                const key = userEnvKeys[envKey];
+                const [type, , , ] = argConfigurationMap[key];
+                if ( has(process.env, envKey) && !has(userArgs, key) ) {
+                    userArgs[key] = parseArgumentWithParam(
+                        envKey,
+                        type,
+                        key,
+                        process.env[envKey],
+                        parserMap
+                    );
+                }
+            }
+        );
 
         return {
             parseStatus: ParsedCommandArgumentStatus.OK,
