@@ -80,10 +80,10 @@ describe('TwilioMessageClientImpl', () => {
     beforeEach(() => {
         mockRequestClient = new MockRequestClient();
         twilioClient = TwilioMessageClientImpl.create(
-            mockRequestClient as unknown as RequestClient,
             accountSid,
             authToken,
             mockSender,
+            mockRequestClient as unknown as RequestClient,
         );
     });
 

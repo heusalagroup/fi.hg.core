@@ -4,11 +4,8 @@ import { ProcessUtils } from "../ProcessUtils";
 
 ProcessUtils.initEnvFromDefaultFiles();
 
-import HTTP from "http";
-import HTTPS from "https";
 import { HgNode } from "../../node/HgNode";
 import { TwilioMessageClient } from "./TwilioMessageClient";
-import { TwilioCreateMessageDTO } from "./dto/TwilioCreateMessageDTO";
 import { TwilioMessageDTO } from "./dto/TwilioMessageDTO";
 import { NodeRequestClient } from "../../node/requestClient/node/NodeRequestClient";
 import { RequestClientImpl } from "../RequestClientImpl";
@@ -46,6 +43,7 @@ const TO_TEST_NUMBER_VALID = '+358407099704';
  * @see https://www.twilio.com/docs/sms/api/message-resource#create-a-message-resource
  */
 describe('system', () => {
+
     (ACCOUNT_SID ? describe : describe.skip)('TwilioMessageClientImpl', () => {
         let client : TwilioMessageClient;
 
@@ -58,14 +56,7 @@ describe('system', () => {
         });
 
         beforeEach(async () => {
-            const requestClient = RequestClientImpl.create(
-                NodeRequestClient.create(
-                    HTTP,
-                    HTTPS,
-                )
-            );
             client = TwilioMessageClientImpl.create(
-                requestClient,
                 ACCOUNT_SID,
                 AUTH_TOKEN,
             );

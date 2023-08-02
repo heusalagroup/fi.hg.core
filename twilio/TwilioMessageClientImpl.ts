@@ -5,6 +5,7 @@ import { JsonAny, parseJson } from "../Json";
 import { LogService } from "../LogService";
 import { QueryParams, QueryParamUtils } from "../QueryParamUtils";
 import { RequestClient } from "../RequestClient";
+import { RequestClientImpl } from "../RequestClientImpl";
 import { LogLevel } from "../types/LogLevel";
 import { isString } from "../types/String";
 import { createTwilioCreateMessageDTO } from "./dto/TwilioCreateMessageDTO";
@@ -60,13 +61,13 @@ export class TwilioMessageClientImpl implements TwilioMessageClient {
      * @param sender
      */
     public static create (
-        client      : RequestClient,
         accountSid  : string,
         authToken   : string,
-        sender     ?: TwilioCreateMessageSender,
+        sender     ?: string | TwilioCreateMessageSender | undefined,
+        client     ?: RequestClient,
     ) : TwilioMessageClientImpl {
         return new TwilioMessageClientImpl(
-            client,
+            client ?? RequestClientImpl,
             accountSid,
             AuthorizationUtils.createBasicHeaderTokenWithUserAndPassword(accountSid, authToken),
             sender,
