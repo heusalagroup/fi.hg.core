@@ -8,7 +8,7 @@ import { HttpService } from "./HttpService";
 import { LogService } from "./LogService";
 import { createVerifySmsCodeDTO, VerifySmsCodeDTO } from "./auth/sms/types/VerifySmsCodeDTO";
 import { ReadonlyJsonAny } from "./Json";
-import { CallbackWithLanguage, AUTHENTICATE_SMS_URL, VERIFY_SMS_CODE_URL, VERIFY_SMS_TOKEN_URL } from "./auth/sms/sms-constants";
+import { CallbackWithLanguage, AUTHENTICATE_SMS_URL, VERIFY_SMS_CODE_URL, VERIFY_SMS_TOKEN_URL } from "./auth/sms/sms-auth-constants";
 import { LogLevel } from "./types/LogLevel";
 import { createVerifySmsTokenDTO, VerifySmsTokenDTO } from "./auth/sms/types/VerifySmsTokenDTO";
 import { createAuthenticateSmsDTO } from "./auth/sms/types/AuthenticateSmsDTO";
