@@ -1,5 +1,7 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { startsWith } from "./functions/startsWith";
+import { trim } from "./functions/trim";
 import { trimStart } from "./functions/trimStart";
 import { every } from "./functions/every";
 
@@ -26,6 +28,11 @@ export class PhoneNumberUtils {
             rest,
             (char: string) : boolean => '0123456789'.includes(char)
         );
+    }
+
+    public static normalizePhoneAddress (value: string, defaultPrefix: string) : string {
+        value = trim(value);
+        return startsWith(value, '+') ? value : `${defaultPrefix}${startsWith(value, '0') ? value.substring(1) : value}`
     }
 
 }
