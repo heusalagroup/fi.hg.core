@@ -1,4 +1,4 @@
-// Copyright (c) 2022. Heusala Group <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group <info@heusalagroup.fi>. All rights reserved.
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 export enum AuthEmailQueryParam {
@@ -42,6 +42,3 @@ export function parseAuthEmailQueryParam (value: any): AuthEmailQueryParam | und
     }
 
 }
-
-
-

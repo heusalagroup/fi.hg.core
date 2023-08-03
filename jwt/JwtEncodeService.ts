@@ -2,7 +2,7 @@
 
 import { JwtEngine } from "./JwtEngine";
 
-export interface JwtService {
+export interface JwtEncodeService {
 
     getDefaultAlgorithm (): string;
 

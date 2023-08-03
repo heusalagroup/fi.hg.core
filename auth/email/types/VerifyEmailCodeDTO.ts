@@ -44,5 +44,3 @@ export function parseVerifyEmailCodeDTO (value: any): VerifyEmailCodeDTO | undef
     if ( isVerifyEmailCodeDTO(value) ) return value;
     return undefined;
 }
-
-

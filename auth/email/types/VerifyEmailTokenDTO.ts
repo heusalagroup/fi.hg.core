@@ -36,5 +36,3 @@ export function parseVerifyEmailTokenDTO (value: any): VerifyEmailTokenDTO | und
     if ( isVerifyEmailTokenDTO(value) ) return value;
     return undefined;
 }
-
-

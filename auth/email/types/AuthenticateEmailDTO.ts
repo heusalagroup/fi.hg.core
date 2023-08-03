@@ -24,7 +24,7 @@ export function isAuthenticateEmailDTO (value: any): value is AuthenticateEmailD
 }
 
 export function stringifyAuthenticateEmailDTO (value: AuthenticateEmailDTO): string {
-    return `AuthenticateEmailDTO(${value})`;
+    return JSON.stringify(value);
 }
 
 export function parseAuthenticateEmailDTO (value: any): AuthenticateEmailDTO | undefined {

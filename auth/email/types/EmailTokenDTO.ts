@@ -41,7 +41,7 @@ export function isEmailTokenDTO (value: any): value is EmailTokenDTO {
 }
 
 export function stringifyEmailTokenDTO (value: EmailTokenDTO): string {
-    return `EmailTokenDTO(${value})`;
+    return JSON.stringify(value);
 }
 
 export function parseEmailTokenDTO (value: any): EmailTokenDTO | undefined {
