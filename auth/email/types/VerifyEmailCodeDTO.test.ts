@@ -51,4 +51,5 @@ describe('VerifyEmailCodeDTO', () => {
             expect(result).toBeUndefined();
         });
     });
+
 });

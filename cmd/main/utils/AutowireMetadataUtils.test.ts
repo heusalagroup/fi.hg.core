@@ -24,7 +24,7 @@ describe('AutowireMetadataUtils', () => {
     });
 
     describe('getMethodMetadata', () => {
-        it.only('should return the metadata of the method', () => {
+        it('should return the metadata of the method', () => {
             const expectedMetadata = createAutowireMetadata(['param1', 'param2']);
             (Reflect.getMetadata as any).mockReturnValue(expectedMetadata);
 

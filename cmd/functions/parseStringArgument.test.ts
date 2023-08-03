@@ -28,7 +28,7 @@ describe('parseStringArgument', () => {
         });
     });
 
-    describe.only('with null input', () => {
+    describe('with null input', () => {
         it('should throw TypeError', () => {
             const argName = '--foo';
             expect(() => parseStringArgument(argName, null as unknown as string)).toThrow(TypeError);
