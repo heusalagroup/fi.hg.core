@@ -8,7 +8,7 @@ import { HttpService } from "./HttpService";
 import { LogService } from "./LogService";
 import { createVerifyEmailCodeDTO, VerifyEmailCodeDTO } from "./auth/email/types/VerifyEmailCodeDTO";
 import { ReadonlyJsonAny } from "./Json";
-import { CallbackWithLanguage, AUTHENTICATE_EMAIL_URL, VERIFY_EMAIL_CODE_URL, VERIFY_EMAIL_TOKEN_URL } from "./auth/email/constants";
+import { CallbackWithLanguage, AUTHENTICATE_EMAIL_URL, VERIFY_EMAIL_CODE_URL, VERIFY_EMAIL_TOKEN_URL } from "./auth/email/email-auth-constants";
 import { LogLevel } from "./types/LogLevel";
 import { createVerifyEmailTokenDTO, VerifyEmailTokenDTO } from "./auth/email/types/VerifyEmailTokenDTO";
 import { createAuthenticateEmailDTO } from "./auth/email/types/AuthenticateEmailDTO";
