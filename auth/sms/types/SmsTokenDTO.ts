@@ -10,13 +10,13 @@ import { explainNot, explainOk, explainOr } from "../../../types/explain";
 
 export interface SmsTokenDTO {
     readonly token     : string;
-    readonly sms     : string;
+    readonly sms       : string;
     readonly verified ?: boolean | undefined;
 }
 
 export function createSmsTokenDTO (
     token     : string,
-    sms     : string,
+    sms       : string,
     verified ?: boolean | undefined,
 ) {
     return {

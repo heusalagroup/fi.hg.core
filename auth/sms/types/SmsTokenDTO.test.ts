@@ -25,7 +25,7 @@ describe('SmsTokenDTO', () => {
         });
 
         it('should return false when the value is not a valid SmsTokenDTO', () => {
-            const result = isSmsTokenDTO({token: 123, email: '+3587099704'});
+            const result = isSmsTokenDTO({token: 123, sms: '+3587099704'});
             expect(result).toBe(false);
         });
 
@@ -46,7 +46,7 @@ describe('SmsTokenDTO', () => {
         });
 
         it('should return undefined when given an invalid object', () => {
-            const result = parseSmsTokenDTO({token: 123, email: '+3587099704'});
+            const result = parseSmsTokenDTO({token: 123, sms: '+3587099704'});
             expect(result).toBeUndefined();
         });
 
@@ -63,7 +63,7 @@ describe('SmsTokenDTO', () => {
         });
 
         it('should return false when the value is not a valid SmsTokenDTO and not undefined', () => {
-            const result = isSmsTokenDTOOrUndefined({token: 123, email: '+3587099704'});
+            const result = isSmsTokenDTOOrUndefined({token: 123, sms: '+3587099704'});
             expect(result).toBe(false);
         });
 
@@ -80,7 +80,7 @@ describe('SmsTokenDTO', () => {
         });
 
         it('should return explanation when the value is not a valid SmsTokenDTO and not undefined', () => {
-            const result = explainSmsTokenDTOOrUndefined({token: 123, email: '+3587099704'});
+            const result = explainSmsTokenDTOOrUndefined({token: 123, sms: '+3587099704'});
             expect(result).toBe('not SmsTokenDTO or undefined');
         });
 
