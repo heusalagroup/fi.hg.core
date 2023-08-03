@@ -25,6 +25,12 @@ export interface SmsAuthController {
     setDefaultLanguage (value: Language) : void;
 
     /**
+     * Set default phone prefix, e.g. `+358`
+     * @param value
+     */
+    setDefaultPhonePrefix (value: string) : void;
+
+    /**
      * Handles POST HTTP request to initiate an sms address authentication by
      * sending one time code to the user as a sms message.
      *
