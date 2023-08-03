@@ -3,7 +3,6 @@
 import { explainNot, explainOk, explainOr } from "./explain";
 import { trim } from "../functions/trim";
 import { default as _isSafeInteger } from "lodash/isSafeInteger";
-import { isString } from "./String";
 import { isUndefined } from "./undefined";
 import { isNull } from "./Null";
 
