@@ -60,6 +60,7 @@ export interface EmailAuthController {
 
     /**
      * Can be used internally in APIs to validate and return the subject of this token.
+     * @FIXME: This should be in a service that's not specific to email addresses
      */
     verifyTokenAndReturnSubject (
         token: string

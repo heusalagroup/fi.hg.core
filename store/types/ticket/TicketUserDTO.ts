@@ -7,22 +7,24 @@ import { explainString, isString } from "../../../types/String";
 import { explainBoolean, isBoolean } from "../../../types/Boolean";
 
 export interface TicketUserDTO {
-    readonly ticketUserId  : string;
+    readonly ticketUserId    : string;
     readonly updated         : string;
     readonly created         : string;
     readonly name            : string;
     readonly email           : string;
+    readonly tel             : string;
     readonly onHold          : boolean;
     readonly dataJson        : string;
     readonly isTerminated    : boolean;
 }
 
 export function createTicketUserDTO (
-    ticketUserId  : string,
+    ticketUserId    : string,
     updated         : string,
     created         : string,
     name            : string,
     email           : string,
+    tel             : string,
     onHold          : boolean,
     dataJson        : string,
     isTerminated    : boolean,
@@ -33,6 +35,7 @@ export function createTicketUserDTO (
         created,
         name,
         email,
+        tel,
         onHold,
         dataJson,
         isTerminated
@@ -48,6 +51,7 @@ export function isTicketUserDTO (value: unknown) : value is TicketUserDTO {
             'created',
             'name',
             'email',
+            'tel',
             'onHold',
             'dataJson',
             'isTerminated'
@@ -57,6 +61,7 @@ export function isTicketUserDTO (value: unknown) : value is TicketUserDTO {
         && isString(value?.created)
         && isString(value?.name)
         && isString(value?.email)
+        && isString(value?.tel)
         && isBoolean(value?.onHold)
         && isString(value?.dataJson)
         && isBoolean(value?.isTerminated)
@@ -73,6 +78,7 @@ export function explainTicketUserDTO (value: any) : string {
                 'created',
                 'name',
                 'email',
+                'tel',
                 'onHold',
                 'dataJson',
                 'isTerminated'
@@ -82,6 +88,7 @@ export function explainTicketUserDTO (value: any) : string {
             , explainProperty("created", explainString(value?.created))
             , explainProperty("name", explainString(value?.name))
             , explainProperty("email", explainString(value?.email))
+            , explainProperty("tel", explainString(value?.tel))
             , explainProperty("onHold", explainBoolean(value?.onHold))
             , explainProperty("dataJson", explainString(value?.dataJson))
             , explainProperty("isTerminated", explainBoolean(value?.isTerminated))

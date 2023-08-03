@@ -9,6 +9,7 @@ import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../../types/
 export interface NewTicketUserDTO {
     readonly name            ?: string;
     readonly email           ?: string;
+    readonly tel             ?: string;
     readonly onHold          ?: boolean;
     readonly dataJson        ?: string;
     readonly isTerminated    ?: boolean;
@@ -17,6 +18,7 @@ export interface NewTicketUserDTO {
 export function createNewTicketUserDTO (
     name            ?: string | undefined,
     email           ?: string | undefined,
+    tel             ?: string | undefined,
     onHold          ?: boolean | undefined,
     dataJson        ?: string | undefined,
     isTerminated    ?: boolean | undefined,
@@ -24,6 +26,7 @@ export function createNewTicketUserDTO (
     return {
         name,
         email,
+        tel,
         onHold,
         dataJson,
         isTerminated
@@ -36,12 +39,14 @@ export function isNewTicketUserDTO (value: unknown) : value is NewTicketUserDTO 
         && hasNoOtherKeysInDevelopment(value, [
             'name',
             'email',
+            'tel',
             'onHold',
             'dataJson',
             'isTerminated'
         ])
         && isStringOrUndefined(value?.name)
         && isStringOrUndefined(value?.email)
+        && isStringOrUndefined(value?.tel)
         && isBooleanOrUndefined(value?.onHold)
         && isStringOrUndefined(value?.dataJson)
         && isBooleanOrUndefined(value?.isTerminated)
@@ -55,12 +60,14 @@ export function explainNewTicketUserDTO (value: any) : string {
             explainNoOtherKeysInDevelopment(value, [
                 'name',
                 'email',
+                'tel',
                 'onHold',
                 'dataJson',
                 'isTerminated'
             ])
             , explainProperty("name", explainStringOrUndefined(value?.name))
             , explainProperty("email", explainStringOrUndefined(value?.email))
+            , explainProperty("tel", explainStringOrUndefined(value?.tel))
             , explainProperty("onHold", explainBooleanOrUndefined(value?.onHold))
             , explainProperty("dataJson", explainStringOrUndefined(value?.dataJson))
             , explainProperty("isTerminated", explainBooleanOrUndefined(value?.isTerminated))
