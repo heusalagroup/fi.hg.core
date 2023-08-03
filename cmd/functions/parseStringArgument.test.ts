@@ -11,20 +11,25 @@ describe('parseStringArgument', () => {
             const result = parseStringArgument(argName, value);
             expect(result).toBe(value);
         });
+        it('should return the same integer string', () => {
+            const argName = '--foo=123';
+            const value = '123';
+            const result = parseStringArgument(argName, value);
+            expect(result).toBe(value);
+        });
+        it('should return the same number as string', () => {
+            const argName = '--foo=123';
+            const value = 123;
+            // @ts-ignore
+            const result = parseStringArgument(argName, value);
+            expect(result).toBe("123");
+        });
     });
 
     describe('with undefined input', () => {
         it('should throw TypeError', () => {
             const argName = '--foo';
             expect(() => parseStringArgument(argName, undefined as unknown as string)).toThrow(TypeError);
-        });
-    });
-
-    describe('with non-string input', () => {
-        it('should throw TypeError', () => {
-            const argName = '--foo=123';
-            const value = 123;
-            expect(() => parseStringArgument(argName, value as unknown as string)).toThrow(TypeError);
         });
     });
 
