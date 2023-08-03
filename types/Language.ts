@@ -1,3 +1,4 @@
+// Copyright (c) 2022-2023. Heusala Group <info@hg.fi>. All rights reserved.
 // Copyright (c) 2021. Sendanor <info@sendanor.fi>. All rights reserved.
 
 export enum Language {
@@ -13,22 +14,18 @@ export function isLanguage (value: any): value is Language {
 
         default:
             return false;
-
     }
 }
 
 export function stringifyLanguage (value: Language): string {
     switch (value) {
-
         case Language.FINNISH : return 'fi';
         case Language.ENGLISH : return 'en';
-
     }
     throw new TypeError(`Unsupported Language value: ${value}`);
 }
 
 export function parseLanguage (value: any): Language | undefined {
-
     switch (`${value}`.toUpperCase()) {
 
         case 'FI' :
@@ -41,7 +38,5 @@ export function parseLanguage (value: any): Language | undefined {
 
         default    :
             return undefined;
-
     }
-
 }

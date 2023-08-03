@@ -54,7 +54,7 @@ export function isJwtPayload (value: any): value is JwtPayload {
 }
 
 export function stringifyJwtPayload (value: JwtPayload): string {
-    return `JwtPayload(${value})`;
+    return JSON.stringify(value);
 }
 
 export function parseJwtPayload (value: any): JwtPayload | undefined {
