@@ -8,7 +8,7 @@
   "sms.m.common.authCodeIs"       : "Koodi: ",
   "sms.m.common.authDisclaimer"   : "Jos et pyytänyt koodia itse, älä tee mitään.",
   "sms.m.authCode.subject"        : "Vahvista osoitteesi palveluumme",
-  "sms.m.authCode.headerText"     : "$t(m.common.headerText)",
-  "sms.m.authCode.bodyText"       : "$t(m.common.authCodeIs) {{CODE}} $t(m.common.authDisclaimer)",
-  "sms.m.authCode.footerText"     : "$t(m.common.footerText)"
+  "sms.m.authCode.headerText"     : "$t(sms.m.common.headerText)",
+  "sms.m.authCode.bodyText"       : "$t(sms.m.common.authCodeIs) {{CODE}} $t(sms.m.common.authDisclaimer)",
+  "sms.m.authCode.footerText"     : "$t(sms.m.common.footerText)"
 }
