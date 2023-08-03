@@ -2,22 +2,22 @@
 
 import { Disposable } from "../types/Disposable";
 
-export interface EmailVerificationService extends Disposable {
+export interface SmsVerificationService extends Disposable {
 
     destroy (): void;
 
     verifyCode (
-        email : string,
+        sms : string,
         code  : string
     ) : boolean;
 
     removeVerificationCode (
-        email : string,
+        sms : string,
         code  : string
     ): void;
 
     createVerificationCode (
-        email: string
+        sms: string
     ) : string;
 
 }
