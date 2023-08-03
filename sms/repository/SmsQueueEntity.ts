@@ -10,7 +10,7 @@ import { TemporalType } from "../../data/types/TemporalType";
 import { UpdateTimestamp } from "../../data/UpdateTimestamp";
 import { EntityUtils } from "../../data/utils/EntityUtils";
 import { LogService } from "../../LogService";
-import { NewSmsQueueDTO } from "../dto/NewSmsQueueDTO";
+import type { NewSmsQueueDTO } from "../dto/NewSmsQueueDTO";
 import { createSmsQueueDTO, explainSmsQueueDTO, isSmsQueueDTO, SmsQueueDTO } from "../dto/SmsQueueDTO";
 
 const LOG = LogService.createLogger('SmsQueueEntity');
