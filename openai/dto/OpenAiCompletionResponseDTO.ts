@@ -8,7 +8,7 @@ import {
 import { OpenAiModel } from "../types/OpenAiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
-import {explainString, explainStringOrUndefined, isString, isStringOrUndefined} from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 import { startsWith } from "../../functions/startsWith";
