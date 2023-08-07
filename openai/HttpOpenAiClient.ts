@@ -41,6 +41,12 @@ import { OpenAiModel } from "./types/OpenAiModel";
 import { OpenAiClient } from "./OpenAiClient";
 import { explainOpenAiEditResponseDTO, isOpenAiEditResponseDTO, OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
+import {createOpenAiChatCompletionRequestDTO} from "./dto/OpenAiChatCompletionRequestDTO";
+import {
+    explainOpenAiChatCompletionResponseDTO,
+    isOpenAiChatCompletionResponseDTO, OpenAiChatCompletionResponseDTO
+} from "./dto/OpenAiChatCompletionResponseDTO";
+import {OpenAiChatCompletionMessageDTO} from "./dto/OpenAiChatCompletionMessageDTO";
 
 const LOG = LogService.createLogger('HttpOpenAiClient');
 
@@ -72,6 +78,14 @@ export const OPENAI_API_POST_EDITS_PATH = '/v1/edits';
  * The path for the OpenAI API's `GET /v1/completions` endpoint.
  */
 export const OPENAI_API_POST_COMPLETIONS_PATH = '/v1/completions';
+
+/**
+ * @constant {string}
+ * @default '/v1/chat/completions'
+ *
+ * The path for the OpenAI API's `GET /v1/chat/completions` endpoint.
+ */
+export const OPENAI_API_POST_CHAT_COMPLETIONS_PATH = '/v1/chat/completions';
 
 /**
  * A client for interacting with the OpenAI API.
@@ -245,6 +259,39 @@ export class HttpOpenAiClient implements OpenAiClient {
             throw new TypeError(`Result was not OpenAiCompletionResponseDTO: ` + explainOpenAiCompletionResponseDTO(result));
         }
         LOG.debug(`getCompletion: result = `, result);
+        return result;
+    }
+
+    public async getChatCompletion (
+        messages           : OpenAiChatCompletionMessageDTO,
+        model             ?: OpenAiModel | string,
+        max_tokens        ?: number,
+        temperature       ?: number,
+        top_p             ?: number,
+        frequency_penalty ?: number,
+        presence_penalty  ?: number
+    ) : Promise<OpenAiChatCompletionResponseDTO> {
+        const body = createOpenAiChatCompletionRequestDTO(
+            [messages],
+            model,
+            max_tokens,
+            temperature,
+            top_p,
+            frequency_penalty,
+            presence_penalty
+        );
+        const headers = HttpOpenAiClient._getHeaders(this._apiKey);
+        LOG.debug(`getChatCompletion: body = `, body);
+        const result = await HttpService.postJson(
+            `${this._url}${OPENAI_API_POST_CHAT_COMPLETIONS_PATH}`,
+            body as unknown as ReadonlyJsonAny,
+            headers
+        );
+        if (!isOpenAiChatCompletionResponseDTO(result)) {
+            LOG.error(`getChatCompletion: result = `, result);
+            throw new TypeError(`Result was not OpenAiChatCompletionResponseDTO: ` + explainOpenAiChatCompletionResponseDTO(result));
+        }
+        LOG.debug(`getChatCompletion: result = `, result);
         return result;
     }
 

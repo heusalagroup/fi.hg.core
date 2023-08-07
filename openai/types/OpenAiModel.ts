@@ -150,7 +150,30 @@ export enum OpenAiModel {
      * Remarks:
      * - This model is currently in limited beta.
      */
-    CODEX = 'code-davinci-002'
+    CODEX = 'code-davinci-002',
+
+    /**
+     * More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat.
+     * Will be updated with our latest model iteration 2 weeks after it is released.
+     */
+    GPT_4 = "gpt-4",
+
+    /**
+     * Same capabilities as the base gpt-4 mode but with 4x the context length.
+     * Will be updated with our latest model iteration.
+     */
+    GPT_4_32K = "gpt-4-32k",
+
+    /**
+     * Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003.
+     * Will be updated with our latest model iteration 2 weeks after it is released.
+     */
+    GPT_3_5_TURBO = "gpt-3.5-turbo",
+
+    /**
+     * Same capabilities as the standard gpt-3.5-turbo model but with 4 times the context.
+     */
+    GPT_3_5_TURBO_16K = "gpt-3.5-turbo-16k",
 
 }
 
@@ -170,6 +193,10 @@ export function isOpenAiModel (value: unknown) : value is OpenAiModel {
         case OpenAiModel.ADA:
         case OpenAiModel.CONTENT_FILTER:
         case OpenAiModel.CODEX:
+        case OpenAiModel.GPT_4:
+        case OpenAiModel.GPT_4_32K:
+        case OpenAiModel.GPT_3_5_TURBO:
+        case OpenAiModel.GPT_3_5_TURBO_16K:
             return true;
         default:
             return false;
@@ -195,14 +222,18 @@ export function explainOpenAiModel (value : unknown) : string {
  */
 export function stringifyOpenAiModel (value : OpenAiModel) : string {
     switch (value) {
-        case OpenAiModel.DAVINCI           : return 'text-davinci-003';
-        case OpenAiModel.DAVINCI_EDIT_TEXT : return 'text-davinci-edit-001';
-        case OpenAiModel.DAVINCI_EDIT_CODE : return 'code-davinci-edit-001';
-        case OpenAiModel.CURIE          : return 'text-curie-001';
-        case OpenAiModel.BABBAGE        : return 'text-babbage-001';
-        case OpenAiModel.ADA            : return 'text-ada-001';
-        case OpenAiModel.CONTENT_FILTER : return 'content-filter-alpha';
-        case OpenAiModel.CODEX          : return 'code-davinci-002';
+        case OpenAiModel.DAVINCI                : return 'text-davinci-003';
+        case OpenAiModel.DAVINCI_EDIT_TEXT      : return 'text-davinci-edit-001';
+        case OpenAiModel.DAVINCI_EDIT_CODE      : return 'code-davinci-edit-001';
+        case OpenAiModel.CURIE                  : return 'text-curie-001';
+        case OpenAiModel.BABBAGE                : return 'text-babbage-001';
+        case OpenAiModel.ADA                    : return 'text-ada-001';
+        case OpenAiModel.CONTENT_FILTER         : return 'content-filter-alpha';
+        case OpenAiModel.CODEX                  : return 'code-davinci-002';
+        case OpenAiModel.GPT_4                  : return 'gpt-4';
+        case OpenAiModel.GPT_4_32K              : return 'gpt-4-32k';
+        case OpenAiModel.GPT_3_5_TURBO          : return 'gpt-3.5-turbo';
+        case OpenAiModel.GPT_3_5_TURBO_16K      : return 'gpt-3.5-turbo-16k';
     }
     throw new TypeError(`Unsupported OpenApiModel value: ${value}`)
 }
@@ -252,12 +283,26 @@ export function parseOpenAiModel (value: any) : OpenAiModel | undefined {
         case 'content_filter_alpha'   :
         case 'content-filter-alpha'   : return OpenAiModel.CONTENT_FILTER;
 
-        case 'codex'            :
-        case 'code_davinci_002'            :
-        case 'code-davinci-002'            : return OpenAiModel.CODEX;
+        case 'codex'                        :
+        case 'code_davinci_002'             :
+        case 'code-davinci-002'             : return OpenAiModel.CODEX;
 
-        default                 : return undefined;
+        case 'gpt4'                         :
+        case 'gpt-4'                        :
+        case 'gpt_4'                        : return OpenAiModel.GPT_4;
+
+        case 'gtp4-32k'                     :
+        case 'gpt-4-32k'                    :
+        case 'gpt_4_32k'                    : return OpenAiModel.GPT_4_32K;
+
+        case 'gpt3.5'                       :
+        case 'gpt3.5-turbo'                 :
+        case 'gpt-3.5-turbo'                : return OpenAiModel.GPT_3_5_TURBO;
+
+        case 'gpt3.5-16k'                   :
+        case 'gpt3.5-turbo-16k'             :
+        case 'gpt-3.5-turbo-16k'            : return OpenAiModel.GPT_3_5_TURBO_16K;
+
+        default                             : return undefined;
     }
 }
-
-
