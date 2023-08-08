@@ -2,18 +2,18 @@
 
 import {
     OpenAiCompletionResponseChoice
-} from "./OpenAiCompletionResponseChoice";
-import { OpenAiModel } from "../types/OpenAiModel";
-import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
-import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
-import { explain, explainProperty } from "../../types/explain";
-import { explainArrayOf, isArrayOf } from "../../types/Array";
-import { startsWith } from "../../functions/startsWith";
-import { parseJson } from "../../Json";
-import { explainOpenAiCompletionResponseUsage, isOpenAiCompletionResponseUsage, OpenAiCompletionResponseUsage } from "./OpenAiCompletionResponseUsage";
-import { explainNumber, isNumber } from "../../types/Number";
-import { OpenAiError } from "./OpenAiError";
+} from "../OpenAiCompletionResponseChoice";
+import { OpenAiModel } from "../../types/OpenAiModel";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
+import { explain, explainProperty } from "../../../types/explain";
+import { explainArrayOf, isArrayOf } from "../../../types/Array";
+import { startsWith } from "../../../functions/startsWith";
+import { parseJson } from "../../../Json";
+import { explainOpenAiCompletionResponseUsage, isOpenAiCompletionResponseUsage, OpenAiCompletionResponseUsage } from "../OpenAiCompletionResponseUsage";
+import { explainNumber, isNumber } from "../../../types/Number";
+import { OpenAiError } from "../OpenAiError";
 import {
     explainOpenAiChatCompletionResponseChoice,
     isOpenAiChatCompletionResponseChoice,

@@ -1,16 +1,16 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 import {
     explainNumber,
     isNumber,
-} from "../../types/Number";
-import { explainString, isString } from "../../types/String";
-import { explain, explainOk, explainProperty } from "../../types/explain";
-import { startsWith } from "../../functions/startsWith";
-import { parseJson } from "../../Json";
-import { isOpenAiError, OpenAiError } from "./OpenAiError";
+} from "../../../types/Number";
+import { explainString, isString } from "../../../types/String";
+import { explain, explainOk, explainProperty } from "../../../types/explain";
+import { startsWith } from "../../../functions/startsWith";
+import { parseJson } from "../../../Json";
+import { isOpenAiError, OpenAiError } from "../OpenAiError";
 import {
     explainOpenAiChatCompletionMessageDTO,
     isOpenAiChatCompletionMessageDTO,
