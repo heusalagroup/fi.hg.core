@@ -3,8 +3,8 @@
 import { OpenAiModel } from "./types/OpenAiModel";
 import { OpenAiCompletionResponseDTO } from "./dto/OpenAiCompletionResponseDTO";
 import { OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
-import {OpenAiChatCompletionRequestDTO} from "./dto/OpenAiChatCompletionRequestDTO";
-import {OpenAiChatCompletionMessageDTO} from "./dto/OpenAiChatCompletionMessageDTO";
+import {OpenAiChatCompletionRequestDTO} from "./dto/chatDTO/OpenAiChatCompletionRequestDTO";
+import {OpenAiChatCompletionMessage} from "./dto/chatDTO/OpenAiChatCompletionMessage";
 
 /**
  * A client for interacting with the OpenAI API.
@@ -113,7 +113,7 @@ export interface OpenAiClient {
      *                       unexpected format.
      */
     getChatCompletion (
-        messages           : OpenAiChatCompletionMessageDTO,
+        messages           : OpenAiChatCompletionMessage,
         model             ?: OpenAiModel | string | undefined,
         max_tokens        ?: number | undefined,
         temperature       ?: number | undefined,

@@ -18,7 +18,7 @@ import {
     explainOpenAiChatCompletionResponseChoice,
     isOpenAiChatCompletionResponseChoice,
     OpenAiChatCompletionResponseChoice
-} from "./OpenAiChatCompletionResponseChoiceDTO";
+} from "./OpenAiChatCompletionResponseChoice";
 
 /**
  * @typedef {Object} OpenAiChatCompletionResponseDTO

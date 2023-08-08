@@ -11,10 +11,10 @@ import {isReadonlyJsonObject, parseJson, ReadonlyJsonObject} from "../../../Json
 import { isUndefined } from "../../../types/undefined";
 import {explainArrayOf, isArrayOf} from "../../../types/Array";
 import {
-    explainOpenAiChatCompletionMessageDTO,
-    isOpenAiChatCompletionMessageDTO,
-    OpenAiChatCompletionMessageDTO
-} from "./OpenAiChatCompletionMessageDTO";
+    explainOpenAiChatCompletionMessage,
+    isOpenAiChatCompletionMessage,
+    OpenAiChatCompletionMessage
+} from "./OpenAiChatCompletionMessage";
 import {
     explainOpenAiChatCompletionFunctions,
     isOpenAiChatCompletionFunctions,
@@ -43,7 +43,7 @@ export interface OpenAiChatCompletionRequestDTO {
      *
      * @see https://beta.openai.com/docs/api-reference/completions/create#completions/create-messages
      */
-    readonly messages               ?: OpenAiChatCompletionMessageDTO[];
+    readonly messages               ?: OpenAiChatCompletionMessage[];
 
     /**
      * A list of functions the model may generate JSON inputs for.
@@ -159,7 +159,7 @@ export interface OpenAiChatCompletionRequestDTO {
  * @returns {OpenAiChatCompletionRequestDTO} An `OpenAiChatCompletionRequestDTO` object with the given properties.
  */
 export function createOpenAiChatCompletionRequestDTO (
-    messages              : OpenAiChatCompletionMessageDTO[],
+    messages              : OpenAiChatCompletionMessage[],
     model                ?: OpenAiModel | string,
     functions            ?: OpenAiChatCompletionFunctions[],
     max_tokens           ?: number,
@@ -217,7 +217,7 @@ export function isOpenAiChatCompletionRequestDTO (value: any) : value is OpenAiC
             'logit_bias',
             'user',
         ])
-        && isArrayOf<OpenAiChatCompletionMessageDTO>(value.messages, isOpenAiChatCompletionMessageDTO)
+        && isArrayOf<OpenAiChatCompletionMessage>(value.messages, isOpenAiChatCompletionMessage)
         && isOpenAiModel(value?.model)
         && isArrayOf<OpenAiChatCompletionFunctions>(value?.functions, isOpenAiChatCompletionFunctions)
         && isNumberOrUndefined(value?.max_tokens)
@@ -260,7 +260,7 @@ export function explainOpenAiChatCompletionRequestDTO (value: unknown) : string 
                 'logit_bias',
                 'user',
             ])
-            , explainProperty("messages", explainArrayOf<OpenAiChatCompletionMessageDTO>("OpenAiChatCompletionMessageDTO", explainOpenAiChatCompletionMessageDTO, value?.messages, isOpenAiChatCompletionMessageDTO))
+            , explainProperty("messages", explainArrayOf<OpenAiChatCompletionMessage>("OpenAiChatCompletionMessageDTO", explainOpenAiChatCompletionMessage, value?.messages, isOpenAiChatCompletionMessage))
             , explainProperty("model", explainArrayOf<OpenAiModel>("OpenAiModel", explainOpenAiModel, value?.model, isOpenAiModel))
             , explainProperty("functions", explainArrayOf<OpenAiChatCompletionFunctions>("OpenAiChatCompletionFunctions", explainOpenAiChatCompletionFunctions, value?.functions, isOpenAiChatCompletionFunctions))
             , explainProperty("max_tokens", explainNumberOrUndefined(value?.max_tokens))

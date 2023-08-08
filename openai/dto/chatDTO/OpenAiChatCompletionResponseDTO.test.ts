@@ -7,8 +7,8 @@ import {
     OpenAiChatCompletionResponseDTO
 } from "./OpenAiChatCompletionResponseDTO";
 import {OpenAiModel} from "../../types/OpenAiModel";
-import {createOpenAiChatCompletionResponseChoice} from "./OpenAiChatCompletionResponseChoiceDTO";
-import {createOpenAiChatCompletionMessageDTO} from "./OpenAiChatCompletionMessageDTO";
+import {createOpenAiChatCompletionResponseChoice} from "./OpenAiChatCompletionResponseChoice";
+import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 import {createOpenAiCompletionResponseUsage} from "../OpenAiCompletionResponseUsage";
 
@@ -24,7 +24,7 @@ xdescribe("OpenAiChatCompletionResponseDTO", () => {
                 OpenAiModel.GPT_3_5_TURBO_16K,
                 [createOpenAiChatCompletionResponseChoice(
                     1,
-                    createOpenAiChatCompletionMessageDTO(
+                    createOpenAiChatCompletionMessage(
                         OpenAiUserType.USER,
                         "Hey, could you describe apple to me?"
                     ),

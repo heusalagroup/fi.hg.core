@@ -41,12 +41,12 @@ import { OpenAiModel } from "./types/OpenAiModel";
 import { OpenAiClient } from "./OpenAiClient";
 import { explainOpenAiEditResponseDTO, isOpenAiEditResponseDTO, OpenAiEditResponseDTO } from "./dto/OpenAiEditResponseDTO";
 import { createOpenAiEditRequestDTO } from "./dto/OpenAiEditRequestDTO";
-import {createOpenAiChatCompletionRequestDTO} from "./dto/OpenAiChatCompletionRequestDTO";
+import {createOpenAiChatCompletionRequestDTO} from "./dto/chatDTO/OpenAiChatCompletionRequestDTO";
 import {
     explainOpenAiChatCompletionResponseDTO,
     isOpenAiChatCompletionResponseDTO, OpenAiChatCompletionResponseDTO
-} from "./dto/OpenAiChatCompletionResponseDTO";
-import {OpenAiChatCompletionMessageDTO} from "./dto/OpenAiChatCompletionMessageDTO";
+} from "./dto/chatDTO/OpenAiChatCompletionResponseDTO";
+import {OpenAiChatCompletionMessage} from "./dto/chatDTO/OpenAiChatCompletionMessage";
 
 const LOG = LogService.createLogger('HttpOpenAiClient');
 
@@ -263,7 +263,7 @@ export class HttpOpenAiClient implements OpenAiClient {
     }
 
     public async getChatCompletion (
-        messages           : OpenAiChatCompletionMessageDTO,
+        messages           : OpenAiChatCompletionMessage,
         model             ?: OpenAiModel | string,
         max_tokens        ?: number,
         temperature       ?: number,
@@ -274,6 +274,7 @@ export class HttpOpenAiClient implements OpenAiClient {
         const body = createOpenAiChatCompletionRequestDTO(
             [messages],
             model,
+            undefined,
             max_tokens,
             temperature,
             top_p,

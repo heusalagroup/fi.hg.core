@@ -5,11 +5,11 @@ import {
     explainOpenAiChatCompletionResponseChoice,
     isOpenAiChatCompletionResponseChoice,
     OpenAiChatCompletionResponseChoice
-} from "./OpenAiChatCompletionResponseChoiceDTO";
-import {createOpenAiChatCompletionMessageDTO} from "./OpenAiChatCompletionMessageDTO";
+} from "./OpenAiChatCompletionResponseChoice";
+import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 
-xdescribe("OpenAiChatCompletionResponseChoice", () => {
+describe("OpenAiChatCompletionResponseChoice", () => {
     let validItem = {
         "finish_reason": "stop",
         "index": 1,
@@ -23,7 +23,7 @@ xdescribe("OpenAiChatCompletionResponseChoice", () => {
         it("creates valid OpenAiChatCompletionResponseChoice objects", () => {
             const item = createOpenAiChatCompletionResponseChoice(
                 1,
-                createOpenAiChatCompletionMessageDTO(
+                createOpenAiChatCompletionMessage(
                     OpenAiUserType.USER,
                     "tell me a lie",
                     "tester",

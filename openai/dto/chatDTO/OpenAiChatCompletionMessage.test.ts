@@ -1,19 +1,19 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
-    createOpenAiChatCompletionMessageDTO,
-    explainOpenAiChatCompletionMessageDTO,
-    isOpenAiChatCompletionMessageDTO,
-    OpenAiChatCompletionMessageDTO
-} from "./OpenAiChatCompletionMessageDTO";
+    createOpenAiChatCompletionMessage,
+    explainOpenAiChatCompletionMessage,
+    isOpenAiChatCompletionMessage,
+    OpenAiChatCompletionMessage
+} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 
-xdescribe("OpenAiChatCompletionMessageDTO", () => {
+describe("OpenAiChatCompletionMessageDTO", () => {
 
     describe("createOpenAiChatCompletionMessageDTO", () => {
 
         it("creates valid OpenAiChatCompletionMessageDTO objects", () => {
-            const message = createOpenAiChatCompletionMessageDTO(
+            const message = createOpenAiChatCompletionMessage(
                 OpenAiUserType.USER,
                 "what is a banana?"
             );
@@ -28,7 +28,7 @@ xdescribe("OpenAiChatCompletionMessageDTO", () => {
         it("returns true for valid OpenAiChatCompletionMessageDTO objects", () => {
             const message = {"content": "what is a banana?", "role": "user"};
 
-            expect(isOpenAiChatCompletionMessageDTO(message)).toBeTruthy();
+            expect(isOpenAiChatCompletionMessage(message)).toBeTruthy();
         });
 
     });
@@ -38,16 +38,15 @@ xdescribe("OpenAiChatCompletionMessageDTO", () => {
         it("returns true if value is OpenAiChatCompletionMessageDTO", () => {
             const validMessage = {"role": "user", "content": "what is a banana?"};
 
-            expect(explainOpenAiChatCompletionMessageDTO(validMessage)).toBeTruthy();
+            expect(explainOpenAiChatCompletionMessage(validMessage)).toBeTruthy();
 
         });
 
-        it("returns a human-readable string explaining why the value is not a regular object", () => {
+        it("returns a human-readable string explaining why the value is not a OpenAiChatCompletionMessageDTO", () => {
             const inValidMessage = {"content": "what is a banana?", "role": "tester"};
 
-            expect(explainOpenAiChatCompletionMessageDTO(inValidMessage)).toBe(
-                "property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values user, system, assistant, property \"function_call\" not regular object, Value had extra properties: , " +
-                "property \"name\" not string, property \"args\" not string"
+            expect(explainOpenAiChatCompletionMessage(inValidMessage)).toBe(
+                "property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values user, system, assistant"
             );
         });
 

@@ -6,7 +6,7 @@ import {
     isOpenAiChatCompletionRequestDTO,
     OpenAiChatCompletionRequestDTO
 } from "./OpenAiChatCompletionRequestDTO";
-import {createOpenAiChatCompletionMessageDTO} from "./OpenAiChatCompletionMessageDTO";
+import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 import {OpenAiModel} from "../../types/OpenAiModel";
 import {createOpenAiChatCompletionFunctions} from "./OpenAiChatCompletionFunctions";
@@ -17,7 +17,7 @@ xdescribe("OpenAiChatCompletionRequestDTO", () => {
 
         it("creates valid OpenAiChatCompletionRequestDTO objects", () => {
             const item = createOpenAiChatCompletionRequestDTO(
-                [createOpenAiChatCompletionMessageDTO(
+                [createOpenAiChatCompletionMessage(
                     OpenAiUserType.USER,
                     "Who manufactures volvo?",
                 )],

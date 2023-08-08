@@ -12,10 +12,10 @@ import { startsWith } from "../../../functions/startsWith";
 import { parseJson } from "../../../Json";
 import { isOpenAiError, OpenAiError } from "../OpenAiError";
 import {
-    explainOpenAiChatCompletionMessageDTO,
-    isOpenAiChatCompletionMessageDTO,
-    OpenAiChatCompletionMessageDTO
-} from "./OpenAiChatCompletionMessageDTO";
+    explainOpenAiChatCompletionMessage,
+    isOpenAiChatCompletionMessage,
+    OpenAiChatCompletionMessage
+} from "./OpenAiChatCompletionMessage";
 
 /**
  * @typedef {Object} OpenAiChatCompletionResponseChoice
@@ -28,7 +28,7 @@ export interface OpenAiChatCompletionResponseChoice {
      * The completed text.
      */
     readonly index : number;
-    readonly message: OpenAiChatCompletionMessageDTO;
+    readonly message: OpenAiChatCompletionMessage;
     readonly finish_reason: string;
 
 }
@@ -43,7 +43,7 @@ export interface OpenAiChatCompletionResponseChoice {
  */
 export function createOpenAiChatCompletionResponseChoice (
     index: number,
-    message: OpenAiChatCompletionMessageDTO,
+    message: OpenAiChatCompletionMessage,
     finish_reason: string
 ) : OpenAiChatCompletionResponseChoice {
     return {
@@ -68,7 +68,7 @@ export function isOpenAiChatCompletionResponseChoice (value: unknown) : value is
             'finish_reason'
         ])
         && isNumber(value?.index)
-        && isOpenAiChatCompletionMessageDTO(value?.message)
+        && isOpenAiChatCompletionMessage(value?.message)
         && isString(value?.finish_reason)
     );
 }
@@ -89,7 +89,7 @@ export function explainOpenAiChatCompletionResponseChoice (value: any) : string 
                 'finish_reason'
             ])
             , explainProperty("index", explainNumber(value?.index))
-            , explainProperty("message", explainOpenAiChatCompletionMessageDTO(value?.message))
+            , explainProperty("message", explainOpenAiChatCompletionMessage(value?.message))
             , explainProperty("finish_reason", explainString(value?.finish_reason))
         ]
     );

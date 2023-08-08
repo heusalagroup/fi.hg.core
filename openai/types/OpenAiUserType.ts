@@ -2,9 +2,10 @@ import {explainEnum} from "../../types/Enum";
 import {isOpenAiType, OpenAiType} from "../../../../heusalagroup/core/types/OpenAiType";
 
 export enum OpenAiUserType {
-    USER = "user",
-    SYSTEM = "system",
-    ASSISTANT = "assistant"
+    USER        = "user",
+    SYSTEM      = "system",
+    ASSISTANT   = "assistant",
+    FUNCTION    = "function"
 }
 
 export function isOpenAiUserType (value : any) : value is OpenAiUserType {
@@ -12,6 +13,7 @@ export function isOpenAiUserType (value : any) : value is OpenAiUserType {
         case OpenAiUserType.USER:
         case OpenAiUserType.SYSTEM:
         case OpenAiUserType.ASSISTANT:
+        case OpenAiUserType.FUNCTION:
             return true;
 
         default:
@@ -24,7 +26,8 @@ export function stringifyOpenAiUserType (value: OpenAiUserType): string {
         case OpenAiUserType.USER            : return 'user';
         case OpenAiUserType.SYSTEM          : return 'system';
         case OpenAiUserType.ASSISTANT       : return 'assistant';
-        default                         : return `OpenAiUserType#${value}`
+        case OpenAiUserType.FUNCTION        : return 'function';
+        default                             : return `OpenAiUserType#${value}`
     }
 }
 
@@ -43,6 +46,7 @@ export function parseOpenAiUserType (value: any): OpenAiUserType | undefined {
         case 'user'         : return OpenAiUserType.USER;
         case 'system'       : return OpenAiUserType.SYSTEM;
         case 'assistant'    : return OpenAiUserType.ASSISTANT;
+        case 'function'     : return OpenAiUserType.FUNCTION;
         default             : return undefined;
     }
 }
