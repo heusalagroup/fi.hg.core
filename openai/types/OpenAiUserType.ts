@@ -1,5 +1,4 @@
 import {explainEnum} from "../../types/Enum";
-import {isOpenAiType, OpenAiType} from "../../../../heusalagroup/core/types/OpenAiType";
 
 export enum OpenAiUserType {
     USER        = "user",
@@ -38,7 +37,7 @@ export function stringifyOpenAiUserType (value: OpenAiUserType): string {
  * @returns {string} A string explaining the value with respect to the `OpenAiModel` enum.
  */
 export function explainOpenAiUserType (value : unknown) : string {
-    return explainEnum("OpenAiUserType", OpenAiType, isOpenAiType, value);
+    return explainEnum("OpenAiUserType", OpenAiUserType, isOpenAiUserType, value);
 }
 
 export function parseOpenAiUserType (value: any): OpenAiUserType | undefined {

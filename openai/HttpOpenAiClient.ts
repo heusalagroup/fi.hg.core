@@ -264,7 +264,7 @@ export class HttpOpenAiClient implements OpenAiClient {
 
     public async getChatCompletion (
         messages           : OpenAiChatCompletionMessage,
-        model             ?: OpenAiModel | string,
+        model              : OpenAiModel | string,
         max_tokens        ?: number,
         temperature       ?: number,
         top_p             ?: number,
