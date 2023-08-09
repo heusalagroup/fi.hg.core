@@ -8,6 +8,7 @@ import {
 } from "./OpenAiChatCompletionResponseChoice";
 import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
+import {explainOpenAiChatCompletionFunctions} from "./OpenAiChatCompletionFunctions";
 
 describe("OpenAiChatCompletionResponseChoice", () => {
     let validItem = {
@@ -17,7 +18,16 @@ describe("OpenAiChatCompletionResponseChoice", () => {
             "content": "tell me a lie",
             "name": "tester",
             "role": "user"
-        }} as OpenAiChatCompletionResponseChoice;
+        }};
+
+    let inValidItem = {
+        "finish_reason": 100,
+        "index": 1,
+        "message": {
+            "content": ["Can I add array here ?"],
+            "name": "tester",
+            "role": "owner"
+        }};
     describe("createOpenAiChatCompletionResponseChoice", () => {
 
         it("creates valid OpenAiChatCompletionResponseChoice objects", () => {
@@ -54,16 +64,28 @@ describe("OpenAiChatCompletionResponseChoice", () => {
             expect(isOpenAiChatCompletionResponseChoice(validItem)).toBeTruthy();
         });
 
+        it("returns false for inValid OpenAiChatCompletionResponseChoice objects", () => {
+            expect(isOpenAiChatCompletionResponseChoice(inValidItem)).toBeFalsy();
+        });
+
     });
 
     describe("explainOpenAiChatCompletionResponseChoice", () => {
 
-        it("returns a human-readable string explaining why the value is not a regular object", () => {
+        it("returns true if value is OpenAiChatCompletionResponseChoice", () => {
+
             expect(explainOpenAiChatCompletionResponseChoice(validItem)).toBeTruthy();
             expect(explainOpenAiChatCompletionResponseChoice(validItem)).toStrictEqual(
-                "property \"message\" property \"function_call\" Value had extra properties: "
+                "OK"
             );
 
+        });
+
+        it("returns a human-readable string explaining why the value is not a regular object", () => {
+
+            expect(explainOpenAiChatCompletionResponseChoice(inValidItem)).toStrictEqual(
+                "property \"message\" property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values user, system, assistant, property \"content\" not string, property \"finish_reason\" not string"
+            );
         });
 
     });

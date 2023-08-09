@@ -1,28 +1,28 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainOpenAiModel, isOpenAiModel, OpenAiModel } from "../../types/OpenAiModel";
-import { explain, explainProperty } from "../../../types/explain";
-import {explainString, explainStringOrUndefined, isString, isStringOrUndefined} from "../../../types/String";
-import {explainNumber, explainNumberOrUndefined, isNumber, isNumberOrUndefined} from "../../../types/Number";
+import {explainOpenAiModel, isOpenAiModel, OpenAiModel, parseOpenAiModel} from "../../types/OpenAiModel";
+import {explain, explainNot, explainOk, explainProperty} from "../../../types/explain";
+import { explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
+import { explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../../types/Number";
 import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
-import { startsWith } from "../../../functions/startsWith";
-import {isReadonlyJsonObject, parseJson, ReadonlyJsonObject} from "../../../Json";
-import { isUndefined } from "../../../types/undefined";
-import {explainArrayOf, isArrayOf} from "../../../types/Array";
+import { isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
+import {explainArrayOf, explainArrayOfOrUndefined, isArrayOf, isArrayOfOrUndefined} from "../../../types/Array";
 import {
     explainOpenAiChatCompletionMessage,
     isOpenAiChatCompletionMessage,
     OpenAiChatCompletionMessage
 } from "./OpenAiChatCompletionMessage";
 import {
-    explainOpenAiChatCompletionFunctions,
-    isOpenAiChatCompletionFunctions,
+    explainOpenAiChatCompletionFunctions, explainOpenAiChatCompletionFunctionsOrUndefined,
+    isOpenAiChatCompletionFunctions, isOpenAiChatCompletionFunctionsOrUndefined,
     OpenAiChatCompletionFunctions
 } from "./OpenAiChatCompletionFunctions";
-import {isStringArray} from "../../../types/StringArray";
-import {isBoolean, isBooleanOrUndefined} from "../../../types/Boolean";
-import {isObject} from "../../../types/Object";
+import {isStringArray, isStringArrayOrUndefined} from "../../../types/StringArray";
+import { isBoolean, isBooleanOrUndefined } from "../../../types/Boolean";
+import { isObject } from "../../../types/Object";
+import {isUndefined} from "../../../types/undefined";
+import {isOpenAiChatCompletionFunctionCall} from "./OpenAiChatCompletionFunctionCall";
 
 /**
  * Data Transfer Object for requesting a completion from the OpenAI API.
@@ -160,7 +160,7 @@ export interface OpenAiChatCompletionRequestDTO {
  */
 export function createOpenAiChatCompletionRequestDTO (
     messages              : OpenAiChatCompletionMessage[],
-    model                ?: OpenAiModel | string,
+    model                 : OpenAiModel | string,
     functions            ?: OpenAiChatCompletionFunctions[],
     max_tokens           ?: number,
     temperature          ?: number,
@@ -177,18 +177,18 @@ export function createOpenAiChatCompletionRequestDTO (
     return {
         messages,
         model: model ?? OpenAiModel.GPT_4,
-        ...(isOpenAiChatCompletionFunctions(functions) ? {functions} : {}),
-        ...(isNumber(max_tokens) ? {max_tokens} : {}),
-        ...(isNumber(temperature) ? {temperature} : {}),
-        ...(isNumber(top_p) ? {top_p} : {}),
-        ...(isNumber(frequency_penalty) ? {frequency_penalty} : {}),
-        ...(isNumber(presence_penalty) ? {presence_penalty} : {}),
-        ...(isString(function_call) || isObject(function_call) ? {function_call} : {}),
-        ...(isNumber(n) ? {n} : {}),
-        ...(isBoolean(stream) ? {stream} : {}),
-        ...(isStringArray(stop) || isString(stop) ? {stop} : {}),
-        ...(isReadonlyJsonObject(logit_bias) ? {logit_bias} : {}),
-        ...(isString(user) ? {user} : {}),
+        functions,
+        max_tokens,
+        temperature,
+        top_p,
+        frequency_penalty,
+        presence_penalty,
+        function_call,
+        n,
+        stream,
+        stop,
+        logit_bias,
+        user
     };
 }
 
@@ -219,7 +219,7 @@ export function isOpenAiChatCompletionRequestDTO (value: any) : value is OpenAiC
         ])
         && isArrayOf<OpenAiChatCompletionMessage>(value.messages, isOpenAiChatCompletionMessage)
         && isOpenAiModel(value?.model)
-        && isArrayOf<OpenAiChatCompletionFunctions>(value?.functions, isOpenAiChatCompletionFunctions)
+        && isArrayOfOrUndefined<OpenAiChatCompletionFunctions>(value?.functions, isOpenAiChatCompletionFunctionsOrUndefined)
         && isNumberOrUndefined(value?.max_tokens)
         && isNumberOrUndefined(value?.temperature)
         && isNumberOrUndefined(value?.top_p)
@@ -228,7 +228,7 @@ export function isOpenAiChatCompletionRequestDTO (value: any) : value is OpenAiC
         && isStringOrUndefined(value?.function_call)
         && isNumberOrUndefined(value?.n)
         && isBooleanOrUndefined(value?.stream)
-        && isStringArray(value?.stop) || isString(value?.stop)
+        && isStringArrayOrUndefined(value?.stop) || isStringOrUndefined(value?.stop)
         && isReadonlyJsonObject(value?.logit_bias)
         && isStringOrUndefined(value?.user)
     );
@@ -240,7 +240,7 @@ export function isOpenAiChatCompletionRequestDTO (value: any) : value is OpenAiC
  * @param {unknown} value - The value to test.
  * @returns {string} A human-readable message explaining why the value is not an `OpenAiChatCompletionRequestDTO` object, or `'ok'` if it is.
  */
-export function explainOpenAiChatCompletionRequestDTO (value: unknown) : string {
+export function explainOpenAiChatCompletionRequestDTO (value: any) : string {
     return explain(
         [
             explainRegularObject(value),
@@ -261,8 +261,8 @@ export function explainOpenAiChatCompletionRequestDTO (value: unknown) : string 
                 'user',
             ])
             , explainProperty("messages", explainArrayOf<OpenAiChatCompletionMessage>("OpenAiChatCompletionMessageDTO", explainOpenAiChatCompletionMessage, value?.messages, isOpenAiChatCompletionMessage))
-            , explainProperty("model", explainArrayOf<OpenAiModel>("OpenAiModel", explainOpenAiModel, value?.model, isOpenAiModel))
-            , explainProperty("functions", explainArrayOf<OpenAiChatCompletionFunctions>("OpenAiChatCompletionFunctions", explainOpenAiChatCompletionFunctions, value?.functions, isOpenAiChatCompletionFunctions))
+            , explainProperty("model", explainOpenAiModel(value.model))
+            , explainProperty("functions", explainArrayOfOrUndefined<OpenAiChatCompletionFunctions>("OpenAiChatCompletionFunctions", explainOpenAiChatCompletionFunctionsOrUndefined, value?.functions, isOpenAiChatCompletionFunctionsOrUndefined))
             , explainProperty("max_tokens", explainNumberOrUndefined(value?.max_tokens))
             , explainProperty("temperature", explainNumberOrUndefined(value?.temperature))
             , explainProperty("top_p", explainNumberOrUndefined(value?.top_p))
@@ -278,31 +278,10 @@ export function explainOpenAiChatCompletionRequestDTO (value: unknown) : string 
     );
 }
 
-/**
- * Convert the given `OpenAiChatCompletionRequestDTO` object to a string.
- *
- * @param {OpenAiChatCompletionRequestDTO} value - The value to convert.
- * @returns {string} A string representation of the `OpenAiChatCompletionRequestDTO` object.
- */
-export function stringifyOpenAiChatCompletionRequestDTO (value : OpenAiChatCompletionRequestDTO) : string {
-    return `OpenAiChatCompletionRequestDTO(${JSON.stringify(value)})`;
+export function isOpenAiChatCompletionFunctionCallOrUndefined (value: unknown): value is OpenAiChatCompletionFunctions | undefined {
+    return isOpenAiChatCompletionFunctionCall(value) || isUndefined(value);
 }
 
-/**
- * Attempt to parse the given value as an `OpenAiChatCompletionRequestDTO` object.
- *
- * @param {unknown} value - The value to parse.
- * @returns {OpenAiChatCompletionRequestDTO|undefined} The parsed `OpenAiChatCompletionRequestDTO` object, or `undefined` if the value is not a valid `OpenAiChatCompletionRequestDTO` object.
- */
-export function parseOpenAiChatCompletionRequestDTO (value: unknown) : OpenAiChatCompletionRequestDTO | undefined {
-
-    if (isString(value)) {
-        if (startsWith(value, "OpenAiChatCompletionRequestDTO(")) {
-            value = value.substring("OpenAiChatCompletionRequestDTO(".length, value.length -1 );
-        }
-        value = parseJson(value);
-    }
-
-    if (isOpenAiChatCompletionRequestDTO(value)) return value;
-    return undefined;
+export function explainOpenAiChatCompletionFunctionCallOrUndefined (value: any): string {
+    return isOpenAiChatCompletionFunctionCallOrUndefined(value) ? explainOk() : explainNot('OpenAiChatCompletionFunctionCall or undefined');
 }

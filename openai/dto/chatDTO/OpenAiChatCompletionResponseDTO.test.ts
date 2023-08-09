@@ -12,7 +12,7 @@ import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 import {createOpenAiCompletionResponseUsage} from "../OpenAiCompletionResponseUsage";
 
-xdescribe("OpenAiChatCompletionResponseDTO", () => {
+describe("OpenAiChatCompletionResponseDTO", () => {
 
     describe("createOpenAiChatCompletionResponseDTO", () => {
 

@@ -10,8 +10,40 @@ import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 import {OpenAiModel} from "../../types/OpenAiModel";
 import {createOpenAiChatCompletionFunctions} from "./OpenAiChatCompletionFunctions";
+import {explainOpenAiChatCompletionFunctionCall} from "./OpenAiChatCompletionFunctionCall";
 
-xdescribe("OpenAiChatCompletionRequestDTO", () => {
+describe("OpenAiChatCompletionRequestDTO", () => {
+
+    const validItem = {
+        "frequency_penalty": 1,
+        "max_tokens": 300,
+        "messages": [
+            {
+                "content": "Who manufactures volvo?",
+                "role": "user"
+            }
+        ],
+        "model": "gpt-3.5-turbo-16k",
+        "presence_penalty": 2,
+        "temperature": 1,
+        "top_p": 1
+    };
+
+    const inValidItem = {
+        "frequency_penalty": "1",
+        "max_tokens": 300,
+        "messages": [
+            {
+                "content": ["Who manufactures volvo arr?"],
+                "role": "user"
+            }
+        ],
+        "model": "gpt-3.5-turbo-16k",
+        "presence_penalty": 2,
+        "temperature": 1,
+        "top_p": 1
+    };
+
 
     describe("createOpenAiChatCompletionRequestDTO", () => {
 
@@ -34,10 +66,6 @@ xdescribe("OpenAiChatCompletionRequestDTO", () => {
                 2,
                 "none",
                 10,
-                false,
-                undefined,
-                undefined,
-                undefined
             );
 
             expect(item).toBeTruthy();
@@ -51,8 +79,20 @@ xdescribe("OpenAiChatCompletionRequestDTO", () => {
 
             expect(item).toStrictEqual(
                 {
-                    "frequency_penalty": 0.5,
-                    "max_tokens": 300,
+                    "frequency_penalty": 2,
+                    "function_call": "none",
+                    "functions": [
+                        {
+                            "description": "Function for testing",
+                            "name": "testFunc",
+                            "parameters": {
+                                "props": "true",
+                                "type": "json"
+                            }
+                        }
+                    ],
+                    "logit_bias": undefined,
+                    "max_tokens": 0.5,
                     "messages": [
                         {
                             "content": "Who manufactures volvo?",
@@ -60,9 +100,13 @@ xdescribe("OpenAiChatCompletionRequestDTO", () => {
                         }
                     ],
                     "model": "gpt-3.5-turbo-16k",
+                    "n": 10,
                     "presence_penalty": 2,
-                    "temperature": 0.5,
-                    "top_p": 1
+                    "stop": undefined,
+                    "stream": undefined,
+                    "temperature": 1,
+                    "top_p": 0.5,
+                    "user": undefined
                 }
             );
 
@@ -73,45 +117,32 @@ xdescribe("OpenAiChatCompletionRequestDTO", () => {
     describe("isOpenAiChatCompletionRequestDTO", () => {
 
         it("returns true for valid OpenAiChatCompletionRequestDTO objects", () => {
-            const item = {
-                "frequency_penalty": 1,
-                "max_tokens": 300,
-                "messages": [
-                    {
-                        "content": "Who manufactures volvo?",
-                        "role": "user"
-                    }
-                ],
-                "model": "gpt-3.5-turbo-16k",
-                "presence_penalty": 2,
-                "temperature": 1,
-                "top_p": 1
-            };
 
-            expect(isOpenAiChatCompletionRequestDTO(item)).toBeTruthy();
+            expect(isOpenAiChatCompletionRequestDTO(validItem)).toBeTruthy();
+
+        });
+
+        it("returns false for inValid OpenAiChatCompletionRequestDTO objects", () => {
+
+            expect(isOpenAiChatCompletionRequestDTO(inValidItem)).toBeFalsy();
+
         });
 
     });
 
     describe("explainOpenAiChatCompletionRequestDTO", () => {
 
-        it("returns a human-readable string explaining why the value is not a regular object", () => {
-            const item = {
-                "frequency_penalty": 1,
-                "max_tokens": 300,
-                "messages": [
-                    {
-                        "content": "Who manufactures volvo?",
-                        "role": "user"
-                    }
-                ],
-                "model": "gpt-3.5-turbo-16k",
-                "presence_penalty": 2,
-                "temperature": 1,
-                "top_p": 1
-            };
+        it("returns true if value is OpenAiChatCompletionRequestDTO", () => {
+            expect(explainOpenAiChatCompletionRequestDTO(validItem)).toBeTruthy();
+            expect(explainOpenAiChatCompletionRequestDTO(validItem)).toBe('OK');
+        });
 
-            expect(explainOpenAiChatCompletionRequestDTO(item)).toBe('')
+        it("returns a human-readable string explaining why the value is not a regular object", () => {
+
+            expect(explainOpenAiChatCompletionRequestDTO(inValidItem)).toBe(
+                "property \"messages\" not OpenAiChatCompletionMessageDTO: property \"content\" not string, property \"frequency_penalty\" not number or undefined"
+            );
+
         });
 
     });

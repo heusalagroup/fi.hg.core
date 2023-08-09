@@ -6,8 +6,10 @@ import {explainOpenAiUserType, isOpenAiUserType, OpenAiUserType} from "../../typ
 import {explainRegularObject, isRegularObject} from "../../../types/RegularObject";
 import {explainNoOtherKeys, hasNoOtherKeysInDevelopment} from "../../../types/OtherKeys";
 import {explainString, explainStringOrUndefined, isString, isStringOrUndefined} from "../../../types/String";
-import {explain, explainProperty} from "../../../types/explain";
+import {explain, explainNot, explainOk, explainProperty} from "../../../types/explain";
 import {explainObject, isObject} from "../../../types/Object";
+import {isUndefined} from "../../../types/undefined";
+import {isOpenAiChatCompletionFunctionCall} from "./OpenAiChatCompletionFunctionCall";
 
 export interface OpenAiChatCompletionFunctions {
     /**
@@ -75,4 +77,12 @@ export function explainOpenAiChatCompletionFunctions (value: unknown) : string {
             , explainProperty("description", explainStringOrUndefined((value as any)?.description))
         ]
     );
+}
+
+export function isOpenAiChatCompletionFunctionsOrUndefined (value: unknown): value is OpenAiChatCompletionFunctions | undefined {
+    return isOpenAiChatCompletionFunctions(value) || isUndefined(value);
+}
+
+export function explainOpenAiChatCompletionFunctionsOrUndefined (value: any): string {
+    return isOpenAiChatCompletionFunctionsOrUndefined(value) ? explainOk() : explainNot('OpenAiChatCompletionFunctions or undefined');
 }
