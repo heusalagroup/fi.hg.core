@@ -112,7 +112,7 @@ export interface OpenAiClient {
      * @throws {TypeError} - If the OpenAI API returns a response in an
      *                       unexpected format.
      */
-    getChatCompletion (
+    getChatCompletion? (
         messages           : OpenAiChatCompletionMessage,
         model             ?: OpenAiModel | string | undefined,
         max_tokens        ?: number | undefined,
