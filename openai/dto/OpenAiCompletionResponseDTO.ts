@@ -1,14 +1,14 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import {
-    explainOpenAiCompletionResponseChoice, explainOpenAiCompletionResponseChoiceOrError,
-    isOpenAiCompletionResponseChoice, isOpenAiCompletionResponseChoiceOrError,
+    explainOpenAiCompletionResponseChoiceOrError,
+    isOpenAiCompletionResponseChoiceOrError,
     OpenAiCompletionResponseChoice
 } from "./OpenAiCompletionResponseChoice";
 import { OpenAiModel } from "../types/OpenAiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
-import { explainString, isString } from "../../types/String";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
 import { explainArrayOf, isArrayOf } from "../../types/Array";
 import { startsWith } from "../../functions/startsWith";
@@ -54,6 +54,8 @@ export interface OpenAiCompletionResponseDTO {
      *
      */
     readonly usage : OpenAiCompletionResponseUsage;
+
+    readonly warning ?: string;
 
 }
 
@@ -101,7 +103,8 @@ export function isOpenAiCompletionResponseDTO (value: unknown) : value is OpenAi
             'created',
             'model',
             'choices',
-            'usage'
+            'usage',
+            'warning'
         ])
         && isString(value?.id)
         && isString(value?.object)
@@ -109,6 +112,7 @@ export function isOpenAiCompletionResponseDTO (value: unknown) : value is OpenAi
         && isString(value?.model)
         && isArrayOf<OpenAiCompletionResponseChoice|OpenAiError>(value?.choices, isOpenAiCompletionResponseChoiceOrError)
         && isOpenAiCompletionResponseUsage(value?.usage)
+        && isStringOrUndefined(value?.warning)
     );
 }
 
@@ -128,7 +132,8 @@ export function explainOpenAiCompletionResponseDTO (value: any) : string {
                 'created',
                 'model',
                 'choices',
-                'usage'
+                'usage',
+                'warning'
             ])
             , explainProperty("id", explainString(value?.id))
             , explainProperty("object", explainString(value?.object))
@@ -141,6 +146,7 @@ export function explainOpenAiCompletionResponseDTO (value: any) : string {
                 isOpenAiCompletionResponseChoiceOrError
             ))
             , explainProperty("usage", explainOpenAiCompletionResponseUsage(value?.usage))
+            , explainProperty("warning", explainStringOrUndefined(value?.warning))
         ]
     );
 }
