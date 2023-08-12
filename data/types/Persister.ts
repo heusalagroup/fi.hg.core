@@ -2,7 +2,7 @@
 // Copyright (c) 2020-2021. Sendanor. All rights reserved.
 
 import { EntityMetadata } from "./EntityMetadata";
-import { Entity, EntityIdTypes } from "../Entity";
+import { Entity } from "../Entity";
 import { Sort } from "../Sort";
 import { Where } from "../Where";
 import { PersisterType } from "../persisters/types/PersisterType";
@@ -67,10 +67,7 @@ export interface Persister extends Disposable {
      * @param where Criteria to filter entities, otherwise all entities will be
      *              counted.
      */
-    count<
-        T extends Entity,
-        ID extends EntityIdTypes
-    >(
+    count (
         metadata  : EntityMetadata,
         where     : Where | undefined,
     ) : Promise<number>;
@@ -82,10 +79,7 @@ export interface Persister extends Disposable {
      * @param where Criteria to filter entities
      * @returns `true` if entities matching the criteria exist, otherwise `false`
      */
-    existsBy<
-        T extends Entity,
-        ID extends EntityIdTypes
-        > (
+    existsBy (
         metadata : EntityMetadata,
         where    : Where,
     ) : Promise<boolean>;
@@ -97,10 +91,7 @@ export interface Persister extends Disposable {
      * @param where Criteria to filter entities, otherwise all entities will be
      *              removed.
      */
-    deleteAll<
-        T extends Entity,
-        ID extends EntityIdTypes
-    > (
+    deleteAll (
         metadata  : EntityMetadata,
         where     : Where | undefined,
     ): Promise<void>;
@@ -114,7 +105,7 @@ export interface Persister extends Disposable {
      *             unspecified and may be random.
      * @returns all matching entities
      */
-    findAll<T extends Entity, ID extends EntityIdTypes> (
+    findAll<T extends Entity> (
         metadata  : EntityMetadata,
         where     : Where | undefined,
         sort      : Sort | undefined
@@ -130,7 +121,7 @@ export interface Persister extends Disposable {
      *             the order will be unspecified and may be random.
      * @returns the matching entity, otherwise `undefined`
      */
-    findBy<T extends Entity, ID extends EntityIdTypes> (
+    findBy<T extends Entity> (
         metadata : EntityMetadata,
         where    : Where,
         sort     : Sort | undefined
@@ -142,7 +133,7 @@ export interface Persister extends Disposable {
      * @param metadata Entity metadata
      * @param entity
      */
-    insert<T extends Entity, ID extends EntityIdTypes> (
+    insert<T extends Entity> (
         metadata : EntityMetadata,
         entity   : T | readonly T[],
     ): Promise<T>;
@@ -153,7 +144,7 @@ export interface Persister extends Disposable {
      * @param metadata Entity metadata
      * @param entity
      */
-    update<T extends Entity, ID extends EntityIdTypes> (
+    update<T extends Entity> (
         metadata : EntityMetadata,
         entity   : T,
     ): Promise<T>;

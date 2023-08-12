@@ -25,7 +25,7 @@ describe('MySqlEntityUpdateQueryBuilder', () => {
     const idProperty = 'carId';
     const nameProperty = 'carName';
     const ageProperty = 'carAge';
-    const termProperty = 'carTerm';
+    // const termProperty = 'carTerm';
 
     @Table(tableName)
     class CarEntity extends Entity {
@@ -68,9 +68,9 @@ describe('MySqlEntityUpdateQueryBuilder', () => {
 
     let metadata : EntityMetadata;
     let carEntity1 : CarEntity;
-    let carEntity2 : CarEntity;
-    let carEntity3 : CarEntity;
-    let entities : readonly Entity[];
+    // let carEntity2 : CarEntity;
+    // let carEntity3 : CarEntity;
+    // let entities : readonly Entity[];
 
     beforeEach( () => {
 
@@ -121,14 +121,14 @@ describe('MySqlEntityUpdateQueryBuilder', () => {
         );
 
         carEntity1 = new CarEntity('1', 'Car A', 13, true);
-        carEntity2 = new CarEntity('2', 'Car B', 99, false);
-        carEntity3 = new CarEntity('3', 'Car C', 3, true);
+        // carEntity2 = new CarEntity('2', 'Car B', 99, false);
+        // carEntity3 = new CarEntity('3', 'Car C', 3, true);
 
-        entities = [
-            carEntity1,
-            carEntity2,
-            carEntity3,
-        ];
+        // entities = [
+        //     carEntity1,
+        //     carEntity2,
+        //     carEntity3,
+        // ];
 
     })
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createSmsTokenDTO, SmsTokenDTO, explainSmsTokenDTOOrUndefined, isSmsTokenDTO, isSmsTokenDTOOrUndefined, parseSmsTokenDTO, stringifySmsTokenDTO } from "./SmsTokenDTO";
+import { createSmsTokenDTO, explainSmsTokenDTOOrUndefined, isSmsTokenDTO, isSmsTokenDTOOrUndefined, parseSmsTokenDTO, stringifySmsTokenDTO } from "./SmsTokenDTO";
 
 describe('SmsTokenDTO', () => {
 

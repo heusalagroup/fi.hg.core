@@ -17,14 +17,12 @@ import { UserDefinedParserMap } from "../types/UserDefinedParserMap";
  * @param argName The full argument string, e.g. `--foo=bar`
  * @param type The type of argument, e.g. `ArgumentType.STRING` or a name of a
  *             custom type.
- * @param key The key part of the argument, e.g. `--foo`
  * @param value The value of the argument, e.g. `bar`
  * @param parserMap User defined parsers for custom types
  */
 export function parseArgumentWithParam (
     argName: string,
     type: UserDefinedArgumentType,
-    key: string,
     value: string,
     parserMap: UserDefinedParserMap | undefined,
 ): number | boolean | string {

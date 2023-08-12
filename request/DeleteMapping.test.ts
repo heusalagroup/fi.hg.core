@@ -10,7 +10,6 @@ import { LogLevel } from "../types/LogLevel";
 import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
 import { ParamRoutes } from "../requestServer/types/ParamRoutes";
-import { GetMapping } from "./GetMapping";
 import { DeleteMapping } from "./DeleteMapping";
 
 PathVariable.setLogLevel(LogLevel.NONE);

@@ -1,15 +1,8 @@
+// Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+
 import {
-  PankkiViivakoodi,
-  parseFiIBAN,
-  padZeros,
-  parseRefNum,
-  parseCents,
-  parseDueDate,
   viivakoodiCreate,
   viivakoodiCheck,
-  viivakoodiParse4,
-  parseRfRefNum,
-  viivakoodiParse5,
   viivakoodiParse
 } from './pankkiviivakoodi';
 

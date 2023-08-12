@@ -3,7 +3,7 @@
 import { isBoolean } from "../../types/Boolean";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
-import { explainString, explainStringOrNull, isString, isStringOrNull } from "../../types/String";
+import { explainString, explainStringOrNull, isString } from "../../types/String";
 import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../types/explain";
 import { isUndefined } from "../../types/undefined";
 

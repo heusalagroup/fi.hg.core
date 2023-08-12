@@ -2,7 +2,7 @@
 
 import { FunctionQueryBuilder } from "../../types/FunctionQueryBuilder";
 import { PgArgumentListBuilder } from "./PgArgumentList";
-import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
+import { QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
 import { PgAndChainBuilder } from "./PgAndChainBuilder";
 import { map } from "../../../../functions/map";
 
@@ -22,7 +22,7 @@ export class PgJsonBuildObjectBuilder extends FunctionQueryBuilder {
         this.setFormulaFromQueryBuilder(this._arguments);
     }
 
-    public static create (builder: QueryBuilder) : PgJsonBuildObjectBuilder {
+    public static create () : PgJsonBuildObjectBuilder {
         return new PgJsonBuildObjectBuilder();
     }
 

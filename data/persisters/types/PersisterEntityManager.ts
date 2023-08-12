@@ -17,7 +17,7 @@ export interface PersisterEntityManager {
      * This is an internal function used by the persister to detect changes in
      * entities provided by them.
      */
-    saveLastEntityState<T extends EntityLike> (item: any) : void
+    saveLastEntityState<T extends EntityLike> (item: T) : void
 
     /**
      * Saves current state as the state that is last known state from the
@@ -26,7 +26,7 @@ export interface PersisterEntityManager {
      * This is an internal function used by the persister to detect changes in
      * entities provided by them.
      */
-    saveLastEntityListState<T extends EntityLike> (list: readonly any[]) : void;
+    saveLastEntityListState<T extends EntityLike> (list: readonly T[]) : void;
 
     /**
      * Get saved state as the state that is the last known state provided by the
@@ -35,7 +35,7 @@ export interface PersisterEntityManager {
      * This is an internal function used by the persister to detect changes made
      * by the user of the persister.
      */
-    getLastEntityState<T extends EntityLike> (item: any) : EntityLike | undefined;
+    getLastEntityState<T extends EntityLike> (item: T) : T | undefined;
 
     /**
      * Get array of fields which have changed since last saved state.

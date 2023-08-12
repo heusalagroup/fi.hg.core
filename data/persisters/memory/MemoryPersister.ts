@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { Persister } from "../../types/Persister";
-import { Entity, EntityIdTypes } from "../../Entity";
+import { Entity } from "../../Entity";
 import { EntityMetadata } from "../../types/EntityMetadata";
 import { first } from "../../../functions/first";
 import { isArray } from "../../../types/Array";
@@ -102,7 +102,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.count}
      */
-    public async count<T extends Entity, ID extends EntityIdTypes> (
+    public async count (
         metadata : EntityMetadata,
         where    : Where | undefined,
     ): Promise<number> {
@@ -115,7 +115,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.existsBy}
      */
-    public async existsBy<T extends Entity, ID extends EntityIdTypes> (
+    public async existsBy (
         metadata : EntityMetadata,
         where    : Where,
     ): Promise<boolean> {
@@ -128,7 +128,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.deleteAll}
      */
-    public async deleteAll<T extends Entity, ID extends EntityIdTypes> (
+    public async deleteAll (
         metadata : EntityMetadata,
         where    : Where | undefined,
     ): Promise<void> {
@@ -141,7 +141,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.findAll}
      */
-    public async findAll<T extends Entity, ID extends EntityIdTypes> (
+    public async findAll<T extends Entity> (
         metadata : EntityMetadata,
         where    : Where | undefined,
         sort     : Sort | undefined
@@ -155,13 +155,13 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.findBy}
      */
-    public async findBy<T extends Entity, ID extends EntityIdTypes> (
+    public async findBy<T extends Entity> (
         metadata : EntityMetadata,
         where    : Where,
         sort     : Sort | undefined
     ): Promise<T | undefined> {
         return await this._transaction( async (db: MemoryDatabase) : Promise<any> => {
-            return await this._findBy<T, ID>(db, metadata, where, sort);
+            return await this._findBy<T>(db, metadata, where, sort);
         });
     }
 
@@ -169,7 +169,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.insert}
      */
-    public async insert<T extends Entity, ID extends EntityIdTypes> (
+    public async insert<T extends Entity> (
         metadata: EntityMetadata,
         entity: T | readonly T[],
     ): Promise<T> {
@@ -182,7 +182,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.update}
      */
-    public async update<T extends Entity, ID extends EntityIdTypes> (
+    public async update<T extends Entity> (
         metadata: EntityMetadata,
         entity: T,
     ): Promise<T> {
@@ -210,14 +210,20 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.deleteAll}
      */
-    private async _deleteAll<T extends Entity, ID extends EntityIdTypes> (
+    private async _deleteAll<T extends Entity> (
         db       : MemoryDatabase,
         metadata : EntityMetadata,
         where    : Where | undefined,
     ): Promise<void> {
         let entities : T[] = [];
 
-        const { tableName, fields, temporalProperties, callbacks, idPropertyName } = metadata;
+        const {
+            tableName,
+            // fields,
+            // temporalProperties,
+            callbacks,
+            idPropertyName
+        } = metadata;
 
         if (!has(db, tableName)) return;
 
@@ -225,7 +231,7 @@ export class MemoryPersister implements Persister {
         const hasPostRemoveCallbacks = EntityCallbackUtils.hasCallbacks(callbacks, EntityCallbackType.POST_REMOVE);
 
         if (hasPreRemoveCallbacks || hasPostRemoveCallbacks) {
-            entities = await this._findAll<T, ID>(db, metadata, where, undefined);
+            entities = await this._findAll<T>(db, metadata, where, undefined);
             if ( hasPreRemoveCallbacks && entities?.length ) {
                 await EntityCallbackUtils.runPreRemoveCallbacks(
                     entities,
@@ -267,7 +273,7 @@ export class MemoryPersister implements Persister {
 
     }
 
-    private async _findAll<T extends Entity, ID extends EntityIdTypes> (
+    private async _findAll<T extends Entity> (
         db       : MemoryDatabase,
         metadata : EntityMetadata,
         where    : Where | undefined,
@@ -294,7 +300,7 @@ export class MemoryPersister implements Persister {
         return ret;
     }
 
-    private async _findBy<T extends Entity, ID extends EntityIdTypes> (
+    private async _findBy<T extends Entity> (
         db       : MemoryDatabase,
         metadata : EntityMetadata,
         where    : Where,
@@ -323,7 +329,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.insert}
      */
-    private async _insert<T extends Entity, ID extends EntityIdTypes> (
+    private async _insert<T extends Entity> (
         db       : MemoryDatabase,
         metadata: EntityMetadata,
         entity: T | readonly T[],
@@ -419,7 +425,7 @@ export class MemoryPersister implements Persister {
      * @inheritDoc
      * @see {@link Persister.update}
      */
-    private async _update<T extends Entity, ID extends EntityIdTypes> (
+    private async _update<T extends Entity> (
         db       : MemoryDatabase,
         metadata : EntityMetadata,
         entity   : T,
@@ -498,8 +504,8 @@ export class MemoryPersister implements Persister {
             db[tableName].items.push( savedItem );
         }
 
-        const savedEntity = this._populateRelations(db, savedItem.value.clone(), metadata);
-        this._entityManager.saveLastEntityState<T>(savedEntity);
+        const savedEntity : Entity = this._populateRelations(db, savedItem.value.clone(), metadata);
+        this._entityManager.saveLastEntityState(savedEntity);
 
         await EntityCallbackUtils.runPostLoadCallbacks(
             [savedEntity],
@@ -514,7 +520,7 @@ export class MemoryPersister implements Persister {
         return savedEntity as unknown as T;
     }
 
-    private _count<T extends Entity, ID extends EntityIdTypes> (
+    private _count (
         db       : MemoryDatabase,
         metadata : EntityMetadata,
         where    : Where | undefined,
@@ -531,7 +537,7 @@ export class MemoryPersister implements Persister {
         return db[tableName].items.length;
     }
 
-    private _existsBy<T extends Entity, ID extends EntityIdTypes> (
+    private _existsBy (
         db       : MemoryDatabase,
         metadata : EntityMetadata,
         where    : Where,
@@ -555,7 +561,7 @@ export class MemoryPersister implements Persister {
      * @returns The item if found, otherwise `undefined`
      * @private
      */
-    private _findItem<T extends Entity, ID extends EntityIdTypes> (
+    private _findItem (
         db       : MemoryDatabase,
         callback: (item: MemoryItem) => boolean,
         tableName: string

@@ -57,9 +57,8 @@ export class SimpleRepositoryUtils {
     ) : string {
         return explainArrayOf(
             tName,
-            (item: SimpleRepositoryEntry<T>): string => explainRepositoryEntry<T>(
+            (item: SimpleRepositoryEntry<T>): string => explainRepositoryEntry(
                 item,
-                isT,
                 explainT
             ),
             list,

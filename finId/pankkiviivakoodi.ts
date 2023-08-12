@@ -155,11 +155,11 @@ export function viivakoodiParse4(code : string) : PankkiViivakoodi {
         throw new TypeError("code is invalid: "+ code);
     }
 
-    let version = code[0];
-    // debug.assert(version).is('string').equals('4');
-
-    let duedate = code.substring(1+16+6+2+3+20, 6);
-    //debug.log('duedate = ', duedate);
+    // let version = code[0];
+    // // debug.assert(version).is('string').equals('4');
+    //
+    // let duedate = code.substring(1+16+6+2+3+20, 6);
+    // //debug.log('duedate = ', duedate);
 
     const refNum = refNumParse( code.substring(1+16+6+2+3, 20) );
 
@@ -190,8 +190,8 @@ export function viivakoodiParse5(code: string) : PankkiViivakoodi {
     if(!viivakoodiCheck(code)) {
         throw new TypeError("code is invalid: "+ code);
     }
-    let version = code[0];
-    // debug.assert(version).is('string').equals('5');
+    // let version = code[0];
+    // // debug.assert(version).is('string').equals('5');
     let duedate = code.substring(1+16+6+2+23, 6);
     //debug.log('duedate = ', duedate);
     let parsed = {

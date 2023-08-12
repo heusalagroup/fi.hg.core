@@ -28,6 +28,22 @@ export interface HgAiCommandService {
     setTemperature(value: number | undefined) : void;
     setMaxTokens(value: number | undefined) : void;
 
+    getIterations(): number | undefined;
+    getLanguage(): string | undefined;
+    getSuffix(): string | undefined;
+    getModel(): string | undefined;
+    getStop(): string | undefined;
+    getUser(): string | undefined;
+    getLogProbs(): number | undefined;
+    getBestOf(): number | undefined;
+    getPresencePenalty(): number | undefined;
+    getFrequencyPenalty(): number | undefined;
+    getEcho(): boolean | undefined;
+    getN(): number | undefined;
+    getTopP(): number | undefined;
+    getTemperature(): number | undefined;
+    getMaxTokens(): number | undefined;
+
     /**
      * The main command line handler
      *

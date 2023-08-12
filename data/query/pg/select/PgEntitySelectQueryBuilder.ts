@@ -164,7 +164,6 @@ export class PgEntitySelectQueryBuilder
         relations: readonly EntityRelationManyToOne[],
         resolveMappedFieldInfo: TableFieldInfoCallback,
         fields: readonly EntityField[],
-        temporalProperties: readonly TemporalProperty[]
     ): void {
         forEach(
             relations,
@@ -183,7 +182,8 @@ export class PgEntitySelectQueryBuilder
                     propertyName,
                     mappedFields,
                     mappedTemporalProperties,
-                    mappedTable, mappedColumnName,
+                    mappedTable,
+                    mappedColumnName,
                     this.getTableName(), mappedColumnName
                 );
             }

@@ -1,7 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeys, explainNoOtherKeysInDevelopment, hasNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import {
     explainNumber,
     explainNumberOrNullOrUndefined,

@@ -22,7 +22,6 @@ import { CommandExitStatus } from "../types/CommandExitStatus";
 import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { addAutowired } from "./addAutowired";
 import { ProcessUtils } from "../../ProcessUtils";
-import { DestroyServiceImpl } from "./services/DestroyServiceImpl";
 import { AutowireUtils } from "./utils/AutowireUtils";
 import "../../../jest/matchers";
 import { DestroyService } from "./services/DestroyService";

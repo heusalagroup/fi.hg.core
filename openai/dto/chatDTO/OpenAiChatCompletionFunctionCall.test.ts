@@ -1,9 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-
 import {
-    createOpenAiChatCompletionFunctionCall, explainOpenAiChatCompletionFunctionCall,
-    isOpenAiChatCompletionFunctionCall, OpenAiChatCompletionFunctionCall
+    createOpenAiChatCompletionFunctionCall,
+    explainOpenAiChatCompletionFunctionCall,
+    isOpenAiChatCompletionFunctionCall
 } from "./OpenAiChatCompletionFunctionCall";
 
 describe("OpenAiChatCompletionFunctionCall", () => {

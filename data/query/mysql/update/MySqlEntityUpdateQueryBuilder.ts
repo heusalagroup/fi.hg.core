@@ -10,7 +10,7 @@ import { has } from "../../../../functions/has";
 import { find } from "../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { QueryBuilder, QueryBuildResult, QueryStringFactory, QueryValueFactory } from "../../types/QueryBuilder";
-import { ColumnDefinition, isJsonColumnDefinition, isTimeColumnDefinition } from "../../../types/ColumnDefinition";
+import { isJsonColumnDefinition, isTimeColumnDefinition } from "../../../types/ColumnDefinition";
 
 /**
  * Defines an interface for a builder of MySQL database read query from

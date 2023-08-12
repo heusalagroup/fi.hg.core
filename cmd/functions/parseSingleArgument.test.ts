@@ -34,7 +34,9 @@ describe('parseSingleArgument', () => {
     describe('with custom type and parser', () => {
         it('uses the correct custom parser when provided', () => {
             const parserMap = {
-                'CUSTOM': (value: unknown): string | undefined => `Custom parsed: no value`
+                'CUSTOM': (
+                    // @ts-ignore
+                    value: unknown): string | undefined => `Custom parsed: no value`
             };
             const result = parseSingleArgument('--foo', 'CUSTOM', parserMap);
             expect(result).toBe('Custom parsed: no value');

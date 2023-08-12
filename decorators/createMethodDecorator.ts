@@ -27,6 +27,7 @@ export function createMethodDecorator<T> (
     esDecorator: ClassMethodDecorator
 ) : MethodDecoratorFunction {
     return function methodDecorator (
+        // @ts-ignore
         target        : any | Function,
         propertyName ?: string,
         descriptor   ?: TypedPropertyDescriptor<any>,
@@ -56,7 +57,9 @@ export function createMethodDecorator<T> (
                     has: () : boolean => descriptor.value !== undefined,
                     get: () => descriptor.value
                 },
-                addInitializer: (initializer: () => void): void => {
+                addInitializer: (
+                    // @ts-ignore
+                    initializer: () => void): void => {
                     LOG.warn(`Warning! "addInitializer" not yet implemented.`);
                 }
             }

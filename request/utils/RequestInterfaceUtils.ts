@@ -95,7 +95,7 @@ export class RequestInterfaceUtils {
 
     }
 
-    static explainEveryPropertyIs<T> (
+    static explainEveryPropertyIs (
         value: {[key: string] : any},
         test : Function,
         explain : Function

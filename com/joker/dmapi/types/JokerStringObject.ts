@@ -19,7 +19,6 @@ export function explainJokerStringObject (value: any) : string {
         isString,
         isString,
         "string",
-        "string"
     );
 }
 

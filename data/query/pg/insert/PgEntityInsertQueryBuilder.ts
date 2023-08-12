@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { forEach } from "../../../../functions/forEach";
-import { map } from "../../../../functions/map";
 import { has } from "../../../../functions/has";
 import { find } from "../../../../functions/find";
 import { filter } from "../../../../functions/filter";

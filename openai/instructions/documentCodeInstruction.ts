@@ -1,7 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { replaceTemplate } from "../../functions/replaceTemplate";
-import { exampleTypeScriptTest } from "./exampleTypeScriptTest";
 
 /**
  * A template for instruction to document the provided source code.

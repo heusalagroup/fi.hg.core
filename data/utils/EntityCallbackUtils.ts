@@ -7,7 +7,6 @@ import { EntityCallbackType } from "../types/EntityCallbackType";
 import { filter } from "../../functions/filter";
 import { LogService } from "../../LogService";
 import { LogLevel } from "../../types/LogLevel";
-import { has } from "../../functions/has";
 import { some } from "../../functions/some";
 
 const LOG = LogService.createLogger( 'EntityCallbackUtils' );

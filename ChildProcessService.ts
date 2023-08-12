@@ -1,6 +1,5 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { ReadonlyJsonObject } from "./Json";
 import { Disposable } from "./types/Disposable";
 import { DisposeAware } from "./types/DisposeAware";
 

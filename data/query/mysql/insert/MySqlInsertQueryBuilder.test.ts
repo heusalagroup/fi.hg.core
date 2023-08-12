@@ -25,14 +25,14 @@ describe('MySqlInsertQueryBuilder', () => {
 
     const tablePrefix = 'db1_';
     const tableName = 'cars';
-    const idColumn = 'car_id';
+    // const idColumn = 'car_id';
     const nameColumn = 'car_name';
     const ageColumn = 'car_age';
     const dateColumn = 'car_date';
-    const idProperty = 'carId';
-    const nameProperty = 'carName';
-    const ageProperty = 'carAge';
-    const dateProperty = 'carDate';
+    // const idProperty = 'carId';
+    // const nameProperty = 'carName';
+    // const ageProperty = 'carAge';
+    // const dateProperty = 'carDate';
     let dateOnlyListBuilder : QueryBuilder;
     let nameAndDateListBuilder : QueryBuilder;
 

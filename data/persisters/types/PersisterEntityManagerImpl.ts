@@ -60,8 +60,8 @@ export class PersisterEntityManagerImpl implements PersisterEntityManager {
     /**
      * @inheritDoc
      */
-    public getLastEntityState<T extends EntityLike> (item: any) : EntityLike | undefined {
-        return has(item, this._symbol) ? item[this._symbol] : undefined;
+    public getLastEntityState<T extends EntityLike> (item: T) : T | undefined {
+        return has(item, this._symbol) ? (item as any)[this._symbol] : undefined;
     }
 
     /**

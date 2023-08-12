@@ -7,7 +7,6 @@ import { explainString, isString } from "../../types/String";
 import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";
 import { isUndefined } from "../../types/undefined";
-import { isBooleanOrUndefined } from "../../types/Boolean";
 
 export interface OpenAiError {
     readonly message : string;

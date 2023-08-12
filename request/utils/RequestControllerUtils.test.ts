@@ -516,7 +516,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach attribute mapping for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -549,7 +551,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach header configuration for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -586,7 +590,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach path variable configuration for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -625,7 +631,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach path variable map configuration for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -660,7 +668,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach header map configuration for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -695,7 +705,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach body argument configuration for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -727,7 +739,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach openAPI configuration for the controller", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }
@@ -760,7 +774,9 @@ describe('RequestControllerUtils', () => {
 
         test("can attach openAPI operation info for the controller's method", () => {
             class TestController {
-                static getEcho (test: string) {
+                static getEcho (
+                    // @ts-ignore
+                    test: string) {
 
                 };
             }

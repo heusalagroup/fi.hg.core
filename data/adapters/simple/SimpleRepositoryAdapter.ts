@@ -7,7 +7,6 @@ import { filter } from "../../../functions/filter";
 import { get } from "../../../functions/get";
 import { uniq } from "../../../functions/uniq";
 import { concat } from "../../../functions/concat";
-import { explainNot, explainOk } from "../../../types/explain";
 
 import { SimpleStoredRepositoryItem, StoredRepositoryItemExplainCallback, StoredRepositoryItemTestCallback } from "../../../simpleRepository/types/SimpleStoredRepositoryItem";
 import { SimpleRepository as SimpleBaseRepository, REPOSITORY_NEW_IDENTIFIER } from "../../../simpleRepository/types/SimpleRepository";
@@ -36,23 +35,25 @@ export class SimpleRepositoryAdapter<T extends SimpleStoredRepositoryItem, Simpl
     private readonly _repository : SimpleEntityRepository<SimpleEntityT>;
     private readonly _members    : readonly string[];
     private readonly _isT        : StoredRepositoryItemTestCallback;
-    private readonly _explainT   : StoredRepositoryItemExplainCallback;
-    private readonly _tName      : string;
+    // private readonly _explainT   : StoredRepositoryItemExplainCallback;
+    // private readonly _tName      : string;
     private readonly _tCreate    : (dto: NewSimpleDTO) => SimpleEntityT;
 
     public constructor (
         repository : SimpleEntityRepository<SimpleEntityT>,
         tCreate    : (dto: NewSimpleDTO) => SimpleEntityT,
         isT        : StoredRepositoryItemTestCallback,
+        // @ts-ignore @todo Why not used?
         tName      : string | undefined,
+        // @ts-ignore @todo Why not used?
         explainT   : StoredRepositoryItemExplainCallback | undefined,
         members    : readonly string[] | undefined
     ) {
         this._repository = repository;
         this._members    = members ?? [];
         this._isT        = isT;
-        this._tName      = tName ?? 'T';
-        this._explainT   = explainT ?? ( (value: any) : string => isT(value) ? explainOk() : explainNot(this._tName) );
+        // this._tName      = tName ?? 'T';
+        // this._explainT   = explainT ?? ( (value: any) : string => isT(value) ? explainOk() : explainNot(this._tName) );
         this._tCreate    = tCreate;
     }
 
@@ -242,12 +243,20 @@ export class SimpleRepositoryAdapter<T extends SimpleStoredRepositoryItem, Simpl
      */
     public async waitById (id: string, includeMembers?: boolean, timeout?: number): Promise<SimpleRepositoryEntry<T> | undefined> {
         return new Promise((resolve, reject) => {
-            setTimeout(
+            try {
+                setTimeout(
                 () => {
-                    resolve(this.findById(id, includeMembers));
+                    try {
+                        resolve(this.findById(id, includeMembers));
+                    } catch (err) {
+                        reject(err);
+                    }
                 },
-                timeout ?? 4000
-            )
+                    timeout ?? 4000
+                );
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 

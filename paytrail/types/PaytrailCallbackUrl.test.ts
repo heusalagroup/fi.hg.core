@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createPaytrailCallbackUrl, explainPaytrailCallbackUrl, isPaytrailCallbackUrl, parsePaytrailCallbackUrl, PaytrailCallbackUrl } from "./PaytrailCallbackUrl";
+import { createPaytrailCallbackUrl, explainPaytrailCallbackUrl, isPaytrailCallbackUrl, parsePaytrailCallbackUrl } from "./PaytrailCallbackUrl";
 
 describe('PaytrailCallbackUrl', () => {
 

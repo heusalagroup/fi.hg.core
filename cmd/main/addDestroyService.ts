@@ -41,7 +41,7 @@ export function addDestroyService<T = any> (
         context: ClassMethodDecoratorContext
     ) => {
         const propertyName = context.name;
-        LOG.debug(`overriding method ${context.name.toString()}`);
+        LOG.debug(`overriding method ${propertyName.toString()}`);
         return async function (
             this: T,
             ...args: readonly string[]

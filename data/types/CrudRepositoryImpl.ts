@@ -56,7 +56,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         const id = EntityUtils.getId<T, ID>(entity, this._entityMetadata);
         const propertyName = EntityUtils.getIdPropertyName(this._entityMetadata);
         LOG.debug(`delete: id = `, id);
-        return await this._persister.deleteAll<T, ID>(
+        return await this._persister.deleteAll(
             this._entityMetadata,
             Where.propertyEquals(propertyName, id)
         );
@@ -124,13 +124,13 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
     public async count (
         where ?: Where
     ): Promise<number> {
-        return await this._persister.count<T, ID>(this._entityMetadata, where);
+        return await this._persister.count(this._entityMetadata, where);
     }
 
     public async existsBy (
         where : Where
     ): Promise<boolean> {
-        return await this._persister.existsBy<T, ID>(this._entityMetadata, where);
+        return await this._persister.existsBy(this._entityMetadata, where);
     }
 
     public async deleteAll (
@@ -139,7 +139,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
 
         if (entities === undefined) {
             LOG.debug(`deleteAll`);
-            return await this._persister.deleteAll<T, ID>(
+            return await this._persister.deleteAll(
                 this._entityMetadata,
                 undefined
             );
@@ -147,7 +147,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
 
         if (isWhere(entities)) {
             LOG.debug(`deleteAll: where = `, entities);
-            return await this._persister.deleteAll<T, ID>(
+            return await this._persister.deleteAll(
                 this._entityMetadata,
                 entities
             );
@@ -160,7 +160,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
             (item : T)  : ID => EntityUtils.getId<T, ID>(item, this._entityMetadata)
         );
         LOG.debug(`deleteAll: ids = `, ids);
-        return await this._persister.deleteAll<T, ID>(
+        return await this._persister.deleteAll(
             this._entityMetadata,
             Where.propertyListEquals(
                 propertyName,
@@ -172,7 +172,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
 
     public async deleteById (id: ID): Promise<void> {
         LOG.debug(`deleteById: id = `, id);
-        return await this._persister.deleteAll<T, ID>(
+        return await this._persister.deleteAll(
             this._entityMetadata,
             Where.propertyEquals(this._entityMetadata.idPropertyName, id)
         );
@@ -182,7 +182,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         ids = isArray(ids) ? ids : [ids];
         LOG.debug(`deleteAllById: ids = `, ids);
         const idPropertyName : string = EntityUtils.getIdPropertyName(this._entityMetadata);
-        return await this._persister.deleteAll<T, ID>(
+        return await this._persister.deleteAll(
             this._entityMetadata,
             Where.propertyListEquals(idPropertyName, ids)
         );
@@ -192,7 +192,7 @@ export class CrudRepositoryImpl<T extends Entity, ID extends EntityIdTypes>
         LOG.debug(`existsById: id = `, id);
         const idPropertyName : string = EntityUtils.getIdPropertyName(this._entityMetadata);
         LOG.debug(`existsById: idPropertyName = `, idPropertyName);
-        return await this._persister.existsBy<T, ID>(
+        return await this._persister.existsBy(
             this._entityMetadata,
             Where.propertyEquals(idPropertyName, id),
         );

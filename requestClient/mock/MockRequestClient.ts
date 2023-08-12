@@ -9,19 +9,27 @@ import { MockRequestClientAdapter } from "./MockRequestClientAdapter";
 
 export class MockRequestClient implements RequestClient {
 
-    public async deleteJson (url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<JsonAny | undefined> {
+    public async deleteJson (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<JsonAny | undefined> {
         return undefined;
     }
 
-    public async deleteJsonEntity (url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<ResponseEntity<JsonAny | undefined>> {
+    public async deleteJsonEntity (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<ResponseEntity<JsonAny | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async deleteText (url: string, headers?: {[p: string]: string}, data?: string): Promise<string | undefined> {
+    public async deleteText (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}, data?: string): Promise<string | undefined> {
         return undefined;
     }
 
-    public async deleteTextEntity (url: string, headers?: {[p: string]: string}, data?: string): Promise<ResponseEntity<string | undefined>> {
+    public async deleteTextEntity (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}, data?: string): Promise<ResponseEntity<string | undefined>> {
         return ResponseEntity.ok();
     }
 
@@ -29,83 +37,123 @@ export class MockRequestClient implements RequestClient {
         return new MockRequestClientAdapter();
     }
 
-    public async getJson (url: string, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
+    public async getJson (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
         return undefined;
     }
 
-    public async getJsonEntity (url: string, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
+    public async getJsonEntity (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async getText (url: string, headers?: {[p: string]: string}): Promise<string | undefined> {
+    public async getText (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}): Promise<string | undefined> {
         return undefined;
     }
 
-    public async getTextEntity (url: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
+    public async getTextEntity (
+        // @ts-ignore
+        url: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async jsonEntityRequest (method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<ResponseEntity<JsonAny | undefined>> {
+    public async jsonEntityRequest (
+        // @ts-ignore
+        method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<ResponseEntity<JsonAny | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async jsonRequest (method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<JsonAny | undefined> {
+    public async jsonRequest (
+        // @ts-ignore
+        method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: JsonAny): Promise<JsonAny | undefined> {
         return undefined;
     }
 
-    public async patchJson (url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
+    public async patchJson (
+        // @ts-ignore
+        url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
         return undefined;
     }
 
-    public async patchJsonEntity (url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
+    public async patchJsonEntity (
+        // @ts-ignore
+        url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async patchText (url: string, data?: string, headers?: {[p: string]: string}): Promise<string | undefined> {
+    public async patchText (
+        // @ts-ignore
+        url: string, data?: string, headers?: {[p: string]: string}): Promise<string | undefined> {
         return undefined;
     }
 
-    public async patchTextEntity (url: string, data?: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
+    public async patchTextEntity (
+        // @ts-ignore
+        url: string, data?: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async postJson (url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
+    public async postJson (
+        // @ts-ignore
+        url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
         return undefined;
     }
 
-    public async postJsonEntity (url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
+    public async postJsonEntity (
+        // @ts-ignore
+        url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async postText (url: string, data?: string, headers?: {[p: string]: string}): Promise<string | undefined> {
+    public async postText (
+        // @ts-ignore
+        url: string, data?: string, headers?: {[p: string]: string}): Promise<string | undefined> {
         return undefined;
     }
 
-    public async postTextEntity (url: string, data?: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
+    public async postTextEntity (
+        // @ts-ignore
+        url: string, data?: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async putJson (url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
+    public async putJson (
+        // @ts-ignore
+        url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<JsonAny | undefined> {
         return undefined;
     }
 
-    public async putJsonEntity (url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
+    public async putJsonEntity (
+        // @ts-ignore
+        url: string, data?: JsonAny, headers?: {[p: string]: string}): Promise<ResponseEntity<JsonAny | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async putText (url: string, data?: string, headers?: {[p: string]: string}): Promise<string | undefined> {
+    public async putText (
+        // @ts-ignore
+        url: string, data?: string, headers?: {[p: string]: string}): Promise<string | undefined> {
         return undefined;
     }
 
-    public async putTextEntity (url: string, data?: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
+    public async putTextEntity (
+        // @ts-ignore
+        url: string, data?: string, headers?: {[p: string]: string}): Promise<ResponseEntity<string | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async textEntityRequest (method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: string): Promise<ResponseEntity<string | undefined>> {
+    public async textEntityRequest (
+        // @ts-ignore
+        method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: string): Promise<ResponseEntity<string | undefined>> {
         return ResponseEntity.ok();
     }
 
-    public async textRequest (method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: string): Promise<string | undefined> {
+    public async textRequest (
+        // @ts-ignore
+        method: RequestMethod, url: string, headers?: {[p: string]: string}, data?: string): Promise<string | undefined> {
         return undefined;
     }
 

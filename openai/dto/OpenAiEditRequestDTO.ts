@@ -8,7 +8,6 @@ import { explainRegularObject, isRegularObject } from "../../types/RegularObject
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../types/OtherKeys";
 import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";
-import { isUndefined } from "../../types/undefined";
 
 /**
  * Data Transfer Object for requesting an edit from the OpenAI API.

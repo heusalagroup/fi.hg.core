@@ -11,6 +11,7 @@ export class ChildProcessError extends Error {
     public readonly signal  ?: string | number | undefined;
     public readonly origMessage  ?: string | undefined;
 
+    // @ts-ignore
     private readonly __proto__: any;
 
     public constructor (

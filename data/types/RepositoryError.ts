@@ -9,6 +9,7 @@ export class RepositoryError extends Error {
 
     public readonly code: RepositoryErrorCode;
 
+    // @ts-ignore
     private readonly __proto__: any;
 
     public constructor (

@@ -92,12 +92,24 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
         this._iterations = value;
     }
 
+    public getIterations () : number | undefined {
+        return this._iterations;
+    }
+
     public setLanguage (value: string|undefined): void {
         this._language = value;
     }
 
+    public getLanguage (): string|undefined {
+        return this._language;
+    }
+
     public setSuffix (value: string|undefined): void {
         this._suffix = value;
+    }
+
+    public getSuffix (): string|undefined {
+        return this._suffix;
     }
 
     /**
@@ -109,11 +121,25 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Gets the model to use for the next call to OpenAI API
+     */
+    public getModel (): string|undefined {
+        return this._model;
+    }
+
+    /**
      * Sets the stop option for the next call to OpenAI API
      * @param value
      */
     public setStop (value: string|undefined): void {
         this._stop = value;
+    }
+
+    /**
+     * Gets the stop option for the next call to OpenAI API
+     */
+    public getStop (): string|undefined {
+        return this._stop;
     }
 
     /**
@@ -125,11 +151,25 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Gets the user option for the next call to OpenAI API
+     */
+    public getUser (): string|undefined {
+        return this._user;
+    }
+
+    /**
      * Sets the logProbs option for the next call to OpenAI API
      * @param value
      */
     public setLogProbs (value: number | undefined): void {
         this._logProbs = value;
+    }
+
+    /**
+     * Gets the logProbs option for the next call to OpenAI API
+     */
+    public getLogProbs (): number | undefined {
+        return this._logProbs;
     }
 
     /**
@@ -141,11 +181,25 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Gets the best of option for the next call to OpenAI API
+     */
+    public getBestOf (): number | undefined {
+        return this._bestOf;
+    }
+
+    /**
      * Sets the presence penalty option for the next call to OpenAI API
      * @param value
      */
     public setPresencePenalty (value: number | undefined): void {
         this._presencePenalty = value;
+    }
+
+    /**
+     * Gets the presence penalty option for the next call to OpenAI API
+     */
+    public getPresencePenalty (): number | undefined {
+        return this._presencePenalty;
     }
 
     /**
@@ -157,6 +211,13 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Gets the frequency penalty property for the next call to OpenAI API
+     */
+    public getFrequencyPenalty (): number | undefined {
+        return this._frequencyPenalty;
+    }
+
+    /**
      * Sets the echo property for the next call to OpenAI API
      * @param value
      */
@@ -165,11 +226,25 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Gets the echo property for the next call to OpenAI API
+     */
+    public getEcho (): boolean | undefined {
+        return this._echo;
+    }
+
+    /**
      * Sets the n property for the next call to OpenAI API
      * @param value
      */
     public setN (value: number | undefined): void {
         this._n = value;
+    }
+
+    /**
+     * Gets the n property for the next call to OpenAI API
+     */
+    public getN (): number | undefined {
+        return this._n;
     }
 
     /**
@@ -182,11 +257,25 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
     }
 
     /**
+     * Gets the topP property for the next call to OpenAI API
+     */
+    public getTopP (): number | undefined {
+        return this._topP;
+    }
+
+    /**
      * Sets the temperature property for next call to OpenAI API
      * @param value
      */
     public setTemperature (value: number | undefined): void {
         this._temperature = value;
+    }
+
+    /**
+     * Gets the temperature property for next call to OpenAI API
+     */
+    public getTemperature (): number | undefined {
+        return this._temperature;
     }
 
     /**
@@ -196,6 +285,13 @@ export class HgAiCommandServiceImpl implements HgAiCommandService {
      */
     public setMaxTokens (value: number | undefined): void {
         this._maxTokens = value;
+    }
+
+    /**
+     * Get's the max tokens property for next call to OpenAI API
+     */
+    public getMaxTokens (): number | undefined {
+        return this._maxTokens;
     }
 
     /**

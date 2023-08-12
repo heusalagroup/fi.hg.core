@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createVerifyEmailCodeDTO, isVerifyEmailCodeDTO, parseVerifyEmailCodeDTO, stringifyVerifyEmailCodeDTO, VerifyEmailCodeDTO } from "./VerifyEmailCodeDTO";
+import { createVerifyEmailCodeDTO, isVerifyEmailCodeDTO, parseVerifyEmailCodeDTO, stringifyVerifyEmailCodeDTO } from "./VerifyEmailCodeDTO";
 
 describe('VerifyEmailCodeDTO', () => {
     const validEmailTokenDTO = {

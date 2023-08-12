@@ -23,7 +23,10 @@ export class SimpleMemorySharedClientService implements SimpleSharedClientServic
         return this._client;
     }
 
-    public async initialize (url: string): Promise<void> {
+    public async initialize (
+        // @ts-ignore @todo Why not used?
+        url: string
+    ): Promise<void> {
         if(this._observer.hasCallbacks(SimpleSharedClientServiceEvent.INITIALIZED)) {
             this._observer.triggerEvent(SimpleSharedClientServiceEvent.INITIALIZED);
         }
@@ -33,7 +36,10 @@ export class SimpleMemorySharedClientService implements SimpleSharedClientServic
         return false;
     }
 
-    public async login (url: string): Promise<void> {
+    public async login (
+        // @ts-ignore @todo Why not used?
+        url: string
+    ): Promise<void> {
     }
 
     /**

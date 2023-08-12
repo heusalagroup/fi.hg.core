@@ -161,7 +161,7 @@ export abstract class BaseSelectQueryBuilder implements SelectQueryBuilder {
      * @inheritDoc
      */
     buildOrderQueryString () : string {
-        return map(this._orderByQueries, (f) => f()).join(this._resultSeparator);
+        return map(this._orderByQueries, (f) => f()).join(this._orderSeparator);
     }
 
     /**

@@ -3,9 +3,6 @@
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
 import { QueryWhereable } from "../../types/QueryWhereable";
 import { TablePrefixable } from "../../types/TablePrefixable";
-import { Where } from "../../../Where";
-import { EntityField } from "../../../types/EntityField";
-import { ChainQueryBuilder } from "../../types/ChainQueryBuilder";
 
 export interface DeleteQueryBuilder extends QueryWhereable, TablePrefixable, QueryBuilder {
 

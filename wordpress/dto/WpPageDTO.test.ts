@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { explainWpPageDTO, isWpPageDTO, WpPageDTO } from "./WpPageDTO";
+import { explainWpPageDTO, isWpPageDTO } from "./WpPageDTO";
 import { explainOk } from "../../types/explain";
 
 const TEST_DATA_PAGES = [

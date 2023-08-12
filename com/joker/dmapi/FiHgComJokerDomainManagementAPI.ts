@@ -10,7 +10,6 @@ import { JokerComApiDomainPriceType } from "./types/JokerComApiDomainPriceType";
 import { JokerComApiPeriodType } from "./types/JokerComApiPeriodType";
 import { JokerComApiDomainCheckDTO } from "./types/JokerComApiDomainCheckDTO";
 import { JokerComApiRegisterDTO } from "./types/JokerComApiRegisterDTO";
-import { JokerStringObject } from "./types/JokerStringObject";
 import { JokerComApiProfileDTO } from "./types/JokerComApiProfileDTO";
 
 /**

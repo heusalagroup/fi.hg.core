@@ -63,9 +63,8 @@ export function isRepositoryEntry<T> (
     );
 }
 
-export function explainRepositoryEntry<T> (
+export function explainRepositoryEntry (
     value    : any,
-    isT      : TestCallbackNonStandard,
     explainT : ExplainCallback
 ) : string {
     return explain(

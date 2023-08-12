@@ -42,7 +42,7 @@ export function pathsToScalarItems (
         let allKeys: string[] = [];
         forEach(
             keys(value),
-            (itemKey: any, itemIndex: number) => {
+            (itemKey: any) => {
 
                 const itemFullKey = `${baseKey}${baseKey ? '.' : ''}${itemKey}`;
 

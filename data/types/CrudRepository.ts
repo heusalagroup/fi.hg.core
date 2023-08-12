@@ -47,6 +47,6 @@ export function createCrudRepositoryWithPersister<
     }
 
     const newImpl = new FinalCrudRepositoryImpl(persister);
-    RepositoryUtils.generateDefaultMethods<T, ID, RepositoryType>(FinalCrudRepositoryImpl.prototype, entityMetadata);
+    RepositoryUtils.generateDefaultMethods<T, ID>(FinalCrudRepositoryImpl.prototype, entityMetadata);
     return newImpl as unknown as RepositoryType;
 }

@@ -1,7 +1,8 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { SimpleStoredRepositoryItem } from "./SimpleStoredRepositoryItem";
-
-export interface SimpleRepositoryService<T extends SimpleStoredRepositoryItem> {
+/**
+ * @deprecated SimpleRepository framework should not be used anymore. Will be removed later.
+ */
+export interface SimpleRepositoryService {
     initialize () : Promise<void>;
 }

@@ -29,12 +29,12 @@ describe('MySqlUpdateQueryBuilder', () => {
     const tableName = 'cars';
     const idColumn = 'car_id';
     const nameColumn = 'car_name';
-    const ageColumn = 'car_age';
+    // const ageColumn = 'car_age';
     const dateColumn = 'car_date';
-    const idProperty = 'carId';
-    const nameProperty = 'carName';
-    const ageProperty = 'carAge';
-    const dateProperty = 'carDate';
+    // const idProperty = 'carId';
+    // const nameProperty = 'carName';
+    // const ageProperty = 'carAge';
+    // const dateProperty = 'carDate';
     const dateValue = '2023-04-04T14:58:59Z';
     const dateValueInDb = '2023-04-04 14:58:59';
     let dateOnlyListBuilder : QueryBuilder;

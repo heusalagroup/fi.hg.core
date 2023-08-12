@@ -15,6 +15,7 @@ export class RequestError extends Error {
     public readonly body    : JsonAny | undefined;
     public readonly headers : Headers | undefined;
 
+    // @ts-ignore
     private readonly __proto__: any;
 
     public constructor (

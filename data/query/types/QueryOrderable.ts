@@ -1,8 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { QueryBuilder, QueryStringFactory } from "./QueryBuilder";
-import { Sort } from "../../Sort";
-import { EntityField } from "../../types/EntityField";
 
 export interface QueryOrderable {
 

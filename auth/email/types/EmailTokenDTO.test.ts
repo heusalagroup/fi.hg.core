@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createEmailTokenDTO, EmailTokenDTO, explainEmailTokenDTOOrUndefined, isEmailTokenDTO, isEmailTokenDTOOrUndefined, parseEmailTokenDTO, stringifyEmailTokenDTO } from "./EmailTokenDTO";
+import { createEmailTokenDTO, explainEmailTokenDTOOrUndefined, isEmailTokenDTO, isEmailTokenDTOOrUndefined, parseEmailTokenDTO, stringifyEmailTokenDTO } from "./EmailTokenDTO";
 
 describe('EmailTokenDTO', () => {
 

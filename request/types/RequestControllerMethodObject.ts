@@ -11,7 +11,6 @@ import { OpenAPIV3 } from "../../types/openapi";
 import { isArray, isArrayOf } from "../../types/Array";
 import { every } from "../../functions/every";
 import { isStringArray } from "../../types/StringArray";
-import { has } from "../../functions/has";
 import { isBoolean } from "../../types/Boolean";
 
 export interface RequestControllerMethodObject {

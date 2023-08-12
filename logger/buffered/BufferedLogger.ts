@@ -13,11 +13,11 @@ import { LogWriter } from "../../types/LogWriter";
 export class BufferedLogger implements Logger {
 
     private readonly _writer : (value: string) => void;
-    private readonly _bufferSize : number;
-    private readonly _bufferTime : number;
+    // private readonly _bufferSize : number;
+    // private readonly _bufferTime : number;
     private readonly _bufferedWriter : LogWriter;
     private _logLevel : LogLevel;
-    private _bufferData : string;
+    // private _bufferData : string;
 
     /**
      * Constructs `BufferedLogger` instance which writes chunks of
@@ -42,9 +42,9 @@ export class BufferedLogger implements Logger {
         logLevel ?: LogLevel
     ) {
         this._writer = writer;
-        this._bufferSize = bufferSize;
-        this._bufferTime = bufferTime;
-        this._bufferData = '';
+        // this._bufferSize = bufferSize;
+        // this._bufferTime = bufferTime;
+        // this._bufferData = '';
         this._logLevel = logLevel ?? LogLevel.DEBUG;
         this._bufferedWriter = new BufferedLogWriter(
             this._writer,

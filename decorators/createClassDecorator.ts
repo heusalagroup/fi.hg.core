@@ -27,7 +27,7 @@ export type ClassDecorator = (
  *
  * @param esDecorator
  */
-export function createClassDecorator<T> (
+export function createClassDecorator (
     esDecorator: ClassDecorator
 ) : ClassDecoratorFunction {
     return (
@@ -41,7 +41,9 @@ export function createClassDecorator<T> (
             {
                 kind: 'class',
                 name: undefined,
-                addInitializer: (initializer: () => void): void => {
+                addInitializer: (
+                    // @ts-ignore
+                    initializer: () => void): void => {
                     LOG.warn(`Warning! "addInitializer" not yet implemented.`);
                 }
             }

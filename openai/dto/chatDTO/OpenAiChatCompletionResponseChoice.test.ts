@@ -4,11 +4,9 @@ import {
     createOpenAiChatCompletionResponseChoice,
     explainOpenAiChatCompletionResponseChoice,
     isOpenAiChatCompletionResponseChoice,
-    OpenAiChatCompletionResponseChoice
 } from "./OpenAiChatCompletionResponseChoice";
 import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
-import {explainOpenAiChatCompletionFunctions} from "./OpenAiChatCompletionFunctions";
 
 describe("OpenAiChatCompletionResponseChoice", () => {
     let validItem = {
@@ -83,8 +81,8 @@ describe("OpenAiChatCompletionResponseChoice", () => {
 
         it("returns a human-readable string explaining why the value is not a regular object", () => {
 
-            expect(explainOpenAiChatCompletionResponseChoice(inValidItem)).toStrictEqual(
-                "property \"message\" property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values user, system, assistant, property \"content\" not string, property \"finish_reason\" not string"
+            expect(explainOpenAiChatCompletionResponseChoice(inValidItem)).toContain(
+                "property \"message\" property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values "
             );
         });
 

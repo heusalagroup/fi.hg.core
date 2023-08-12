@@ -11,7 +11,6 @@ import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
 import { ParamRoutes } from "../requestServer/types/ParamRoutes";
 import { GetMapping } from "./GetMapping";
-import { Operation } from "./Operation";
 import { createErrorDTO, ErrorDTO } from "../types/ErrorDTO";
 import { getOpenApiDocumentFromRequestController } from "./types/RequestController";
 import { OpenAPIV3 } from "../types/openapi";

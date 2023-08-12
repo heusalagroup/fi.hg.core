@@ -88,7 +88,7 @@ export function explainRequestControllerMappingObject (value: any) : string {
     }
 
     if (!RequestInterfaceUtils.everyPropertyIs<RequestControllerMethodObject>(value.controllerProperties, isRequestControllerMethodObject)) {
-        return `Property "controllerProperties" was not valid: Some properties were not valid: ${ RequestInterfaceUtils.explainEveryPropertyIs<RequestControllerMethodObject>(value.controllerProperties, isRequestControllerMethodObject, explainRequestControllerMethodObject) }`;
+        return `Property "controllerProperties" was not valid: Some properties were not valid: ${ RequestInterfaceUtils.explainEveryPropertyIs(value.controllerProperties, isRequestControllerMethodObject, explainRequestControllerMethodObject) }`;
     }
 
     return "ok";

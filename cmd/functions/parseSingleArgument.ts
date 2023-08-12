@@ -18,5 +18,5 @@ export function parseSingleArgument (
     type: UserDefinedArgumentType,
     parserMap: UserDefinedParserMap | undefined,
 ): number | boolean | string {
-    return parseArgumentWithParam( argName, type, argName, type === ArgumentType.BOOLEAN ? 'true' : '', parserMap );
+    return parseArgumentWithParam( argName, type, type === ArgumentType.BOOLEAN ? 'true' : '', parserMap );
 }

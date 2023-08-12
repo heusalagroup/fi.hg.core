@@ -14,9 +14,6 @@ import { Column } from "../Column";
 import { ReadonlyJsonObject } from "../../Json";
 import { isDeepStrictEqual } from "util";
 import { PersisterType } from "../persisters/types/PersisterType";
-import { LogService } from "../../LogService";
-
-const LOG = LogService.createLogger( 'typeNativeJsonTests' );
 
 export const typeNativeJsonTests = (context : RepositoryTestContext) : void => {
 

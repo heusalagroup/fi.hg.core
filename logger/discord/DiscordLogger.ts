@@ -42,8 +42,6 @@ export class DiscordLogger implements Logger {
      */
     private readonly _retryPolicy : HttpRetryPolicy;
 
-    private readonly _maxMessageLength : number;
-
     private readonly _bufferedLogger : Logger;
 
     /**
@@ -63,7 +61,7 @@ export class DiscordLogger implements Logger {
         this._name = name;
         this._url = url;
         this._retryPolicy = retryPolicy ?? createDefaultHttpRetryPolicy();
-        this._maxMessageLength = maxMessageLength !== undefined && isNumber(maxMessageLength) && maxMessageLength < MAX_DISCORD_MESSAGE_LENGTH ? maxMessageLength : MAX_DISCORD_MESSAGE_LENGTH;
+        maxMessageLength = maxMessageLength !== undefined && isNumber(maxMessageLength) && maxMessageLength < MAX_DISCORD_MESSAGE_LENGTH ? maxMessageLength : MAX_DISCORD_MESSAGE_LENGTH;
 
         this._bufferedLogger = new BufferedLogger(
             (value: string) => {

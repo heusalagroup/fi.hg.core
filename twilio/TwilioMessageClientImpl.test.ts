@@ -3,11 +3,8 @@
 import { ReadonlyJsonObject } from "../Json";
 import { RequestClient } from "../RequestClient";
 import { LogLevel } from "../types/LogLevel";
-import { TwilioCreateMessageDTO } from "./dto/TwilioCreateMessageDTO";
 import { parseTwilioMessageDTO, TwilioMessageDTO } from "./dto/TwilioMessageDTO";
 import { TwilioCreateMessageBody } from "./dto/types/TwilioCreateMessageBody";
-import { TwilioCreateMessageContentSid } from "./dto/types/TwilioCreateMessageContentSid";
-import { TwilioCreateMessageMediaUrl } from "./dto/types/TwilioCreateMessageMediaUrl";
 import { TwilioCreateMessageRecipient } from "./dto/types/TwilioCreateMessageRecipient";
 import { TwilioCreateMessageSender } from "./dto/types/TwilioCreateMessageSender";
 import { TwilioMessageDirection } from "./dto/types/TwilioMessageDirection";
@@ -18,18 +15,18 @@ const mockMessageBodyString: string = "This is a message body";
 const mockRecipientString: string = "+123456789";
 const mockSenderString: string = "+987654321";
 
-const mockMediaUrl: TwilioCreateMessageMediaUrl = { MediaUrl: "http://example.com/image.jpg" };
-const mockMessageContentSid: TwilioCreateMessageContentSid = { ContentSid: "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" };
+// const mockMediaUrl: TwilioCreateMessageMediaUrl = { MediaUrl: "http://example.com/image.jpg" };
+// const mockMessageContentSid: TwilioCreateMessageContentSid = { ContentSid: "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" };
 const mockMessageBody: TwilioCreateMessageBody = { Body: "This is a message body" };
 const mockRecipient: TwilioCreateMessageRecipient = { To: "+123456789" };
 const mockSender: TwilioCreateMessageSender = { From: "+987654321" };
-const mockUndefined: unknown = undefined;
-const mockInvalid: unknown = 42; // this is an invalid type to pass to these functions
-const mockTwilioCreateMessageDTO = {
-    To: "+123456789",
-    From: "+987654321",
-    Body: "This is a message body"
-};
+// const mockUndefined: unknown = undefined;
+// const mockInvalid: unknown = 42; // this is an invalid type to pass to these functions
+// const mockTwilioCreateMessageDTO = {
+//     To: "+123456789",
+//     From: "+987654321",
+//     Body: "This is a message body"
+// };
 const mockTwilioCreateMessageBody = 'To=%2B123456789&From=%2B987654321&Body=This+is+a+message+body';
 
 // Assuming a mock ReadonlyJsonObject that fits your requirements
@@ -92,11 +89,11 @@ describe('TwilioMessageClientImpl', () => {
     });
 
     describe('sendSms', () => {
-        let mockDto: TwilioCreateMessageDTO;
-
-        beforeEach(() => {
-            mockDto = mockTwilioCreateMessageDTO;
-        });
+        // let mockDto: TwilioCreateMessageDTO;
+        //
+        // beforeEach(() => {
+        //     mockDto = mockTwilioCreateMessageDTO;
+        // });
 
         it('should send SMS successfully using DTOs', async () => {
             const mockResponse: TwilioMessageDTO = mockTwilioMessage;

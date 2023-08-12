@@ -16,7 +16,7 @@ describe('Entity', () => {
         constructor (dto ?: {barName: string}) {
             super()
             this.barId = undefined;
-            this.barName = undefined;
+            this.barName = dto?.barName ?? undefined;
         }
 
         @Id()
@@ -61,7 +61,7 @@ describe('Entity', () => {
     }
 
     let entity : FooEntity;
-    let metadata : EntityMetadata;
+    // let metadata : EntityMetadata;
 
     beforeEach(() => {
         entity = new FooEntity();
@@ -69,7 +69,7 @@ describe('Entity', () => {
         entity.fooName = 'Foo 123';
         entity.fooNumber = 123;
         entity.fooBoolean = true;
-        metadata = entity.getMetadata();
+        // metadata = entity.getMetadata();
     });
 
     describe('#getMetadata', () => {
@@ -147,7 +147,7 @@ describe('Entity', () => {
 
     describe('#toJSON', () => {
 
-        let fooMetadata : EntityMetadata;
+        // let fooMetadata : EntityMetadata;
         let fooEntity : FooEntity;
         let fooEntityWithId : FooEntity;
 
@@ -158,21 +158,21 @@ describe('Entity', () => {
             fooEntityWithId = new FooEntity({fooName: 'Hello world'});
             fooEntityWithId.fooId = '123';
 
-            fooMetadata = createEntityMetadata(
-                'foos',
-                'fooId',
-                [
-                    createEntityField('fooId', 'foo_id'),
-                    createEntityField('fooName', 'foo_name')
-                ],
-                [],
-                [],
-                [],
-                (dto?: any) => new FooEntity(dto),
-                [],
-                [],
-                []
-            );
+            // fooMetadata = createEntityMetadata(
+            //     'foos',
+            //     'fooId',
+            //     [
+            //         createEntityField('fooId', 'foo_id'),
+            //         createEntityField('fooName', 'foo_name')
+            //     ],
+            //     [],
+            //     [],
+            //     [],
+            //     (dto?: any) => new FooEntity(dto),
+            //     [],
+            //     [],
+            //     []
+            // );
 
         });
 
@@ -212,7 +212,7 @@ describe('Entity', () => {
         let fooEntityWithId : FooEntity;
 
         let barMetadata : EntityMetadata;
-        let barEntity : BarEntity;
+        // let barEntity : BarEntity;
         let barEntityWithId : BarEntity;
 
 
@@ -239,7 +239,7 @@ describe('Entity', () => {
                 []
             );
 
-            barEntity = new BarEntity({barName: 'Hello world'});
+            // barEntity = new BarEntity({barName: 'Hello world'});
 
             barEntityWithId = new BarEntity();
             barEntityWithId.barId = '123';

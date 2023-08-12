@@ -23,7 +23,6 @@ export class OpPaymentClientImpl implements OpPaymentClient, OpAuthClient {
     private readonly _auth: OpAuthClient;
     private readonly _signer: RequestSigner;
     private readonly _url: string;
-    private _token: string | undefined;
 
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
@@ -48,13 +47,11 @@ export class OpPaymentClientImpl implements OpPaymentClient, OpAuthClient {
         auth: OpAuthClient,
         signer: RequestSigner,
         url: string,
-        token ?: string | undefined,
     ) {
         this._client = client;
         this._auth = auth;
         this._signer = signer;
         this._url = url;
-        this._token = token;
     }
 
     public isAuthenticated () : boolean {

@@ -259,7 +259,6 @@ export function stringifyCsvRow (
     value: CsvRow,
     separator: string = DEFAULT_CSV_SEPARATOR,
     quote: string = DEFAULT_CSV_QUOTE,
-    lineBreak: string = DEFAULT_CSV_LINE_BREAK
 ): string {
     separator = separator ? separator : DEFAULT_CSV_SEPARATOR;
     quote     = quote     ? quote     : DEFAULT_CSV_QUOTE;
@@ -305,7 +304,7 @@ export function stringifyCsv (
 
     return map(
         value,
-        (row: CsvRow) => stringifyCsvRow(row, separator, quote, lineBreak)
+        (row: CsvRow) => stringifyCsvRow(row, separator, quote)
     ).join(lineBreak);
 }
 

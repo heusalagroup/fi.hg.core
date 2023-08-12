@@ -48,6 +48,7 @@ describe('ModelAttribute', () => {
                         @GetMapping('/hello/{id}')
                         public static getHello (
                             @PathVariable('id')
+                                // @ts-ignore
                                 id: string,
                             @ModelAttribute(MODEL_NAME)
                                 param: string
@@ -63,6 +64,7 @@ describe('ModelAttribute', () => {
                          * @private
                          */
                         @ModelAttribute(MODEL_NAME)
+                        // @ts-ignore
                         private static getFoo () {
                             return 'world';
                         }
@@ -108,6 +110,7 @@ describe('ModelAttribute', () => {
                         @GetMapping('/hello/{id}')
                         public static async getHello (
                             @PathVariable('id')
+                                // @ts-ignore
                                 id: string,
                             @ModelAttribute(MODEL_NAME)
                                 param: string
@@ -123,6 +126,7 @@ describe('ModelAttribute', () => {
                          * @private
                          */
                         @ModelAttribute(MODEL_NAME)
+                        // @ts-ignore
                         private static async getFoo () : Promise<string> {
                             return 'world';
                         }

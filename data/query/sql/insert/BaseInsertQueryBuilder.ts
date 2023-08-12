@@ -189,7 +189,7 @@ export abstract class BaseInsertQueryBuilder implements InsertQueryBuilder {
         if (!columnNameValues.length) throw new TypeError('No value placeholders detected for insert query builder! This must be an error.');
         const inputValues = map(this._inputQueries, (f) => f());
         if (!inputValues.length) throw new TypeError('No value placeholders detected for insert query builder! This must be an error.');
-        return `${prefixes.join(' ')} (${columnNameValues.join(', ')}) VALUES ${inputValues.join(', ')}`;
+        return `${prefixes.join(' ')} (${columnNameValues.join(this._columnNameSeparator)}) VALUES ${inputValues.join(', ')}`;
     }
 
     /**

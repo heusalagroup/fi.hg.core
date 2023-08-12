@@ -4,7 +4,6 @@ import {
     createOpenAiChatCompletionResponseDTO,
     explainOpenAiChatCompletionResponseDTO,
     isOpenAiChatCompletionResponseDTO,
-    OpenAiChatCompletionResponseDTO
 } from "./OpenAiChatCompletionResponseDTO";
 import {OpenAiModel} from "../../types/OpenAiModel";
 import {createOpenAiChatCompletionResponseChoice} from "./OpenAiChatCompletionResponseChoice";

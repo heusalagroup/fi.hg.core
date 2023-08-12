@@ -291,7 +291,6 @@ export class HttpService {
 
     public static async deleteText (
         url      : string,
-        data    ?: string,
         headers ?: {[key: string]: string},
         retryPolicy ?: HttpRetryPolicy
     ) : Promise<string | undefined> {
@@ -398,7 +397,6 @@ export class HttpService {
 
     public static async deleteTextEntity (
         url      : string,
-        data    ?: string,
         headers ?: {[key: string]: string},
         retryPolicy ?: HttpRetryPolicy
     ) : Promise<ResponseEntity<string|undefined> | undefined> {

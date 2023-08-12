@@ -3,10 +3,7 @@
 import { EntityField } from "../../../types/EntityField";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
 import { MySqlJsonObjectQueryBuilder } from "./MySqlJsonObjectQueryBuilder";
-import { EntityFieldType } from "../../../types/EntityFieldType";
 import { TemporalProperty } from "../../../types/TemporalProperty";
-import { find } from "../../../../functions/find";
-import { TemporalType } from "../../../types/TemporalType";
 import { EntityBuilderUtils } from "../../../utils/EntityBuilderUtils";
 
 /**
@@ -32,19 +29,19 @@ export class MySqlEntityJsonObjectBuilder implements QueryBuilder {
             tableName,
             fields,
             temporalProperties,
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._jsonBuilder.setPropertyFromColumn( columnName, tableName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._jsonBuilder.setPropertyFromColumn( columnName, tableName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._jsonBuilder.setPropertyFromColumn( columnName, tableName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._jsonBuilder.setPropertyFromColumnAsChar( columnName, tableName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._jsonBuilder.setPropertyFromColumn( columnName, tableName, columnName );
             },
         );

@@ -11,7 +11,6 @@ import { EntityFieldType } from "../../types/EntityFieldType";
 import { LogService } from "../../../LogService";
 import { LogLevel } from "../../../types/LogLevel";
 import { values } from "../../../functions/values";
-import { EntityRelationOneToMany } from "../../types/EntityRelationOneToMany";
 
 const LOG = LogService.createLogger('PersisterMetadataManagerImpl');
 

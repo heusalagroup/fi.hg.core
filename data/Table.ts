@@ -5,7 +5,10 @@ import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
 import { EntityMetadata } from "./types/EntityMetadata";
 
 export const Table = (tableName: string) => {
-    return (target: any, context ?: ClassDecoratorContext) : void => {
+    return (target: any,
+        // @ts-ignore @todo why unused?
+        context ?: ClassDecoratorContext
+    ) : void => {
         const TargetEntity = isFunction(target) ? target : undefined;
         EntityMetadataUtils.updateMetadata(target, (metadata: EntityMetadata) => {
             metadata.tableName = tableName;

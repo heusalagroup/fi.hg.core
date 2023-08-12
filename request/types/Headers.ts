@@ -316,7 +316,7 @@ export class Headers {
 
             if (!headerValue) return `${headerKey}`;
 
-            if (isArray(headerValue)) return `${headerKey}: ${headerValue.map((item : string) => {
+            if (isArray(headerValue)) return `${headerKey}: ${headerValue.map((/*item : string*/) => {
                 
                 if ( headerValue.indexOf(';') >= 0 || headerValue.indexOf(',') >= 0 ) {
                     return `"${headerValue}"`;

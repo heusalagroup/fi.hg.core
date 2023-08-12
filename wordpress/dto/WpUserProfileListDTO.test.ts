@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { explainWpUserProfileListDTO, isWpUserProfileListDTO, WpUserProfileListDTO } from "./WpUserProfileListDTO";
+import { explainWpUserProfileListDTO, isWpUserProfileListDTO } from "./WpUserProfileListDTO";
 import { explainOk } from "../../types/explain";
 
 const TEST_PROFILES = [

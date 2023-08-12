@@ -32,7 +32,6 @@ export class RepositoryUtils {
     public static generateDefaultMethods<
         T extends Entity,
         ID extends EntityIdTypes,
-        RepositoryType extends CrudRepository<T, ID>
     > (
         proto          : any,
         entityMetadata : EntityMetadata,
@@ -421,7 +420,7 @@ export class RepositoryUtils {
     ) : Promise<T[]> {
         const persister = self.__getPersister();
         const [where2, sort] : [Where | undefined, Sort | undefined] = this._parseSortAndWhereArgs(arg2, arg3);
-        return await persister.findAll<T, ID>(
+        return await persister.findAll<T>(
             entityMetadata,
             where2 ? where.and(where2) : where,
             sort
@@ -482,7 +481,7 @@ export class RepositoryUtils {
     ) : Promise<T | undefined> {
         const persister = self.__getPersister();
         const [where2, sort]: [Where | undefined, Sort | undefined]  = this._parseSortAndWhereArgs(arg2, arg3);
-        return await persister.findBy<T, ID>(
+        return await persister.findBy<T>(
             entityMetadata,
             where2 ? where.and(where2) : where,
             sort
@@ -507,7 +506,7 @@ export class RepositoryUtils {
     ) : Promise<void> {
         const persister = self.__getPersister();
         const [where2, ]: [Where | undefined, Sort | undefined]  = this._parseSortAndWhereArgs(arg2, arg3);
-        return await persister.deleteAll<T, ID>(
+        return await persister.deleteAll(
             entityMetadata,
             where2 ? where.and(where2) : where
         );
@@ -526,7 +525,7 @@ export class RepositoryUtils {
         where          : Where,
     ) : Promise<boolean> {
         const persister = self.__getPersister();
-        return await persister.existsBy<T, ID>(
+        return await persister.existsBy(
             entityMetadata,
             where
         );
@@ -545,7 +544,7 @@ export class RepositoryUtils {
         where          : Where,
     ) : Promise<number> {
         const persister = self.__getPersister();
-        return await persister.count<T, ID>(
+        return await persister.count(
             entityMetadata,
             where
         );

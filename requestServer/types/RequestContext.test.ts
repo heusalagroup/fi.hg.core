@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { parseRequestContextFromPath, RequestContext } from "./RequestContext";
+import { parseRequestContextFromPath } from "./RequestContext";
 
 describe('RequestContext', () => {
     describe('#parseRequestContextFromPath', () => {

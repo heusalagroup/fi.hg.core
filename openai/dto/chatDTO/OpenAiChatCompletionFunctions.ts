@@ -1,15 +1,11 @@
 // Copyright (c) 2022. Heusala Group <info@heusalagroup.fi>. All rights reserved.
 
-
-
-import {explainOpenAiUserType, isOpenAiUserType, OpenAiUserType} from "../../types/OpenAiUserType";
 import {explainRegularObject, isRegularObject} from "../../../types/RegularObject";
 import {explainNoOtherKeys, hasNoOtherKeysInDevelopment} from "../../../types/OtherKeys";
 import {explainString, explainStringOrUndefined, isString, isStringOrUndefined} from "../../../types/String";
 import {explain, explainNot, explainOk, explainProperty} from "../../../types/explain";
 import {explainObject, isObject} from "../../../types/Object";
 import {isUndefined} from "../../../types/undefined";
-import {isOpenAiChatCompletionFunctionCall} from "./OpenAiChatCompletionFunctionCall";
 
 export interface OpenAiChatCompletionFunctions {
     /**

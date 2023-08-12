@@ -220,6 +220,7 @@ export class RequestControllerUtils {
     public static attachControllerMethodModelAttributeBuilder (
         controller         : RequestController,
         propertyKey        : string,
+        // @ts-ignore @TODO: Why not used?
         propertyDescriptor : PropertyDescriptor,
         attributeName      : string
     ) {

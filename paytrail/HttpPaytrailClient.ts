@@ -20,7 +20,7 @@ import { PaytrailAddress } from "./types/PaytrailAddress";
 import { LogLevel } from "../types/LogLevel";
 import { PaytrailPaymentMethodGroup } from "./types/PaytrailPaymentMethodGroup";
 import { explainPaytrailPaymentProviderListDTO, isPaytrailPaymentProviderListDTO, PaytrailPaymentProviderListDTO } from "./dtos/PaytrailPaymentProviderListDTO";
-import { explainPaytrailProvider, isPaytrailProvider, PaytrailProvider } from "./types/PaytrailProvider";
+import { explainPaytrailProvider, isPaytrailProvider } from "./types/PaytrailProvider";
 import { explainArrayOf, isArrayOf } from "../types/Array";
 import { isPaytrailLimitedProvider, PaytrailLimitedProvider } from "./types/PaytrailLimitedProvider";
 

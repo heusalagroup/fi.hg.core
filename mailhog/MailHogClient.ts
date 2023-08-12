@@ -24,7 +24,6 @@ export class MailHogClient {
     private static _defaultUrl : string = '/';
 
     private readonly _url       : string;
-    private readonly _sessionId : string | undefined;
 
     public static setDefaultUrl (url : string) {
         this._defaultUrl = url;
@@ -44,7 +43,6 @@ export class MailHogClient {
         url : string = MailHogClient._defaultUrl
     ) {
         this._url = url;
-        this._sessionId = undefined;
     }
 
     public getUrl () : string {

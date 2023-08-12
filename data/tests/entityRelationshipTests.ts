@@ -604,12 +604,12 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // TODO: Implement support for this user flow: We're missing ability to insert related entities
         it.skip('can save items mapped by @ManyToOne', async () => {
 
-            const newCart = new CartEntity(
-                {
-                    name: 'Hello world 1',
-                    items: []
-                }
-            );
+            // const newCart = new CartEntity(
+            //     {
+            //         name: 'Hello world 1',
+            //         items: []
+            //     }
+            // );
 
             const newItem = new CartItemEntity(
                 {
@@ -669,12 +669,12 @@ export const entityRelationshipTests = (context : RepositoryTestContext) : void 
         // TODO: Implement support for this user flow: We're missing ability to insert related entities
         it.skip('can save carts mapped to items by @ManyToOne', async () => {
 
-            const newEntity = new CartEntity(
-                {
-                    name: 'Hello world',
-                    items: []
-                }
-            );
+            // const newEntity = new CartEntity(
+            //     {
+            //         name: 'Hello world',
+            //         items: []
+            //     }
+            // );
 
             const newItem = new CartItemEntity(
                 {

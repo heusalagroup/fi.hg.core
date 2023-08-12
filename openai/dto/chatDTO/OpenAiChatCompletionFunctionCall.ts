@@ -1,10 +1,8 @@
 // Copyright (c) 2022. Heusala Group <info@heusalagroup.fi>. All rights reserved.
 
-
-
-import {explainRegularObject, explainRegularObjectOrUndefined, isRegularObject} from "../../../types/RegularObject";
+import {explainRegularObject, isRegularObject} from "../../../types/RegularObject";
 import {explainNoOtherKeys, hasNoOtherKeysInDevelopment} from "../../../types/OtherKeys";
-import {explainString, explainStringOrUndefined, isString} from "../../../types/String";
+import {explainString, isString} from "../../../types/String";
 import {explain, explainNot, explainOk, explainProperty} from "../../../types/explain";
 import {isUndefined} from "../../../types/undefined";
 import {OpenAiChatCompletionFunctions} from "./OpenAiChatCompletionFunctions";

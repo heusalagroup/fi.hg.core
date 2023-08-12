@@ -1,10 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeys, explainNoOtherKeysInDevelopment, hasNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainNumber, isNumber } from "../../types/Number";
-import { explainString, isString } from "../../types/String";
-import { explainStringArray, isStringArray } from "../../types/StringArray";
+import { isString } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
 import { startsWith } from "../../functions/startsWith";
 import { parseJson } from "../../Json";

@@ -11,13 +11,17 @@ export class MockLogger implements Logger {
     /**
      * @inheritDoc
      */
-    public debug (...args: readonly any[]): void {
+    public debug (
+        // @ts-ignore
+        ...args: readonly any[]): void {
     }
 
     /**
      * @inheritDoc
      */
-    public error (...args: readonly any[]): void {
+    public error (
+        // @ts-ignore
+        ...args: readonly any[]): void {
     }
 
     /**
@@ -30,20 +34,26 @@ export class MockLogger implements Logger {
     /**
      * @inheritDoc
      */
-    public info (...args: readonly any[]): void {
+    public info (
+        // @ts-ignore
+        ...args: readonly any[]): void {
     }
 
     /**
      * @inheritDoc
      */
-    public setLogLevel (level: LogLevel | undefined): this {
+    public setLogLevel (
+        // @ts-ignore
+        level: LogLevel | undefined): this {
         return this;
     }
 
     /**
      * @inheritDoc
      */
-    public warn (...args: readonly any[]): void {
+    public warn (
+        // @ts-ignore
+        ...args: readonly any[]): void {
     }
 
 }

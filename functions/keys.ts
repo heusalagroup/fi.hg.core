@@ -12,7 +12,9 @@ export function keys<T extends keyof any = string> (
     isKey: TestCallbackNonStandard = isString
 ): T[] {
     if ( isArray(value) ) {
-        const indexes: number[] = map(value, (item: any, index: number) => index);
+        const indexes: number[] = map(value, (
+            // @ts-ignore
+            item: any, index: number) => index);
         const items: T[] = filter(indexes, (key: number) => isKey(key)) as T[];
         return items;
     } else if ( _isObject(value) ) {

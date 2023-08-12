@@ -60,23 +60,36 @@ export class MockOpenAiClient implements OpenAiClient {
     }
 
     async getCompletion(
+        // @ts-ignore
         prompt             : string,
+        // @ts-ignore
         model             ?: OpenAiModel | string | undefined,
+        // @ts-ignore
         max_tokens        ?: number | undefined,
+        // @ts-ignore
         temperature       ?: number | undefined,
+        // @ts-ignore
         top_p             ?: number | undefined,
+        // @ts-ignore
         frequency_penalty ?: number | undefined,
+        // @ts-ignore
         presence_penalty  ?: number | undefined
     ): Promise<OpenAiCompletionResponseDTO> {
         return {} as OpenAiCompletionResponseDTO;
     }
 
     async getEdit(
+        // @ts-ignore
         instruction        : string,
+        // @ts-ignore
         input             ?: string | undefined,
+        // @ts-ignore
         model             ?: OpenAiModel | string | undefined,
+        // @ts-ignore
         n                 ?: number | undefined,
+        // @ts-ignore
         temperature       ?: number | undefined,
+        // @ts-ignore
         top_p             ?: number | undefined
     ): Promise<OpenAiEditResponseDTO> {
         return {} as OpenAiEditResponseDTO;

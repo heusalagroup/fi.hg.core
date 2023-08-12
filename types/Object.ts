@@ -88,7 +88,6 @@ export function explainObjectOf<K extends string = string, T = any> (
     isKey: TestCallbackOf<K> | undefined = undefined,
     isItem: TestCallbackOf<T> | undefined = undefined,
     keyTypeName: string,
-    itemTypeName: string
 ): string {
     if ( isObjectOf<K>(value, isKey, isItem) ) {
         return explainOk();

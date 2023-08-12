@@ -1,6 +1,5 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { TwilioCreateMessageDTO } from "./dto/TwilioCreateMessageDTO";
 import { TwilioMessageDTO } from "./dto/TwilioMessageDTO";
 import { TwilioCreateMessageContent } from "./dto/types/TwilioCreateMessageContent";
 import { TwilioCreateMessageRecipient } from "./dto/types/TwilioCreateMessageRecipient";

@@ -122,7 +122,9 @@ export class ProductUtils {
      */
     public static calculateCompositeProductFromOptions (
         model    : Product,
+        // @ts-ignore
         options  : {readonly [key: string]: string|number|boolean},
+        // @ts-ignore
         products : readonly Product[]
     ) : Product {
 

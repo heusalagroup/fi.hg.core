@@ -1,9 +1,9 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import {explainOpenAiModel, isOpenAiModel, OpenAiModel, parseOpenAiModel} from "../../types/OpenAiModel";
+import {explainOpenAiModel, isOpenAiModel, OpenAiModel } from "../../types/OpenAiModel";
 import {explain, explainNot, explainOk, explainProperty} from "../../../types/explain";
-import { explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
-import { explainNumberOrUndefined, isNumber, isNumberOrUndefined } from "../../../types/Number";
+import { explainStringOrUndefined, isStringOrUndefined } from "../../../types/String";
+import { explainNumberOrUndefined, isNumberOrUndefined } from "../../../types/Number";
 import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
 import { explainNoOtherKeys, hasNoOtherKeys } from "../../../types/OtherKeys";
 import { isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
@@ -14,13 +14,12 @@ import {
     OpenAiChatCompletionMessage
 } from "./OpenAiChatCompletionMessage";
 import {
-    explainOpenAiChatCompletionFunctions, explainOpenAiChatCompletionFunctionsOrUndefined,
-    isOpenAiChatCompletionFunctions, isOpenAiChatCompletionFunctionsOrUndefined,
+    explainOpenAiChatCompletionFunctionsOrUndefined,
+    isOpenAiChatCompletionFunctionsOrUndefined,
     OpenAiChatCompletionFunctions
 } from "./OpenAiChatCompletionFunctions";
-import {isStringArray, isStringArrayOrUndefined} from "../../../types/StringArray";
-import { isBoolean, isBooleanOrUndefined } from "../../../types/Boolean";
-import { isObject } from "../../../types/Object";
+import { isStringArrayOrUndefined} from "../../../types/StringArray";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
 import {isUndefined} from "../../../types/undefined";
 import {isOpenAiChatCompletionFunctionCall} from "./OpenAiChatCompletionFunctionCall";
 

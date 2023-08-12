@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createVerifySmsCodeDTO, isVerifySmsCodeDTO, parseVerifySmsCodeDTO, stringifyVerifySmsCodeDTO, VerifySmsCodeDTO } from "./VerifySmsCodeDTO";
+import { createVerifySmsCodeDTO, isVerifySmsCodeDTO, parseVerifySmsCodeDTO, stringifyVerifySmsCodeDTO } from "./VerifySmsCodeDTO";
 
 describe('VerifySmsCodeDTO', () => {
     const validSmsTokenDTO = {

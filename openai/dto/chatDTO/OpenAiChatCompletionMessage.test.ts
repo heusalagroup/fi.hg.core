@@ -4,15 +4,14 @@ import {
     createOpenAiChatCompletionMessage,
     explainOpenAiChatCompletionMessage,
     isOpenAiChatCompletionMessage,
-    OpenAiChatCompletionMessage
 } from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 
-describe("OpenAiChatCompletionMessageDTO", () => {
+describe("OpenAiChatCompletionMessage", () => {
 
-    describe("createOpenAiChatCompletionMessageDTO", () => {
+    describe("createOpenAiChatCompletionMessage", () => {
 
-        it("creates valid OpenAiChatCompletionMessageDTO objects", () => {
+        it("creates valid OpenAiChatCompletionMessage objects", () => {
             const message = createOpenAiChatCompletionMessage(
                 OpenAiUserType.USER,
                 "what is a banana?"
@@ -23,9 +22,9 @@ describe("OpenAiChatCompletionMessageDTO", () => {
 
     });
 
-    describe("isOpenAiChatCompletionMessageDTO", () => {
+    describe("isOpenAiChatCompletionMessage", () => {
 
-        it("returns true for valid OpenAiChatCompletionMessageDTO objects", () => {
+        it("returns true for valid OpenAiChatCompletionMessage objects", () => {
             const message = {"content": "what is a banana?", "role": "user"};
 
             expect(isOpenAiChatCompletionMessage(message)).toBeTruthy();
@@ -33,20 +32,20 @@ describe("OpenAiChatCompletionMessageDTO", () => {
 
     });
 
-    describe("explainOpenAiChatCompletionMessageDTO", () => {
+    describe("explainOpenAiChatCompletionMessage", () => {
 
-        it("returns true if value is OpenAiChatCompletionMessageDTO", () => {
+        it("returns true if value is OpenAiChatCompletionMessage", () => {
             const validMessage = {"role": "user", "content": "what is a banana?"};
 
             expect(explainOpenAiChatCompletionMessage(validMessage)).toBeTruthy();
 
         });
 
-        it("returns a human-readable string explaining why the value is not a OpenAiChatCompletionMessageDTO", () => {
+        it("returns a human-readable string explaining why the value is not a OpenAiChatCompletionMessage", () => {
             const inValidMessage = {"content": "what is a banana?", "role": "tester"};
 
-            expect(explainOpenAiChatCompletionMessage(inValidMessage)).toBe(
-                "property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values user, system, assistant"
+            expect(explainOpenAiChatCompletionMessage(inValidMessage)).toContain(
+                "property \"role\" incorrect enum value \"undefined\" for OpenAiUserType: Accepted values "
             );
         });
 

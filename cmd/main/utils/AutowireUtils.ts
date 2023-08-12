@@ -28,7 +28,7 @@ export class AutowireUtils {
      * @param autowireService
      * @param paramNames
      */
-    public static autowireValues<T> (
+    public static autowireValues (
         autowireService: AutowireService,
         paramNames: readonly (string|undefined)[],
     ): any[] {
@@ -40,7 +40,7 @@ export class AutowireUtils {
         );
     }
 
-    public static autowireApply<T> (
+    public static autowireApply (
         target       : any,
         propertyName : string | symbol,
         method       : Function,

@@ -4,13 +4,11 @@ import {
     createOpenAiChatCompletionRequestDTO,
     explainOpenAiChatCompletionRequestDTO,
     isOpenAiChatCompletionRequestDTO,
-    OpenAiChatCompletionRequestDTO
 } from "./OpenAiChatCompletionRequestDTO";
 import {createOpenAiChatCompletionMessage} from "./OpenAiChatCompletionMessage";
 import {OpenAiUserType} from "../../types/OpenAiUserType";
 import {OpenAiModel} from "../../types/OpenAiModel";
 import {createOpenAiChatCompletionFunctions} from "./OpenAiChatCompletionFunctions";
-import {explainOpenAiChatCompletionFunctionCall} from "./OpenAiChatCompletionFunctionCall";
 
 describe("OpenAiChatCompletionRequestDTO", () => {
 

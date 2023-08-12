@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { Country, createCountry, isCountry, parseCountry } from "./Country";
+import { createCountry, isCountry, parseCountry } from "./Country";
 import { CountryCode } from "./CountryCode";
 import { Sovereignty } from "./Sovereignty";
 

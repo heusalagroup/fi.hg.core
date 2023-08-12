@@ -159,12 +159,20 @@ export class SimpleMemoryRepository<T extends SimpleStoredRepositoryItem> implem
     ): Promise<SimpleRepositoryEntry<T> | undefined> {
         // FIXME: Implement real long polling
         return new Promise((resolve, reject) => {
-            setTimeout(
-                () => {
-                    resolve(this.findById(id, includeMembers));
-                },
-                timeout ?? 4000
-            )
+            try {
+                setTimeout(
+                    () => {
+                        try {
+                            resolve(this.findById(id, includeMembers));
+                        } catch (err) {
+                            reject(err);
+                        }
+                    },
+                    timeout ?? 4000
+                );
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 

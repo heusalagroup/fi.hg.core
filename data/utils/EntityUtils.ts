@@ -68,7 +68,7 @@ export class EntityUtils {
      * @param parentMetadata
      * @param metadataManager
      */
-    public static toEntity<T extends Entity, ID extends EntityIdTypes> (
+    public static toEntity<T extends Entity> (
         dbEntity: KeyValuePairs,
         parentMetadata: EntityMetadata,
         metadataManager: PersisterMetadataManager
@@ -86,7 +86,13 @@ export class EntityUtils {
         forEach(
             fields,
             (field: EntityField) : void => {
-                const { fieldType, propertyName, columnName, metadata, columnDefinition } = field;
+                const {
+                    fieldType,
+                    propertyName,
+                    columnName
+                    /*, metadata*/,
+                    columnDefinition
+                } = field;
                 if (fieldType === EntityFieldType.JOINED_ENTITY) {
                     // This is handled below at @ManyToOne
                 } else {

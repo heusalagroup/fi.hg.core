@@ -5,10 +5,8 @@ import {
     isOpenAiEditResponseChoice,
     OpenAiEditResponseChoice
 } from "./OpenAiEditResponseChoice";
-import { explainOpenAiModel, isOpenAiModel, OpenAiModel
-} from "../types/OpenAiModel";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainNoOtherKeys, hasNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
+import { explainNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainString, isString } from "../../types/String";
 import { explain, explainProperty } from "../../types/explain";
 import { explainArrayOf, isArrayOf } from "../../types/Array";

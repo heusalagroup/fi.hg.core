@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { explainWpPostDTO, isWpPostDTO, WpPostDTO } from "./WpPostDTO";
+import { explainWpPostDTO, isWpPostDTO } from "./WpPostDTO";
 import { explainOk } from "../../types/explain";
 
 /**

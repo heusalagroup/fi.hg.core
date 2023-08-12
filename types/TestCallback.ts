@@ -26,7 +26,12 @@ export interface TestCallbackNonStandardOf<T> {
  * @nosideeffects
  */
 export function toTestCallback (callback: TestCallbackNonStandard): TestCallback {
-    return (value, index, arr): boolean => callback(value);
+    return (value,
+        // @ts-ignore @todo why unused?
+        index,
+        // @ts-ignore @todo why unused?
+        arr
+    ): boolean => callback(value);
 }
 
 /**

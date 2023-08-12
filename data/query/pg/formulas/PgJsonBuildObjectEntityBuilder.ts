@@ -2,8 +2,6 @@
 
 import { EntityField } from "../../../types/EntityField";
 import { QueryBuilder, QueryBuildResult, QueryValueFactory } from "../../types/QueryBuilder";
-import { PgRowBuilder } from "./PgRowBuilder";
-import { EntityFieldType } from "../../../types/EntityFieldType";
 import { PgJsonBuildObjectBuilder } from "./PgJsonBuildObjectBuilder";
 import { EntityBuilderUtils } from "../../../utils/EntityBuilderUtils";
 import { TemporalProperty } from "../../../types/TemporalProperty";
@@ -40,19 +38,19 @@ export class PgJsonBuildObjectEntityBuilder implements QueryBuilder {
             tableName,
             fields,
             temporalProperties,
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._builder.setPropertyAsTimestamp(columnName, tableName, columnName);
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._builder.setPropertyAsTimestamp(columnName, tableName, columnName);
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._builder.setPropertyAsTimestamp(columnName, tableName, columnName);
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._builder.setPropertyAsText(columnName, tableName, columnName);
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string/*, propertyName: string*/) => {
                 this._builder.setProperty(columnName, tableName, columnName);
             },
         );

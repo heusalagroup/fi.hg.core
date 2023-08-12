@@ -2,15 +2,13 @@
 
 import { explainNot, explainOk, explainOr } from "../../types/explain";
 import { createTwilioCreateMessageDTO, explainTwilioCreateMessageDTO, explainTwilioCreateMessageDTOOrUndefined, isTwilioCreateMessageDTO, isTwilioCreateMessageDTOOrUndefined, parseTwilioCreateMessageDTO } from "./TwilioCreateMessageDTO";
-import { TwilioCreateMessageBody } from "./types/TwilioCreateMessageBody";
-import { TwilioCreateMessageContentSid } from "./types/TwilioCreateMessageContentSid";
 import { TwilioCreateMessageMediaUrl } from "./types/TwilioCreateMessageMediaUrl";
 import { TwilioCreateMessageRecipient } from "./types/TwilioCreateMessageRecipient";
 import { TwilioCreateMessageSender } from "./types/TwilioCreateMessageSender";
 
 const mockMediaUrl: TwilioCreateMessageMediaUrl = { MediaUrl: "http://example.com/image.jpg" };
-const mockMessageBody: TwilioCreateMessageBody = { Body: "This is a message body" };
-const mockMessageContentSid: TwilioCreateMessageContentSid = { ContentSid: "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" };
+// const mockMessageBody: TwilioCreateMessageBody = { Body: "This is a message body" };
+// const mockMessageContentSid: TwilioCreateMessageContentSid = { ContentSid: "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" };
 const mockRecipient: TwilioCreateMessageRecipient = { To: "+123456789" };
 const mockSender: TwilioCreateMessageSender = { From: "+987654321" };
 const mockUndefined: unknown = undefined;

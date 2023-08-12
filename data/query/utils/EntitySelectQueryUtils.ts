@@ -25,19 +25,19 @@ export class EntitySelectQueryUtils {
             tableName,
             fields,
             temporalProperties,
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string /*, propertyName: string*/) => {
                 builder.includeColumnAsTimestamp( tableName, columnName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string /*, propertyName: string*/) => {
                 builder.includeColumnAsTime( tableName, columnName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string /*, propertyName: string*/) => {
                 builder.includeColumnAsDate( tableName, columnName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string /*, propertyName: string*/) => {
                 builder.includeColumnAsText( tableName, columnName, columnName );
             },
-            (tableName: string, columnName: string, propertyName: string) => {
+            (tableName: string, columnName: string /*, propertyName: string*/) => {
                 builder.includeColumn( tableName, columnName, columnName );
             },
         );

@@ -10,7 +10,7 @@ const LOG = LogService.createLogger('SimpleHttpRepositoryClient');
 
 export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> implements SimpleRepository<T> {
 
-    private readonly _url : string;
+    // private readonly _url : string;
     private _loggedIn : boolean;
 
     public static setLogLevel (value : LogLevel | undefined) {
@@ -18,13 +18,18 @@ export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> im
     }
 
     public constructor (
+        // @ts-ignore @TODO: Why not used?
         url: string
     ) {
-        this._url = url;
+        // this._url = url;
         this._loggedIn = false;
     }
 
-    public async createItem (data: T, members?: readonly string[]): Promise<SimpleRepositoryEntry<T>> {
+    public async createItem (
+        data: T,
+        // @ts-ignore @TODO: Why not used?
+        members?: readonly string[]
+    ): Promise<SimpleRepositoryEntry<T>> {
         return {
             id: 'new',
             data,
@@ -43,11 +48,17 @@ export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> im
         };
     }
 
-    public async deleteByIdList (list: readonly string[]): Promise<readonly SimpleRepositoryEntry<T>[]> {
+    public async deleteByIdList (
+        // @ts-ignore @TODO: Why not used?
+        list: readonly string[]
+    ): Promise<readonly SimpleRepositoryEntry<T>[]> {
         return [];
     }
 
-    public async deleteByList (list: SimpleRepositoryEntry<T>[]): Promise<readonly SimpleRepositoryEntry<T>[]> {
+    public async deleteByList (
+        // @ts-ignore @TODO: Why not used?
+        list: SimpleRepositoryEntry<T>[]
+    ): Promise<readonly SimpleRepositoryEntry<T>[]> {
         return [];
     }
 
@@ -55,11 +66,15 @@ export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> im
         return [];
     }
 
-    public async findById (id: string, includeMembers?: boolean): Promise<SimpleRepositoryEntry<T> | undefined> {
+    public async findById (
+        // @ts-ignore @TODO: Why not used?
+        id: string, includeMembers?: boolean
+    ): Promise<SimpleRepositoryEntry<T> | undefined> {
         return undefined;
     }
 
-    public async findByIdAndUpdate (id: string, item: T): Promise<SimpleRepositoryEntry<T>> {
+    public async findByIdAndUpdate (
+        id: string, item: T): Promise<SimpleRepositoryEntry<T>> {
         return {
             id,
             data: item,
@@ -67,7 +82,10 @@ export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> im
         };
     }
 
-    public async findByProperty (propertyName: string, propertyValue: any): Promise<SimpleRepositoryEntry<T> | undefined> {
+    public async findByProperty (
+        // @ts-ignore @TODO: Why not used?
+        propertyName: string, propertyValue: any
+    ): Promise<SimpleRepositoryEntry<T> | undefined> {
         return undefined;
     }
 
@@ -75,23 +93,38 @@ export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> im
         return [];
     }
 
-    public async getAllByProperty (propertyName: string, propertyValue: any): Promise<readonly SimpleRepositoryEntry<T>[]> {
+    public async getAllByProperty (
+        // @ts-ignore @TODO: Why not used?
+        propertyName: string, propertyValue: any
+    ): Promise<readonly SimpleRepositoryEntry<T>[]> {
         return [];
     }
 
-    public async getSome (idList: readonly string[]): Promise<readonly SimpleRepositoryEntry<T>[]> {
+    public async getSome (
+        // @ts-ignore @TODO: Why not used?
+        idList: readonly string[]
+    ): Promise<readonly SimpleRepositoryEntry<T>[]> {
         return [];
     }
 
-    public async inviteToItem (id: string, members: readonly string[]): Promise<void> {
+    public async inviteToItem (
+        // @ts-ignore @TODO: Why not used?
+        id: string, members: readonly string[]
+    ): Promise<void> {
         return undefined;
     }
 
-    public isRepositoryEntryList (list: any): list is SimpleRepositoryEntry<T>[] {
+    public isRepositoryEntryList (
+        // @ts-ignore @TODO: Why not used?
+        list: any
+    ): list is SimpleRepositoryEntry<T>[] {
         return false;
     }
 
-    public async subscribeToItem (id: string): Promise<void> {
+    public async subscribeToItem (
+        // @ts-ignore @TODO: Why not used?
+        id: string
+    ): Promise<void> {
         return undefined;
     }
 
@@ -111,12 +144,17 @@ export class SimpleHttpRepositoryClient<T extends SimpleStoredRepositoryItem> im
         };
     }
 
-    public async waitById (id: string, includeMembers?: boolean, timeout?: number): Promise<SimpleRepositoryEntry<T> | undefined> {
+    public async waitById (
+        // @ts-ignore @TODO: Why not used?
+        id: string, includeMembers?: boolean, timeout?: number
+    ): Promise<SimpleRepositoryEntry<T> | undefined> {
         return undefined;
     }
 
     public async login (
+        // @ts-ignore @TODO: Why not used?
         username: string,
+        // @ts-ignore @TODO: Why not used?
         password: string
     ) {
         this._loggedIn = true;

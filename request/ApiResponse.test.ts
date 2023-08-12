@@ -3,7 +3,6 @@
 import { RequestMapping } from "./RequestMapping";
 import { RequestRouterImpl } from "../requestServer/RequestRouterImpl";
 import { Headers } from "./types/Headers";
-import { RequestRouter } from "../requestServer/RequestRouter";
 import { LogLevel } from "../types/LogLevel";
 import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
@@ -51,12 +50,12 @@ describe('ApiResponse', () => {
 
                     }
 
-                    let router : RequestRouter;
-
-                    beforeEach( () => {
-                        // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
-                        router = RequestRouterImpl.create(Controller);
-                    } );
+                    // let router : RequestRouter;
+                    //
+                    // beforeEach( () => {
+                    //     // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
+                    //     router = RequestRouterImpl.create(Controller);
+                    // } );
 
                     it('can set OpenAPI responses', async () => {
 
@@ -117,6 +116,7 @@ describe('ApiResponse', () => {
                         @ApiResponse(RequestStatus.OK, 'Successful operation')
                         public static getHello (
                             @PathVariable('param')
+                                // @ts-ignore
                                 param: string,
                             @RequestHeader('Authorization')
                                 authorization: string
@@ -126,12 +126,12 @@ describe('ApiResponse', () => {
 
                     }
 
-                    let router : RequestRouter;
-
-                    beforeEach( () => {
-                        // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
-                        router = RequestRouterImpl.create(Controller);
-                    } );
+                    // let router : RequestRouter;
+                    //
+                    // beforeEach( () => {
+                    //     // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
+                    //     router = RequestRouterImpl.create(Controller);
+                    // } );
 
                     it('can set OpenAPI responses', async () => {
 
@@ -188,6 +188,7 @@ describe('ApiResponse', () => {
                         @ApiResponse(RequestStatus.InternalServerError, 'If error happens')
                         public static getHello (
                             @PathVariable('param')
+                                // @ts-ignore
                                 param: string,
                             @RequestHeader('Authorization')
                                 authorization: string
@@ -197,12 +198,12 @@ describe('ApiResponse', () => {
 
                     }
 
-                    let router : RequestRouter;
-
-                    beforeEach( () => {
-                        // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
-                        router = RequestRouterImpl.create(Controller);
-                    } );
+                    // let router : RequestRouter;
+                    //
+                    // beforeEach( () => {
+                    //     // RequestRouterImpl.setLogLevel(LogLevel.DEBUG);
+                    //     router = RequestRouterImpl.create(Controller);
+                    // } );
 
                     it('can set multiple OpenAPI responses', async () => {
 

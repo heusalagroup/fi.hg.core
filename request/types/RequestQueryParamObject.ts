@@ -3,7 +3,7 @@
 
 import { RequestParamValueType, isRequestParamValueType} from "./RequestParamValueType";
 import { RequestParamObjectType } from "./RequestParamObjectType";
-import { isString, isStringOrUndefined } from "../../types/String";
+import { isStringOrUndefined } from "../../types/String";
 
 export interface RequestQueryParamObject {
     objectType : RequestParamObjectType.QUERY_PARAM;

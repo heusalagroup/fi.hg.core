@@ -10,7 +10,6 @@ import { Entity } from "./Entity";
 import { Temporal } from "./Temporal";
 import { TemporalType } from "./types/TemporalType";
 import { createTemporalProperty, TemporalProperty } from "./types/TemporalProperty";
-import { CreationTimestamp } from "./CreationTimestamp";
 import { UpdateTimestamp } from "./UpdateTimestamp";
 
 describe('UpdateTimestamp', () => {

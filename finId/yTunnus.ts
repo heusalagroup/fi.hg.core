@@ -27,7 +27,7 @@
 
 import { LogService } from "../LogService";
 import { isString } from "../types/String";
-import { isNumber, parseInteger } from "../types/Number";
+import { parseInteger } from "../types/Number";
 import { isNumberArray } from "../types/NumberArray";
 
 const LOG = LogService.createLogger('yTunnus');

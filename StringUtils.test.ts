@@ -90,7 +90,10 @@ describe('StringUtils', () => {
         test('can process variables using a function as typed value', () => {
             expect( StringUtils.processVariables(
                 '${enabled}',
-                (key: string) => false,
+                (
+                    // @ts-ignore
+                    key: string
+                ) => false,
                 '${',
                 '}'
             ) ).toStrictEqual(false);

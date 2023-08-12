@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { CookieObject, parseCookieObject, parseCookiePair } from "./CookieObject";
+import { parseCookieObject, parseCookiePair } from "./CookieObject";
 import { SameSite } from "./SameSite";
 
 describe('CookieObject', () => {

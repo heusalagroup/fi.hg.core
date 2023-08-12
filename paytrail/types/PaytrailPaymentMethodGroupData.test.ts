@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
-import { createPaytrailPaymentMethodGroupData, explainPaytrailPaymentMethodGroupData, explainPaytrailPaymentMethodGroupDataOrUndefined, isPaytrailPaymentMethodGroupData, isPaytrailPaymentMethodGroupDataOrUndefined, parsePaytrailPaymentMethodGroupData, PaytrailPaymentMethodGroupData } from "./PaytrailPaymentMethodGroupData";
+import { createPaytrailPaymentMethodGroupData, explainPaytrailPaymentMethodGroupData, explainPaytrailPaymentMethodGroupDataOrUndefined, isPaytrailPaymentMethodGroupData, isPaytrailPaymentMethodGroupDataOrUndefined, parsePaytrailPaymentMethodGroupData } from "./PaytrailPaymentMethodGroupData";
 import { PaytrailPaymentMethodGroup } from "./PaytrailPaymentMethodGroup";
 
 describe('PaytrailPaymentMethodGroupData', () => {

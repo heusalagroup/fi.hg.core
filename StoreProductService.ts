@@ -41,6 +41,7 @@ export class StoreProductService {
     private static _loading     : boolean = false;
     private static _allProducts : readonly Product[] = [];
 
+    // @ts-ignore @todo Should write unit test for this
     private static setApiUrl (value: string) {
         this._apiUrl = value;
     }

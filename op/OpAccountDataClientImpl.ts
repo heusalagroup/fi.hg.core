@@ -29,7 +29,6 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
     private readonly _client: RequestClient;
     private readonly _auth: OpAuthClient;
     private readonly _url: string;
-    private _token: string | undefined;
 
     public static setLogLevel (level: LogLevel) {
         LOG.setLogLevel(level);
@@ -51,12 +50,10 @@ export class OpAccountDataClientImpl implements OpAccountDataClient, OpAuthClien
         client: RequestClient,
         auth: OpAuthClient,
         url: string,
-        token ?: string | undefined,
     ) {
         this._client = client;
         this._auth = auth;
         this._url = url;
-        this._token = token;
     }
 
     /**

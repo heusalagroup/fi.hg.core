@@ -231,7 +231,7 @@ describe('Where', () => {
             const conditions = where.getConditions();
 
             expect(conditions.length).toBe(1);
-            conditions.forEach((condition, index) => {
+            conditions.forEach((condition) => {
                 expect(condition).toBeInstanceOf(OrCondition);
 
                 const childConditions = (condition as OrCondition).getWhere().getConditions();

@@ -4,7 +4,7 @@ import { RequestMapping } from "./RequestMapping";
 import { RequestMethod } from "./types/RequestMethod";
 import { RequestRouterImpl } from "../requestServer/RequestRouterImpl";
 import { Headers } from "./types/Headers";
-import { RequestRouter } from "../requestServer/RequestRouter";import { ResponseEntity } from "./types/ResponseEntity";
+import { RequestRouter } from "../requestServer/RequestRouter";
 import { LogLevel } from "../types/LogLevel";
 import { StaticRoutes } from "../requestServer/types/StaticRoutes";
 import { PathVariable } from "./PathVariable";
@@ -94,6 +94,7 @@ describe('RequestHeader', () => {
                         @ApiResponse(RequestStatus.OK, 'Successful operation')
                         public static getHello (
                             @PathVariable('param')
+                                // @ts-ignore @TODO: Why not used?
                                 param: string,
                             @RequestHeader('Authorization')
                                 authorization: string

@@ -150,9 +150,9 @@ export class CommandArgumentUtils {
 
                         if ( has( userLongArgs, argKey ) ) {
                             const key = userLongArgs[argKey];
-                            const [ type, , , envKey, defaultValue ] = argConfigurationMap[key];
+                            const [ type, , , , ] = argConfigurationMap[key];
                             try {
-                                userArgs[key] = parseArgumentWithParam( argName, type, argKey, argValue, parserMap );
+                                userArgs[key] = parseArgumentWithParam( argName, type, argValue, parserMap );
                             } catch (err) {
                                 return CommandArgumentUtils._getArgumentParseError(err, nodePath, scriptNameFromArgs, freeArgs, extraArgs, userArgs );
                             }
@@ -161,9 +161,9 @@ export class CommandArgumentUtils {
 
                         if ( has( userShortArgs, argKey ) ) {
                             const key = userShortArgs[argKey];
-                            const [ type, , , envKey, defaultValue ] = argConfigurationMap[key];
+                            const [ type, , , , ] = argConfigurationMap[key];
                             try {
-                                userArgs[key] = parseArgumentWithParam( argName, type, argKey, argValue, parserMap );
+                                userArgs[key] = parseArgumentWithParam( argName, type, argValue, parserMap );
                             } catch (err) {
                                 return CommandArgumentUtils._getArgumentParseError(err, nodePath, scriptNameFromArgs, freeArgs, extraArgs, userArgs );
                             }
@@ -174,7 +174,7 @@ export class CommandArgumentUtils {
 
                         if ( has( userLongArgs, argName ) ) {
                             const key = userLongArgs[argName];
-                            const [ type, , , envKey, defaultValue ] = argConfigurationMap[key];
+                            const [ type, , , , ] = argConfigurationMap[key];
                             try {
                                 userArgs[key] = parseSingleArgument( argName, type, parserMap );
                             } catch (err) {
@@ -185,7 +185,7 @@ export class CommandArgumentUtils {
 
                         if ( has( userShortArgs, argName ) ) {
                             const key = userShortArgs[argName];
-                            const [ type, , , envKey, defaultValue ] = argConfigurationMap[key];
+                            const [ type, , , ,  ] = argConfigurationMap[key];
                             try {
                                 userArgs[key] = parseSingleArgument( argName, type, parserMap );
                             } catch (err) {
@@ -221,7 +221,6 @@ export class CommandArgumentUtils {
                     userArgs[key] = parseArgumentWithParam(
                         envKey,
                         type,
-                        key,
                         process.env[envKey] as unknown as string,
                         parserMap
                     );

@@ -74,6 +74,7 @@ describe('SimpleMemoryRepository', () => {
             expect(list[0]?.data.id).toBe(item?.data.id);
             expect(list[0]?.data.target).toBe(item?.data.target);
 
+            // @ts-ignore @TODO: Why not used?
             const item2: SimpleRepositoryEntry<any> = await memoryRepository.createItem(test2);
 
         });
@@ -104,6 +105,7 @@ describe('SimpleMemoryRepository', () => {
             expect(item?.data.id).toBe("2");
             expect(item?.data.target).toBe("test2");
 
+            // @ts-ignore @TODO: Why not used?
             const item3: SimpleRepositoryEntry<any> = await memoryRepository.createItem(test2);
 
             //getAllByProperty
@@ -125,6 +127,7 @@ describe('SimpleMemoryRepository', () => {
 
             const propertyItemUniqueId = await memoryRepository.findByProperty('id', itemUnique?.data.id);
             expect(propertyItemUnique?.data.id).toBe("22");
+            expect(propertyItemUniqueId?.data.id).toBe("22");
 
         });
 
@@ -134,9 +137,8 @@ describe('SimpleMemoryRepository', () => {
     describe('modifications', () => {
 
         let id: string;
-        let item4: SimpleRepositoryEntry<any>;
-
-        let modification: SimpleRepositoryEntry<any>;
+        // let item4: SimpleRepositoryEntry<any>;
+        // let modification: SimpleRepositoryEntry<any>;
 
         let modificationData = {id: "11", target: "modification"};
 
@@ -184,7 +186,7 @@ describe('SimpleMemoryRepository', () => {
 
     describe('delete operations', () => {
         let id: string;
-        let item5: SimpleRepositoryEntry<any>;
+        // let item5: SimpleRepositoryEntry<any>;
 
         const memoryrepository = new SimpleMemoryRepository(isStoredRepositoryItem);
 
@@ -211,7 +213,7 @@ describe('SimpleMemoryRepository', () => {
 
     describe('wait by id', () => {
         let id: string;
-        let item5: SimpleRepositoryEntry<any>;
+        // let item5: SimpleRepositoryEntry<any>;
 
         const memoryrepository = new SimpleMemoryRepository(isStoredRepositoryItem);
 

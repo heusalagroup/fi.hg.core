@@ -2,7 +2,6 @@
 
 import { Condition } from "./types/Condition";
 import { ConditionTarget } from "./types/ConditionTarget";
-import { EqualCondition } from "./EqualCondition";
 
 export class AfterCondition<T = any> extends Condition {
 

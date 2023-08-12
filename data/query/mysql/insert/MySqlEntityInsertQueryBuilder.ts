@@ -6,7 +6,6 @@ import { MySqlInsertQueryBuilder } from "./MySqlInsertQueryBuilder";
 import { EntityInsertQueryBuilder } from "../../sql/insert/EntityInsertQueryBuilder";
 import { Entity } from "../../../Entity";
 import { forEach } from "../../../../functions/forEach";
-import { map } from "../../../../functions/map";
 import { find } from "../../../../functions/find";
 import { MySqlListQueryBuilder } from "../types/MySqlListQueryBuilder";
 import { filter } from "../../../../functions/filter";
@@ -15,7 +14,7 @@ import { LogService } from "../../../../LogService";
 import { EntityFieldType } from "../../../types/EntityFieldType";
 import { LogLevel } from "../../../../types/LogLevel";
 import { EntityUtils } from "../../../utils/EntityUtils";
-import { ColumnDefinition, isJsonColumnDefinition, isTimeColumnDefinition } from "../../../types/ColumnDefinition";
+import { isJsonColumnDefinition, isTimeColumnDefinition } from "../../../types/ColumnDefinition";
 
 const LOG = LogService.createLogger( 'MySqlEntityInsertQueryBuilder' );
 

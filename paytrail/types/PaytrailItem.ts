@@ -4,7 +4,7 @@ import { explain, explainProperty } from "../../types/explain";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../types/String";
 import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../types/OtherKeys";
 import { explainRegularObject, isRegularObject } from "../../types/RegularObject";
-import { explainPaytrailComission, explainPaytrailComissionOrUndefined, isPaytrailComission, isPaytrailComissionOrUndefined, PaytrailComission } from "./PaytrailComission";
+import { explainPaytrailComissionOrUndefined, isPaytrailComissionOrUndefined, PaytrailComission } from "./PaytrailComission";
 import { explainNumber, isNumber } from "../../types/Number";
 
 /**

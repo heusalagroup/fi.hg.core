@@ -4,8 +4,6 @@ import fs from "fs";
 import path from "path";
 import { LogService } from "./LogService";
 import { ReadonlyJsonAny } from "./Json";
-import { replaceAll } from "./functions/replaceAll";
-import { keys } from "./functions/keys";
 import { replaceTemplate } from "./functions/replaceTemplate";
 
 const LOG = LogService.createLogger('SyncFileUtils');

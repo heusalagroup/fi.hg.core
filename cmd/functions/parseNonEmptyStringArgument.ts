@@ -1,6 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainNonEmptyString, explainString, parseNonEmptyString } from "../../types/String";
+import { explainNonEmptyString, parseNonEmptyString } from "../../types/String";
 
 /**
  * Parses a command line argument with a type of string.
