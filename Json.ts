@@ -216,7 +216,9 @@ export function isReadonlyJsonArrayOf<T extends ReadonlyJsonAny = ReadonlyJsonAn
 
 export function parseJson (value: any) : JsonAny | undefined {
     try {
-        return JSON.parse(value);
+        if ( isString(value) ) return JSON.parse(value);
+        if ( isReadonlyJsonAny(value) ) return cloneJson(value) as JsonAny;
+        return undefined;
     } catch (err) {
         return undefined;
     }
