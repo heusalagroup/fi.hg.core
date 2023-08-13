@@ -1,6 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainEnum } from "../../../types/Enum";
+import { explainNot, explainOk, explainOr } from "../../../types/explain";
+import { isUndefined } from "../../../types/undefined";
 
 export enum InventoryState {
 
@@ -92,4 +94,12 @@ export function parseInventoryState (value: any): InventoryState | undefined {
         case 'ERROR'    : return InventoryState.ERROR;
         default     : return undefined;
     }
+}
+
+export function isInventoryStateOrUndefined (value: unknown): value is InventoryState | undefined {
+    return isUndefined(InventoryState) || isInventoryState(value);
+}
+
+export function explainInventoryStateOrUndefined (value: unknown): string {
+    return isInventoryStateOrUndefined(value) ? explainOk() : explainNot(explainOr(['InventoryState', 'undefined']));
 }

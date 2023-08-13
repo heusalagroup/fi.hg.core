@@ -1,6 +1,8 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainEnum } from "../../../types/Enum";
+import { explainNot, explainOk, explainOr } from "../../../types/explain";
+import { isUndefined } from "../../../types/undefined";
 
 export enum ProductPriceType {
     ONCE     = "ONCE",
@@ -127,5 +129,13 @@ export function getBillingMonthsForProductPriceType (priceType: ProductPriceType
 
     }
     throw new TypeError(`Unsupported type: ${priceType}`);
+}
+
+export function isProductPriceTypeOrUndefined (value: unknown): value is ProductPriceType | undefined {
+    return isUndefined(ProductPriceType) || isProductPriceType(value);
+}
+
+export function explainProductPriceTypeOrUndefined (value: unknown): string {
+    return isProductPriceTypeOrUndefined(value) ? explainOk() : explainNot(explainOr(['ProductPriceType', 'undefined']));
 }
 

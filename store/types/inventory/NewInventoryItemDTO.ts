@@ -2,13 +2,13 @@
 
 import { isBooleanOrUndefined } from "../../../types/Boolean";
 import { isProductTypeOrUndefined, ProductType } from "../product/ProductType";
-import { isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
-import { isInventoryState, InventoryState } from "./InventoryState";
+import { isProductPriceTypeOrUndefined, ProductPriceType } from "../product/ProductPriceType";
+import { InventoryState, isInventoryStateOrUndefined } from "./InventoryState";
 import { isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../../Json";
 import { isString, isStringOrUndefined } from "../../../types/String";
 import { isNumberOrUndefined } from "../../../types/Number";
 import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeys } from "../../../types/OtherKeys";
+import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 
 export interface NewInventoryItemDTO {
     readonly clientId            : string;
@@ -67,7 +67,7 @@ export function createNewInventoryItemDTO (
 export function isNewInventoryItemDTO (value: any): value is NewInventoryItemDTO {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'clientId',
             'date',
             'endDate',
@@ -87,14 +87,14 @@ export function isNewInventoryItemDTO (value: any): value is NewInventoryItemDTO
         && isString(value?.clientId)
         && isStringOrUndefined(value?.date)
         && isStringOrUndefined(value?.endDate)
-        && isInventoryState(value?.state)
+        && isInventoryStateOrUndefined(value?.state)
         && isStringOrUndefined(value?.title)
         && isStringOrUndefined(value?.summary)
         && isStringOrUndefined(value?.productId)
         && isProductTypeOrUndefined(value?.productType)
         && isNumberOrUndefined(value?.priceSum)
         && isNumberOrUndefined(value?.priceVatPercent)
-        && isProductPriceType(value?.priceType)
+        && isProductPriceTypeOrUndefined(value?.priceType)
         && isStringOrUndefined(value?.internalNote)
         && isBooleanOrUndefined(value?.isTerminated)
         && isBooleanOrUndefined(value?.onHold)
