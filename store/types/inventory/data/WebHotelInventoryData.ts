@@ -1,10 +1,11 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { explainNumberOrUndefined, isNumberOrUndefined } from "../../../../types/Number";
 import { InventoryData } from "./InventoryData";
 import { explain, explainProperty } from "../../../../types/explain";
 import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../../types/String";
 import { explainRegularObject, isRegularObject } from "../../../../types/RegularObject";
-import { explainNoOtherKeys, hasNoOtherKeys } from "../../../../types/OtherKeys";
+import { explainNoOtherKeys, explainNoOtherKeysInDevelopment, hasNoOtherKeys, hasNoOtherKeysInDevelopment } from "../../../../types/OtherKeys";
 
 export interface WebHotelInventoryData extends InventoryData {
 
@@ -18,27 +19,45 @@ export interface WebHotelInventoryData extends InventoryData {
      */
     readonly name : string;
 
+    /**
+     * Total storage in MBs this item should use (but not limited to this)
+     */
+    readonly totalStorage ?: number | undefined;
+
+    /**
+     * Total used storage in MBs from the system
+     */
+    readonly usedStorage ?: number | undefined;
+
 }
 
 export function createWebHotelInventoryData (
     system: string,
-    name : string
+    name  : string,
+    totalStorage ?: number | undefined,
+    usedStorage  ?: number | undefined,
 ): WebHotelInventoryData {
     return {
         system,
-        name
+        name,
+        totalStorage: totalStorage ?? undefined,
+        usedStorage: usedStorage ?? undefined,
     };
 }
 
 export function isWebHotelInventoryData (value: any): value is WebHotelInventoryData {
     return (
         isRegularObject(value)
-        && hasNoOtherKeys(value, [
+        && hasNoOtherKeysInDevelopment(value, [
             'system',
-            'name'
+            'name',
+            'totalStorage',
+            'usedStorage',
         ])
         && isString(value?.system)
         && isString(value?.name)
+        && isNumberOrUndefined(value?.totalStorage)
+        && isNumberOrUndefined(value?.usedStorage)
     );
 }
 
@@ -46,12 +65,16 @@ export function explainWebHotelInventoryData (value: any): string {
     return explain(
         [
             explainRegularObject(value)
-            && explainNoOtherKeys(value, [
+            && explainNoOtherKeysInDevelopment(value, [
                 'system',
-                'name'
+                'name',
+                'totalStorage',
+                'usedStorage',
             ])
             && explainProperty("system", explainString(value?.system))
             && explainProperty("name", explainString(value?.name))
+            && explainProperty("totalStorage", explainNumberOrUndefined(value?.totalStorage))
+            && explainProperty("usedStorage", explainNumberOrUndefined(value?.usedStorage))
         ]
     );
 }
@@ -61,10 +84,14 @@ export function isPartialWebHotelInventoryData (value: any): value is Partial<We
         isRegularObject(value)
         && hasNoOtherKeys(value, [
             'system',
-            'name'
+            'name',
+            'totalStorage',
+            'usedStorage',
         ])
         && isStringOrUndefined(value?.system)
         && isStringOrUndefined(value?.name)
+        && isNumberOrUndefined(value?.totalStorage)
+        && isNumberOrUndefined(value?.usedStorage)
     );
 }
 
@@ -74,16 +101,16 @@ export function explainPartialWebHotelInventoryData (value: any): string {
             explainRegularObject(value)
             && explainNoOtherKeys(value, [
                 'system',
-                'name'
+                'name',
+                'totalStorage',
+                'usedStorage',
             ])
             && explainProperty("system", explainStringOrUndefined(value?.system))
             && explainProperty("name", explainStringOrUndefined(value?.name))
+            && explainProperty("totalStorage", explainNumberOrUndefined(value?.totalStorage))
+            && explainProperty("usedStorage", explainNumberOrUndefined(value?.usedStorage))
         ]
     );
-}
-
-export function stringifyWebHotelInventoryData (value: WebHotelInventoryData): string {
-    return `WebHotelInventoryData(${value})`;
 }
 
 export function parseWebHotelInventoryData (value: any): WebHotelInventoryData | undefined {
