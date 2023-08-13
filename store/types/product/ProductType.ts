@@ -1,6 +1,8 @@
 // Copyright (c) 2021-2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { explainEnum } from "../../../types/Enum";
+import { explainNot, explainOk, explainOr } from "../../../types/explain";
+import { isUndefined } from "../../../types/undefined";
 
 export enum ProductType {
     PHOTO                = "PHOTO",
@@ -96,4 +98,12 @@ export function parseProductType (value: any): ProductType | undefined {
         default    :
             return undefined;
     }
+}
+
+export function isProductTypeOrUndefined (value: unknown): value is ProductType | undefined {
+    return isUndefined(ProductType) || isProductType(value);
+}
+
+export function explainProductTypeOrUndefined (value: unknown): string {
+    return isProductTypeOrUndefined(value) ? explainOk() : explainNot(explainOr(['ProductType', 'undefined']));
 }

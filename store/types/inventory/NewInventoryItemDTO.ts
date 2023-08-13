@@ -1,12 +1,12 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isBoolean } from "../../../types/Boolean";
-import { isProductType, ProductType } from "../product/ProductType";
+import { isBooleanOrUndefined } from "../../../types/Boolean";
+import { isProductTypeOrUndefined, ProductType } from "../product/ProductType";
 import { isProductPriceType, ProductPriceType } from "../product/ProductPriceType";
 import { isInventoryState, InventoryState } from "./InventoryState";
-import { isReadonlyJsonObject, ReadonlyJsonObject } from "../../../Json";
-import { isString } from "../../../types/String";
-import { isNumber } from "../../../types/Number";
+import { isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../../Json";
+import { isString, isStringOrUndefined } from "../../../types/String";
+import { isNumberOrUndefined } from "../../../types/Number";
 import { isRegularObject } from "../../../types/RegularObject";
 import { hasNoOtherKeys } from "../../../types/OtherKeys";
 
@@ -85,20 +85,20 @@ export function isNewInventoryItemDTO (value: any): value is NewInventoryItemDTO
             'data'
         ])
         && isString(value?.clientId)
-        && isString(value?.date)
-        && isString(value?.endDate)
+        && isStringOrUndefined(value?.date)
+        && isStringOrUndefined(value?.endDate)
         && isInventoryState(value?.state)
-        && isString(value?.title)
-        && isString(value?.summary)
-        && isString(value?.productId)
-        && isProductType(value?.productType)
-        && isNumber(value?.priceSum)
-        && isNumber(value?.priceVatPercent)
+        && isStringOrUndefined(value?.title)
+        && isStringOrUndefined(value?.summary)
+        && isStringOrUndefined(value?.productId)
+        && isProductTypeOrUndefined(value?.productType)
+        && isNumberOrUndefined(value?.priceSum)
+        && isNumberOrUndefined(value?.priceVatPercent)
         && isProductPriceType(value?.priceType)
-        && isString(value?.internalNote)
-        && isBoolean(value?.isTerminated)
-        && isBoolean(value?.onHold)
-        && isReadonlyJsonObject(value?.data)
+        && isStringOrUndefined(value?.internalNote)
+        && isBooleanOrUndefined(value?.isTerminated)
+        && isBooleanOrUndefined(value?.onHold)
+        && isReadonlyJsonObjectOrUndefined(value?.data)
     );
 }
 
