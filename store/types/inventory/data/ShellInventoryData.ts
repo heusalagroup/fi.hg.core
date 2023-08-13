@@ -23,19 +23,33 @@ export interface ShellInventoryData extends InventoryData {
      */
     readonly port      : number;
 
+    /**
+     * Total storage in MBs this item should use (but not limited to this)
+     */
+    readonly totalStorage ?: number | undefined;
+
+    /**
+     * Total used storage in MBs from the system
+     */
+    readonly usedStorage ?: number | undefined;
+
 }
 
 export function createShellInventoryData (
     hostname  : string,
     username  : string,
     realName  : string,
-    port     ?: number
+    port     ?: number,
+    totalStorage ?: number | undefined,
+    usedStorage  ?: number | undefined,
 ): ShellInventoryData {
     return {
         hostname,
         username,
         realName,
-        port: port ?? 22
+        port: port ?? 22,
+        totalStorage: totalStorage ?? undefined,
+        usedStorage: usedStorage ?? undefined,
     };
 }
 
@@ -47,11 +61,15 @@ export function isShellInventoryData (value: any): value is ShellInventoryData {
             'username',
             'realName',
             'port',
+            'totalStorage',
+            'usedStorage',
         ])
         && isString(value?.hostname)
         && isString(value?.username)
         && isString(value?.realName)
         && isNumber(value?.port)
+        && isNumberOrUndefined(value?.totalStorage)
+        && isNumberOrUndefined(value?.usedStorage)
     );
 }
 
@@ -64,11 +82,15 @@ export function explainShellInventoryData (value: any): string {
                 'username',
                 'realName',
                 'port',
+                'totalStorage',
+                'usedStorage',
             ])
             && explainProperty("hostname", explainString(value?.hostname))
             && explainProperty("username", explainString(value?.username))
             && explainProperty("realName", explainString(value?.realName))
             && explainProperty("port",     explainNumber(value?.port))
+            && explainProperty("totalStorage",     explainNumberOrUndefined(value?.totalStorage))
+            && explainProperty("usedStorage",      explainNumberOrUndefined(value?.usedStorage))
         ]
     );
 }
@@ -81,11 +103,15 @@ export function isPartialShellInventoryData (value: any): value is Partial<Shell
             'username',
             'realName',
             'port',
+            'totalStorage',
+            'usedStorage',
         ])
         && isStringOrUndefined(value?.hostname)
         && isStringOrUndefined(value?.username)
         && isStringOrUndefined(value?.realName)
         && isNumberOrUndefined(value?.port)
+        && isNumberOrUndefined(value?.totalStorage)
+        && isNumberOrUndefined(value?.usedStorage)
     );
 }
 
@@ -98,11 +124,15 @@ export function explainPartialShellInventoryData (value: any): string {
                 'username',
                 'realName',
                 'port',
+                'totalStorage',
+                'usedStorage',
             ])
             && explainProperty("hostname", explainStringOrUndefined(value?.hostname))
             && explainProperty("username", explainStringOrUndefined(value?.username))
             && explainProperty("realName", explainStringOrUndefined(value?.realName))
             && explainProperty("port",     explainNumberOrUndefined(value?.port))
+            && explainProperty("totalStorage",    explainNumberOrUndefined(value?.totalStorage))
+            && explainProperty("usedStorage",     explainNumberOrUndefined(value?.usedStorage))
         ]
     );
 }
