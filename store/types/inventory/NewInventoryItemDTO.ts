@@ -1,14 +1,16 @@
 // Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { isBooleanOrUndefined } from "../../../types/Boolean";
-import { isProductTypeOrUndefined, ProductType } from "../product/ProductType";
-import { isProductPriceTypeOrUndefined, ProductPriceType } from "../product/ProductPriceType";
-import { InventoryState, isInventoryStateOrUndefined } from "./InventoryState";
-import { isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../../Json";
-import { isString, isStringOrUndefined } from "../../../types/String";
-import { isNumberOrUndefined } from "../../../types/Number";
-import { isRegularObject } from "../../../types/RegularObject";
-import { hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
+import { explainBooleanOrUndefined, isBooleanOrUndefined } from "../../../types/Boolean";
+import { explain, explainNot, explainOk, explainOr, explainProperty } from "../../../types/explain";
+import { isUndefined } from "../../../types/undefined";
+import { explainProductTypeOrUndefined, isProductTypeOrUndefined, ProductType } from "../product/ProductType";
+import { explainProductPriceTypeOrUndefined, isProductPriceTypeOrUndefined, ProductPriceType } from "../product/ProductPriceType";
+import { explainInventoryStateOrUndefined, InventoryState, isInventoryStateOrUndefined } from "./InventoryState";
+import { explainReadonlyJsonObjectOrUndefined, isReadonlyJsonObjectOrUndefined, ReadonlyJsonObject } from "../../../Json";
+import { explainString, explainStringOrUndefined, isString, isStringOrUndefined } from "../../../types/String";
+import { explainNumberOrUndefined, isNumberOrUndefined } from "../../../types/Number";
+import { explainRegularObject, isRegularObject } from "../../../types/RegularObject";
+import { explainNoOtherKeysInDevelopment, hasNoOtherKeysInDevelopment } from "../../../types/OtherKeys";
 
 export interface NewInventoryItemDTO {
     readonly clientId            : string;
@@ -109,4 +111,52 @@ export function stringifyNewInventoryItemDTO (value: NewInventoryItemDTO): strin
 export function parseNewInventoryItemDTO (value: any): NewInventoryItemDTO | undefined {
     if ( isNewInventoryItemDTO(value) ) return value;
     return undefined;
+}
+
+export function explainNewInventoryItemDTO (value: any) : string {
+    return explain(
+        [
+            explainRegularObject(value),
+            explainNoOtherKeysInDevelopment(value, [
+                'clientId',
+                'date',
+                'endDate',
+                'state',
+                'title',
+                'summary',
+                'productId',
+                'productType',
+                'priceSum',
+                'priceVatPercent',
+                'priceType',
+                'internalNote',
+                'isTerminated',
+                'onHold',
+                'data'
+            ])
+            , explainProperty("clientId", explainString(value?.clientId))
+            , explainProperty("date", explainStringOrUndefined(value?.date))
+            , explainProperty("endDate", explainStringOrUndefined(value?.endDate))
+            , explainProperty("state", explainInventoryStateOrUndefined(value?.state))
+            , explainProperty("title", explainStringOrUndefined(value?.title))
+            , explainProperty("summary", explainStringOrUndefined(value?.summary))
+            , explainProperty("productId", explainStringOrUndefined(value?.productId))
+            , explainProperty("productType", explainProductTypeOrUndefined(value?.productType))
+            , explainProperty("priceSum", explainNumberOrUndefined(value?.priceSum))
+            , explainProperty("priceVatPercent", explainNumberOrUndefined(value?.priceVatPercent))
+            , explainProperty("priceType", explainProductPriceTypeOrUndefined(value?.priceType))
+            , explainProperty("internalNote", explainStringOrUndefined(value?.internalNote))
+            , explainProperty("isTerminated", explainBooleanOrUndefined(value?.isTerminated))
+            , explainProperty("onHold", explainBooleanOrUndefined(value?.onHold))
+            , explainProperty("data", explainReadonlyJsonObjectOrUndefined(value?.data))
+        ]
+    );
+}
+
+export function isNewInventoryItemDTOOrUndefined (value: unknown): value is NewInventoryItemDTO | undefined {
+    return isUndefined(value) || isNewInventoryItemDTO(value);
+}
+
+export function explainNewInventoryItemDTOOrUndefined (value: unknown): string {
+    return isNewInventoryItemDTOOrUndefined(value) ? explainOk() : explainNot(explainOr(['NewInventoryItemDTO', 'undefined']));
 }

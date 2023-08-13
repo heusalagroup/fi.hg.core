@@ -132,7 +132,7 @@ export function getBillingMonthsForProductPriceType (priceType: ProductPriceType
 }
 
 export function isProductPriceTypeOrUndefined (value: unknown): value is ProductPriceType | undefined {
-    return isUndefined(ProductPriceType) || isProductPriceType(value);
+    return isUndefined(value) || isProductPriceType(value);
 }
 
 export function explainProductPriceTypeOrUndefined (value: unknown): string {

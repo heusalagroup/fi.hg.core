@@ -101,7 +101,7 @@ export function parseProductType (value: any): ProductType | undefined {
 }
 
 export function isProductTypeOrUndefined (value: unknown): value is ProductType | undefined {
-    return isUndefined(ProductType) || isProductType(value);
+    return isUndefined(value) || isProductType(value);
 }
 
 export function explainProductTypeOrUndefined (value: unknown): string {

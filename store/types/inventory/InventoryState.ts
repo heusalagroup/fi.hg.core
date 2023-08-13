@@ -97,7 +97,7 @@ export function parseInventoryState (value: any): InventoryState | undefined {
 }
 
 export function isInventoryStateOrUndefined (value: unknown): value is InventoryState | undefined {
-    return isUndefined(InventoryState) || isInventoryState(value);
+    return isUndefined(value) || isInventoryState(value);
 }
 
 export function explainInventoryStateOrUndefined (value: unknown): string {
