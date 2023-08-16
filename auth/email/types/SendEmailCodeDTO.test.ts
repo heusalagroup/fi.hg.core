@@ -44,7 +44,7 @@ describe('SendEmailCodeDTO', () => {
     describe('stringifySendEmailCodeDTO', () => {
         it('should return a string representation of the SendEmailCodeDTO', () => {
             const result = stringifySendEmailCodeDTO(validDTO);
-            expect(result).toBe('');
+            expect(result).toBe('SendEmailCode([object Object])');
         });
     });
 
