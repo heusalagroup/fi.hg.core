@@ -53,7 +53,7 @@ const TRANSACTION_TEST_LIMIT = parseInteger(process.env.OP_TRANSACTION_TEST_LIMI
  */
 describe('system', () => {
     (CLIENT_ID ? describe : describe.skip)('OpAccountDataClientImpl', () => {
-        let client : OpAccountDataClient;
+        let accountDataClient : OpAccountDataClient;
 
         beforeAll(() => {
             RequestClientImpl.setLogLevel(LogLevel.NONE);
@@ -77,7 +77,7 @@ describe('system', () => {
                 requestClient,
                 API_SERVER,
             );
-            client = OpAccountDataClientImpl.create(
+            accountDataClient = OpAccountDataClientImpl.create(
                 requestClient,
                 authClient,
                 API_SERVER,
@@ -90,7 +90,7 @@ describe('system', () => {
 
         describe('#getAccountList', () => {
             it('should return a list of accounts', async () => {
-                const accountList = await client.getAccountList();
+                const accountList = await accountDataClient.getAccountList();
                 expect(accountList).toBeDefined();
                 expect(Array.isArray(accountList)).toBeTruthy();
             });
@@ -101,7 +101,7 @@ describe('system', () => {
             let surrogateIdList : string[];
 
             beforeEach( async () => {
-                const accountList = await client.getAccountList();
+                const accountList = await accountDataClient.getAccountList();
                 expect(accountList.length).toBeGreaterThanOrEqual(1);
                 surrogateIdList = map(
                     accountList,
@@ -114,7 +114,7 @@ describe('system', () => {
                 it('should return details for a all accounts', async () => {
                     for(let i=0; i<surrogateIdList.length; i+=1) {
                         const surrogateId = surrogateIdList[i];
-                        const accountDetails = await client.getAccountDetails(surrogateId);
+                        const accountDetails = await accountDataClient.getAccountDetails(surrogateId);
                         expect(accountDetails).toBeDefined();
                     }
                 });
@@ -127,7 +127,7 @@ describe('system', () => {
                     for(let i=0; i<surrogateIdList.length; i+=1) {
                         const surrogateId = surrogateIdList[i];
                         const fromTimestamp = Date.now()*1000;
-                        const transactionList = await client.getTransactionListFromTimestamp( surrogateId, fromTimestamp );
+                        const transactionList = await accountDataClient.getTransactionListFromTimestamp( surrogateId, fromTimestamp );
                         expect( transactionList ).toBeDefined();
                     }
                 });
@@ -141,7 +141,7 @@ describe('system', () => {
                         const surrogateId = surrogateIdList[i];
 
                         const fromTimestamp = Date.now()*1000;
-                        const firstTransactionList = await client.getTransactionListFromTimestamp( surrogateId, fromTimestamp );
+                        const firstTransactionList = await accountDataClient.getTransactionListFromTimestamp( surrogateId, fromTimestamp );
 
                         // We test only 5
                         const objectIdList = slice(shuffle(map(
@@ -151,7 +151,7 @@ describe('system', () => {
 
                         for (let i=0; i<objectIdList.length; i+=1) {
                             const objectId = objectIdList[i];
-                            const transactionList = await client.getTransactionListFromObjectId( surrogateId, objectId );
+                            const transactionList = await accountDataClient.getTransactionListFromObjectId( surrogateId, objectId );
                             expect( transactionList ).toBeDefined();
                         }
 

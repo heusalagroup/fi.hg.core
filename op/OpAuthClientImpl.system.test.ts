@@ -38,6 +38,7 @@ const MTLS_CRT = process.env.OP_MTLS_CRT ?? '';
  * @see https://op-developer.fi/products/banking/docs/op-corporate-payment-api#section/Usage-example
  */
 describe('system', () => {
+
     (CLIENT_ID ? describe : describe.skip)('OpAuthClientImpl', () => {
         let client : OpAuthClient;
 
