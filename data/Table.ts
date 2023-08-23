@@ -1,6 +1,7 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
 import { isFunction } from "../types/Function";
+import { isEntity } from "./Entity";
 import { EntityMetadataUtils } from "./utils/EntityMetadataUtils";
 import { EntityMetadata } from "./types/EntityMetadata";
 
@@ -13,7 +14,17 @@ export const Table = (tableName: string) => {
         EntityMetadataUtils.updateMetadata(target, (metadata: EntityMetadata) => {
             metadata.tableName = tableName;
             if (TargetEntity) {
-                metadata.createEntity = (dto?: any) => new TargetEntity(dto);
+
+                const createEntity = (dto?: any) => new TargetEntity(dto);
+
+                // We'll test if it creates correct entity object
+                const ret : any = createEntity() as unknown as any;
+                if (!isEntity(ret)) {
+                    throw new TypeError(`@Table(${JSON.stringify(tableName)}): Your entity class was not extended from the Entity base class`);
+                }
+
+                metadata.createEntity = createEntity;
+
             }
         });
     };

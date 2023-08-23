@@ -81,7 +81,12 @@ export class EntityUtils {
         const { createEntity, fields, manyToOneRelations, oneToManyRelations, temporalProperties } = parentMetadata;
 
         if (!createEntity) throw new TypeError(`Could not create entity: No create function`);
+
         const ret : T = createEntity() as unknown as T;
+        if (!isEntity(ret)) {
+            LOG.debug(`The created entity was not extended from Entity class: `, ret);
+            throw new TypeError(`Could not create an entity object. This is probably because your entity class was not extended from the Entity base class. See debug log for extra information.`);
+        }
 
         forEach(
             fields,
@@ -202,11 +207,6 @@ export class EntityUtils {
                 }
             }
         );
-
-        if (!isEntity(ret)) {
-            LOG.debug(`Could not create entity correctly: `, ret);
-            throw new TypeError(`Could not create entity correctly: ${ret}`);
-        }
 
         return ret;
     }
