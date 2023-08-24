@@ -15,6 +15,7 @@ export interface InvoicePaymentDTO {
     readonly description         : string;
     readonly sum                 : number;
     readonly documentId          : string;
+    readonly opTransactionId     : string;
 }
 
 export function createInvoicePaymentDTO (
@@ -27,6 +28,7 @@ export function createInvoicePaymentDTO (
     description: string,
     sum: number,
     documentId : string,
+    opTransactionId : string,
 ): InvoicePaymentDTO {
     return {
         invoicePaymentId,
@@ -38,6 +40,7 @@ export function createInvoicePaymentDTO (
         description,
         sum,
         documentId,
+        opTransactionId,
     };
 }
 
@@ -54,6 +57,7 @@ export function isInvoicePaymentDTO (value: any): value is InvoicePaymentDTO {
             'description',
             'sum',
             'documentId',
+            'opTransactionId',
         ])
         && isString(value?.invoicePaymentId)
         && isString(value?.created)
@@ -64,6 +68,7 @@ export function isInvoicePaymentDTO (value: any): value is InvoicePaymentDTO {
         && isString(value?.description)
         && isNumber(value?.sum)
         && isString(value?.documentId)
+        && isString(value?.opTransactionId)
     );
 }
 

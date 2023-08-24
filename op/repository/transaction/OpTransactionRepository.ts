@@ -1,10 +1,29 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { Where } from "../../../data/Where";
 import { OpTransactionEntity } from "./OpTransactionEntity";
 import { Repository } from "../../../data/types/Repository";
 import { Sort } from "../../../data/Sort";
 
 export interface OpTransactionRepository extends Repository<OpTransactionEntity, string> {
+
+    findAllByUpdatedBetween (startDate: string, endDate: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByCreatedBetween (startDate: string, endDate: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByValueDateBetween (startDate: string, endDate: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByBookingDateBetween (startDate: string, endDate: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByPaymentDateBetween (startDate: string, endDate: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+
+    findAllByUpdatedAfter (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByCreatedAfter (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByValueDateAfter (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByBookingDateAfter (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByPaymentDateAfter (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+
+    findAllByUpdatedBefore (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByCreatedBefore (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByValueDateBefore (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByBookingDateBefore (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
+    findAllByPaymentDateBefore (date: string, sort?: Sort, where ?: Where) : Promise<OpTransactionEntity[]>;
 
     findByOpSurrogateId (surrogateId: string, sort?: Sort) : Promise<OpTransactionEntity|undefined>;
 

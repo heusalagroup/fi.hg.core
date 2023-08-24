@@ -46,12 +46,12 @@ export class SmsQueueEntity extends Entity {
 
     @UpdateTimestamp()
     @Temporal(TemporalType.TIMESTAMP)
-    @Column("updated", 'DATETIME', { updatable : false, insertable: false })
+    @Column("updated", 'DATETIME')
     public updated?: string;
 
     @CreationTimestamp()
     @Temporal(TemporalType.TIMESTAMP)
-    @Column("creation", 'DATETIME', { updatable : false, insertable: false })
+    @Column("creation", 'DATETIME')
     public created?: string;
 
     @Column("sender_address")

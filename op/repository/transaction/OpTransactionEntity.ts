@@ -99,19 +99,19 @@ export class OpTransactionEntity extends Entity {
     @Column("rf_reference")
     public rfReference ?: string | null;
 
-    @Column("value_date")
+    @Column("value_date", 'DATETIME')
     public valueDate ?: string;
 
     @Column("debtor_name")
     public debtorName ?: string;
 
-    @Column("booking_date")
+    @Column("booking_date", 'DATETIME')
     public bookingDate ?: string;
 
     @Column("creditor_bic")
     public creditorBic ? : string | null;
 
-    @Column("payment_date")
+    @Column("payment_date", 'DATETIME')
     public paymentDate ?: string;
 
     @Column("creditor_name")
