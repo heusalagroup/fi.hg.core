@@ -4,7 +4,9 @@ import { ProcessUtils } from "../ProcessUtils";
 
 ProcessUtils.initEnvFromDefaultFiles();
 
+// @ts-ignore
 import HTTP from "http";
+// @ts-ignore
 import HTTPS from "https";
 // @ts-ignore
 import { HgNode } from "../../node/HgNode";

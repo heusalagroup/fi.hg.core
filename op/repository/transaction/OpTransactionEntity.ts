@@ -3,6 +3,7 @@
 import { LogService } from "../../../LogService";
 import { Table } from "../../../data/Table";
 import { Entity } from "../../../data/Entity";
+import { parseInteger } from "../../../types/Number";
 import { createOpTransactionDTO, explainOpTransactionDTO, isOpTransactionDTO, OpTransactionDTO } from "../../dto/OpTransactionDTO";
 import { Id } from "../../../data/Id";
 import { Column } from "../../../data/Column";
@@ -43,7 +44,7 @@ export class OpTransactionEntity extends Entity {
         this.debtorAccount              = dto?.debtorAccount;
         this.creditorAccount            = dto?.creditorAccount;
         this.endToEndId                 = dto?.endToEndId;
-        this.timestamp                  = dto?.timestamp;
+        this.timestamp                  = `${dto?.timestamp}`;
         this.transactionTypeCode        = dto?.transactionTypeCode;
         this.transactionTypeDescription = dto?.transactionTypeDescription;
         this.uetr                       = dto?.uetr;
@@ -127,7 +128,7 @@ export class OpTransactionEntity extends Entity {
     public endToEndId ?: string | null;
 
     @Column("timestamp", 'BIGINT')
-    public timestamp ?: number;
+    public timestamp ?: string;
 
     @Column("transaction_type_code")
     public transactionTypeCode ?: string;
@@ -175,7 +176,7 @@ export class OpTransactionEntity extends Entity {
             entity.debtorAccount,
             entity.creditorAccount ?? null,
             entity.endToEndId ?? null,
-            entity.timestamp,
+            parseInteger(entity.timestamp),
             entity.transactionTypeCode,
             entity.transactionTypeDescription,
             entity.uetr,
