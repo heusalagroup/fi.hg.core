@@ -156,6 +156,8 @@ export class OpTransactionEntity extends Entity {
         if (!entity.transactionTypeCode) throw new TypeError('entity.transactionTypeCode missing');
         if (!entity.transactionTypeDescription) throw new TypeError('entity.transactionTypeDescription missing');
         if (!entity.uetr) throw new TypeError('entity.uetr missing');
+        const timestamp = parseInteger(entity.timestamp);
+        if (!timestamp) throw new TypeError('timestamp invalid: '+ entity.timestamp);
         const dto : OpTransactionDTO = createOpTransactionDTO(
             entity.amount,
             entity.balanceBefore,
@@ -176,7 +178,7 @@ export class OpTransactionEntity extends Entity {
             entity.debtorAccount,
             entity.creditorAccount ?? null,
             entity.endToEndId ?? null,
-            parseInteger(entity.timestamp),
+            timestamp,
             entity.transactionTypeCode,
             entity.transactionTypeDescription,
             entity.uetr,
