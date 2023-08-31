@@ -34,6 +34,9 @@ export interface EntityConstructor {
 
 export class Entity implements EntityLike {
 
+    protected constructor () {
+    }
+
     /**
      * @inheritDoc
      */
@@ -58,7 +61,7 @@ export class Entity implements EntityLike {
 }
 
 export function isEntity (value: unknown) : value is Entity {
-    return !!value && value instanceof Entity;
+    return !!value && (value instanceof Entity);
 }
 
 /**
