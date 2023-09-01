@@ -75,6 +75,10 @@ export class OpAccountEntity extends Entity {
     @Column("name")
     public name ?: string;
 
+    /**
+     * Please note: This balance includes possible reserved funds (e.g. card
+     * transactions, etc.) which may not be included in the transaction list yet.
+     */
     @Column("balance")
     public balance ?: string;
 
@@ -107,6 +111,10 @@ export class OpAccountEntity extends Entity {
     @Column("d_currency")
     public dCurrency      ?: string;
 
+    /**
+     * Please note: This balance includes possible reserved funds (e.g. card
+     * transactions, etc.) which may not be included in the transaction list yet.
+     */
     @Column("d_net_balance")
     public dNetBalance    ?: string;
 
@@ -122,6 +130,10 @@ export class OpAccountEntity extends Entity {
     @Column("d_creation_date")
     public dCreationDate  ?: string;
 
+    /**
+     * Please note: This balance DOES NOT include possible reserved funds (e.g.
+     * card transactions, etc.).
+     */
     @Column("d_gross_balance")
     public dGrossBalance  ?: string;
 
