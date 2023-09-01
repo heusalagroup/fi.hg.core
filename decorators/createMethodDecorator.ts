@@ -8,7 +8,7 @@ const LOG = LogService.createLogger( 'createMethodDecorator' );
 
 export type ClassMethodDecorator = (
     value: Function,
-    context: ClassMethodDecoratorContext
+    context: ClassMethodDecoratorContext<any>
 ) => Function | void;
 
 /**
@@ -62,7 +62,7 @@ export function createMethodDecorator<T> (
                     initializer: () => void): void => {
                     LOG.warn(`Warning! "addInitializer" not yet implemented.`);
                 }
-            }
+            } as unknown as ClassMethodDecoratorContext<any>
         );
 
         if (isFunction(overrideCallback)) {

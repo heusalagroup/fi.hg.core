@@ -15,6 +15,8 @@ jest.mock('../../LogService', () => ({
     }
 }));
 
+// @ts-ignore
+import "../../../jest/matchers";
 import { addDestroyService } from './addDestroyService';
 import { autowired } from './autowired';
 import { LogLevel } from "../../types/LogLevel";
@@ -23,7 +25,6 @@ import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { addAutowired } from "./addAutowired";
 import { ProcessUtils } from "../../ProcessUtils";
 import { AutowireUtils } from "./utils/AutowireUtils";
-import "../../../jest/matchers";
 import { DestroyService } from "./services/DestroyService";
 import { LogService } from "../../LogService";
 import { find } from "../../functions/find";
@@ -86,6 +87,7 @@ describe('addDestroyService', () => {
 
         const callback = (ProcessUtils.setupDestroyHandler as any).mock.calls[0][0];
 
+        // @ts-ignore
         expect(callback).toBeFunction();
         expect((retrievedDestroyService as any)?.destroy).not.toHaveBeenCalled();
         callback();
