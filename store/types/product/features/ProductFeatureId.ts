@@ -1,14 +1,15 @@
-// Copyright (c) 2022. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
+// Copyright (c) 2022-2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
-import { explainEnum } from "../../../../types/Enum";
+import { explainEnum, isEnum, parseEnum, stringifyEnum } from "../../../../types/Enum";
 
 export enum ProductFeatureId {
     WP        = "WP",
     VPS_TYPE        = "VPS_TYPE",
     VPS_OS          = "VPS_OS",
 
-    SUPPORT_1H_M    = "SUPPORT_1H_M",
+    SUPPORT_1H_M        = "SUPPORT_1H_M",
     BACKUP_RESTORE_1H_M = "BACKUP_RESTORE_1H_M",
+    UPGRADE_1VPS_M        = "UPGRADE_1VPS_M",
 
     DISK_TYPE       = "DISK_TYPE",
     DISK_SIZE       = "DISK_SIZE",
@@ -40,40 +41,7 @@ export enum ProductFeatureId {
 }
 
 export function isProductFeatureId (value: any): value is ProductFeatureId {
-    switch (value) {
-        case ProductFeatureId.WP:
-        case ProductFeatureId.VPS_TYPE:
-        case ProductFeatureId.VPS_OS:
-        case ProductFeatureId.DISK_TYPE:
-        case ProductFeatureId.DISK_SIZE:
-        case ProductFeatureId.DISK_RAID:
-        case ProductFeatureId.DISK_BACKUP:
-        case ProductFeatureId.DISK_USAGE:
-        case ProductFeatureId.SUPPORT_1H_M:
-        case ProductFeatureId.BACKUP_RESTORE_1H_M:
-        case ProductFeatureId.DISK_2_TYPE:
-        case ProductFeatureId.DISK_2_SIZE:
-        case ProductFeatureId.DISK_2_RAID:
-        case ProductFeatureId.DISK_2_BACKUP:
-        case ProductFeatureId.DISK_2_USAGE:
-        case ProductFeatureId.DISK_3_TYPE:
-        case ProductFeatureId.DISK_3_SIZE:
-        case ProductFeatureId.DISK_3_RAID:
-        case ProductFeatureId.DISK_3_BACKUP:
-        case ProductFeatureId.DISK_3_USAGE:
-        case ProductFeatureId.MEMORY_SIZE:
-        case ProductFeatureId.NETWORK_TYPE:
-        case ProductFeatureId.NETWORK_IP4:
-        case ProductFeatureId.NETWORK_IP6:
-        case ProductFeatureId.NETWORK_NET6:
-        case ProductFeatureId.NETWORK_TRAFFIC:
-        case ProductFeatureId.CPU_SHARE:
-        case ProductFeatureId.CPU_AMOUNT:
-        case ProductFeatureId.NETWORK_ZONE:
-            return true;
-        default:
-            return false;
-    }
+    return isEnum(ProductFeatureId, value);
 }
 
 export function explainProductFeatureId (value : any) : string {
@@ -81,79 +49,9 @@ export function explainProductFeatureId (value : any) : string {
 }
 
 export function stringifyProductFeatureId (value: ProductFeatureId): string {
-    switch (value) {
-        case ProductFeatureId.WP : return 'WP';
-        case ProductFeatureId.VPS_TYPE : return 'VPS_TYPE';
-        case ProductFeatureId.VPS_OS : return 'VPS_OS';
-        case ProductFeatureId.SUPPORT_1H_M : return 'SUPPORT_1H_M';
-        case ProductFeatureId.BACKUP_RESTORE_1H_M : return 'BACKUP_RESTORE_1H_M';
-
-        case ProductFeatureId.DISK_TYPE : return 'DISK_TYPE';
-        case ProductFeatureId.DISK_SIZE : return 'DISK_SIZE';
-        case ProductFeatureId.DISK_RAID : return 'DISK_RAID';
-        case ProductFeatureId.DISK_BACKUP : return 'DISK_BACKUP';
-        case ProductFeatureId.DISK_USAGE : return 'DISK_USAGE';
-
-        case ProductFeatureId.DISK_2_TYPE : return 'DISK_2_TYPE';
-        case ProductFeatureId.DISK_2_SIZE : return 'DISK_2_SIZE';
-        case ProductFeatureId.DISK_2_RAID : return 'DISK_2_RAID';
-        case ProductFeatureId.DISK_2_BACKUP : return 'DISK_2_BACKUP';
-        case ProductFeatureId.DISK_2_USAGE : return 'DISK_2_USAGE';
-
-        case ProductFeatureId.DISK_3_TYPE : return 'DISK_3_TYPE';
-        case ProductFeatureId.DISK_3_SIZE : return 'DISK_3_SIZE';
-        case ProductFeatureId.DISK_3_RAID : return 'DISK_3_RAID';
-        case ProductFeatureId.DISK_3_BACKUP : return 'DISK_3_BACKUP';
-        case ProductFeatureId.DISK_3_USAGE : return 'DISK_3_USAGE';
-
-        case ProductFeatureId.MEMORY_SIZE : return 'MEMORY_SIZE';
-        case ProductFeatureId.NETWORK_TYPE : return 'NETWORK_TYPE';
-        case ProductFeatureId.NETWORK_IP4 : return 'NETWORK_IP4';
-        case ProductFeatureId.NETWORK_IP6 : return 'NETWORK_IP6';
-        case ProductFeatureId.NETWORK_NET6 : return 'NETWORK_NET6';
-        case ProductFeatureId.NETWORK_TRAFFIC : return 'NETWORK_TRAFFIC';
-        case ProductFeatureId.CPU_SHARE : return 'CPU_SHARE';
-        case ProductFeatureId.CPU_AMOUNT : return 'CPU_AMOUNT';
-        case ProductFeatureId.NETWORK_ZONE : return 'NETWORK_ZONE';
-    }
-    throw new TypeError(`Unsupported ProductFeatureId value: ${value}`);
+    return stringifyEnum(ProductFeatureId, value);
 }
 
 export function parseProductFeatureId (value: any): ProductFeatureId | undefined {
-    switch (value) {
-        case 'WP' : return ProductFeatureId.WP;
-        case 'VPS_TYPE' : return ProductFeatureId.VPS_TYPE;
-        case 'VPS_OS' : return ProductFeatureId.VPS_OS;
-        case 'SUPPORT_1H_M' : return ProductFeatureId.SUPPORT_1H_M;
-        case 'BACKUP_RESTORE_1H_M' : return ProductFeatureId.BACKUP_RESTORE_1H_M;
-
-        case 'DISK_TYPE' : return ProductFeatureId.DISK_TYPE;
-        case 'DISK_SIZE' : return ProductFeatureId.DISK_SIZE;
-        case 'DISK_RAID' : return ProductFeatureId.DISK_RAID;
-        case 'DISK_BACKUP' : return ProductFeatureId.DISK_BACKUP;
-        case 'DISK_USAGE' : return ProductFeatureId.DISK_USAGE;
-
-        case 'DISK_2_TYPE' : return ProductFeatureId.DISK_2_TYPE;
-        case 'DISK_2_SIZE' : return ProductFeatureId.DISK_2_SIZE;
-        case 'DISK_2_RAID' : return ProductFeatureId.DISK_2_RAID;
-        case 'DISK_2_BACKUP' : return ProductFeatureId.DISK_2_BACKUP;
-        case 'DISK_2_USAGE' : return ProductFeatureId.DISK_2_USAGE;
-
-        case 'DISK_3_TYPE' : return ProductFeatureId.DISK_3_TYPE;
-        case 'DISK_3_SIZE' : return ProductFeatureId.DISK_3_SIZE;
-        case 'DISK_3_RAID' : return ProductFeatureId.DISK_3_RAID;
-        case 'DISK_3_BACKUP' : return ProductFeatureId.DISK_3_BACKUP;
-        case 'DISK_3_USAGE' : return ProductFeatureId.DISK_3_USAGE;
-
-        case 'MEMORY_SIZE' : return ProductFeatureId.MEMORY_SIZE;
-        case 'NETWORK_TYPE' : return ProductFeatureId.NETWORK_TYPE;
-        case 'NETWORK_IP4' : return ProductFeatureId.NETWORK_IP4;
-        case 'NETWORK_IP6' : return ProductFeatureId.NETWORK_IP6;
-        case 'NETWORK_NET6' : return ProductFeatureId.NETWORK_NET6;
-        case 'NETWORK_TRAFFIC' : return ProductFeatureId.NETWORK_TRAFFIC;
-        case 'CPU_SHARE' : return ProductFeatureId.CPU_SHARE;
-        case 'CPU_AMOUNT' : return ProductFeatureId.CPU_AMOUNT;
-        case 'NETWORK_ZONE' : return ProductFeatureId.NETWORK_ZONE;
-        default    : return undefined;
-    }
+    return parseEnum(ProductFeatureId, value) as ProductFeatureId | undefined;
 }
