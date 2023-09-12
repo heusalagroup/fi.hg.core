@@ -323,4 +323,13 @@ export class StringUtils {
         );
     }
 
+    public static truncateLongString (
+        value     : string,
+        maxLength : number,
+        suffix    : string = '...'
+    ) : string {
+        if (maxLength < suffix.length) throw new TypeError('StringUtils.truncateLongString: maxLength must be greater than length of the suffix');
+        return value.length <= maxLength ? value : value.substring(0, maxLength-3) + suffix;
+    }
+
 }
