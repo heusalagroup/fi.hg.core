@@ -223,7 +223,7 @@ export function isStringOrUndefinedOf (
 export function parseString (value: unknown): string | undefined {
     if ( value === undefined ) return undefined;
     if ( value === null ) return undefined;
-    if ( isFunction(value?.toString) ) return value.toString();
+    if ( isFunction((value as any)?.toString) ) return (value as any)?.toString();
     return `${value}`;
 }
 
