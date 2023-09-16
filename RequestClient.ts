@@ -13,7 +13,7 @@ import { ResponseEntity } from "./request/types/ResponseEntity";
  * Before using static methods of this library the implementation must be defined
  * and selected using `RequestClientImpl.useClient()`.
  *
- * - See `HgNode.initialize()` which calls `useClient()` for NodeJS projects
+ * - See `HgNode.initialize()` which calls `useClient()` for Node.js projects
  * - See `HgFrontend.initialize()` which calls `useClient()` for frontend projects
  *
  * You may also use it as a standard class:
