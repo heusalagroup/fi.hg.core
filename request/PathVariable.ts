@@ -58,7 +58,7 @@ export function PathVariable (
         );
     }
 
-    LOG.debug( 'pathVariable: ', arg1, arg2, arg3 );
+    // LOG.debug( 'pathVariable: ', arg1, arg2, arg3 );
 
     if ( isString( arg2 ) && isNumber( arg3 ) ) {
         const target: any | Function = arg1;
@@ -88,7 +88,7 @@ export function PathVariable (
         } else {
             throw new TypeError( 'PathVariable: Invalid type of options' );
         }
-        LOG.debug( 'pathVariable: init: ', variableName );
+        // LOG.debug( 'pathVariable: init: ', variableName );
         return (
             target: any | Function,
             propertyKey ?: string,
