@@ -65,7 +65,7 @@ export function RequestHeader (
         }
     }
 
-    LOG.debug( 'RequestHeader: ', arg1, arg2, arg3 );
+    // LOG.debug( 'RequestHeader: ', arg1, arg2, arg3 );
     if ( isString( arg2 ) && isNumber( arg3 ) ) {
         _setMethodHeaderMap( arg1, arg2, arg3, undefined );
         return;
@@ -87,7 +87,7 @@ export function RequestHeader (
         } else {
             throw new TypeError( 'RequestHeader: Invalid type of options' );
         }
-        LOG.debug( 'header: init: ', headerName );
+        // LOG.debug( 'header: init: ', headerName );
         return (
             target: any | Function,
             propertyKey ?: string,

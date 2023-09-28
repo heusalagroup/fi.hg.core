@@ -198,7 +198,7 @@ export class RequestControllerUtils {
         attributeName : string,
         paramType     : RequestParamValueType
     ) {
-        LOG.debug('setControllerMethodModelAttributeParam: attributeName =', attributeName, paramType);
+        // LOG.debug('setControllerMethodModelAttributeParam: attributeName =', attributeName, paramType);
         const newParam : RequestModelAttributeParamObject = {
             objectType    : RequestParamObjectType.MODEL_ATTRIBUTE,
             attributeName : attributeName,
@@ -224,7 +224,7 @@ export class RequestControllerUtils {
         propertyDescriptor : PropertyDescriptor,
         attributeName      : string
     ) {
-        LOG.debug('attachControllerMethodModelAttributeBuilder: attributeName =', attributeName, propertyKey);
+        // LOG.debug('attachControllerMethodModelAttributeBuilder: attributeName =', attributeName, propertyKey);
         const origMapping : RequestControllerMappingObject | undefined = getInternalRequestMappingObject(controller, controller);
         if (origMapping === undefined) {
             setInternalRequestMappingObject(controller, {
@@ -451,8 +451,8 @@ export class RequestControllerUtils {
             return;
         }
 
-        LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
-        LOG.debug('attachControllerOperation: config = ', config);
+        // LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
+        // LOG.debug('attachControllerOperation: config = ', config);
         const openApiPartials = mappingObject?.openApiPartials ?? [];
         setInternalRequestMappingObject(
             controller,
@@ -517,9 +517,9 @@ export class RequestControllerUtils {
             return;
         }
 
-        LOG.debug('attachControllerOperation: propertyKey = ', propertyKey);
-        LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
-        LOG.debug('attachControllerOperation: config = ', config);
+        // LOG.debug('attachControllerOperation: propertyKey = ', propertyKey);
+        // LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
+        // LOG.debug('attachControllerOperation: config = ', config);
 
         if (propertyKey === undefined) {
             // When property does not exist, append to root mapping
@@ -661,8 +661,8 @@ export class RequestControllerUtils {
             return;
         }
 
-        LOG.debug('attachControllerOperation: propertyKey = ', propertyKey);
-        LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
+        // LOG.debug('attachControllerOperation: propertyKey = ', propertyKey);
+        // LOG.debug('attachControllerOperation: mappingObject = ', mappingObject);
 
         if (!has(mappingObject.controllerProperties, propertyKey)) {
             // When mapping exists, but property does not, we'll create new property from stretch
