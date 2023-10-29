@@ -4,19 +4,20 @@ import { SameSite } from "../../types/SameSite";
 
 export interface CookieLike {
 
-    getDomain() : string;
+    getDomain() : string | undefined;
 
-    getHttpOnly() : boolean;
+    getHttpOnly() : boolean | undefined;
 
-    getMaxAge() : number;
+    getMaxAge() : number | undefined;
 
     getName() : string;
 
-    getPath() : string;
+    getValue() : string | undefined;
+    getPath() : string | undefined;
 
-    getSameSite() : SameSite;
+    getSameSite() : SameSite | undefined;
 
-    getSecure() : boolean;
+    getSecure() : boolean | undefined;
 
     setDomain(domain : string) : void;
 
@@ -25,6 +26,7 @@ export interface CookieLike {
     setMaxAge(maxAge: number) : void;
 
     setName(name : string) : void;
+    setValue(name : string | undefined) : void;
 
     setPath(path: string) : void;
 

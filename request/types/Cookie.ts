@@ -5,33 +5,66 @@ import { SameSite } from "../../types/SameSite";
 
 export class Cookie implements CookieLike {
 
-    private _path : string;
     private _name : string;
-    private _domain : string;
-    private _httpOnly : boolean;
-    private _secure : boolean;
-    private _maxAge : number;
-    private _sameSite : SameSite;
+    private _path : string | undefined;
+    private _value : string | undefined;
+    private _domain : string | undefined;
+    private _httpOnly : boolean | undefined;
+    private _secure : boolean | undefined;
+    private _maxAge : number | undefined;
+    private _sameSite : SameSite | undefined;
 
-    public constructor () {
-        this._path = '';
-        this._name = '';
-        this._domain = '';
-        this._httpOnly = false;
-        this._secure = false;
-        this._maxAge = 0;
-        this._sameSite = SameSite.NONE;
+    private constructor (
+        name      : string,
+        value     : string | undefined,
+        path      : string | undefined,
+        domain    : string | undefined,
+        httpOnly  : boolean | undefined,
+        secure    : boolean | undefined,
+        maxAge    : number | undefined,
+        sameSite  : SameSite | undefined,
+    ) {
+        this._path = path;
+        this._name = name;
+        this._value = value;
+        this._domain = domain;
+        this._httpOnly = httpOnly;
+        this._secure = secure;
+        this._maxAge = maxAge;
+        this._sameSite = sameSite;
     }
 
-    public getDomain (): string {
+    public static create (
+        name      : string,
+        value     : string = undefined,
+        path      : string = undefined,
+        domain    : string = undefined,
+        httpOnly  : boolean = undefined,
+        secure    : boolean = undefined,
+        maxAge    : number = undefined,
+        sameSite  : SameSite = undefined,
+    ) : CookieLike {
+        return new Cookie(
+            name,
+            value,
+            path,
+            domain,
+            httpOnly,
+            secure,
+            maxAge,
+            sameSite,
+        );
+    }
+
+    public getDomain (): string | undefined {
         return this._domain;
     }
 
-    public getHttpOnly (): boolean {
+    public getHttpOnly (): boolean | undefined {
         return this._httpOnly;
     }
 
-    public getMaxAge (): number {
+    public getMaxAge (): number | undefined {
         return this._maxAge;
     }
 
@@ -39,15 +72,19 @@ export class Cookie implements CookieLike {
         return this._name;
     }
 
-    public getPath (): string {
+    public getValue (): string | undefined {
+        return this._value;
+    }
+
+    public getPath (): string | undefined {
         return this._path;
     }
 
-    public getSameSite (): SameSite {
+    public getSameSite (): SameSite | undefined {
         return this._sameSite;
     }
 
-    public getSecure (): boolean {
+    public getSecure (): boolean | undefined {
         return this._secure;
     }
 
@@ -65,6 +102,10 @@ export class Cookie implements CookieLike {
 
     public setName (name: string): void {
         this._name = name;
+    }
+
+    public setValue (value: string | undefined): void {
+        this._value = value;
     }
 
     public setPath (path: string): void {
