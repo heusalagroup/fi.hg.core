@@ -36,13 +36,13 @@ export class Cookie implements CookieLike {
 
     public static create (
         name      : string,
-        value     : string = undefined,
-        path      : string = undefined,
-        domain    : string = undefined,
-        httpOnly  : boolean = undefined,
-        secure    : boolean = undefined,
-        maxAge    : number = undefined,
-        sameSite  : SameSite = undefined,
+        value     : string | undefined = undefined,
+        path      : string | undefined = undefined,
+        domain    : string | undefined = undefined,
+        httpOnly  : boolean | undefined = undefined,
+        secure    : boolean | undefined = undefined,
+        maxAge    : number | undefined = undefined,
+        sameSite  : SameSite | undefined = undefined,
     ) : CookieLike {
         return new Cookie(
             name,
