@@ -44,6 +44,14 @@ describe('LogUtils', () => {
             expect(LogUtils.stringifyValue({ name: 'John' })).toEqual('{"name":"John"}');
         });
 
+        it('converts an Error object to a string', () => {
+            expect(LogUtils.stringifyValue(new Error('Fail'))).toEqual('Error: Fail');
+        });
+
+        it('converts an TypeError object to a string', () => {
+            expect(LogUtils.stringifyValue(new TypeError('Fail'))).toEqual('TypeError: Fail');
+        });
+
         it('converts undefined to the string "undefined"', () => {
             expect(LogUtils.stringifyValue(undefined)).toEqual('undefined');
         });

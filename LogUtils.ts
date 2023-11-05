@@ -22,6 +22,7 @@ export class LogUtils {
             if ( value === null ) return 'null';
             if ( isBoolean(value) ) return value ? 'true' : 'false';
             if ( value && isObject(value) ) {
+                if ( value instanceof Error ) return `${value}`;
                 if ( value instanceof Date ) return value.toISOString();
                 if ( has(value, 'toString') && isFunction(value?.toString) ) {
                     return value.toString();
