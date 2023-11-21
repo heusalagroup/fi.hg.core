@@ -12,6 +12,10 @@ export interface EventCallback<T> {
     (event : T) : void;
 }
 
+export interface EventCallbackWithArgs<T> {
+    (event : T, ...params: any[]) : void;
+}
+
 export interface DropCallback<T> {
     (id : T, ...params: any[]) : void;
 }
