@@ -114,8 +114,8 @@ export function isOpenAiChatCompletionResponseDTO (value: unknown) : value is Op
             'model',
             'choices',
             'usage',
-            'system_fingerprint'
-            //'warning'
+            'system_fingerprint',
+            'warning'
         ])
         && isString(value?.id)
         && isString(value?.object)
@@ -124,7 +124,7 @@ export function isOpenAiChatCompletionResponseDTO (value: unknown) : value is Op
         && isArrayOf<OpenAiChatCompletionResponseChoice|OpenAiError>(value?.choices, isOpenAiChatCompletionResponseChoice)
         && isOpenAiCompletionResponseUsage(value?.usage)
         && isStringOrNull(value?.system_fingerprint)
-        //&& isStringOrUndefined(value?.warning)
+        && isStringOrUndefined(value?.warning)
     );
 }
 
@@ -145,8 +145,8 @@ export function explainOpenAiChatCompletionResponseDTO (value: any) : string {
                 'model',
                 'choices',
                 'usage',
-                'system_fingerprint'
-                //'warning'
+                'system_fingerprint',
+                'warning'
             ])
             , explainProperty("id", explainString(value?.id))
             , explainProperty("object", explainString(value?.object))
@@ -160,7 +160,7 @@ export function explainOpenAiChatCompletionResponseDTO (value: any) : string {
         ))
             , explainProperty("usage", explainOpenAiCompletionResponseUsage(value?.usage))
             ,explainProperty("system_fingerprint", explainStringOrNull(value?.system_fingerprint))
-            //, explainProperty("warning", explainStringOrUndefined(value?.warning))
+            , explainProperty("warning", explainStringOrUndefined(value?.warning))
         ]
     );
 }
