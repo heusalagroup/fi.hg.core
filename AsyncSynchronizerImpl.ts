@@ -37,7 +37,7 @@ export class AsyncSynchronizerImpl implements AsyncSynchronizer {
     /**
      * @inheritDoc
      */
-    public async run<T> (callback: () => Promise<T>) : Promise<T> {
+    public async run<T = any> (callback: () => Promise<T>) : Promise<T> {
 
         // Create a lock for this request
         const lock : AsyncLock = createAsyncLock();

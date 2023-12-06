@@ -94,7 +94,7 @@ describe("OpPaymentClientImpl", () => {
 
         requestClient = new MockRequestClient();
         authClient = new MockOpAuthClient();
-        requestSigner = jest.fn();
+        requestSigner = jest.fn<any>();
 
         jest.spyOn(requestClient, 'postText');
         jest.spyOn(requestClient, 'getJson');

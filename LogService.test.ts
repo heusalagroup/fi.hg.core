@@ -20,10 +20,10 @@ describe('LogService', () => {
         prevLogger = LogService.getLogger();
         prevLogLevel = LogService.getLogLevel();
         mockLogger = new MockLogger();
-        spyDebug = jest.spyOn(mockLogger, 'debug').mockImplementation();
-        spyInfo = jest.spyOn(mockLogger, 'info').mockImplementation();
-        spyWarn = jest.spyOn(mockLogger, 'warn').mockImplementation();
-        spyError = jest.spyOn(mockLogger, 'error').mockImplementation();
+        spyDebug = jest.spyOn(mockLogger, 'debug').mockImplementation(() => {});
+        spyInfo = jest.spyOn(mockLogger, 'info').mockImplementation(() => {});
+        spyWarn = jest.spyOn(mockLogger, 'warn').mockImplementation(() => {});
+        spyError = jest.spyOn(mockLogger, 'error').mockImplementation(() => {});
         LogService.setLogger(mockLogger);
         LogService.setLogLevel(LogLevel.DEBUG);
     });

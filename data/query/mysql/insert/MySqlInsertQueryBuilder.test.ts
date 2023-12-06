@@ -11,12 +11,12 @@ import { map } from "../../../../functions/map";
  */
 export const mockQueryBuilderFactory = (): QueryBuilder => {
     let me : QueryBuilder = {
-        valueOf: jest.fn().mockReturnValue(''),
-        toString: jest.fn().mockReturnValue(''),
-        build: jest.fn().mockImplementation(() => [me.buildQueryString(), me.buildQueryValues()]),
-        buildQueryString: jest.fn().mockReturnValue('query'),
-        buildQueryValues: jest.fn().mockImplementation(() => map(me.getQueryValueFactories(), item => item())),
-        getQueryValueFactories: jest.fn().mockReturnValue([() => 'value of query']),
+        valueOf: jest.fn<any>().mockReturnValue(''),
+        toString: jest.fn<any>().mockReturnValue(''),
+        build: jest.fn<any>().mockImplementation(() => [me.buildQueryString(), me.buildQueryValues()]),
+        buildQueryString: jest.fn<any>().mockReturnValue('query'),
+        buildQueryValues: jest.fn<any>().mockImplementation(() => map(me.getQueryValueFactories(), item => item())),
+        getQueryValueFactories: jest.fn<any>().mockReturnValue([() => 'value of query']),
     };
     return me;
 };

@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from '@jest/globals';
 import { AutowireServiceImpl } from '../services/AutowireServiceImpl';
 import { AutowireMetadataUtils } from './AutowireMetadataUtils';
 import { AutowireUtils } from './AutowireUtils';
@@ -8,20 +9,20 @@ import { AutowireService } from "../services/AutowireService";
 
 jest.mock('../services/AutowireServiceImpl', () => ({
     AutowireServiceImpl: {
-        getAutowireService: jest.fn()
+        getAutowireService: jest.fn<any>()
     }
 }));
 
 jest.mock('./AutowireMetadataUtils', () => ({
     AutowireMetadataUtils: {
-        getMethodMetadata: jest.fn()
+        getMethodMetadata: jest.fn<any>()
     }
 }));
 
 describe('AutowireUtils', () => {
 
     let autowireServiceMock : Partial<AutowireService>;
-    let mockTarget : {propertyName: jest.Mock<any, any, any>};
+    let mockTarget : {propertyName: jest.Mock<any>};
 
     beforeAll( () => {
         AutowireUtils.setLogLevel(LogLevel.NONE);
@@ -34,15 +35,15 @@ describe('AutowireUtils', () => {
 
         // Setup mock functions
         autowireServiceMock = {
-            setName: jest.fn(),
-            hasName: jest.fn(),
-            getName: jest.fn(),
-            deleteName: jest.fn()
+            setName: jest.fn<any>(),
+            hasName: jest.fn<any>(),
+            getName: jest.fn<any>(),
+            deleteName: jest.fn<any>()
         };
 
         // Mock target object
         mockTarget = {
-            propertyName: jest.fn()
+            propertyName: jest.fn<any>()
         };
 
         (AutowireServiceImpl.getAutowireService as any).mockReturnValue(autowireServiceMock);

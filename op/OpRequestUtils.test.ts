@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from '@jest/globals'
 import { OpRequestUtils } from './OpRequestUtils';
 import { OpAuthClient } from "./OpAuthClient";
 import { ExplainCallback } from "../types/ExplainCallback";
@@ -7,20 +8,20 @@ import { RequestClient } from "../RequestClient";
 import { LogLevel } from "../types/LogLevel";
 
 const authClient: jest.Mocked<OpAuthClient> = {
-    isAuthenticated: jest.fn(),
-    authenticate: jest.fn(),
-    getAccessKey: jest.fn(),
+    isAuthenticated: jest.fn<any>(),
+    authenticate: jest.fn<any>(),
+    getAccessKey: jest.fn<any>(),
 };
 
 const requestClient: jest.Mocked<RequestClient> = {
-    getJson: jest.fn(),
-    postText: jest.fn(),
+    getJson: jest.fn<any>(),
+    postText: jest.fn<any>(),
 } as unknown as jest.Mocked<RequestClient>;
 
-const mockSigner = jest.fn();
+const mockSigner = jest.fn<any>();
 
-const isDTO : jest.Mock<boolean> = jest.fn() as unknown as jest.Mock<boolean>;
-const explainDTO: jest.Mock<string> & ExplainCallback = jest.fn();
+const isDTO : jest.Mock<any> = jest.fn<any>() as unknown as jest.Mock<any>;
+const explainDTO: jest.Mock<any> & ExplainCallback = jest.fn<any>();
 
 // Test data
 const mockURL = 'https://test.com';

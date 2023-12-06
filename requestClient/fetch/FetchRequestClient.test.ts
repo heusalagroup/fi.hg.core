@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from "@jest/globals";
 import { FetchInterface, FetchRequestClient } from "./FetchRequestClient";
 import { RequestMethod } from "../../request/types/RequestMethod";
 import { ContentType } from "../../request/types/ContentType";
@@ -12,19 +13,19 @@ describe("FetchRequestClient", () => {
     beforeEach(() => {
 
         const mockHeaders = {
-            get: jest.fn().mockReturnValue("value"),
-            set: jest.fn(),
-            forEach: jest.fn((cb: (value: string, key: string) => void) => {
+            get: jest.fn<any>().mockReturnValue("value"),
+            set: jest.fn<any>(),
+            forEach: jest.fn<any>((cb: (value: string, key: string) => void) => {
                 cb(ContentType.JSON, 'Content-Type');
                 cb('1234', 'Length');
             })
         };
 
-        mockFetch = jest.fn().mockResolvedValue(
+        mockFetch = jest.fn<any>().mockResolvedValue(
             {
                 ok: true,
-                json: jest.fn().mockResolvedValue({}),
-                text: jest.fn().mockResolvedValue(""),
+                json: jest.fn<any>().mockResolvedValue({}),
+                text: jest.fn<any>().mockResolvedValue(""),
                 status: 200,
                 headers: mockHeaders,
                 statusText: "OK"

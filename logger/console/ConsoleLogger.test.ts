@@ -13,10 +13,10 @@ describe('ConsoleLogger', () => {
     let logger : Logger;
 
     beforeEach( () => {
-        spyDebug = jest.spyOn(console, 'debug').mockImplementation();
-        spyInfo = jest.spyOn(console, 'info').mockImplementation();
-        spyWarn = jest.spyOn(console, 'warn').mockImplementation();
-        spyError = jest.spyOn(console, 'error').mockImplementation();
+        spyDebug = jest.spyOn(console, 'debug').mockImplementation( () => {} );
+        spyInfo = jest.spyOn(console, 'info').mockImplementation( () => {} );
+        spyWarn = jest.spyOn(console, 'warn').mockImplementation( () => {} );
+        spyError = jest.spyOn(console, 'error').mockImplementation( () => {} );
         logger = new ConsoleLogger(LogLevel.DEBUG);
     });
 

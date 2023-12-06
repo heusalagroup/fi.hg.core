@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
+import { jest } from '@jest/globals';
 import "../../jest/matchers/index";
 import { EntityMetadata } from "./types/EntityMetadata";
 import { Table } from "./Table";

@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from "@jest/globals";
 import { addArgumentParser } from './addArgumentParser';
 import { autowired } from './autowired';
 import { LogLevel } from "../../types/LogLevel";
@@ -34,13 +35,11 @@ describe('addArgumentParser', () => {
         let retrievedUserArgs: ArgumentValueMap | undefined;
         let retrievedParsedArgs: ParsedCommandArgumentObject | undefined;
 
-        let getVersion : jest.Mock<any, any, any>;
-        let getUsage: jest.Mock<any, any, any>;
-        let consoleLog: jest.SpyInstance<any, any, any>;
-        let consoleError: jest.SpyInstance<any, any, any>;
+        let consoleLog: jest.SpiedFunction<any>;
+        let consoleError: jest.SpiedFunction<any>;
 
-        getVersion = jest.fn().mockImplementation(() => '1.0.0');
-        getUsage = jest.fn().mockImplementation(() => 'usage');
+        let getVersion = jest.fn<() => string>().mockImplementation(() => '1.0.0');
+        let getUsage = jest.fn<() => string>().mockImplementation(() => 'usage');
 
         // Mock class with a method decorated with `addArgumentParser` and `addAutowired`
         class MyApp {

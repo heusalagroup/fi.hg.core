@@ -47,7 +47,7 @@ describe('TranslationUtils', () => {
 
     describe('translateKeys', () => {
         it('should translate keys', () => {
-            const t = jest.fn().mockImplementation((key, params) => `${key}:${params.key}`);
+            const t = jest.fn<any>().mockImplementation((key: any, params: any) : string => `${key}:${params.key}`);
             const keys = ['key1', 'key2'];
             const translationParams = { key: 'value' };
             const expectedResult = { key1: 'key1:value', key2: 'key2:value' };

@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from '@jest/globals';
 import { RequestClientImpl } from "../RequestClientImpl";
 import { OpAuthClientImpl } from "./OpAuthClientImpl";
 import { LogLevel } from "../types/LogLevel";
@@ -14,7 +15,7 @@ describe('OpAuthClientImpl', () => {
 
     beforeEach(() => {
         mockClient = {
-            postText: jest.fn(),
+            postText: jest.fn<any>(),
         } as any;
     });
 

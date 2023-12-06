@@ -18,10 +18,10 @@ describe('ContextLogger', () => {
 
     beforeEach( () => {
         mockLogger = new MockLogger();
-        spyDebug = jest.spyOn(mockLogger, 'debug').mockImplementation();
-        spyInfo = jest.spyOn(mockLogger, 'info').mockImplementation();
-        spyWarn = jest.spyOn(mockLogger, 'warn').mockImplementation();
-        spyError = jest.spyOn(mockLogger, 'error').mockImplementation();
+        spyDebug = jest.spyOn(mockLogger, 'debug').mockImplementation( () => {});
+        spyInfo = jest.spyOn(mockLogger, 'info').mockImplementation( () => {});
+        spyWarn = jest.spyOn(mockLogger, 'warn').mockImplementation( () => {});
+        spyError = jest.spyOn(mockLogger, 'error').mockImplementation( () => {});
         logger = new ContextLogger(
             TEST_CONTEXT_NAME,
             mockLogger,

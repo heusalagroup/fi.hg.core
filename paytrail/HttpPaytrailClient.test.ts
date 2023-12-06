@@ -1,3 +1,5 @@
+
+import { jest } from "@jest/globals";
 import { HttpPaytrailClient } from "./HttpPaytrailClient";
 import { PaytrailClient } from "./PaytrailClient";
 import { createPaytrailCustomer } from "./types/PaytrailCustomer";
@@ -15,7 +17,6 @@ import { createPaytrailFormField } from "./types/PaytrailFormField";
 import { parseJson } from "../Json";
 import { createPaytrailAddress } from "./types/PaytrailAddress";
 import { LogLevel } from "../types/LogLevel";
-import SpyInstance = jest.SpyInstance;
 
 // Test constants
 const TEST_STAMP = '29858472953';
@@ -166,8 +167,8 @@ const TEST_FETCH_RESPONSE = {
 describe('HttpPaytrailClient', () => {
 
     let client : PaytrailClient;
-    let postTextSpy : SpyInstance;
-    let getTextSpy : SpyInstance;
+    let postTextSpy : jest.SpiedFunction<(...args: any) => any>;
+    let getTextSpy : jest.SpiedFunction<(...args: any) => any>;
 
     beforeAll( () => {
         HgTest.initialize();
@@ -192,7 +193,7 @@ describe('HttpPaytrailClient', () => {
 
         it('should return a successful response with valid input', async () => {
 
-            const payment = await client.createPayment(
+            const payment : any = await client.createPayment(
                 TEST_STAMP,
                 TEST_REFERENCE,
                 TEST_AMOUNT,
@@ -245,7 +246,7 @@ describe('HttpPaytrailClient', () => {
                 ),
             );
 
-            expect(payment).toMatchObject(TEST_CREATE_RESPONSE);
+            expect(payment).toMatchObject(TEST_CREATE_RESPONSE as any);
             expect(RequestClientImpl.postText).toHaveBeenCalledTimes(1);
             expect((RequestClientImpl.postText as any).mock.calls[0][0]).toBe('http://mockUrl/payments');
             expect( parseJson( (RequestClientImpl.postText as any).mock.calls[0][1] )).toStrictEqual(TEST_CREATE_REQUEST);

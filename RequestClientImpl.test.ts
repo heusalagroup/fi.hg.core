@@ -14,10 +14,10 @@ describe("RequestClientImpl", () => {
     beforeEach( () => {
         RequestClientImpl.setLogLevel(LogLevel.NONE);
         mockRequestClient = {
-            jsonEntityRequest: jest.fn().mockResolvedValue(ResponseEntity.ok({})),
-            textEntityRequest: jest.fn().mockResolvedValue(ResponseEntity.ok('')),
-            jsonRequest: jest.fn().mockResolvedValue({}),
-            textRequest: jest.fn().mockResolvedValue('')
+            jsonEntityRequest: jest.fn<() => Promise<ResponseEntity<{}>>>().mockResolvedValue(ResponseEntity.ok<{}>({})),
+            textEntityRequest: jest.fn<() => Promise<ResponseEntity<string>>>().mockResolvedValue(ResponseEntity.ok<string>('')),
+            jsonRequest: jest.fn<() => Promise<{}>>().mockResolvedValue({}),
+            textRequest: jest.fn<() => Promise<string>>().mockResolvedValue('')
         };
     });
 

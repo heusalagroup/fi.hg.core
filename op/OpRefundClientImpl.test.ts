@@ -8,7 +8,7 @@ import { MockOpAuthClient } from "./mocks/MockOpAuthClient";
 import { OpAuthClient } from "./OpAuthClient";
 import { OpRefundClientImpl } from "./OpRefundClientImpl";
 
-jest.mock('../RequestClient');
+jest.mock<any>('../RequestClient');
 
 const MOCK_OPREFUNDREQUEST_DTO = {
     "archiveId": "20190524593156999999999999999999999",
@@ -62,7 +62,7 @@ describe("OpRefundClientImpl", () => {
 
         requestClient = new MockRequestClient();
         authClient = new MockOpAuthClient();
-        requestSigner = jest.fn();
+        requestSigner = jest.fn<any>();
 
         jest.spyOn(requestClient, 'postText');
         jest.spyOn(authClient, 'isAuthenticated');

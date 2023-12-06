@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from "@jest/globals";
 import { createAutowiredDefaultCallback } from './createAutowiredDefaultCallback';
 import { AutowireServiceImpl } from "../main/services/AutowireServiceImpl";
 import { AutowireUtils } from "../main/utils/AutowireUtils";
@@ -9,9 +10,9 @@ import { addAutowired } from "../main/addAutowired";
 
 describe('createAutowiredDefaultCallback', () => {
 
-    let setNameSpy: jest.SpyInstance;
-    let hasNameSpy: jest.SpyInstance;
-    let getNameSpy: jest.SpyInstance;
+    let setNameSpy: jest.SpiedFunction<(...args: any[]) => any>;
+    let hasNameSpy: jest.SpiedFunction<(...args: any[]) => any>;
+    let getNameSpy: jest.SpiedFunction<(...args: any[]) => any>;
 
     // AutowireServiceImpl instance
     let autowireService: AutowireServiceImpl;
@@ -45,7 +46,7 @@ describe('createAutowiredDefaultCallback', () => {
         const testValue = 'test';
 
         // Set up our autowired value
-        setNameSpy.mockImplementation((name, value) => {
+        setNameSpy.mockImplementation((name: any, value: any) => {
             if (name === autowiredTo) {
                 hasNameSpy.mockReturnValue(true);
                 getNameSpy.mockReturnValue(value);
@@ -65,7 +66,7 @@ describe('createAutowiredDefaultCallback', () => {
         const autowiredTo = 'autowiredValue';
 
         // Make sure there is no autowired value
-        setNameSpy.mockImplementation((name, value) => {
+        setNameSpy.mockImplementation((name: any, value: any) => {
             if (name === autowiredTo) {
                 hasNameSpy.mockReturnValue(false);
                 getNameSpy.mockReturnValue(value);

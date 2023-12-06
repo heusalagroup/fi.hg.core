@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@hg.fi>. All rights reserved.
 
+import { jest } from "@jest/globals";
 import { addStateService } from "./addStateService";
 import { AutowireServiceImpl } from "./services/AutowireServiceImpl";
 import { LogLevel } from "../../types/LogLevel";
@@ -7,14 +8,14 @@ import { LogLevel } from "../../types/LogLevel";
 // Mocked implementations
 
 jest.mock('./services/AutowireServiceImpl', () => ({
-    ...jest.requireActual('./services/AutowireServiceImpl'),
+    ...jest.requireActual<any>('./services/AutowireServiceImpl'),
     AutowireServiceImpl: {
-        ...jest.requireActual('./services/AutowireServiceImpl').AutowireServiceImpl,
-        getAutowireService: jest.fn().mockImplementation(() => ({
-            getName: jest.fn().mockImplementation((name: any) => name === 'parsedArgs' ? {} : undefined),
-            setName: jest.fn(),
-            deleteName: jest.fn(),
-            hasName: jest.fn()
+        ...jest.requireActual<any>('./services/AutowireServiceImpl').AutowireServiceImpl,
+        getAutowireService: jest.fn<any>().mockImplementation(() => ({
+            getName: jest.fn<any>().mockImplementation((name: any) => name === 'parsedArgs' ? {} : undefined),
+            setName: jest.fn<any>(),
+            deleteName: jest.fn<any>(),
+            hasName: jest.fn<any>()
         })),
     },
 }));
@@ -28,19 +29,19 @@ describe('addStateService', () => {
 
     it('should properly create the service and perform state changes', async () => {
         // Prepare
-        const createStateService = jest.fn();
-        const createDTO = jest.fn();
-        const isDTO = jest.fn();
-        const explainDTO = jest.fn();
-        const mockStateService = { on: jest.fn(), getDTO: jest.fn(), destroy: jest.fn() };
+        const createStateService = jest.fn<any>();
+        const createDTO = jest.fn<any>();
+        const isDTO = jest.fn<any>();
+        const explainDTO = jest.fn<any>();
+        const mockStateService = { on: jest.fn<any>(), getDTO: jest.fn<any>(), destroy: jest.fn<any>() };
         const mockAutowireService = {
-            getName: jest.fn().mockImplementation((name: any) => name === 'parsedArgs' ? {} : undefined),
-            setName: jest.fn(),
-            deleteName: jest.fn(),
-            hasName: jest.fn()
+            getName: jest.fn<any>().mockImplementation((name: any) => name === 'parsedArgs' ? {} : undefined),
+            setName: jest.fn<any>(),
+            deleteName: jest.fn<any>(),
+            hasName: jest.fn<any>()
         };
-        const readFile = jest.fn();
-        const writeFile = jest.fn();
+        const readFile = jest.fn<any>();
+        const writeFile = jest.fn<any>();
 
         createStateService.mockReturnValue(mockStateService);
         createDTO.mockReturnValue({});
@@ -79,12 +80,12 @@ describe('addStateService', () => {
 
     it('should throw an error if state file is not valid DTO', async () => {
         // Prepare
-        const createStateService = jest.fn();
-        const createDTO = jest.fn();
-        const isDTO = jest.fn();
-        const explainDTO = jest.fn();
-        const readFile = jest.fn();
-        const writeFile = jest.fn();
+        const createStateService = jest.fn<any>();
+        const createDTO = jest.fn<any>();
+        const isDTO = jest.fn<any>();
+        const explainDTO = jest.fn<any>();
+        const readFile = jest.fn<any>();
+        const writeFile = jest.fn<any>();
 
         createDTO.mockReturnValue({});
         isDTO.mockReturnValue(false);
@@ -115,23 +116,23 @@ describe('addStateService', () => {
     it('should write new state to file when state changes', async () => {
 
         // Prepare
-        const createStateService = jest.fn();
-        const createDTO = jest.fn();
-        const isDTO = jest.fn();
-        const explainDTO = jest.fn();
+        const createStateService = jest.fn<any>();
+        const createDTO = jest.fn<any>();
+        const isDTO = jest.fn<any>();
+        const explainDTO = jest.fn<any>();
         const mockStateService = {
-            on: jest.fn(),
-            getDTO: jest.fn().mockReturnValue({ a: 1 }),
-            destroy: jest.fn(),
+            on: jest.fn<any>(),
+            getDTO: jest.fn<any>().mockReturnValue({ a: 1 }),
+            destroy: jest.fn<any>(),
         };
         const mockAutowireService = {
-            getName: jest.fn().mockImplementation((name: any) => name === 'parsedArgs' ? {} : undefined),
-            setName: jest.fn(),
-            deleteName: jest.fn(),
-            hasName: jest.fn()
+            getName: jest.fn<any>().mockImplementation((name: any) => name === 'parsedArgs' ? {} : undefined),
+            setName: jest.fn<any>(),
+            deleteName: jest.fn<any>(),
+            hasName: jest.fn<any>()
         };
-        const readFile = jest.fn();
-        const writeFile = jest.fn();
+        const readFile = jest.fn<any>();
+        const writeFile = jest.fn<any>();
 
         createStateService.mockReturnValue(mockStateService);
         createDTO.mockReturnValue({});
@@ -154,7 +155,7 @@ describe('addStateService', () => {
             public static async run() {
 
                 // Simulate state change
-                const stateChangeCallback = mockStateService.on.mock.calls[0][1];
+                const stateChangeCallback : any = mockStateService.on.mock.calls[0][1];
                 await stateChangeCallback();
 
             }

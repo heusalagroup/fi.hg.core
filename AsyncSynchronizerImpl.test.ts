@@ -24,10 +24,10 @@ describe('AsyncSynchronizerImpl', () => {
     describe('run', () => {
 
         it('should return the result of the callback', async () => {
-            const expectedResult = 'Test';
-            const callback = jest.fn().mockResolvedValue(expectedResult);
+            const expectedResult : string = 'Test';
+            const callback = jest.fn<() => Promise<string>>().mockResolvedValue(expectedResult);
 
-            const result = await asyncSynchronizer.run(callback);
+            const result = await asyncSynchronizer.run<string>(callback);
 
             expect(result).toBe(expectedResult);
             expect(callback).toHaveBeenCalled();

@@ -22,14 +22,14 @@ describe('CompositeLogger', () => {
     beforeEach( () => {
         mockLogger1 = new MockLogger();
         mockLogger2 = new MockLogger();
-        spyDebug1 = jest.spyOn(mockLogger1, 'debug').mockImplementation();
-        spyInfo1 = jest.spyOn(mockLogger1, 'info').mockImplementation();
-        spyWarn1 = jest.spyOn(mockLogger1, 'warn').mockImplementation();
-        spyError1 = jest.spyOn(mockLogger1, 'error').mockImplementation();
-        spyDebug2 = jest.spyOn(mockLogger2, 'debug').mockImplementation();
-        spyInfo2 = jest.spyOn(mockLogger2, 'info').mockImplementation();
-        spyWarn2 = jest.spyOn(mockLogger2, 'warn').mockImplementation();
-        spyError2 = jest.spyOn(mockLogger2, 'error').mockImplementation();
+        spyDebug1 = jest.spyOn(mockLogger1, 'debug').mockImplementation( () => {} );
+        spyInfo1 = jest.spyOn(mockLogger1, 'info').mockImplementation( () => {} );
+        spyWarn1 = jest.spyOn(mockLogger1, 'warn').mockImplementation( () => {} );
+        spyError1 = jest.spyOn(mockLogger1, 'error').mockImplementation( () => {} );
+        spyDebug2 = jest.spyOn(mockLogger2, 'debug').mockImplementation( () => {} );
+        spyInfo2 = jest.spyOn(mockLogger2, 'info').mockImplementation( () => {} );
+        spyWarn2 = jest.spyOn(mockLogger2, 'warn').mockImplementation( () => {} );
+        spyError2 = jest.spyOn(mockLogger2, 'error').mockImplementation( () => {} );
         logger = new CompositeLogger(
             [
                 mockLogger1,

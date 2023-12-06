@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from "@jest/globals";
 import { HgAiCommandServiceImpl } from "./HgAiCommandServiceImpl";
 import { MockOpenAiClient } from "../../mocks/MockOpenAiClient";
 import { createOpenAiCompletionResponseDTO } from "../../openai/dto/OpenAiCompletionResponseDTO";
@@ -17,9 +18,9 @@ import { LogLevel } from "../../types/LogLevel";
 describe("HgAiCommandServiceImpl", () => {
     let service: HgAiCommandServiceImpl;
     let client: MockOpenAiClient;
-    let consoleSpy : jest.SpyInstance;
-    let warnConsoleSpy : jest.SpyInstance;
-    let errorConsoleSpy : jest.SpyInstance;
+    let consoleSpy : jest.SpiedFunction<any>;
+    let warnConsoleSpy : jest.SpiedFunction<any>;
+    let errorConsoleSpy : jest.SpiedFunction<any>;
 
     beforeEach(() => {
         HgAiCommandServiceImpl.setLogLevel(LogLevel.NONE);

@@ -1,5 +1,6 @@
 // Copyright (c) 2023. Heusala Group Oy <info@heusalagroup.fi>. All rights reserved.
 
+import { jest } from "@jest/globals";
 import { HttpOpenAiClient, OPENAI_API_POST_COMPLETIONS_PATH, OPENAI_API_POST_EDITS_PATH } from './HttpOpenAiClient';
 import { OpenAiModel } from "./types/OpenAiModel";
 import { HttpService } from "../HttpService";
@@ -16,7 +17,7 @@ describe('HttpOpenAiClient', () => {
     const baseUrl = 'https://api.openai.com';
     let client: HttpOpenAiClient;
     let prevDefaultUrl: string;
-    let postJsonSpy: jest.SpyInstance;
+    let postJsonSpy: jest.SpiedFunction<(...args: any) => any>;
 
     beforeAll(() => {
 
