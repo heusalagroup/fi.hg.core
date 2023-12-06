@@ -4,6 +4,7 @@
 import { default as _isString } from "lodash/isString";
 import { default as _every } from "lodash/every";
 import { default as _filter } from "lodash/filter";
+import { prefixLines } from "./String";
 
 /**
  * Returned from explain functions when the value is OK.
@@ -41,5 +42,5 @@ export function explainProperty (
     values: readonly string[] | string
 ): string {
     const e = explain(values);
-    return isExplainOk(e) ? explainOk() : `property "${name}" ${e}`;
+    return isExplainOk(e) ? explainOk() : '\n' + prefixLines(`property "${name}" ${e}`, '  ');
 }

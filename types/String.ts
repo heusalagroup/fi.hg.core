@@ -2,6 +2,7 @@
 
 import { default as _isString } from "lodash/isString";
 import { default as _isSymbol } from "lodash/isSymbol";
+import { replaceAll } from "../functions/replaceAll";
 import { isUndefined } from "./undefined";
 import { explainNot, explainOk, explainOr } from "./explain";
 import { isNull } from "lodash";
@@ -237,4 +238,21 @@ export function parseNonEmptyString (value: any): string | undefined {
     if ( value === undefined ) return undefined;
     if ( value === '' ) return undefined;
     return `${value}`;
+}
+
+/**
+ * Returns the string with each line prefixed with another string.
+ *
+ * @param value The value
+ * @param prefix The prefix string
+ */
+export function prefixLines (
+    value: string,
+    prefix: string
+) : string {
+    return `${prefix}${replaceAll(
+        value,
+        "\n",
+        `\n${prefix}`
+    )}`;
 }
