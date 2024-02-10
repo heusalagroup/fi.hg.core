@@ -1,4 +1,11 @@
-**Join our [Discord](https://discord.gg/UBTrHxA78f) to discuss about our software!**
+_____________________________________________________________________________________
+
+***DEPRECATED:*** Development will be continued in 
+[io.hyperify.core](https://github.com/hyperifyio/io.hyperify.core).
+
+*Join our [Discord](https://discord.gg/UBTrHxA78f) to discuss about our software!*
+
+_____________________________________________________________________________________
 
 # heusalagroup/fi.hg.core
 
