@@ -1,6 +1,9 @@
 _____________________________________________________________________________________
 
-***DEPRECATED:*** Development will be continued in 
+# DEPRECATED
+
+Development under this git repository is ***discontinued*** and future improvements 
+will continue under
 [io.hyperify.core](https://github.com/hyperifyio/io.hyperify.core).
 
 *Join our [Discord](https://discord.gg/UBTrHxA78f) to discuss about our software!*
